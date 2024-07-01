@@ -1,0 +1,45 @@
+package org.molgenis.vipannotate.annotator;
+
+import java.util.List;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.util.ReusableBatchIterator;
+import org.molgenis.vipannotate.vcf.VcfHeader;
+import org.molgenis.vipannotate.vcf.VcfReader;
+import org.molgenis.vipannotate.vcf.VcfRecord;
+import org.molgenis.vipannotate.vcf.VcfWriter;
+
+// TODO consider annotation of records in batches to improve performance
+@RequiredArgsConstructor
+public class VcfAnnotator implements AutoCloseable {
+  @NonNull private final VcfReader vcfReader;
+  @NonNull private final VcfRecordAnnotator vcfRecordAnnotator;
+  @NonNull private final VcfWriter vcfWriter;
+
+  public void annotate() {
+    ReusableBatchIterator<VcfRecord> batchIterator = new ReusableBatchIterator<>(vcfReader, 100);
+
+    // update header
+    VcfHeader vcfHeader = vcfReader.getHeader();
+    vcfRecordAnnotator.updateHeader(vcfHeader);
+    vcfWriter.writeHeader(vcfHeader);
+
+    // update records
+    while (batchIterator.hasNext()) {
+      List<VcfRecord> batch = batchIterator.next();
+      vcfRecordAnnotator.annotate(batch);
+      vcfWriter.write(batch);
+    }
+  }
+
+  @Override
+  public void close() {
+    vcfWriter.close();
+    try {
+      vcfRecordAnnotator.close();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    vcfReader.close();
+  }
+}

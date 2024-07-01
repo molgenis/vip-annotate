@@ -1,0 +1,30 @@
+package org.molgenis.vipannotate.util;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import org.molgenis.vipannotate.db.Quantized16UnitIntervalDoublePrimitive;
+
+public class Quantized16UnitIntervalDoublePrimitiveTest {
+  @Test
+  public void test() {
+    // test [0,1)
+    for (int i = 0; i < 10000; ++i) {
+      double x = Math.random();
+      double xQuantized =
+          Quantized16UnitIntervalDoublePrimitive.toDouble(
+              Quantized16UnitIntervalDoublePrimitive.toShort(x));
+      assertEquals(x, xQuantized, 1E-4);
+    }
+  }
+
+  @Test
+  public void test1() {
+    // test 1
+    double x = 1d;
+    double xQuantized =
+        Quantized16UnitIntervalDoublePrimitive.toDouble(
+            Quantized16UnitIntervalDoublePrimitive.toShort(x));
+    assertEquals(x, xQuantized, 1E-4);
+  }
+}
