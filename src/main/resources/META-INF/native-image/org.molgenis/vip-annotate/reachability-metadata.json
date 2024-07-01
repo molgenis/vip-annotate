@@ -1,0 +1,132 @@
+{
+  "foreign": {
+    "downcalls": [
+      {
+        "returnType": "int",
+        "parameterTypes": [],
+        "options": {
+          "critical": {
+            "allowHeapAccess": false
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "void*",
+          "void*",
+          "long",
+          "void*",
+          "long",
+          "int"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": true
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "void*",
+          "int",
+          "void*"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": true
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "void*",
+          "void*",
+          "int"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": true
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "void*",
+          "int",
+          "void*",
+          "int"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": true
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "void*",
+          "void*",
+          "int",
+          "int"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": true
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [],
+        "options": {
+          "critical": {
+            "allowHeapAccess": false
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "long",
+          "long"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": false
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "void*"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": false
+          }
+        }
+      },
+      {
+        "returnType": "long",
+        "parameterTypes": [
+          "void*",
+          "void*",
+          "long",
+          "void*",
+          "long"
+        ],
+        "options": {
+          "critical": {
+            "allowHeapAccess": true
+          }
+        }
+      }
+    ]
+  }
+}

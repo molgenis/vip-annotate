@@ -1,0 +1,43 @@
+Bootstrap: localimage
+From: streamvbyte-2.0.0.sif
+Stage: build-streamvbyte
+
+Bootstrap: localimage
+From: zstd-1.5.7.sif
+Stage: build-zstd
+
+Bootstrap: localimage
+From: ubuntu-24.04.sif
+Stage: final
+
+%files from build-streamvbyte
+    /streamvbyte-2.0.0/libstreamvbyte.so.0.0.1 /opt/vip-annotate/lib/libstreamvbyte.so.0.0.1
+
+%files from build-zstd
+    /zstd-1.5.7/lib/libzstd.so.1.5.7 /opt/vip-annotate/lib/libzstd.so.1.5.7
+
+%post
+    apt-get -y update
+    # https://www.graalvm.org/jdk25/getting-started/linux/#prerequisites-for-native-image-on-linux
+    apt-get -y install build-essential zlib1g-dev
+
+    # https://www.graalvm.org/jdk25/getting-started/linux/#from-an-archive
+    apt-get -y install wget
+    wget https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-25.0.1/graalvm-community-jdk-25.0.1_linux-x64_bin.tar.gz
+    tar -xzf graalvm-community-jdk-25.0.1_linux-x64_bin.tar.gz -C /opt
+    rm graalvm-community-jdk-25.0.1_linux-x64_bin.tar.gz
+
+    wget https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+    tar xzf apache-maven-3.9.9-bin.tar.gz -C /opt
+    rm apache-maven-3.9.9-bin.tar.gz
+
+    apt-get -y purge --auto-remove wget
+    apt-get clean
+
+%environment
+    export JAVA_HOME=/opt/graalvm-community-openjdk-25.0.1+8.1
+    export PATH=/opt/graalvm-community-openjdk-25.0.1+8.1/bin:/opt/apache-maven-3.9.9/bin:$PATH
+    export MAVEN_OPTS="-Dstreamvbyte.lib.path=/opt/vip-annotate/lib/libstreamvbyte.so.0.0.1 -Dzstd.lib.path=/opt/vip-annotate/lib/libzstd.so.1.5.7"
+
+%help
+    graalvm native image build container with graalvm, mvn, streamvbyte and zstd

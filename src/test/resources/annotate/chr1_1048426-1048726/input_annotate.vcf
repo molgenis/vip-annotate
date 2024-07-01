@@ -1,0 +1,10 @@
+##fileformat=VCFv4.5
+##reference=file:///references/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
+##contig=<ID=chr1,length=248956422>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr1	1048426	.	G	A	.	.	.
+chr1	1048426	.	G	GT	.	.	.
+chr1	1048426	.	GT	G	.	.	.
+chr1	1048426	.	GTG	G	.	.	.
+chr1	1048426	.	GTGG	G	.	.	.
+chr1	1048426	.	GTGGG	G	.	.	.
