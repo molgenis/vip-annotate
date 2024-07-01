@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.molgenis</groupId>
+    <artifactId>vip-annotate</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <samtools.htsjdk.version>4.1.0</samtools.htsjdk.version>
+        <logback.classic.version>1.5.6</logback.classic.version>
+        <lombok.version>1.18.32</lombok.version>
+        <apache.fury.version>0.5.1</apache.fury.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>iitj</id>
+            <url>https://raw.githubusercontent.com/wiki/mlin/iitj/mvn-repo/</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.samtools</groupId>
+                <artifactId>htsjdk</artifactId>
+                <version>${samtools.htsjdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.classic.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.fury</groupId>
+                <artifactId>fury-core</artifactId>
+                <version>${apache.fury.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.samtools</groupId>
+            <artifactId>htsjdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.fury</groupId>
+            <artifactId>fury-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>
