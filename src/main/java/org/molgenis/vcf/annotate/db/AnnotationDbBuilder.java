@@ -11,6 +11,7 @@ import java.util.zip.GZIPInputStream;
 import org.molgenis.vcf.annotate.db.model.*;
 import org.molgenis.vcf.annotate.db.model.Chromosome;
 import org.molgenis.vcf.annotate.db.utils.BitList;
+import org.molgenis.vcf.annotate.db.utils.Gff3;
 import org.molgenis.vcf.annotate.db.utils.Gff3Parser;
 import org.molgenis.vcf.annotate.db.utils.IntervalUtils;
 import org.slf4j.Logger;
@@ -27,197 +28,193 @@ public class AnnotationDbBuilder {
 
   public GenomeAnnotationDb create(File gff3File) {
     // parse gff3
-    List<Gff3Parser.Feature> features = new ArrayList<>();
-    try (BufferedReader bufferedReader =
-        new BufferedReader(
-            new InputStreamReader(
-                new GZIPInputStream(new FileInputStream(gff3File)), StandardCharsets.UTF_8))) {
-      Gff3Parser gff3Parser = new Gff3Parser(bufferedReader);
-      Gff3Parser.Feature feature;
-      while ((feature = gff3Parser.parseLine()) != null) {
-        features.add(feature);
-      }
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    LOGGER.info("parsing {}", gff3File);
+    Gff3 gff3 = createGff3(gff3File);
 
-    // pass 1: create genes
-    Map<String, Gene> genes = new LinkedHashMap<>();
-    for (Gff3Parser.Feature feature : features) {
-      if (feature.type().equals("gene")) {
-        String geneName = (String) feature.attributes().attributeMap().get("gene_name");
-        int nrGenes = geneName != null ? geneName.split(",", -1).length : 1;
-        for (int i = 0; i < nrGenes; i++) {
-          Gene gene = createGene(feature, i);
-          genes.put(feature.getAttributeId(), gene);
-        }
-      }
-    }
-
-    // pass 2: group features by chromosome
-    EnumMap<Chromosome, List<Gff3Parser.Feature>> chromosomeFeatureMap =
-        new EnumMap<>(Chromosome.class);
-    for (Gff3Parser.Feature feature : features) {
-      Chromosome chromosome = Chromosome.from(feature.seqid());
-      chromosomeFeatureMap.computeIfAbsent(chromosome, k -> new ArrayList<>()).add(feature);
-    }
-
-    // create transcript database per chromosome
+    // create annotation db
     EnumMap<Chromosome, AnnotationDb> chromosomeTranscriptDatabaseMap =
         new EnumMap<>(Chromosome.class);
-    chromosomeFeatureMap.forEach(
-        (chromosome, featureList) -> {
-          AnnotationDb annotationDb = createAnnotationChromosomeDb(chromosome, genes, featureList);
+    gff3.forEach(
+        entry -> {
+          Chromosome chromosome = Chromosome.from(entry.getKey());
+          AnnotationDb annotationDb = createAnnotationDb(chromosome, entry.getValue());
           chromosomeTranscriptDatabaseMap.put(chromosome, annotationDb);
         });
+
     return new GenomeAnnotationDb(chromosomeTranscriptDatabaseMap);
   }
 
-  private Gene createGene(Gff3Parser.Feature feature, int index) {
-    Gene.GeneBuilder builder = Gene.builder();
-    String geneName = (String) feature.attributes().attributeMap().get("gene_name");
-    if (geneName != null) {
-      geneName = geneName.split(",", -1)[index].trim();
-    } else {
-      geneName = feature.getAttributeId();
-    }
-    builder.name(geneName);
-    String geneType = (String) feature.attributes().attributeMap().get("gene_type");
-    if (geneType != null) {
-      String[] tokens = geneType.split(",", -1);
-      if (tokens.length > 1) geneType = tokens[index].trim();
-      else geneType = tokens[0];
+  private static Gff3 createGff3(File gff3File) {
+    Set<String> seqIds = new HashSet<>();
+    seqIds.add("NC_000001.11");
+    seqIds.add("NC_000002.12");
+    seqIds.add("NC_000003.12");
+    seqIds.add("NC_000004.12");
+    seqIds.add("NC_000005.10");
+    seqIds.add("NC_000006.12");
+    seqIds.add("NC_000007.14");
+    seqIds.add("NC_000008.11");
+    seqIds.add("NC_000009.12");
+    seqIds.add("NC_000010.11");
+    seqIds.add("NC_000011.10");
+    seqIds.add("NC_000012.12");
+    seqIds.add("NC_000013.11");
+    seqIds.add("NC_000014.9");
+    seqIds.add("NC_000015.10");
+    seqIds.add("NC_000016.10");
+    seqIds.add("NC_000017.11");
+    seqIds.add("NC_000018.10");
+    seqIds.add("NC_000019.10");
+    seqIds.add("NC_000020.11");
+    seqIds.add("NC_000021.9");
+    seqIds.add("NC_000022.11");
+    seqIds.add("NC_000023.11"); // X
+    seqIds.add("NC_000024.10"); // Y
+    // FIXME enable
+    // seqIds.add("NC_012920.1"); // MT
 
-      builder.type(
-          switch (geneType) {
-            case "antisense_RNA" -> Gene.Type.ANTISENSE_RNA;
-            case "C_region" -> Gene.Type.C_REGION;
-            case "J_segment" -> Gene.Type.J_SEGMENT;
-            case "lncRNA" -> Gene.Type.LNC_RNA;
-            case "miRNA" -> Gene.Type.MI_RNA;
-            case "misc_RNA" -> Gene.Type.MISC_RNA;
-            case "ncRNA" -> Gene.Type.NC_RNA;
-            case "ncRNA_pseudogene" -> Gene.Type.NC_RNA_PSEUDOGENE;
-            case "protein_coding" -> Gene.Type.PROTEIN_CODING;
-            case "pseudogene" -> Gene.Type.PSEUDOGENE;
-            case "rRNA" -> Gene.Type.R_RNA;
-            case "RNase_MRP_RNA" -> Gene.Type.RNASE_MRP_RNA;
-            case "scRNA" -> Gene.Type.SC_RNA;
-            case "snRNA" -> Gene.Type.SN_RNA;
-            case "snoRNA" -> Gene.Type.SNO_RNA;
-            case "TEC" -> Gene.Type.TEC;
-            case "tRNA" -> Gene.Type.T_RNA;
-            case "telomerase_RNA" -> Gene.Type.TELOMERASE_RNA;
-            case "transcribed_pseudogene" -> Gene.Type.TRANSCRIBED_PSEUDOGENE;
-            case "V_segment" -> Gene.Type.V_SEGMENT;
-            case "V_segment_pseudogene" -> Gene.Type.V_SEGMENT_PSEUDOGENE;
-            default -> {
-              System.out.println(geneType);
-              yield Gene.Type.V_SEGMENT;
-            } // throw new IllegalStateException("Unexpected value: " + geneType);
-          });
+    Set<String> sources = new HashSet<>();
+    sources.add("RefSeq");
+    sources.add("BestRefSeq");
+    sources.add("RefSeqFE");
+    sources.add("Curated Genomic");
+    sources.add("BestRefSeq,Gnomon");
+    sources.add("tRNAscan-SE");
+    sources.add("Curated Genomic,cmsearch");
+
+    Set<String> attributes = new HashSet<>();
+    attributes.add("ID");
+    attributes.add("Parent");
+    attributes.add("gene");
+    attributes.add("gene_biotype");
+    attributes.add("transcript_id");
+    attributes.add("Dbxref");
+
+    Gff3 gff3;
+    try (Gff3Parser gff3Parser =
+        new Gff3Parser(
+            new InputStreamReader(
+                new GZIPInputStream(new FileInputStream(gff3File)), StandardCharsets.UTF_8))) {
+      gff3 = gff3Parser.parse(new Gff3Parser.Filter(seqIds, sources, attributes));
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
-    if (feature.strand() == null) {
-      LOGGER.warn("null strand for " + feature);
-      builder.strand(Strand.UNKNOWN);
-    } else {
-      builder.strand(feature.strand());
+    return gff3;
+  }
+
+  private Gene createGene(Gff3Parser.Feature feature) {
+    Gene.GeneBuilder builder =
+        Gene.builder().name(feature.getAttribute("gene")).strand(feature.strand());
+
+    List<String> dbxref = feature.getAttributeAsList("Dbxref");
+    if (dbxref != null) {
+      for (String ref : dbxref) {
+        if (ref.startsWith("HGNC:HGNC:")) {
+          int id = Integer.valueOf(ref.substring("HGNC:HGNC:".length()));
+          builder.id(id);
+          break;
+        }
+      }
     }
+    String geneBiotype = feature.getAttribute("gene_biotype");
+    builder.bioType(Gene.BioType.PROTEIN_CODING); // FIXME
+
     return builder.build();
   }
 
-  private AnnotationDb createAnnotationChromosomeDb(
-      Chromosome chromosome, Map<String, Gene> genes, List<Gff3Parser.Feature> featureList) {
-    LOGGER.debug("processing chromosome: {}", chromosome.getId());
+  private AnnotationDb createAnnotationDb(Chromosome chromosome, Gff3.Features features) {
+    LOGGER.info("processing chromosome {}", chromosome.getId());
 
-    // pass 1: create transcripts
+    Map<String, Integer> geneMap = new LinkedHashMap<>();
+    List<Gene> geneList = new ArrayList<>();
     Map<String, Transcript.TranscriptBuilder> transcriptBuilderMap =
         new LinkedHashMap<>(); // preserve order
 
-    featureList.forEach(
+    // pass 1: create transcripts
+    List<Interval> sequenceIntervals = new ArrayList<>();
+    features.forEach(
         feature -> {
-          if (feature.type().equals("transcript")) {
-            Transcript.TranscriptBuilder builder = Transcript.builder();
-            builder.start(Math.toIntExact(feature.start()));
-            builder.length(Math.toIntExact(feature.end() - feature.start() + 1));
+          if (isGene(feature)) {
+            // create gene
+            Gene gene = createGene(feature);
+            geneList.add(gene);
+            geneMap.put(feature.getAttributeId(), geneList.size() - 1);
+          } else if (isTranscript(feature)) {
+            // create transcript stub
+            Transcript.TranscriptBuilder<?, ?> transcriptBuilder =
+                Transcript.builder()
+                    .start(Math.toIntExact(feature.start()))
+                    .length(Math.toIntExact(feature.end() - feature.start() + 1))
+                    .id(feature.getAttribute("transcript_id"))
+                    .geneIndex(geneMap.get(feature.getAttributeParent().getFirst()));
 
-            Gene gene = genes.get(feature.getAttributeParent());
-            builder.gene(gene);
+            transcriptBuilderMap.put(feature.getAttributeId(), transcriptBuilder);
+          } else if (isExon(feature)) {
+            String parentFeatureId = feature.getAttributeParent().getFirst();
+            Transcript.TranscriptBuilder transcriptBuilder =
+                transcriptBuilderMap.get(parentFeatureId);
 
-            String dbXrefValue = (String) feature.attributes().attributeMap().get("db_xref");
-            if (dbXrefValue != null) {
-              TranscriptCatalog currentTranscriptCatalog = null;
-              for (String part : dbXrefValue.split(",", -1)) {
-                String[] tokens = part.split(":", -1);
-                String id;
-                if (tokens.length == 2) {
-                  currentTranscriptCatalog =
-                      switch (tokens[0]) {
-                        case "RefSeq" -> TranscriptCatalog.REFSEQ;
-                        case "GENCODE" -> TranscriptCatalog.GENCODE;
-                        default ->
-                            throw new IllegalStateException("Unexpected value: " + tokens[0]);
-                      };
-                  id = tokens[1];
-                } else {
-                  id = tokens[0];
-                }
-                if (currentTranscriptCatalog == null) throw new RuntimeException();
+            // FIXME can be null in case of 'miRNA', what to do?
+            if (transcriptBuilder != null) {
+              // create exon
+              Exon exon =
+                  Exon.builder()
+                      .start(Math.toIntExact(feature.start()))
+                      .length(Math.toIntExact(feature.end() - feature.start() + 1))
+                      .build();
 
-                builder.transcriptRef(
-                    TranscriptRef.builder()
-                        .transcriptCatalog(currentTranscriptCatalog)
-                        .id(id)
-                        .build());
-              }
+              // add to transcript stub
+              transcriptBuilder.exon(exon);
             }
+          } else if (isCds(feature)) {
+            String parentFeatureId = feature.getAttributeParent().getFirst();
+            Transcript.TranscriptBuilder transcriptBuilder =
+                transcriptBuilderMap.get(parentFeatureId);
 
-            transcriptBuilderMap.put(feature.getAttributeId(), builder);
-          }
-        });
+            // FIXME can be null in case of *_gene_segment, and in case of mRNA on MT
+            if (transcriptBuilder != null) {
+              // create cds
+              Cds cds =
+                  Cds.builder()
+                      .start(Math.toIntExact(feature.start()))
+                      .length(Math.toIntExact(feature.end() - feature.start() + 1))
+                      .phase(
+                          switch (feature.phase()) {
+                            case ZERO -> (byte) 0;
+                            case ONE -> (byte) 1;
+                            case TWO -> (byte) 2;
+                          })
+                      .build();
 
-    // pass 2: populate transcripts with exons and cds
-    List<Cds> requestedCdsSequences = new ArrayList<>();
-    featureList.forEach(
-        feature -> {
-          if (feature.type().equals("exon")) {
-            Exon exon =
-                Exon.builder()
-                    .start(Math.toIntExact(feature.start()))
-                    .length(Math.toIntExact(feature.end() - feature.start() + 1))
-                    .build();
-            transcriptBuilderMap.get(feature.getAttributeParent()).exon(exon);
-          } else if (feature.type().equals("CDS")) {
-            Cds cds =
-                Cds.builder()
-                    .start(Math.toIntExact(feature.start()))
-                    .length(Math.toIntExact(feature.end() - feature.start() + 1))
-                    .build();
-            transcriptBuilderMap.get(feature.getAttributeParent()).codingSequence(cds);
+              // add to transcript stub
+              transcriptBuilderMap.get(feature.getAttributeParent().getFirst()).codingSequence(cds);
 
-            // request sequence data for cds
-            requestedCdsSequences.add(cds);
+              // store interval for sequence data retrieval
+              sequenceIntervals.add(cds);
+            }
           }
         });
 
     // pass 3: create transcript db
-    List<Transcript> transcripts =
-        transcriptBuilderMap.values().stream().map(Transcript.TranscriptBuilder::build).toList();
+    Transcript[] transcripts =
+        transcriptBuilderMap.values().stream()
+            .map(Transcript.TranscriptBuilder::build)
+            .toArray(Transcript[]::new);
 
-    IntervalTree.Builder intervalTreeBuilder = new IntervalTree.Builder(transcripts.size());
-    transcripts.forEach(
-        transcript -> intervalTreeBuilder.add(transcript.getStart(), transcript.getStop()));
+    IntervalTree.Builder intervalTreeBuilder = new IntervalTree.Builder(transcripts.length);
+    for (Transcript transcript : transcripts) {
+      intervalTreeBuilder.add(transcript.getStart(), transcript.getStop());
+    }
     IntervalTree intervalTree = intervalTreeBuilder.build();
-    TranscriptDb transcriptDb =
-        TranscriptDb.builder().intervalTree(intervalTree).transcripts(transcripts).build();
+    TranscriptDb transcriptDb = new TranscriptDb(intervalTree, transcripts);
 
     // pass 4: create sequence db
     SequenceDb sequenceDb;
-    if (!requestedCdsSequences.isEmpty()) {
+    if (!sequenceIntervals.isEmpty()) {
       // merge cds intervals
       List<IntervalUtils.MutableInterval> mergedIntervals =
           IntervalUtils.mergeIntervals(
-              requestedCdsSequences.stream()
+              sequenceIntervals.stream()
                   .map(cds -> new IntervalUtils.MutableInterval(cds.getStart(), cds.getStop()))
                   .toArray(IntervalUtils.MutableInterval[]::new));
 
@@ -237,14 +234,15 @@ public class AnnotationDbBuilder {
 
       IntervalTree sequenceIntervalTree = sequenceIntervalTreeBuilder.build();
 
-      sequenceDb =
-          SequenceDb.builder().intervalTree(sequenceIntervalTree).sequences(sequenceList).build();
+      sequenceDb = new SequenceDb(sequenceIntervalTree, sequenceList.toArray(Sequence[]::new));
     } else {
       sequenceDb = null;
     }
-    return AnnotationDb.builder().transcriptDb(transcriptDb).sequenceDb(sequenceDb).build();
+    return new AnnotationDb(transcriptDb, geneList.toArray(Gene[]::new), sequenceDb);
   }
 
+  // TODO keep casing in sequence? see
+  // https://gatk.broadinstitute.org/hc/en-us/articles/360035890951-Human-genome-reference-builds-GRCh38-or-hg38-b37-hg19
   private Sequence createSequence(Chromosome chromosome, long start, long stop) {
     ReferenceSequence sequence =
         referenceSequenceFile.getSubsequenceAt(chromosome.getId(), start, stop);
@@ -257,14 +255,14 @@ public class AnnotationDbBuilder {
       int pos = 0;
       for (byte b : sequence.getBases()) {
         switch (b) {
-          case 'A' -> {} // 000
-          case 'C' -> bitList.set(pos + 2); // 001
-          case 'T' -> bitList.set(pos + 1); // 010
-          case 'G' -> { // 011
+          case 'A', 'a' -> {} // 000
+          case 'C', 'c' -> bitList.set(pos + 2); // 001
+          case 'T', 't' -> bitList.set(pos + 1); // 010
+          case 'G', 'g' -> { // 011
             bitList.set(pos + 1);
             bitList.set(pos + 2);
           }
-          case 'N' -> bitList.set(pos); // 100
+          case 'N', 'n' -> bitList.set(pos); // 100
           default -> throw new IllegalStateException();
         }
         pos += 3;
@@ -275,10 +273,10 @@ public class AnnotationDbBuilder {
       int pos = 0;
       for (byte b : sequence.getBases()) {
         switch (b) {
-          case 'A' -> {} // 00
-          case 'C' -> bitList.set(pos + 1); // 01
-          case 'T' -> bitList.set(pos); // 10
-          case 'G' -> { // 11
+          case 'A', 'a' -> {} // 00
+          case 'C', 'c' -> bitList.set(pos + 1); // 01
+          case 'T', 't' -> bitList.set(pos); // 10
+          case 'G', 'g' -> { // 11
             bitList.set(pos);
             bitList.set(pos + 1);
           }
@@ -294,5 +292,21 @@ public class AnnotationDbBuilder {
         .sequenceType(sequenceType)
         .bits(bitList.getBits())
         .build();
+  }
+
+  private boolean isGene(Gff3Parser.Feature feature) {
+    return feature.type().equals("gene") || feature.type().equals("pseudogene");
+  }
+
+  private boolean isTranscript(Gff3Parser.Feature feature) {
+    return feature.hasAttribute("transcript_id") && !isExon(feature);
+  }
+
+  private boolean isExon(Gff3Parser.Feature feature) {
+    return feature.type().equals("exon");
+  }
+
+  private boolean isCds(Gff3Parser.Feature feature) {
+    return feature.type().equals("CDS");
   }
 }

@@ -7,11 +7,41 @@ import lombok.Value;
 @Value
 @Builder
 public class Gene {
+  int id;
   @NonNull String name;
-  @NonNull Gene.Type type;
+  @NonNull Gene.BioType bioType;
   @NonNull Strand strand;
 
-  public enum Type {
+  /*
+    antisense_RNA
+  C_region
+  C_region_pseudogene
+  D_segment
+  J_segment
+  J_segment_pseudogene
+  lncRNA
+  miRNA
+  misc_RNA
+  ncRNA
+  ncRNA_pseudogene
+  other
+  protein_coding
+  pseudogene
+  RNase_MRP_RNA
+  RNase_P_RNA
+  rRNA
+  scRNA
+  snoRNA
+  snRNA
+  telomerase_RNA
+  transcribed_pseudogene
+  tRNA
+  V_segment
+  V_segment_pseudogene
+  vault_RNA
+  Y_RNA
+     */
+  public enum BioType {
     ANTISENSE_RNA,
     C_REGION,
     J_SEGMENT,

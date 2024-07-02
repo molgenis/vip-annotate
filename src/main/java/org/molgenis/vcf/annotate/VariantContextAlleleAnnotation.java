@@ -14,9 +14,10 @@ public class VariantContextAlleleAnnotation {
   @NonNull String allele;
   @NonNull Consequence consequence;
   String geneSymbol;
+  Integer gene;
   FeatureType featureType;
   String feature;
-  Gene.Type biotype;
+  Gene.BioType biotype;
   Strand strand;
   int alleleNum;
   /*
@@ -24,7 +25,7 @@ public class VariantContextAlleleAnnotation {
   Consequence           done
   IMPACT                done
   SYMBOL                done
-  Gene
+  Gene                  done
   Feature_type          done
   Feature               done
   BIOTYPE               done

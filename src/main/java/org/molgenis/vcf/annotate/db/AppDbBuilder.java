@@ -18,17 +18,17 @@ public class AppDbBuilder {
     ReferenceSequenceFile referenceSequenceFile =
         ReferenceSequenceFileFactory.getReferenceSequenceFile(referenceFile);
 
-    LOGGER.debug("creating database ...");
+    LOGGER.info("creating database ...");
     long startCreateDb = System.currentTimeMillis();
     GenomeAnnotationDb genomeAnnotationDb =
         new AnnotationDbBuilder(referenceSequenceFile).create(inputFile);
     long endCreateDb = System.currentTimeMillis();
-    LOGGER.debug("creating database done in {}ms", endCreateDb - startCreateDb);
+    LOGGER.info("creating database done in {}ms", endCreateDb - startCreateDb);
 
-    LOGGER.debug("writing database to file ...");
+    LOGGER.info("writing database to file ...");
     long startWriteDb = System.currentTimeMillis();
     new AnnotationDbWriter().writeTranscriptDatabase(genomeAnnotationDb, outputFile);
     long endWriteDb = System.currentTimeMillis();
-    LOGGER.debug("writing database to file done in {}ms", endWriteDb - startWriteDb);
+    LOGGER.info("writing database to file done in {}ms", endWriteDb - startWriteDb);
   }
 }

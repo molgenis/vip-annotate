@@ -8,10 +8,13 @@ import lombok.experimental.SuperBuilder;
 @NonFinal
 @SuperBuilder
 public class Interval {
+  /** start in [start, stop) */
   int start;
 
+  /** stop - start */
   int length;
 
+  /** stop in [start, stop) */
   public int getStop() {
     return start + length;
   }

@@ -8,10 +8,10 @@ import htsjdk.variant.variantcontext.VariantContextBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.molgenis.vcf.annotate.db.model.*;
 import org.molgenis.vcf.annotate.model.Consequence;
 import org.molgenis.vcf.annotate.model.FeatureType;
+import org.molgenis.vcf.annotate.util.ContigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +19,9 @@ public class VariantContextAnnotator {
   private static final Logger LOGGER = LoggerFactory.getLogger(VariantContextAnnotator.class);
 
   private final GenomeAnnotationDb genomeAnnotationDb;
-  private final VariantConsequenceCalculator variantConsequenceCalculator;
 
-  public VariantContextAnnotator(
-      GenomeAnnotationDb genomeAnnotationDb,
-      VariantConsequenceCalculator variantConsequenceCalculator) {
+  public VariantContextAnnotator(GenomeAnnotationDb genomeAnnotationDb) {
     this.genomeAnnotationDb = requireNonNull(genomeAnnotationDb);
-    this.variantConsequenceCalculator = requireNonNull(variantConsequenceCalculator);
   }
 
   public VariantContext annotate(VariantContext variantContext) {
@@ -46,6 +42,10 @@ public class VariantContextAnnotator {
   }
 
   private List<VariantContextAlleleAnnotation> annotate(VariantContext variantContext, int i) {
+    Chromosome chromosome = ContigUtils.map(variantContext.getContig());
+    AnnotationDb annotationDb = genomeAnnotationDb.get(chromosome);
+    ConsequencePredictor consequencePredictor = new ConsequencePredictor(annotationDb);
+
     Allele alt = variantContext.getAlternateAllele(i);
 
     VariantContextAlleleAnnotation.VariantContextAlleleAnnotationBuilder builder =
@@ -53,15 +53,15 @@ public class VariantContextAnnotator {
     builder.alleleNum(i);
     builder.allele(alt.getDisplayString());
 
-    // FIXME skip difficult stuff for now
-    Chromosome chromosome = Chromosome.from(variantContext.getContig());
     int start = variantContext.getStart();
     Allele ref = variantContext.getReference();
     if (ref.isSymbolic()
         || ref.isSingleBreakend()
         || ref.isBreakpoint()
         || ref.getDisplayBases().length != 1) {
-      LOGGER.debug("skipping {}:{} {}", chromosome, start, ref.getDisplayString());
+      // FIXME support symbolic alleles
+      // FIXME support breakends
+      // FIXME support non-SNPs
       return Collections.emptyList();
     }
 
@@ -69,71 +69,39 @@ public class VariantContextAnnotator {
         || alt.isSingleBreakend()
         || alt.isBreakpoint()
         || alt.getDisplayBases().length != 1) {
-      LOGGER.debug(
-          "skipping {}:{} {}>{}",
-          chromosome,
-          start,
-          ref.getDisplayString(),
-          alt.getDisplayString());
+      // FIXME support symbolic alleles
+      // FIXME support breakends
+      // FIXME support non-SNPs
       return Collections.emptyList();
     }
 
     // determine annotations
     List<VariantContextAlleleAnnotation> annotations = new ArrayList<>();
 
-    List<Transcript> transcripts = genomeAnnotationDb.findTranscripts(chromosome, start, start);
+    List<Transcript> transcripts = annotationDb.findTranscripts(start, start);
 
     if (!transcripts.isEmpty()) {
       for (Transcript transcript : transcripts) {
-        // FIXME
-        //        builder.geneSymbol((String) feature.attributes().attributeMap().get("gene_name"));
-        builder.strand(transcript.getStrand());
+        Gene gene = annotationDb.getGene(transcript);
+        Strand strand = gene.getStrand();
+
+        builder.geneSymbol(gene.getName());
+        builder.gene(gene.getId());
+
+        builder.strand(strand);
         builder.featureType(FeatureType.TRANSCRIPT);
 
         Consequence consequence =
-            variantConsequenceCalculator.determineConsequenceTranscriptVariant(
-                chromosome, start, ref, alt, transcript);
+            consequencePredictor.predictConsequence(start, ref, alt, strand, transcript);
         builder.consequence(consequence);
 
-        String feature =
-            transcript.getTranscriptRefs().stream()
-                .map(
-                    transcriptRef -> {
-                      String catalog =
-                          switch (transcriptRef.getTranscriptCatalog()) {
-                            case CHESS -> "Chess";
-                            case GENCODE -> "GENCODE";
-                            case REFSEQ -> "RefSeq";
-                          };
-                      return transcriptRef.getId() != null
-                          ? catalog + ":" + transcriptRef.getId()
-                          : catalog;
-                    })
-                .collect(Collectors.joining(","));
-        builder.feature(feature);
-
-        // FIXME
-        //        String geneType = (String) feature.attributes().attributeMap().get("gene_type");
-        //        if (geneType != null) {
-        //          builder.biotype(
-        //              switch (geneType) {
-        //                case "protein_coding" -> GeneType.PROTEIN_CODING;
-        //                case "antisense_RNA" -> GeneType.ANTISENSE_RNA;
-        //                case "lncRNA" -> GeneType.LNC_RNA;
-        //                case "snRNA" -> GeneType.SN_RNA;
-        //                case "telomerase_RNA" -> GeneType.TELOMERASE_RNA;
-        //                case "RNase_MRP_RNA" -> GeneType.RNASE_MRP_RNA;
-        //                case "transcribed_pseudogene" -> GeneType.TRANSCRIBED_PSEUDOGENE;
-        //                case "snoRNA" -> GeneType.SNO_RNA;
-        //                case "miRNA" -> GeneType.MI_RNA;
-        //                default -> throw new IllegalStateException("Unexpected value: " +
-        // geneType);
-        //              });
-        //        }
+        builder.feature(transcript.getId());
+        builder.biotype(gene.getBioType());
         annotations.add(builder.build());
       }
     } else {
       builder.consequence(Consequence.INTERGENIC_VARIANT);
+      annotations.add(builder.build());
     }
 
     return annotations;
@@ -153,7 +121,8 @@ public class VariantContextAnnotator {
         });
     String geneSymbol = annotation.getGeneSymbol();
     values.add(geneSymbol != null ? geneSymbol : "");
-
+    Integer gene = annotation.getGene();
+    values.add(gene != null ? String.valueOf(gene) : "");
     FeatureType featureType = annotation.getFeatureType();
     values.add(
         featureType != null
@@ -165,7 +134,7 @@ public class VariantContextAnnotator {
     String feature = annotation.getFeature();
     values.add(feature != null ? feature : "");
 
-    Gene.Type biotype = annotation.getBiotype();
+    Gene.BioType biotype = annotation.getBiotype();
     values.add(
         biotype != null
             ? switch (biotype) {
@@ -198,8 +167,8 @@ public class VariantContextAnnotator {
     values.add(
         strand != null
             ? switch (strand) {
-              case PLUS -> "+";
-              case MINUS -> "-";
+              case PLUS -> "1";
+              case MINUS -> "0";
               case UNKNOWN -> "";
             }
             : "");

@@ -17,21 +17,21 @@ public class App {
   private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
   public static void main(String[] args) throws IOException {
-    long start = System.currentTimeMillis();
+    long start;
 
     File inputFile = new File(args[0]);
     File outputFile = new File(args[1]);
     File dbFile = new File(args[2]);
 
-    LOGGER.debug("parsing database ...");
-    long startCreateDb = System.currentTimeMillis();
+    LOGGER.info("loading database ...");
+    start = System.currentTimeMillis();
     GenomeAnnotationDb genomeAnnotationDb = new AnnotationDbReader().readTranscriptDatabase(dbFile);
-    long endCreateDb = System.currentTimeMillis();
-    LOGGER.debug("parsing database done in {}ms", endCreateDb - startCreateDb);
+    LOGGER.info("loading database done in {}ms", System.currentTimeMillis() - start);
 
+    LOGGER.info("annotating vcf records ...");
+    start = System.currentTimeMillis();
     VariantContextAnnotator variantContextAnnotator =
-        new VariantContextAnnotator(
-            genomeAnnotationDb, new VariantConsequenceCalculator(genomeAnnotationDb));
+        new VariantContextAnnotator(genomeAnnotationDb);
 
     try (VariantContextWriter writer =
             new VariantContextWriterBuilder()
@@ -49,7 +49,7 @@ public class App {
               "CSQ",
               VCFHeaderLineCount.UNBOUNDED,
               VCFHeaderLineType.String,
-              "Consequence annotations from VIP. Format: Allele|SYMBOL|Feature_type|Feature|BIOTYPE|ALLELE_NUM|STRAND"));
+              "Consequence annotations from VIP. Format: Allele|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|ALLELE_NUM|STRAND"));
       writer.writeHeader(vcfHeader);
 
       long records = 0;
@@ -58,10 +58,8 @@ public class App {
         writer.add(annotatedVariantContext);
         records++;
       }
-      LOGGER.debug("annotated {} records", records);
+      LOGGER.info(
+          "annotated {} vcf records done in {}ms", records, System.currentTimeMillis() - start);
     }
-
-    long end = System.currentTimeMillis();
-    LOGGER.debug("completed in {}ms", end - start);
   }
 }

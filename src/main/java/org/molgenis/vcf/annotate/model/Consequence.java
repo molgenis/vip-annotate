@@ -6,6 +6,8 @@ import lombok.Getter;
 
 @Getter
 public enum Consequence {
+  SPLICE_DONOR_VARIANT("splice_donor_variant", Impact.HIGH),
+  SPLICE_ACCEPTOR_VARIANT("splice_acceptor_variant", Impact.HIGH),
   STOP_GAINED("stop_gained", Impact.HIGH),
   START_LOST("start_lost", Impact.HIGH),
   STOP_LOST("stop_lost", Impact.HIGH),
