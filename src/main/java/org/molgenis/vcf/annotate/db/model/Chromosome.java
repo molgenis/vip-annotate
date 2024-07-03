@@ -35,12 +35,12 @@ public enum Chromosome {
   CHRY("NC_000024.10"),
   CHRM("NC_012920.1");
 
-  private static final Map<String, Chromosome> idToChromosomeMap;
+  private static final Map<String, Chromosome> ID_TO_CHROMOSOME_MAP;
 
   static {
-    idToChromosomeMap = HashMap.newHashMap(Chromosome.values().length);
+    ID_TO_CHROMOSOME_MAP = HashMap.newHashMap(Chromosome.values().length);
     for (Chromosome chromosome : Chromosome.values()) {
-      idToChromosomeMap.put(chromosome.getId(), chromosome);
+      ID_TO_CHROMOSOME_MAP.put(chromosome.getId(), chromosome);
     }
   }
 
@@ -51,12 +51,6 @@ public enum Chromosome {
   }
 
   public static Chromosome from(String id) {
-    requireNonNull(id);
-
-    Chromosome chromosome = idToChromosomeMap.get(id);
-    if (chromosome == null) {
-      throw new NullPointerException();
-    }
-    return chromosome;
+    return ID_TO_CHROMOSOME_MAP.get(requireNonNull(id));
   }
 }

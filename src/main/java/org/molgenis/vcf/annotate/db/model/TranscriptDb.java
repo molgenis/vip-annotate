@@ -10,9 +10,13 @@ public record TranscriptDb(@NonNull IntervalTree intervalTree, @NonNull Transcri
     implements Serializable {
   @Serial private static final long serialVersionUID = 1L;
 
-  public List<Transcript> find(int start, int stop) {
+  /**
+   * @return overlapping [start, stop) transcripts
+   */
+  public List<Transcript> findOverlap(int start, int stop) {
     List<Transcript> overlappingTranscripts = new ArrayList<>();
-    intervalTree.queryOverlapId(start, stop, id -> overlappingTranscripts.add(transcripts[id]));
+    // end + 1, because interval tree builder requires [x, y) interval
+    intervalTree.queryOverlapId(start, stop + 1, id -> overlappingTranscripts.add(transcripts[id]));
     return overlappingTranscripts;
   }
 }

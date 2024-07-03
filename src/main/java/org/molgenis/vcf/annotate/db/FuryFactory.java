@@ -14,12 +14,13 @@ public class FuryFactory {
     Fury fury = Fury.builder().withLanguage(Language.JAVA).requireClassRegistration(true).build();
     fury.register(AnnotationDb.class);
     fury.register(Cds.class);
+    fury.register(Cds.Part.class);
     fury.register(Chromosome.class);
     fury.register(Exon.class);
     fury.register(Gene.class);
     fury.register(Gene.BioType.class);
     fury.register(GenomeAnnotationDb.class);
-    fury.register(Interval.class);
+    fury.register(ClosedInterval.class);
     fury.register(IntervalTree.class);
     fury.register(Sequence.class);
     fury.register(SequenceDb.class);

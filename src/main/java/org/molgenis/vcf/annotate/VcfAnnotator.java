@@ -1,60 +1,76 @@
 package org.molgenis.vcf.annotate;
 
-import static java.util.Objects.requireNonNull;
-
 import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.variantcontext.VariantContextBuilder;
+import htsjdk.variant.variantcontext.writer.VariantContextWriter;
+import htsjdk.variant.vcf.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.molgenis.vcf.annotate.db.model.*;
 import org.molgenis.vcf.annotate.model.Consequence;
 import org.molgenis.vcf.annotate.model.FeatureType;
 import org.molgenis.vcf.annotate.util.ContigUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class VariantContextAnnotator {
-  private static final Logger LOGGER = LoggerFactory.getLogger(VariantContextAnnotator.class);
+@RequiredArgsConstructor
+public class VcfAnnotator {
+  @NonNull private final GenomeAnnotationDb genomeAnnotationDb;
 
-  private final GenomeAnnotationDb genomeAnnotationDb;
+  public long annotate(VCFIterator reader, VariantContextWriter writer) throws IOException {
+    VCFHeader vcfHeader = reader.getHeader();
+    vcfHeader.addMetaDataLine(
+        new VCFInfoHeaderLine(
+            "CSQ",
+            VCFHeaderLineCount.UNBOUNDED,
+            VCFHeaderLineType.String,
+            "Consequence annotations from VIP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|ALLELE_NUM|STRAND"));
+    writer.writeHeader(vcfHeader);
 
-  public VariantContextAnnotator(GenomeAnnotationDb genomeAnnotationDb) {
-    this.genomeAnnotationDb = requireNonNull(genomeAnnotationDb);
+    long records = 0;
+    while (reader.hasNext()) {
+      VariantContext vcfRecord = reader.next();
+      VariantContext annotatedVcfRecord = annotate(vcfRecord);
+      writer.add(annotatedVcfRecord);
+      records++;
+    }
+    return records;
   }
 
-  public VariantContext annotate(VariantContext variantContext) {
+  private VariantContext annotate(VariantContext vcfRecord) {
     // determine annotations per alternative allele
-    List<VariantContextAlleleAnnotation> annotationList = new ArrayList<>();
-    for (int i = 0; i < variantContext.getNAlleles() - 1; i++) {
-      annotationList.addAll(annotate(variantContext, i));
+    List<AlleleAnnotation> annotationList = new ArrayList<>();
+    for (int i = 0; i < vcfRecord.getNAlleles() - 1; i++) {
+      annotationList.addAll(annotate(vcfRecord, i));
     }
-    if (annotationList.isEmpty()) return variantContext;
+    if (annotationList.isEmpty()) return vcfRecord;
 
     // create variant context with annotations
     List<String> attributeValue =
-        annotationList.stream().map(VariantContextAnnotator::createAttributeValue).toList();
-    VariantContextBuilder variantContextBuilder = new VariantContextBuilder(variantContext);
+        annotationList.stream().map(VcfAnnotator::createAttributeValue).toList();
+    VariantContextBuilder variantContextBuilder = new VariantContextBuilder(vcfRecord);
     variantContextBuilder.attribute("CSQ", attributeValue);
 
     return variantContextBuilder.make();
   }
 
-  private List<VariantContextAlleleAnnotation> annotate(VariantContext variantContext, int i) {
-    Chromosome chromosome = ContigUtils.map(variantContext.getContig());
+  private List<AlleleAnnotation> annotate(VariantContext vcfRecord, int altAlleleIndex) {
+    Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
     AnnotationDb annotationDb = genomeAnnotationDb.get(chromosome);
-    ConsequencePredictor consequencePredictor = new ConsequencePredictor(annotationDb);
+    VariantTranscriptConsequenceAnnotator variantTranscriptConsequenceAnnotator =
+        new VariantTranscriptConsequenceAnnotator(annotationDb);
 
-    Allele alt = variantContext.getAlternateAllele(i);
+    Allele alt = vcfRecord.getAlternateAllele(altAlleleIndex);
 
-    VariantContextAlleleAnnotation.VariantContextAlleleAnnotationBuilder builder =
-        VariantContextAlleleAnnotation.builder();
-    builder.alleleNum(i);
+    AlleleAnnotation.AlleleAnnotationBuilder builder = AlleleAnnotation.builder();
+    builder.alleleNum(altAlleleIndex);
     builder.allele(alt.getDisplayString());
 
-    int start = variantContext.getStart();
-    Allele ref = variantContext.getReference();
+    int start = vcfRecord.getStart();
+    Allele ref = vcfRecord.getReference();
     if (ref.isSymbolic()
         || ref.isSingleBreakend()
         || ref.isBreakpoint()
@@ -76,27 +92,32 @@ public class VariantContextAnnotator {
     }
 
     // determine annotations
-    List<VariantContextAlleleAnnotation> annotations = new ArrayList<>();
+    List<AlleleAnnotation> annotations = new ArrayList<>();
 
-    List<Transcript> transcripts = annotationDb.findTranscripts(start, start);
+    List<Transcript> transcripts = annotationDb.findOverlapTranscripts(start, start);
 
     if (!transcripts.isEmpty()) {
       for (Transcript transcript : transcripts) {
         Gene gene = annotationDb.getGene(transcript);
         Strand strand = gene.getStrand();
 
+        TranscriptAnnotation transcriptAnnotation =
+            variantTranscriptConsequenceAnnotator.annotate(
+                start, ref.getBases(), alt.getBases(), strand, transcript);
+
         builder.geneSymbol(gene.getName());
         builder.gene(gene.getId());
-
         builder.strand(strand);
         builder.featureType(FeatureType.TRANSCRIPT);
+        builder.hgvsC(transcriptAnnotation.getHgvsC());
+        builder.hgvsP(transcriptAnnotation.getHgvsP());
 
-        Consequence consequence =
-            consequencePredictor.predictConsequence(start, ref, alt, strand, transcript);
-        builder.consequence(consequence);
+        builder.consequence(transcriptAnnotation.getConsequence());
 
         builder.feature(transcript.getId());
         builder.biotype(gene.getBioType());
+        builder.exon(transcriptAnnotation.getExon());
+        builder.intron(transcriptAnnotation.getIntron());
         annotations.add(builder.build());
       }
     } else {
@@ -107,7 +128,7 @@ public class VariantContextAnnotator {
     return annotations;
   }
 
-  private static String createAttributeValue(VariantContextAlleleAnnotation annotation) {
+  private static String createAttributeValue(AlleleAnnotation annotation) {
     List<String> values = new ArrayList<>();
     values.add(annotation.getAllele());
     Consequence consequence = annotation.getConsequence();
@@ -135,41 +156,18 @@ public class VariantContextAnnotator {
     values.add(feature != null ? feature : "");
 
     Gene.BioType biotype = annotation.getBiotype();
-    values.add(
-        biotype != null
-            ? switch (biotype) {
-              case ANTISENSE_RNA -> "antisense_RNA";
-              case C_REGION -> "C_region";
-              case J_SEGMENT -> "J_segment";
-              case LNC_RNA -> "lncRNA";
-              case MI_RNA -> "miRNA";
-              case MISC_RNA -> "miscRNA";
-              case NC_RNA -> "ncRNA";
-              case NC_RNA_PSEUDOGENE -> "ncRNA_pseudogene";
-              case PROTEIN_CODING -> "protein_coding";
-              case PSEUDOGENE -> "pseudogene";
-              case R_RNA -> "rRNA";
-              case RNASE_MRP_RNA -> "RNase_MRP_RNA";
-              case SC_RNA -> "scRNA";
-              case SN_RNA -> "snRNA";
-              case SNO_RNA -> "snoRNA";
-              case TEC -> "TEC";
-              case T_RNA -> "tRNA";
-              case TELOMERASE_RNA -> "telomerase_RNA";
-              case TRANSCRIBED_PSEUDOGENE -> "transcribed_pseudogene";
-              case V_SEGMENT -> "v_segment";
-              case V_SEGMENT_PSEUDOGENE -> "v_segment_pseudogene";
-            }
-            : "");
-
+    values.add(biotype != null ? biotype.getTerm() : "");
+    values.add(annotation.getExon() != null ? annotation.getExon() : "");
+    values.add(annotation.getIntron() != null ? annotation.getIntron() : "");
+    values.add(annotation.getHgvsC() != null ? annotation.getHgvsC() : "");
+    values.add(annotation.getHgvsP() != null ? annotation.getHgvsP() : "");
     values.add(String.valueOf(annotation.getAlleleNum()));
     Strand strand = annotation.getStrand();
     values.add(
         strand != null
             ? switch (strand) {
-              case PLUS -> "1";
-              case MINUS -> "0";
-              case UNKNOWN -> "";
+              case POSITIVE -> "1";
+              case NEGATIVE -> "0";
             }
             : "");
 

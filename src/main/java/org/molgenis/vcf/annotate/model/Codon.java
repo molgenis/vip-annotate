@@ -1,7 +1,6 @@
 package org.molgenis.vcf.annotate.model;
 
 import lombok.Getter;
-import org.molgenis.vcf.annotate.db.model.Strand;
 
 @Getter
 public enum Codon {
@@ -84,16 +83,16 @@ public enum Codon {
     return aminoAcid == null;
   }
 
-  public static Codon from(byte[] bases, Strand strand) {
-    final byte base0 = bases[strand == Strand.PLUS ? 0 : 2];
-    final byte base1 = bases[1];
-    final byte base2 = bases[strand == Strand.PLUS ? 2 : 0];
+  public static Codon from(char[] nucs) {
+    final char nuc0 = nucs[0];
+    final char nuc1 = nucs[1];
+    final char nuc2 = nucs[2];
 
-    return switch (base0) {
+    return switch (nuc0) {
       case 'A' ->
-          switch (base1) {
+          switch (nuc1) {
             case 'A' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.AAA;
                   case 'C' -> Codon.AAC;
                   case 'G' -> Codon.AAG;
@@ -101,7 +100,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'C' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.ACA;
                   case 'C' -> Codon.ACC;
                   case 'G' -> Codon.ACG;
@@ -109,7 +108,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'G' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.AGA;
                   case 'C' -> Codon.AGC;
                   case 'G' -> Codon.AGG;
@@ -117,7 +116,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'T' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.ATA;
                   case 'C' -> Codon.ATC;
                   case 'G' -> Codon.ATG;
@@ -127,9 +126,9 @@ public enum Codon {
             default -> throw new IllegalStateException();
           };
       case 'C' ->
-          switch (base1) {
+          switch (nuc1) {
             case 'A' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.CAA;
                   case 'C' -> Codon.CAC;
                   case 'G' -> Codon.CAG;
@@ -137,7 +136,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'C' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.CCA;
                   case 'C' -> Codon.CCC;
                   case 'G' -> Codon.CCG;
@@ -145,7 +144,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'G' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.CGA;
                   case 'C' -> Codon.CGC;
                   case 'G' -> Codon.CGG;
@@ -153,7 +152,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'T' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.CTA;
                   case 'C' -> Codon.CTC;
                   case 'G' -> Codon.CTG;
@@ -163,9 +162,9 @@ public enum Codon {
             default -> throw new IllegalStateException();
           };
       case 'G' ->
-          switch (base1) {
+          switch (nuc1) {
             case 'A' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.GAA;
                   case 'C' -> Codon.GAC;
                   case 'G' -> Codon.GAG;
@@ -173,7 +172,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'C' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.GCA;
                   case 'C' -> Codon.GCC;
                   case 'G' -> Codon.GCG;
@@ -181,7 +180,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'G' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.GGA;
                   case 'C' -> Codon.GGC;
                   case 'G' -> Codon.GGG;
@@ -189,7 +188,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'T' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.GTA;
                   case 'C' -> Codon.GTC;
                   case 'G' -> Codon.GTG;
@@ -199,9 +198,9 @@ public enum Codon {
             default -> throw new IllegalStateException();
           };
       case 'T' ->
-          switch (base1) {
+          switch (nuc1) {
             case 'A' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.TAA;
                   case 'C' -> Codon.TAC;
                   case 'G' -> Codon.TAG;
@@ -209,7 +208,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'C' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.TCA;
                   case 'C' -> Codon.TCC;
                   case 'G' -> Codon.TCG;
@@ -217,7 +216,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'G' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.TGA;
                   case 'C' -> Codon.TGC;
                   case 'G' -> Codon.TGG;
@@ -225,7 +224,7 @@ public enum Codon {
                   default -> throw new IllegalStateException();
                 };
             case 'T' ->
-                switch (base2) {
+                switch (nuc2) {
                   case 'A' -> Codon.TTA;
                   case 'C' -> Codon.TTC;
                   case 'G' -> Codon.TTG;

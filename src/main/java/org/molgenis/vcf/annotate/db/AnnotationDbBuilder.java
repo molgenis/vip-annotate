@@ -10,10 +10,7 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 import org.molgenis.vcf.annotate.db.model.*;
 import org.molgenis.vcf.annotate.db.model.Chromosome;
-import org.molgenis.vcf.annotate.db.utils.BitList;
-import org.molgenis.vcf.annotate.db.utils.Gff3;
-import org.molgenis.vcf.annotate.db.utils.Gff3Parser;
-import org.molgenis.vcf.annotate.db.utils.IntervalUtils;
+import org.molgenis.vcf.annotate.db.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +85,7 @@ public class AnnotationDbBuilder {
     attributes.add("gene");
     attributes.add("gene_biotype");
     attributes.add("transcript_id");
+    attributes.add("protein_id");
     attributes.add("Dbxref");
 
     Gff3 gff3;
@@ -103,8 +101,13 @@ public class AnnotationDbBuilder {
   }
 
   private Gene createGene(Gff3Parser.Feature feature) {
-    Gene.GeneBuilder builder =
-        Gene.builder().name(feature.getAttribute("gene")).strand(feature.strand());
+    Strand strand =
+        switch (feature.strand()) {
+          case PLUS -> Strand.POSITIVE;
+          case MINUS -> Strand.NEGATIVE;
+          default -> throw new RuntimeException();
+        };
+    Gene.GeneBuilder builder = Gene.builder().name(feature.getAttribute("gene")).strand(strand);
 
     List<String> dbxref = feature.getAttributeAsList("Dbxref");
     if (dbxref != null) {
@@ -125,13 +128,15 @@ public class AnnotationDbBuilder {
   private AnnotationDb createAnnotationDb(Chromosome chromosome, Gff3.Features features) {
     LOGGER.info("processing chromosome {}", chromosome.getId());
 
+    Set<String> exonIds = new HashSet<>();
+
     Map<String, Integer> geneMap = new LinkedHashMap<>();
     List<Gene> geneList = new ArrayList<>();
-    Map<String, Transcript.TranscriptBuilder> transcriptBuilderMap =
+    Map<String, TranscriptStub.TranscriptStubBuilder> transcriptBuilderMap =
         new LinkedHashMap<>(); // preserve order
 
     // pass 1: create transcripts
-    List<Interval> sequenceIntervals = new ArrayList<>();
+    List<IntervalUtils.MutableInterval> sequenceIntervals = new ArrayList<>();
     features.forEach(
         feature -> {
           if (isGene(feature)) {
@@ -141,8 +146,8 @@ public class AnnotationDbBuilder {
             geneMap.put(feature.getAttributeId(), geneList.size() - 1);
           } else if (isTranscript(feature)) {
             // create transcript stub
-            Transcript.TranscriptBuilder<?, ?> transcriptBuilder =
-                Transcript.builder()
+            TranscriptStub.TranscriptStubBuilder<?, ?> transcriptBuilder =
+                TranscriptStub.builder()
                     .start(Math.toIntExact(feature.start()))
                     .length(Math.toIntExact(feature.end() - feature.start() + 1))
                     .id(feature.getAttribute("transcript_id"))
@@ -151,7 +156,7 @@ public class AnnotationDbBuilder {
             transcriptBuilderMap.put(feature.getAttributeId(), transcriptBuilder);
           } else if (isExon(feature)) {
             String parentFeatureId = feature.getAttributeParent().getFirst();
-            Transcript.TranscriptBuilder transcriptBuilder =
+            TranscriptStub.TranscriptStubBuilder transcriptBuilder =
                 transcriptBuilderMap.get(parentFeatureId);
 
             // FIXME can be null in case of 'miRNA', what to do?
@@ -168,14 +173,16 @@ public class AnnotationDbBuilder {
             }
           } else if (isCds(feature)) {
             String parentFeatureId = feature.getAttributeParent().getFirst();
-            Transcript.TranscriptBuilder transcriptBuilder =
+            TranscriptStub.TranscriptStubBuilder transcriptBuilder =
                 transcriptBuilderMap.get(parentFeatureId);
 
             // FIXME can be null in case of *_gene_segment, and in case of mRNA on MT
             if (transcriptBuilder != null) {
+              String proteinId = feature.getAttribute("protein_id");
+
               // create cds
-              Cds cds =
-                  Cds.builder()
+              CdsStub cds =
+                  CdsStub.builder()
                       .start(Math.toIntExact(feature.start()))
                       .length(Math.toIntExact(feature.end() - feature.start() + 1))
                       .phase(
@@ -184,13 +191,24 @@ public class AnnotationDbBuilder {
                             case ONE -> (byte) 1;
                             case TWO -> (byte) 2;
                           })
+                      .proteinId(proteinId)
                       .build();
 
               // add to transcript stub
               transcriptBuilderMap.get(feature.getAttributeParent().getFirst()).codingSequence(cds);
 
               // store interval for sequence data retrieval
-              sequenceIntervals.add(cds);
+              IntervalUtils.MutableInterval sequenceInterval =
+                  switch (feature.strand()) {
+                    case PLUS ->
+                        new IntervalUtils.MutableInterval(
+                            cds.getStart() + cds.getPhase(), cds.getStop());
+                    case MINUS ->
+                        new IntervalUtils.MutableInterval(
+                            cds.getStart(), cds.getStop() - cds.getPhase());
+                    case UNKNOWN -> throw new RuntimeException();
+                  };
+              sequenceIntervals.add(sequenceInterval);
             }
           }
         });
@@ -198,12 +216,13 @@ public class AnnotationDbBuilder {
     // pass 3: create transcript db
     Transcript[] transcripts =
         transcriptBuilderMap.values().stream()
-            .map(Transcript.TranscriptBuilder::build)
+            .map(transcriptStubBuilder -> transcriptStubBuilder.build().createTranscript())
             .toArray(Transcript[]::new);
 
     IntervalTree.Builder intervalTreeBuilder = new IntervalTree.Builder(transcripts.length);
     for (Transcript transcript : transcripts) {
-      intervalTreeBuilder.add(transcript.getStart(), transcript.getStop());
+      // end + 1, because interval tree builder requires [x, y) interval
+      intervalTreeBuilder.add(transcript.getStart(), transcript.getStop() + 1);
     }
     IntervalTree intervalTree = intervalTreeBuilder.build();
     TranscriptDb transcriptDb = new TranscriptDb(intervalTree, transcripts);
@@ -214,9 +233,7 @@ public class AnnotationDbBuilder {
       // merge cds intervals
       List<IntervalUtils.MutableInterval> mergedIntervals =
           IntervalUtils.mergeIntervals(
-              sequenceIntervals.stream()
-                  .map(cds -> new IntervalUtils.MutableInterval(cds.getStart(), cds.getStop()))
-                  .toArray(IntervalUtils.MutableInterval[]::new));
+              sequenceIntervals.toArray(IntervalUtils.MutableInterval[]::new));
 
       // get sequences
       List<Sequence> sequenceList =
@@ -229,8 +246,8 @@ public class AnnotationDbBuilder {
           new IntervalTree.Builder(mergedIntervals.size());
       sequenceList.forEach(
           sequence ->
-              sequenceIntervalTreeBuilder.add(
-                  sequence.getStart(), sequence.getStop())); // TODO range ok? [x,y)?
+              // end + 1, because interval tree builder requires [x, y) interval
+              sequenceIntervalTreeBuilder.add(sequence.getStart(), sequence.getStop() + 1));
 
       IntervalTree sequenceIntervalTree = sequenceIntervalTreeBuilder.build();
 

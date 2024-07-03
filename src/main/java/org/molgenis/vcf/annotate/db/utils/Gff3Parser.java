@@ -2,13 +2,9 @@ package org.molgenis.vcf.annotate.db.utils;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.molgenis.vcf.annotate.db.model.Strand;
 
 /**
  * see <a
@@ -133,6 +129,20 @@ public class Gff3Parser implements AutoCloseable {
   @Override
   public void close() throws IOException {
     reader.close();
+  }
+
+  public enum Strand implements Serializable {
+    PLUS,
+    MINUS,
+    UNKNOWN;
+
+    public static Strand from(String str) {
+      return switch (str) {
+        case "+" -> PLUS;
+        case "-" -> MINUS;
+        default -> throw new IllegalArgumentException("Unknown strand: " + str);
+      };
+    }
   }
 
   public enum Phase {

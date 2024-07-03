@@ -7,13 +7,10 @@ import org.molgenis.vcf.annotate.db.model.*;
 
 public class AnnotationDbReader {
 
-  public GenomeAnnotationDb readTranscriptDatabase(File dbFile) {
+  public GenomeAnnotationDb readTranscriptDatabase(InputStream inputStream) throws IOException {
     Fury fury = FuryFactory.createFury();
-
-    try (FuryInputStream furyInputStream = new FuryInputStream(new FileInputStream(dbFile))) {
+    try (FuryInputStream furyInputStream = new FuryInputStream(inputStream)) {
       return (GenomeAnnotationDb) fury.deserialize(furyInputStream);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
     }
   }
 }

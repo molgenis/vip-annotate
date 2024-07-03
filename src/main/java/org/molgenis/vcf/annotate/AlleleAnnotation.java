@@ -10,7 +10,7 @@ import org.molgenis.vcf.annotate.model.FeatureType;
 
 @Value
 @Builder(toBuilder = true)
-public class VariantContextAlleleAnnotation {
+public class AlleleAnnotation {
   @NonNull String allele;
   @NonNull Consequence consequence;
   String geneSymbol;
@@ -18,6 +18,10 @@ public class VariantContextAlleleAnnotation {
   FeatureType featureType;
   String feature;
   Gene.BioType biotype;
+  String exon;
+  String intron;
+  String hgvsC;
+  String hgvsP;
   Strand strand;
   int alleleNum;
   /*
@@ -29,10 +33,10 @@ public class VariantContextAlleleAnnotation {
   Feature_type          done
   Feature               done
   BIOTYPE               done
-  EXON
-  INTRON
-  HGVSc
-  HGVSp
+  EXON                  done
+  INTRON                done
+  HGVSc                 done
+  HGVSp                 done
   cDNA_position
   CDS_position
   Protein_position
