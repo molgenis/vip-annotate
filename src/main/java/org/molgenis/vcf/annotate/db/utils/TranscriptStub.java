@@ -32,16 +32,16 @@ public class TranscriptStub extends ClosedInterval {
       builder.cds(
           Cds.builder()
               .proteinId(codingSequences.getFirst().getProteinId())
-              .parts(
+              .fragments(
                   codingSequences.stream()
                       .map(
                           cdsStub ->
-                              Cds.Part.builder()
+                              Cds.Fragment.builder()
                                   .start(cdsStub.getStart())
                                   .length(cdsStub.getLength())
                                   .phase(cdsStub.getPhase())
                                   .build())
-                      .toArray(Cds.Part[]::new))
+                      .toArray(Cds.Fragment[]::new))
               .build());
     }
     return builder.build();

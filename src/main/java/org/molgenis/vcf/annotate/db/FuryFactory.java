@@ -14,7 +14,7 @@ public class FuryFactory {
     Fury fury = Fury.builder().withLanguage(Language.JAVA).requireClassRegistration(true).build();
     fury.register(AnnotationDb.class);
     fury.register(Cds.class);
-    fury.register(Cds.Part.class);
+    fury.register(Cds.Fragment.class);
     fury.register(Chromosome.class);
     fury.register(Exon.class);
     fury.register(Gene.class);

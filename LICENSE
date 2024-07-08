@@ -55,7 +55,7 @@ version:
    a) under this License, provided that you make a good faith effort to
    ensure that, in the event an Application does not supply the
    function or data, the facility still operates, and performs
-   whatever part of its purpose remains meaningful, or
+   whatever fragment of its purpose remains meaningful, or
 
    b) under the GNU GPL, with none of the additional permissions of
    this License applicable to that copy.
@@ -63,7 +63,7 @@ version:
   3. Object Code Incorporating Material from Library Header Files.
 
   The object code form of an Application may incorporate material from
-a header file that is part of the Library.  You may convey such object
+a header file that is fragment of the Library.  You may convey such object
 code under terms of your choice, provided that, if the incorporated
 material is not limited to numerical parameters, data structure
 layouts and accessors, or small macros, inline functions and templates
@@ -137,7 +137,7 @@ choice, if you do both of the following:
    on the Library, uncombined with any other library facilities,
    conveyed under the terms of this License.
 
-   b) Give prominent notice with the combined library that part of it
+   b) Give prominent notice with the combined library that fragment of it
    is a work based on the Library, and explaining where to find the
    accompanying uncombined form of the same work.
 

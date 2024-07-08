@@ -8,12 +8,15 @@ import htsjdk.variant.vcf.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vcf.annotate.db.model.*;
 import org.molgenis.vcf.annotate.model.Consequence;
 import org.molgenis.vcf.annotate.model.FeatureType;
+import org.molgenis.vcf.annotate.model.Impact;
 import org.molgenis.vcf.annotate.util.ContigUtils;
 
 @RequiredArgsConstructor
@@ -40,7 +43,7 @@ public class VcfAnnotator {
     return records;
   }
 
-  private VariantContext annotate(VariantContext vcfRecord) {
+  public VariantContext annotate(VariantContext vcfRecord) {
     // determine annotations per alternative allele
     List<AlleleAnnotation> annotationList = new ArrayList<>();
     for (int i = 0; i < vcfRecord.getNAlleles() - 1; i++) {
@@ -60,14 +63,10 @@ public class VcfAnnotator {
   private List<AlleleAnnotation> annotate(VariantContext vcfRecord, int altAlleleIndex) {
     Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
     AnnotationDb annotationDb = genomeAnnotationDb.get(chromosome);
-    VariantTranscriptConsequenceAnnotator variantTranscriptConsequenceAnnotator =
-        new VariantTranscriptConsequenceAnnotator(annotationDb);
+    SnpTranscriptEffectAnnotator snpTranscriptEffectAnnotator =
+        new SnpTranscriptEffectAnnotator(annotationDb);
 
     Allele alt = vcfRecord.getAlternateAllele(altAlleleIndex);
-
-    AlleleAnnotation.AlleleAnnotationBuilder builder = AlleleAnnotation.builder();
-    builder.alleleNum(altAlleleIndex);
-    builder.allele(alt.getDisplayString());
 
     int start = vcfRecord.getStart();
     Allele ref = vcfRecord.getReference();
@@ -101,26 +100,33 @@ public class VcfAnnotator {
         Gene gene = annotationDb.getGene(transcript);
         Strand strand = gene.getStrand();
 
-        TranscriptAnnotation transcriptAnnotation =
-            variantTranscriptConsequenceAnnotator.annotate(
+        // TODO merge AlleleAnnotation and VariantEffect
+        VariantEffect variantEffect =
+            snpTranscriptEffectAnnotator.annotateTranscriptVariant(
                 start, ref.getBases(), alt.getBases(), strand, transcript);
 
+        AlleleAnnotation.AlleleAnnotationBuilder builder = AlleleAnnotation.builder();
+        builder.alleleNum(1 + altAlleleIndex);
+        builder.allele(alt.getDisplayString());
         builder.geneSymbol(gene.getName());
         builder.gene(gene.getId());
         builder.strand(strand);
         builder.featureType(FeatureType.TRANSCRIPT);
-        builder.hgvsC(transcriptAnnotation.getHgvsC());
-        builder.hgvsP(transcriptAnnotation.getHgvsP());
+        builder.hgvsC(variantEffect.getHgvsC());
+        builder.hgvsP(variantEffect.getHgvsP());
 
-        builder.consequence(transcriptAnnotation.getConsequence());
+        builder.consequences(variantEffect.getConsequences());
 
         builder.feature(transcript.getId());
         builder.biotype(gene.getBioType());
-        builder.exon(transcriptAnnotation.getExon());
-        builder.intron(transcriptAnnotation.getIntron());
+        builder.exon(variantEffect.getExon());
+        builder.intron(variantEffect.getIntron());
         annotations.add(builder.build());
       }
     } else {
+      AlleleAnnotation.AlleleAnnotationBuilder builder = AlleleAnnotation.builder();
+      builder.alleleNum(1 + altAlleleIndex);
+      builder.allele(alt.getDisplayString());
       builder.consequence(Consequence.INTERGENIC_VARIANT);
       annotations.add(builder.build());
     }
@@ -131,10 +137,22 @@ public class VcfAnnotator {
   private static String createAttributeValue(AlleleAnnotation annotation) {
     List<String> values = new ArrayList<>();
     values.add(annotation.getAllele());
-    Consequence consequence = annotation.getConsequence();
-    values.add(consequence.getTerm());
+    List<Consequence> consequences = annotation.getConsequences();
     values.add(
-        switch (consequence.getImpact()) {
+        consequences.stream()
+            .sorted(
+                (o1, o2) ->
+                    o1.getImpact().ordinal() != o2.getImpact().ordinal()
+                        ? o1.getImpact().ordinal() - o2.getImpact().ordinal()
+                        : o1.getTerm().compareTo(o2.getTerm()))
+            .map(Consequence::getTerm)
+            .collect(Collectors.joining("&")));
+    Impact impact = Impact.MODIFIER;
+    for (Consequence consequence : consequences) {
+      if (consequence.getImpact().ordinal() < impact.ordinal()) impact = consequence.getImpact();
+    }
+    values.add(
+        switch (impact) {
           case HIGH -> "HIGH";
           case MODERATE -> "MODERATE";
           case LOW -> "LOW";
@@ -148,7 +166,7 @@ public class VcfAnnotator {
     values.add(
         featureType != null
             ? switch (featureType) {
-              case TRANSCRIPT -> "transcript";
+              case TRANSCRIPT -> "Transcript";
             }
             : "");
 
@@ -167,7 +185,7 @@ public class VcfAnnotator {
         strand != null
             ? switch (strand) {
               case POSITIVE -> "1";
-              case NEGATIVE -> "0";
+              case NEGATIVE -> "-1";
             }
             : "");
 

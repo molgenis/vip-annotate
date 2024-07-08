@@ -1,7 +1,9 @@
 package org.molgenis.vcf.annotate;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.Singular;
 import lombok.Value;
 import org.molgenis.vcf.annotate.db.model.Gene;
 import org.molgenis.vcf.annotate.db.model.Strand;
@@ -12,7 +14,8 @@ import org.molgenis.vcf.annotate.model.FeatureType;
 @Builder(toBuilder = true)
 public class AlleleAnnotation {
   @NonNull String allele;
-  @NonNull Consequence consequence;
+  @NonNull @Singular
+  List<Consequence> consequences;
   String geneSymbol;
   Integer gene;
   FeatureType featureType;

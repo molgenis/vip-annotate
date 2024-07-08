@@ -112,15 +112,15 @@ public class AnnotationDbBuilder {
     List<String> dbxref = feature.getAttributeAsList("Dbxref");
     if (dbxref != null) {
       for (String ref : dbxref) {
-        if (ref.startsWith("HGNC:HGNC:")) {
-          int id = Integer.valueOf(ref.substring("HGNC:HGNC:".length()));
+        if (ref.startsWith("GeneID:")) {
+          int id = Integer.valueOf(ref.substring("GeneID:".length()));
           builder.id(id);
           break;
         }
       }
     }
     String geneBiotype = feature.getAttribute("gene_biotype");
-    builder.bioType(Gene.BioType.PROTEIN_CODING); // FIXME
+    builder.bioType(Gene.BioType.from(geneBiotype));
 
     return builder.build();
   }
@@ -199,15 +199,7 @@ public class AnnotationDbBuilder {
 
               // store interval for sequence data retrieval
               IntervalUtils.MutableInterval sequenceInterval =
-                  switch (feature.strand()) {
-                    case PLUS ->
-                        new IntervalUtils.MutableInterval(
-                            cds.getStart() + cds.getPhase(), cds.getStop());
-                    case MINUS ->
-                        new IntervalUtils.MutableInterval(
-                            cds.getStart(), cds.getStop() - cds.getPhase());
-                    case UNKNOWN -> throw new RuntimeException();
-                  };
+                  new IntervalUtils.MutableInterval(cds.getStart(), cds.getStop());
               sequenceIntervals.add(sequenceInterval);
             }
           }

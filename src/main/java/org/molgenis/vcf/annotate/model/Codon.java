@@ -18,7 +18,7 @@ public enum Codon {
   AGT(AminoAcid.SER),
   ATA(AminoAcid.ILE),
   ATC(AminoAcid.ILE),
-  ATG(AminoAcid.MET),
+  ATG(AminoAcid.MET), // start codon
   ATT(AminoAcid.ILE),
   CAA(AminoAcid.GLN),
   CAC(AminoAcid.HIS),
@@ -68,6 +68,8 @@ public enum Codon {
   TTC(AminoAcid.PHE),
   TTG(AminoAcid.LEU),
   TTT(AminoAcid.PHE);
+
+  public static final int NR_NUCLEOTIDES = 3;
 
   private final AminoAcid aminoAcid;
 

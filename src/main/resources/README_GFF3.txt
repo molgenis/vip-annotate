@@ -49,7 +49,7 @@ specifications:
 Un-official directives
 ----------------------
 
-The following directives are not part of the official GFF3 specifications, but 
+The following directives are not fragment of the official GFF3 specifications, but
 have either been proposed or are provided as additional information to aid in
 parsing the files. They are indicated by a leading '#!'.
 
@@ -172,7 +172,7 @@ ID
    during file generation. They are not intended to be used as stable feature
    identifiers, and they are likely to change between annotation versions. 
    Multiple rows with the same ID designate a single feature that is 
-   composed of multiple parts, most common for CDSes and multi-exon alignments 
+   composed of multiple fragments, most common for CDSes and multi-exon alignments
    but possible for other feature types as well. Note other attributes such as 
    gene symbols, GeneIDs, and transcript or protein accessions may occur on 
    multiple features, whereas the ID is globally unique for an individual file.
@@ -201,7 +201,7 @@ Name
    
 Note
    feature comment. This appears as a /note qualifier in the GenBank format.
-   Additional text may appear in the flatfile /note that internally is not part
+   Additional text may appear in the flatfile /note that internally is not fragment
    of a comment, and is not included in the GFF3 Note attribute.
    
 Is_circular
@@ -298,7 +298,7 @@ gene_biotype
 	   
    Note: There may be multiple gene features on a single assembly annotated 
    with the same GeneID dbxref because they are considered to be different 
-   parts or alleles of the same gene. In these cases, it's possible for the
+   fragments or alleles of the same gene. In these cases, it's possible for the
    gene features to be annotated with different gene_biotype values, such as
    protein_coding and transcribed_pseudogene or protein_coding and other.
 
@@ -317,10 +317,10 @@ ncrna_class
    ncrna_class values can be found in the feature table documentation:
    http://www.insdc.org/files/feature_table.html#7.2   
 
-part
+fragment
    A proposed attribute for the official GFF3 specification that has not yet
    been finalized. Indicates the order in which multiple rows for the same ID 
-   should be joined, using the format "part=X/Y", where X is the row order and
+   should be joined, using the format "fragment=X/Y", where X is the row order and
    Y is the total number of rows. Only found on some types of features such as
    genes that are rarely represented as more than one range.
 
@@ -506,7 +506,7 @@ Name
 
 chromosome
    The chromosome of the record, if one is assigned. Note some scaffolds may be
-   assigned to a specific chromosome even if they are not part of a single
+   assigned to a specific chromosome even if they are not fragment of a single
    record for that chromosome ("unlocalized scaffolds").
 
 Is_circular
@@ -683,7 +683,7 @@ They appear in several places:
    Genome-genome alignment files as used by NCBI's Remap service:
    https://ftp.ncbi.nlm.nih.gov/pub/remap/
    
-   Primary-ALT_LOCI and primary-PATCH alignment files, provided as part of
+   Primary-ALT_LOCI and primary-PATCH alignment files, provided as fragment of
    the human and mouse GRC assemblies, indicating correspondence between
    locations on the primary assembly and sequences of alternate loci. For 
    example: 
@@ -706,7 +706,7 @@ Official GFF3 attributes
 ID
    A unique identifier for the alignment. Some alignments use a long UUID string
    as a stable alignment identifier. Multiple rows with the same ID indicate
-   parts of the same alignment. For example, transcript alignments are
+   fragments of the same alignment. For example, transcript alignments are
    represented with a separate row representing each exon of the transcript.
 
 Target
