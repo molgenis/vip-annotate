@@ -107,13 +107,16 @@ public class SnpTranscriptEffectAnnotator {
     } else if (isSpliceDonorVariant(pos, strand, fivePrimeExon)) {
       variantEffectBuilder.consequence(Consequence.SPLICE_DONOR_VARIANT);
     } else {
-      if (isSpliceDonorRegionVariant(pos, strand, fivePrimeExon)) {
+      if (isSpliceDonor5thBaseVariant(pos, strand, fivePrimeExon)) {
+        variantEffectBuilder.consequence(Consequence.SPLICE_DONOR_5TH_BASE_VARIANT);
+      } else if (isSpliceDonorRegionVariant(pos, strand, fivePrimeExon)) {
         variantEffectBuilder.consequence(Consequence.SPLICE_DONOR_REGION_VARIANT);
+      } else if (isSplicePolypyrimidineTractVariant(pos, strand, threePrimeExon)) {
+        variantEffectBuilder.consequence(Consequence.SPLICE_POLYPYRIMIDINE_TRACT_VARIANT);
       }
       // TODO use non_coding_transcript_intron_variant
       variantEffectBuilder.consequence(Consequence.INTRON_VARIANT);
     }
-
     if (transcript.getCds() == null) {
       variantEffectBuilder.consequence(Consequence.NON_CODING_TRANSCRIPT_VARIANT);
     }
@@ -137,6 +140,21 @@ public class SnpTranscriptEffectAnnotator {
               threePrimeExon);
     }
     variantEffectBuilder.hgvsC(hgvsC);
+  }
+
+  private boolean isSpliceDonor5thBaseVariant(int pos, Strand strand, Exon fivePrimeExon) {
+    return switch (strand) {
+      case POSITIVE -> pos - fivePrimeExon.getStop() == 5;
+      case NEGATIVE -> fivePrimeExon.getStart() - pos == 5;
+    };
+  }
+
+  private boolean isSplicePolypyrimidineTractVariant(int pos, Strand strand, Exon threePrimeExon) {
+    return switch (strand) {
+      case POSITIVE ->
+          threePrimeExon.getStart() - pos >= 3 && threePrimeExon.getStart() - pos <= 17;
+      case NEGATIVE -> pos - threePrimeExon.getStop() >= 3 && pos - threePrimeExon.getStop() <= 17;
+    };
   }
 
   private boolean isSpliceDonorRegionVariant(int pos, Strand strand, Exon fivePrimeExon) {
@@ -205,6 +223,7 @@ public class SnpTranscriptEffectAnnotator {
 
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append(transcript.getId()).append(":c.").append(codingReferenceSequencePos);
+    // FIXME c.* if intron in 3'UTR
     if (intronPos >= 0) {
       stringBuilder.append('+');
     }
@@ -732,14 +751,14 @@ public class SnpTranscriptEffectAnnotator {
         if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
           cdsPos = pos - cdsFragment.getStart();
         } else {
-          cdsPos = pos - exon.getStop();
+          cdsPos = pos - exon.getStop() - 1;
           do {
             exon = transcript.getExons()[++exonIndex];
             if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
-              cdsPos += pos - cdsFragment.getStart();
+              cdsPos += exon.getStart() - cdsFragment.getStart();
               break;
             } else {
-              cdsPos += exon.getLength();
+              cdsPos -= exon.getLength();
             }
           } while (true);
         }
@@ -755,7 +774,7 @@ public class SnpTranscriptEffectAnnotator {
               cdsPos += cdsFragment.getStop() - exon.getStop();
               break;
             } else {
-              cdsPos += exon.getLength();
+              cdsPos -= exon.getLength();
             }
           } while (true);
         }
@@ -780,7 +799,50 @@ public class SnpTranscriptEffectAnnotator {
       Exon exon,
       VariantEffect.VariantEffectBuilder variantEffectBuilder) {
     variantEffectBuilder.consequence(Consequence.THREE_PRIME_UTR_VARIANT);
-    // FIXME add hgvsC
+
+    // hgvs
+    Cds.Fragment cdsFragment = cds.fragments()[cds.fragments().length - 1];
+    int cdsPos;
+    switch (strand) {
+      case POSITIVE -> {
+        if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
+          cdsPos = pos - cdsFragment.getStop();
+        } else {
+          cdsPos = pos - exon.getStart();
+          do {
+            exon = transcript.getExons()[--exonIndex];
+            if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
+              cdsPos += exon.getStart() - cdsFragment.getStop();
+              break;
+            } else {
+              cdsPos += exon.getLength();
+            }
+          } while (true);
+        }
+      }
+      case NEGATIVE -> {
+        if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
+          cdsPos = cdsFragment.getStart() - pos;
+        } else {
+          cdsPos = exon.getStop() - pos + 1;
+          do {
+            exon = transcript.getExons()[--exonIndex];
+            if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
+              cdsPos += cdsFragment.getStart() - exon.getStart();
+              break;
+            } else {
+              cdsPos += exon.getLength();
+            }
+          } while (true);
+        }
+      }
+      default -> throw new IllegalStateException();
+    }
+
+    char ref = getBase(refBases, strand);
+    char alt = getBase(altBases, strand);
+    String hgvsC = transcript.getId() + ":c.*" + cdsPos + ref + ">" + alt;
+    variantEffectBuilder.hgvsC(hgvsC);
   }
 
   /**

@@ -52,6 +52,14 @@ public enum Consequence {
    */
   MISSENSE_VARIANT("missense_variant", Impact.MODERATE),
   /**
+   * A sequence variant that causes a change at the 5th base pair after the start of the intron in
+   * the orientation of the transcript.
+   *
+   * @see <a
+   *     href="http://www.sequenceontology.org/browser/current_release/term/SO:0001787">SO:0001787</a>
+   */
+  SPLICE_DONOR_5TH_BASE_VARIANT("splice_donor_5th_base_variant", Impact.LOW),
+  /**
    * A sequence variant in which a change has occurred within the region of the splice site, either
    * within 1-3 bases of the exon or 3-8 bases of the intron.
    *
@@ -67,6 +75,13 @@ public enum Consequence {
    *     href="http://www.sequenceontology.org/browser/current_release/term/SO:0002170">SO:0002170</a>
    */
   SPLICE_DONOR_REGION_VARIANT("splice_donor_region_variant", Impact.LOW),
+  /**
+   * A sequence variant that falls in the polypyrimidine tract at 3' end of intron between 17 and 3
+   * bases from the end (acceptor -3 to acceptor -17).
+   *
+   * @see <a href="sequenceontology.org/browser/current_release/term/SO:0002169">SO:0002169</a>
+   */
+  SPLICE_POLYPYRIMIDINE_TRACT_VARIANT("splice_polypyrimidine_tract_variant", Impact.LOW),
   /**
    * A sequence variant where at least one base in the start codon is changed, but the start
    * remains.
