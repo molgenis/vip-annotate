@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 
-/** see <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/">here</a> */
+/**
+ * @see <a
+ *     href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/">GCF_000001405.40</a>
+ */
 @Getter
 public enum Chromosome {
   CHR1("NC_000001.11"),

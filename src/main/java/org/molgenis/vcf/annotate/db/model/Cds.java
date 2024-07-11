@@ -21,17 +21,17 @@ public record Cds(@NonNull String proteinId, @NonNull Fragment[] fragments)
   @Serial private static final long serialVersionUID = 1L;
 
   /**
-   * @return first cds fragment overlapping with [start, stop] or <code>null</code>
+   * @return first cds fragment id overlapping with [start, stop] or <code>-1</code>
    */
-  public Fragment findAnyFragment(long start, long stop) {
-    for (Fragment fragment : fragments) {
-      if (fragment.isOverlapping(start, stop)) return fragment;
+  public int findAnyFragmentId(long start, long stop) {
+    for (int i = 0; i < fragments.length; i++) {
+      if (fragments[i].isOverlapping(start, stop)) return i;
     }
-    return null;
+    return -1;
   }
 
   /**
-   * A CDS fragment.
+   * A portion of a CDS that is not the complete CDS.
    *
    * @see <a
    *     href="http://www.sequenceontology.org/browser/current_release/term/SO:0001384">SO:0001384</a>

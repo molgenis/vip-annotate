@@ -79,7 +79,8 @@ public enum Consequence {
    * A sequence variant that falls in the polypyrimidine tract at 3' end of intron between 17 and 3
    * bases from the end (acceptor -3 to acceptor -17).
    *
-   * @see <a href="sequenceontology.org/browser/current_release/term/SO:0002169">SO:0002169</a>
+   * @see <a
+   *     href="http://sequenceontology.org/browser/current_release/term/SO:0002169">SO:0002169</a>
    */
   SPLICE_POLYPYRIMIDINE_TRACT_VARIANT("splice_polypyrimidine_tract_variant", Impact.LOW),
   /**

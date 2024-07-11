@@ -64,7 +64,7 @@ public class VcfAnnotator {
     Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
     AnnotationDb annotationDb = genomeAnnotationDb.get(chromosome);
     SnpTranscriptEffectAnnotator snpTranscriptEffectAnnotator =
-        new SnpTranscriptEffectAnnotator(annotationDb);
+        new SnpTranscriptEffectAnnotator(annotationDb, true);
 
     Allele alt = vcfRecord.getAlternateAllele(altAlleleIndex);
 
@@ -119,8 +119,12 @@ public class VcfAnnotator {
 
         builder.feature(transcript.getId());
         builder.biotype(gene.getBioType());
-        builder.exon(variantEffect.getExon());
-        builder.intron(variantEffect.getIntron());
+        if (variantEffect.getExonNumber() != null) {
+          builder.exon(variantEffect.getExonNumber() + "/" + variantEffect.getExonTotal());
+        }
+        if (variantEffect.getIntronNumber() != null) {
+          builder.intron(variantEffect.getIntronNumber() + "/" + variantEffect.getIntronTotal());
+        }
         annotations.add(builder.build());
       }
     } else {
@@ -140,11 +144,7 @@ public class VcfAnnotator {
     List<Consequence> consequences = annotation.getConsequences();
     values.add(
         consequences.stream()
-            .sorted(
-                (o1, o2) ->
-                    o1.getImpact().ordinal() != o2.getImpact().ordinal()
-                        ? o1.getImpact().ordinal() - o2.getImpact().ordinal()
-                        : o1.getTerm().compareTo(o2.getTerm()))
+            .sorted(Comparator.comparingInt(o -> o.getImpact().ordinal()))
             .map(Consequence::getTerm)
             .collect(Collectors.joining("&")));
     Impact impact = Impact.MODIFIER;

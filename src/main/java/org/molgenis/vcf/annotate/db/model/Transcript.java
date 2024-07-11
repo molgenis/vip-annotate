@@ -6,6 +6,11 @@ import lombok.*;
 import lombok.experimental.PackagePrivate;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * An RNA synthesized on a DNA or RNA template by an RNA polymerase.
+ *
+ * @see <a href="http://sequenceontology.org/browser/current_release/term/SO:0000673">SO:0000673</a>
+ */
 @Value
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
@@ -16,14 +21,4 @@ public class Transcript extends ClosedInterval implements Serializable {
   @PackagePrivate int geneIndex;
   @NonNull Exon[] exons;
   Cds cds;
-
-  /**
-   * @return first exon overlapping with [start, stop] or <code>null</code>
-   */
-  public Exon findAnyExon(long start, long stop) {
-    for (Exon exon : exons) {
-      if (exon.isOverlapping(start, stop)) return exon;
-    }
-    return null;
-  }
 }
