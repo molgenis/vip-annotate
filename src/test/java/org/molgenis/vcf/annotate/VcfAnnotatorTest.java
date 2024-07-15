@@ -82,10 +82,18 @@ chr1	1790454	.	G	A	.	.	CSQ=A|stop_gained|HIGH|GNB1|4396|transcript|NM_001282539.
                 .open(VcfAnnotatorTest.class.getResourceAsStream("/vkgl_annotations_vip.vcf")); ) {
       int i = 0;
       while (vcfIterator.hasNext()) {
-        VariantContext variantContext = vcfAnnotator.annotate(vcfIterator.next());
+        VariantContext variantContext = vcfIterator.next();
+
+        VariantContext annotatedVariantContext;
+        try {
+          annotatedVariantContext = vcfAnnotator.annotate(variantContext);
+        } catch (RuntimeException e) {
+          throw new RuntimeException(
+              String.format("record #%d = %s", i, variantContext.toString()), e);
+        }
         VariantContext expectedVariantContext = expectedVcfIterator.next();
-        if (variantContext.getType() == VariantContext.Type.SNP) {
-          assertVariantContextEquals(++i, variantContext, expectedVariantContext);
+        if (annotatedVariantContext.getType() == VariantContext.Type.SNP) {
+          assertVariantContextEquals(++i, annotatedVariantContext, expectedVariantContext);
         }
       }
     }

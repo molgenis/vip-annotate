@@ -4,7 +4,6 @@ import org.molgenis.vcf.annotate.db.model.Cds;
 import org.molgenis.vcf.annotate.db.model.Exon;
 import org.molgenis.vcf.annotate.db.model.Strand;
 import org.molgenis.vcf.annotate.db.model.Transcript;
-import org.molgenis.vcf.annotate.model.Codon;
 import org.molgenis.vcf.annotate.util.CodonVariant;
 import org.molgenis.vcf.annotate.util.SequenceUtils;
 
@@ -93,7 +92,8 @@ public class HgvsDescriber {
     }
 
     int cdsFragmentIndex = transcript.getCds().findAnyFragmentId(exonPos, exonPos);
-    Cds.Fragment cdsFragment = transcript.getCds().fragments()[cdsFragmentIndex];
+    Cds.Fragment cdsFragment =
+        cdsFragmentIndex != -1 ? transcript.getCds().fragments()[cdsFragmentIndex] : null;
     String codingReferenceSequencePos = getCdsPos(exonPos, strand, transcript, cdsFragment);
 
     char ref = SequenceUtils.getBase(refBases, strand);
@@ -346,28 +346,43 @@ public class HgvsDescriber {
     return nucleotideNumber;
   }
 
-  static String calculateHgvsP(Cds cds, CodonVariant codonVariant, String codingPos, int codonPos) {
-    String hgvsP =
-        cds.proteinId()
-            + ":p."
-            + (codonVariant.ref().isStopCodon()
-                ? "Ter"
-                : codonVariant.ref().getAminoAcid().getTerm())
-            + (((Integer.parseInt(codingPos) - codonPos) / 3) + 1)
-            + (codonVariant.alt().isStopCodon()
-                ? "Ter"
-                : codonVariant.alt().getAminoAcid().getTerm());
-    return hgvsP;
+  private static int getCdsPos(int pos, Strand strand, Cds cds, int overlappingCdsFragmentId) {
+    Cds.Fragment overlappingCdsFragment = cds.fragments()[overlappingCdsFragmentId];
+
+    int codingReferenceSequencePos =
+        switch (strand) {
+          case POSITIVE -> pos - overlappingCdsFragment.getStart() + 1;
+          case NEGATIVE -> overlappingCdsFragment.getStop() - pos + 1;
+        };
+
+    for (int i = 0; i < overlappingCdsFragmentId; i++) {
+      codingReferenceSequencePos += cds.fragments()[i].getLength();
+    }
+
+    return codingReferenceSequencePos;
   }
 
-  static String calculateStartCodonVariantHgvsP(
-      Transcript transcript, String transcriptPos, int codonPos) {
-    String hgvsP =
-        transcript.getCds().proteinId()
-            + ":p."
-            + Codon.ATG.getAminoAcid().getTerm()
-            + (((Integer.parseInt(transcriptPos) - codonPos) / 3) + 1)
-            + "?";
+  private static String calculateHgvsP(
+      Cds cds, CodonVariant codonVariant, int codingPos, int codonPos) {
+    String hgvsP;
+    int aaPosition = ((codingPos - codonPos) / 3) + 1;
+    if (aaPosition > 1) {
+      hgvsP =
+          cds.proteinId()
+              + ":p."
+              + (codonVariant.ref().isStopCodon()
+                  ? "Ter"
+                  : codonVariant.ref().getAminoAcid().getTerm())
+              + aaPosition
+              + (codonVariant.ref().getAminoAcid() != codonVariant.alt().getAminoAcid()
+                  ? (codonVariant.alt().isStopCodon()
+                      ? "Ter"
+                      : codonVariant.alt().getAminoAcid().getTerm())
+                  : "%3D");
+    } else {
+      hgvsP =
+          cds.proteinId() + ":p." + codonVariant.ref().getAminoAcid().getTerm() + aaPosition + "?";
+    }
     return hgvsP;
   }
 
@@ -426,8 +441,7 @@ public class HgvsDescriber {
     char ref = SequenceUtils.getBase(refBases, strand);
     char alt = SequenceUtils.getBase(altBases, strand);
     int cdsPos = getCdsPosFivePrimeUtr(pos, strand, transcript, cds, exonIndex, exon);
-    String hgvsC = transcript.getId() + ":c." + cdsPos + ref + ">" + alt;
-    return hgvsC;
+    return transcript.getId() + ":c." + cdsPos + ref + ">" + alt;
   }
 
   static String calculateHgvsCThreePrime(
@@ -443,8 +457,7 @@ public class HgvsDescriber {
 
     char ref = SequenceUtils.getBase(refBases, strand);
     char alt = SequenceUtils.getBase(altBases, strand);
-    String hgvsC = transcript.getId() + ":c.*" + cdsPos + ref + ">" + alt;
-    return hgvsC;
+    return transcript.getId() + ":c.*" + cdsPos + ref + ">" + alt;
   }
 
   private static int getCdsPosThreePrimeUtr(
@@ -490,7 +503,27 @@ public class HgvsDescriber {
     return cdsPos;
   }
 
-  public static String calculateHgvsC() {
-    throw new RuntimeException();
+  public static Hgvs calculateHgvsCodingSequenceVariant(
+      int pos,
+      byte[] refBases,
+      byte[] altBases,
+      Strand strand,
+      Transcript transcript,
+      int cdsFragmentId,
+      CodonVariant codonVariant,
+      int codonPos) {
+    int cdsPos = getCdsPos(pos, strand, transcript.getCds(), cdsFragmentId);
+
+    // c.
+    char ref = SequenceUtils.getBase(refBases, strand);
+    char alt = SequenceUtils.getBase(altBases, strand);
+    String hgvsC = transcript.getId() + ":c." + cdsPos + ref + ">" + alt;
+
+    // p.
+    String hgvsP = calculateHgvsP(transcript.getCds(), codonVariant, cdsPos, codonPos);
+
+    return new Hgvs(hgvsC, hgvsP);
   }
+
+  public record Hgvs(String hgvsC, String hgvsP) {}
 }

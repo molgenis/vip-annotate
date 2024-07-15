@@ -20,6 +20,7 @@ public record AnnotationDb(
 
   /**
    * @return sequence in [start, stop] if start <= stop, or the reverse sequence in [stop, start]
+   * @throws IllegalArgumentException if no sequence exists for [start, stop]
    */
   public char[] getSequence(int start, int stop, Strand strand) {
     Sequence sequence =
@@ -27,6 +28,9 @@ public record AnnotationDb(
           case POSITIVE -> sequenceDb.findAnySequence(start, stop);
           case NEGATIVE -> sequenceDb.findAnySequence(stop, start);
         };
-    return sequence != null ? sequence.get(start, stop, strand) : null;
+    if (sequence == null) {
+      throw new IllegalArgumentException(String.format("invalid sequence [%d, %d]", start, stop));
+    }
+    return sequence.get(start, stop, strand);
   }
 }

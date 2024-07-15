@@ -80,7 +80,7 @@ public class SnpTranscriptEffectAnnotator {
             variantEffectBuilder);
       } else {
         annotateCodingSequenceVariant(
-            pos, refBases, altBases, strand, transcript, cds, variantEffectBuilder);
+            pos, refBases, altBases, strand, transcript, variantEffectBuilder);
       }
     }
 
@@ -203,9 +203,14 @@ public class SnpTranscriptEffectAnnotator {
       byte[] altBases,
       Strand strand,
       Transcript transcript,
-      Cds cds,
       VariantEffectBuilder variantEffectBuilder) {
-    CodonVariant codonVariant = getReferenceSequenceCodon(pos, altBases, strand, cds);
+    Cds cds = transcript.getCds();
+    int cdsFragmentId = cds.findAnyFragmentId(pos, pos);
+    Cds.Fragment cdsFragment = cds.fragments()[cdsFragmentId];
+    int codonPos = getCodonPos(pos, strand, cdsFragment);
+
+    CodonVariant codonVariant =
+        getReferenceSequenceCodon(pos, altBases, strand, cds, cdsFragmentId, codonPos);
 
     if (isInitiatorCodonVariant(pos, strand, cds)) {
       annotateInitiatorCodonVariant(variantEffectBuilder);
@@ -218,8 +223,11 @@ public class SnpTranscriptEffectAnnotator {
     }
 
     if (annotateHgvs) {
-      variantEffectBuilder.hgvsC(HgvsDescriber.calculateHgvsC()); // FIXME
-      variantEffectBuilder.hgvsP(HgvsDescriber.calculateHgvsP(cds, codonVariant, "", 666)); // FIXME
+      HgvsDescriber.Hgvs hgvs =
+          HgvsDescriber.calculateHgvsCodingSequenceVariant(
+              pos, refBases, altBases, strand, transcript, cdsFragmentId, codonVariant, codonPos);
+
+      variantEffectBuilder.hgvsC(hgvs.hgvsC()).hgvsP(hgvs.hgvsP());
     }
   }
 
@@ -289,7 +297,6 @@ public class SnpTranscriptEffectAnnotator {
       Exon fivePrimeExon,
       Exon threePrimeExon,
       VariantEffectBuilder variantEffectBuilder) {
-    // FIXME add splice_region variant
     if (isSpliceAcceptorVariant(pos, strand, threePrimeExon)) {
       variantEffectBuilder.consequence(Consequence.SPLICE_ACCEPTOR_VARIANT);
     } else if (isSpliceDonorVariant(pos, strand, fivePrimeExon)) {
@@ -449,10 +456,9 @@ public class SnpTranscriptEffectAnnotator {
     };
   }
 
-  private CodonVariant getReferenceSequenceCodon(int pos, byte[] alt, Strand strand, Cds cds) {
-    int cdsFragmentId = cds.findAnyFragmentId(pos, pos);
+  private CodonVariant getReferenceSequenceCodon(
+      int pos, byte[] alt, Strand strand, Cds cds, int cdsFragmentId, int codonPos) {
     Cds.Fragment cdsFragment = cds.fragments()[cdsFragmentId];
-    int codonPos = getCodonPos(pos, strand, cdsFragment);
     char[] refSequence =
         switch (strand) {
           case Strand.POSITIVE -> {
@@ -517,8 +523,6 @@ public class SnpTranscriptEffectAnnotator {
             }
           }
         };
-
-    if (refSequence == null) throw new RuntimeException();
 
     char[] altSequence = new char[3];
     System.arraycopy(refSequence, 0, altSequence, 0, 3);
