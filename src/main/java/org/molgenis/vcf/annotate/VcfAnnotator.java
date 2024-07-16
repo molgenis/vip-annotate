@@ -110,14 +110,14 @@ public class VcfAnnotator {
         builder.geneSymbol(gene.getName());
         builder.gene(gene.getId());
         builder.strand(strand);
-        builder.featureType(transcript.getType());
+        builder.featureType("Transcript");
         builder.hgvsC(variantEffect.getHgvsC());
         builder.hgvsP(variantEffect.getHgvsP());
 
         builder.consequences(variantEffect.getConsequences());
 
         builder.feature(transcript.getId());
-        builder.biotype(gene.getBioType());
+        builder.biotype(transcript.getType());
         if (variantEffect.getExonNumber() != null) {
           builder.exon(variantEffect.getExonNumber() + "/" + variantEffect.getExonTotal());
         }
@@ -161,12 +161,12 @@ public class VcfAnnotator {
     values.add(geneSymbol != null ? geneSymbol : "");
     Integer gene = annotation.getGene();
     values.add(gene != null ? String.valueOf(gene) : "");
-    values.add(annotation.getFeatureType() != null ? annotation.getFeatureType().getTerm() : "");
+    values.add(annotation.getFeatureType() != null ? annotation.getFeatureType() : "");
 
     String feature = annotation.getFeature();
     values.add(feature != null ? feature : "");
 
-    Gene.BioType biotype = annotation.getBiotype();
+    Transcript.Type biotype = annotation.getBiotype();
     values.add(biotype != null ? biotype.getTerm() : "");
     values.add(annotation.getExon() != null ? annotation.getExon() : "");
     values.add(annotation.getIntron() != null ? annotation.getIntron() : "");

@@ -37,7 +37,6 @@ public class AnnotationDbBuilder {
           AnnotationDb annotationDb = createAnnotationDb(chromosome, entry.getValue());
           chromosomeTranscriptDatabaseMap.put(chromosome, annotationDb);
         });
-
     return new GenomeAnnotationDb(chromosomeTranscriptDatabaseMap);
   }
 
@@ -83,7 +82,6 @@ public class AnnotationDbBuilder {
     attributes.add("ID");
     attributes.add("Parent");
     attributes.add("gene");
-    attributes.add("gene_biotype");
     attributes.add("transcript_id");
     attributes.add("protein_id");
     attributes.add("Dbxref");
@@ -119,8 +117,6 @@ public class AnnotationDbBuilder {
         }
       }
     }
-    String geneBiotype = feature.getAttribute("gene_biotype");
-    builder.bioType(Gene.BioType.from(geneBiotype));
 
     return builder.build();
   }
