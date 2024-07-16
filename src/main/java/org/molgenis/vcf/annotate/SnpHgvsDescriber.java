@@ -14,8 +14,10 @@ import org.molgenis.vcf.annotate.util.SequenceUtils;
  *
  * @see <a href="https://hgvs-nomenclature.org/stable/">HGVS Nomenclature</a>
  */
-public class HgvsDescriber {
-  static String calculateIntronVariantHgvsC(
+public class SnpHgvsDescriber {
+  public record Hgvs(String hgvsC, String hgvsP) {}
+
+  public static String calculateHgvsCIntronVariant(
       int pos,
       byte[] refBases,
       byte[] altBases,
@@ -26,7 +28,14 @@ public class HgvsDescriber {
       Exon threePrimeExon) {
     if (transcript.getCds() != null) {
       return calculateIntronVariantCodingDnaHgvsC(
-          pos, refBases, altBases, strand, transcript, fivePrimeExon, threePrimeExon);
+          pos,
+          refBases,
+          altBases,
+          strand,
+          transcript,
+          fivePrimeExon,
+          threePrimeExonIndex,
+          threePrimeExon);
     } else {
       return calculateIntronVariantNonCodingDnaHgvsC(
           pos,
@@ -71,30 +80,81 @@ public class HgvsDescriber {
       Strand strand,
       Transcript transcript,
       Exon fivePrimeExon,
+      int threePrimeExonIndex,
       Exon threePrimeExon) {
 
+    Cds.Fragment[] cdsFragments = transcript.getCds().fragments();
     int exonPos;
     int intronPos;
+    String codingReferenceSequencePos;
     switch (strand) {
       case POSITIVE -> {
         int intronCenter =
             fivePrimeExon.getStop() + ((threePrimeExon.getStart() - fivePrimeExon.getStop()) / 2);
-        exonPos = pos <= intronCenter ? fivePrimeExon.getStop() : threePrimeExon.getStart();
+
+        int exonIndex;
+        if (pos <= intronCenter) {
+          exonPos = fivePrimeExon.getStop();
+          exonIndex = threePrimeExonIndex - 1;
+        } else {
+          exonPos = threePrimeExon.getStart();
+          exonIndex = threePrimeExonIndex;
+        }
+
+        if (exonPos < cdsFragments[0].getStart()) {
+          // 5' ÚTR
+          codingReferenceSequencePos =
+              String.valueOf(getCdsPosFivePrimeUtr(exonPos, strand, transcript, exonIndex));
+        } else if (exonPos > cdsFragments[cdsFragments.length - 1].getStop()) {
+          // 3' ÚTR
+          codingReferenceSequencePos =
+              "*" + getCdsPosThreePrimeUtr(exonPos, strand, transcript, exonIndex);
+        } else {
+          // protein coding region
+          int cdsFragmentIndex = transcript.getCds().findAnyFragmentId(exonPos, exonPos);
+          if (cdsFragmentIndex == -1) throw new RuntimeException();
+          codingReferenceSequencePos =
+              String.valueOf(
+                  getCdsPosProteinCodingRegion(
+                      exonPos, strand, transcript.getCds(), cdsFragmentIndex));
+        }
+
         intronPos = pos - exonPos;
       }
       case NEGATIVE -> {
         int intronCenter =
             threePrimeExon.getStop() + ((fivePrimeExon.getStart() - threePrimeExon.getStop()) / 2);
-        exonPos = pos <= intronCenter ? threePrimeExon.getStop() : fivePrimeExon.getStart();
+        int exonIndex;
+        if (pos <= intronCenter) {
+          exonPos = threePrimeExon.getStop();
+          exonIndex = threePrimeExonIndex;
+        } else {
+          exonPos = fivePrimeExon.getStart();
+          exonIndex = threePrimeExonIndex - 1;
+        }
+
+        if (exonPos > cdsFragments[0].getStop()) {
+          // 5' ÚTR
+          codingReferenceSequencePos =
+              String.valueOf(getCdsPosFivePrimeUtr(exonPos, strand, transcript, exonIndex));
+        } else if (exonPos < cdsFragments[cdsFragments.length - 1].getStart()) {
+          // 3' ÚTR
+          codingReferenceSequencePos =
+              "*" + getCdsPosThreePrimeUtr(exonPos, strand, transcript, exonIndex);
+        } else {
+          // protein coding region
+          int cdsFragmentIndex = transcript.getCds().findAnyFragmentId(exonPos, exonPos);
+          if (cdsFragmentIndex == -1) throw new RuntimeException();
+          codingReferenceSequencePos =
+              String.valueOf(
+                  getCdsPosProteinCodingRegion(
+                      exonPos, strand, transcript.getCds(), cdsFragmentIndex));
+        }
+
         intronPos = exonPos - pos;
       }
       default -> throw new IllegalStateException("Unexpected value: " + strand);
     }
-
-    int cdsFragmentIndex = transcript.getCds().findAnyFragmentId(exonPos, exonPos);
-    Cds.Fragment cdsFragment =
-        cdsFragmentIndex != -1 ? transcript.getCds().fragments()[cdsFragmentIndex] : null;
-    String codingReferenceSequencePos = getCdsPos(exonPos, strand, transcript, cdsFragment);
 
     char ref = SequenceUtils.getBase(refBases, strand);
     char alt = SequenceUtils.getBase(altBases, strand);
@@ -224,7 +284,7 @@ public class HgvsDescriber {
    *     href="https://hgvs-nomenclature.org/stable/background/numbering/#non-coding-dna-reference-sequences">HGVS
    *     Nomenclature v21.0.2</a>
    */
-  static String calculateNonCodingTranscriptExonVariantHgvsC(
+  public static String calculateNonCodingTranscriptExonVariantHgvsC(
       int pos,
       byte[] refBases,
       byte[] altBases,
@@ -249,136 +309,35 @@ public class HgvsDescriber {
     return stringBuilder.toString();
   }
 
-  private static String getCdsPos(
-      int pos, Strand strand, Transcript transcript, Cds.Fragment cdsFragment) {
-    String nucleotideNumber;
-    if (cdsFragment != null) {
-      int codingReferenceSequencePos = 0;
-      for (Cds.Fragment fragment : transcript.getCds().fragments()) {
-        cdsFragment = fragment;
-
-        if (strand == Strand.POSITIVE) {
-          if (pos > cdsFragment.getStop()) {
-            codingReferenceSequencePos += cdsFragment.getLength();
-          } else {
-            codingReferenceSequencePos += pos - cdsFragment.getStart() + 1;
-            break;
-          }
-        } else if (strand == Strand.NEGATIVE) {
-          if (pos < cdsFragment.getStart()) {
-            codingReferenceSequencePos += cdsFragment.getLength();
-          } else {
-            codingReferenceSequencePos += cdsFragment.getStop() - pos + 1;
-            break;
-          }
-        } else throw new RuntimeException();
-      }
-      nucleotideNumber = String.valueOf(codingReferenceSequencePos);
-    } else {
-      // find overlapping exon
-      Exon[] exons = transcript.getExons();
-      int exonIndex;
-      for (exonIndex = 0; exonIndex < exons.length; exonIndex++) {
-        if (exons[exonIndex].isOverlapping(pos, pos)) break;
-      }
-
-      cdsFragment = transcript.getCds().fragments()[0];
-      switch (strand) {
-        case POSITIVE -> {
-          if (pos < cdsFragment.getStart()) {
-            // 5' UTR
-            int codingReferenceSequencePos = 0;
-            Exon exon = exons[exonIndex];
-            while (!exon.isOverlapping(cdsFragment.getStart(), cdsFragment.getStop())) {
-              if (exon.isOverlapping(pos, pos)) {
-                codingReferenceSequencePos -= exon.getStop() - pos + 1;
-              } else {
-                codingReferenceSequencePos -= exon.getLength();
-              }
-              exon = transcript.getExons()[++exonIndex];
-            }
-            codingReferenceSequencePos -= cdsFragment.getStart() - exon.getStart();
-            nucleotideNumber = String.valueOf(codingReferenceSequencePos);
-          } else {
-            // 3' UTR
-            cdsFragment =
-                transcript.getCds().fragments()[transcript.getCds().fragments().length - 1];
-
-            int codingReferenceSequencePos = 0;
-            Exon exon = exons[exonIndex];
-            while (!exon.isOverlapping(cdsFragment.getStart(), cdsFragment.getStop())) {
-              if (exon.isOverlapping(pos, pos)) {
-                codingReferenceSequencePos += pos - exon.getStart() + 1;
-              } else {
-                codingReferenceSequencePos += exon.getLength();
-              }
-              exon = transcript.getExons()[--exonIndex];
-            }
-            codingReferenceSequencePos += exon.getStop() - cdsFragment.getStop();
-            nucleotideNumber = "*" + codingReferenceSequencePos;
-          }
-        }
-        case NEGATIVE -> {
-          if (pos > cdsFragment.getStop()) {
-            // 5' UTR
-            int codingReferenceSequencePos = 0;
-            Exon exon = exons[exonIndex];
-            while (!exon.isOverlapping(cdsFragment.getStart(), cdsFragment.getStop())) {
-              if (exon.isOverlapping(pos, pos)) {
-                codingReferenceSequencePos -= pos - exon.getStart() + 1;
-              } else {
-                codingReferenceSequencePos -= exon.getLength();
-              }
-              exon = transcript.getExons()[++exonIndex];
-            }
-            codingReferenceSequencePos -= exon.getStop() - cdsFragment.getStop();
-            nucleotideNumber = String.valueOf(codingReferenceSequencePos);
-          } else {
-            // 3' UTR
-            // FIXME implement
-            nucleotideNumber = "*<something>";
-          }
-        }
-        default -> throw new IllegalArgumentException();
-      }
-    }
-
-    return nucleotideNumber;
-  }
-
-  private static int getCdsPos(int pos, Strand strand, Cds cds, int overlappingCdsFragmentId) {
-    Cds.Fragment overlappingCdsFragment = cds.fragments()[overlappingCdsFragmentId];
-
-    int codingReferenceSequencePos =
-        switch (strand) {
-          case POSITIVE -> pos - overlappingCdsFragment.getStart() + 1;
-          case NEGATIVE -> overlappingCdsFragment.getStop() - pos + 1;
-        };
-
-    for (int i = 0; i < overlappingCdsFragmentId; i++) {
-      codingReferenceSequencePos += cds.fragments()[i].getLength();
-    }
-
-    return codingReferenceSequencePos;
-  }
-
   private static String calculateHgvsP(
       Cds cds, CodonVariant codonVariant, int codingPos, int codonPos) {
     String hgvsP;
     int aaPosition = ((codingPos - codonPos) / 3) + 1;
     if (aaPosition > 1) {
-      hgvsP =
-          cds.proteinId()
-              + ":p."
-              + (codonVariant.ref().isStopCodon()
-                  ? "Ter"
-                  : codonVariant.ref().getAminoAcid().getTerm())
-              + aaPosition
-              + (codonVariant.ref().getAminoAcid() != codonVariant.alt().getAminoAcid()
-                  ? (codonVariant.alt().isStopCodon()
-                      ? "Ter"
-                      : codonVariant.alt().getAminoAcid().getTerm())
-                  : "%3D");
+      if (codonVariant.ref().isStopCodon() && !codonVariant.alt().isStopCodon()) {
+        hgvsP =
+            cds.proteinId()
+                + ":p."
+                + "Ter"
+                + aaPosition
+                + codonVariant.alt().getAminoAcid().getTerm()
+                + "extTer"
+                + "?"; // FIXME add extension_length (The number of amino acids added beyond the
+                       // original Ter)
+      } else {
+        hgvsP =
+            cds.proteinId()
+                + ":p."
+                + (codonVariant.ref().isStopCodon()
+                    ? "Ter"
+                    : codonVariant.ref().getAminoAcid().getTerm())
+                + aaPosition
+                + (codonVariant.ref().getAminoAcid() != codonVariant.alt().getAminoAcid()
+                    ? (codonVariant.alt().isStopCodon()
+                        ? "Ter"
+                        : codonVariant.alt().getAminoAcid().getTerm())
+                    : "%3D");
+      }
     } else {
       hgvsP =
           cds.proteinId() + ":p." + codonVariant.ref().getAminoAcid().getTerm() + aaPosition + "?";
@@ -386,9 +345,65 @@ public class HgvsDescriber {
     return hgvsP;
   }
 
-  static int getCdsPosFivePrimeUtr(
-      int pos, Strand strand, Transcript transcript, Cds cds, int exonIndex, Exon exon) {
+  public static String calculateHgvsCFivePrimeUtrVariant(
+      int pos,
+      byte[] refBases,
+      byte[] altBases,
+      Strand strand,
+      Transcript transcript,
+      int overlappingExonIndex) {
+    char ref = SequenceUtils.getBase(refBases, strand);
+    char alt = SequenceUtils.getBase(altBases, strand);
+    int cdsPos = getCdsPosFivePrimeUtr(pos, strand, transcript, overlappingExonIndex);
+    return transcript.getId() + ":c." + cdsPos + ref + ">" + alt;
+  }
+
+  public static String calculateHgvsCThreePrimeUtrVariant(
+      int pos,
+      byte[] refBases,
+      byte[] altBases,
+      Strand strand,
+      Transcript transcript,
+      int overlappingExonIndex) {
+    int cdsPos = getCdsPosThreePrimeUtr(pos, strand, transcript, overlappingExonIndex);
+
+    char ref = SequenceUtils.getBase(refBases, strand);
+    char alt = SequenceUtils.getBase(altBases, strand);
+    return transcript.getId() + ":c.*" + cdsPos + ref + ">" + alt;
+  }
+
+  public static Hgvs calculateHgvsCodingSequenceVariant(
+      int pos,
+      byte[] refBases,
+      byte[] altBases,
+      Strand strand,
+      Transcript transcript,
+      int cdsFragmentId,
+      CodonVariant codonVariant,
+      int codonPos) {
+    int cdsPos = getCdsPosProteinCodingRegion(pos, strand, transcript.getCds(), cdsFragmentId);
+
+    // c.
+    char ref = SequenceUtils.getBase(refBases, strand);
+    char alt = SequenceUtils.getBase(altBases, strand);
+    String hgvsC = transcript.getId() + ":c." + cdsPos + ref + ">" + alt;
+
+    // p.
+    String hgvsP = calculateHgvsP(transcript.getCds(), codonVariant, cdsPos, codonPos);
+
+    return new Hgvs(hgvsC, hgvsP);
+  }
+
+  /**
+   * @see <a
+   *     href="https://hgvs-nomenclature.org/stable/background/numbering/#coding-dna-reference-sequences">untranslated
+   *     region (UTR)</a>
+   */
+  private static int getCdsPosFivePrimeUtr(
+      int pos, Strand strand, Transcript transcript, int exonIndex) {
     // hgvs
+    Exon exon = transcript.getExons()[exonIndex];
+    Cds cds = transcript.getCds();
     Cds.Fragment cdsFragment = cds.fragments()[0];
     int cdsPos;
     switch (strand) {
@@ -429,40 +444,37 @@ public class HgvsDescriber {
     return cdsPos;
   }
 
-  static String calculateHgvsCFivePrimeUtr(
-      int pos,
-      byte[] refBases,
-      byte[] altBases,
-      Strand strand,
-      Transcript transcript,
-      Cds cds,
-      int exonIndex,
-      Exon exon) {
-    char ref = SequenceUtils.getBase(refBases, strand);
-    char alt = SequenceUtils.getBase(altBases, strand);
-    int cdsPos = getCdsPosFivePrimeUtr(pos, strand, transcript, cds, exonIndex, exon);
-    return transcript.getId() + ":c." + cdsPos + ref + ">" + alt;
+  /**
+   * @see <a
+   *     href="https://hgvs-nomenclature.org/stable/background/numbering/#coding-dna-reference-sequences">protein
+   *     coding region</a>
+   */
+  private static int getCdsPosProteinCodingRegion(
+      int pos, Strand strand, Cds cds, int overlappingCdsFragmentId) {
+    Cds.Fragment overlappingCdsFragment = cds.fragments()[overlappingCdsFragmentId];
+
+    int codingReferenceSequencePos =
+        switch (strand) {
+          case POSITIVE -> pos - overlappingCdsFragment.getStart() + 1;
+          case NEGATIVE -> overlappingCdsFragment.getStop() - pos + 1;
+        };
+
+    for (int i = 0; i < overlappingCdsFragmentId; i++) {
+      codingReferenceSequencePos += cds.fragments()[i].getLength();
+    }
+
+    return codingReferenceSequencePos;
   }
 
-  static String calculateHgvsCThreePrime(
-      int pos,
-      byte[] refBases,
-      byte[] altBases,
-      Strand strand,
-      Transcript transcript,
-      Cds cds,
-      int exonIndex,
-      Exon exon) {
-    int cdsPos = getCdsPosThreePrimeUtr(pos, strand, transcript, cds, exonIndex, exon);
-
-    char ref = SequenceUtils.getBase(refBases, strand);
-    char alt = SequenceUtils.getBase(altBases, strand);
-    return transcript.getId() + ":c.*" + cdsPos + ref + ">" + alt;
-  }
-
+  /**
+   * @see <a
+   *     href="https://hgvs-nomenclature.org/stable/background/numbering/#coding-dna-reference-sequences">untranslated
+   *     region (UTR)</a>
+   */
   private static int getCdsPosThreePrimeUtr(
-      int pos, Strand strand, Transcript transcript, Cds cds, int exonIndex, Exon exon) {
-    // hgvs
+      int pos, Strand strand, Transcript transcript, int exonIndex) {
+    Exon exon = transcript.getExons()[exonIndex];
+    Cds cds = transcript.getCds();
     Cds.Fragment cdsFragment = cds.fragments()[cds.fragments().length - 1];
     int cdsPos;
     switch (strand) {
@@ -470,11 +482,11 @@ public class HgvsDescriber {
         if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
           cdsPos = pos - cdsFragment.getStop();
         } else {
-          cdsPos = pos - exon.getStart();
+          cdsPos = pos - exon.getStart() + 1;
           do {
             exon = transcript.getExons()[--exonIndex];
             if (cdsFragment.isOverlapping(exon.getStart(), exon.getStop())) {
-              cdsPos += exon.getStart() - cdsFragment.getStop();
+              cdsPos += exon.getStop() - cdsFragment.getStop();
               break;
             } else {
               cdsPos += exon.getLength();
@@ -502,28 +514,4 @@ public class HgvsDescriber {
     }
     return cdsPos;
   }
-
-  public static Hgvs calculateHgvsCodingSequenceVariant(
-      int pos,
-      byte[] refBases,
-      byte[] altBases,
-      Strand strand,
-      Transcript transcript,
-      int cdsFragmentId,
-      CodonVariant codonVariant,
-      int codonPos) {
-    int cdsPos = getCdsPos(pos, strand, transcript.getCds(), cdsFragmentId);
-
-    // c.
-    char ref = SequenceUtils.getBase(refBases, strand);
-    char alt = SequenceUtils.getBase(altBases, strand);
-    String hgvsC = transcript.getId() + ":c." + cdsPos + ref + ">" + alt;
-
-    // p.
-    String hgvsP = calculateHgvsP(transcript.getCds(), codonVariant, cdsPos, codonPos);
-
-    return new Hgvs(hgvsC, hgvsP);
-  }
-
-  public record Hgvs(String hgvsC, String hgvsP) {}
 }

@@ -7,6 +7,7 @@ import lombok.Singular;
 import lombok.Value;
 import org.molgenis.vcf.annotate.db.model.Gene;
 import org.molgenis.vcf.annotate.db.model.Strand;
+import org.molgenis.vcf.annotate.db.model.Transcript;
 import org.molgenis.vcf.annotate.model.Consequence;
 import org.molgenis.vcf.annotate.model.FeatureType;
 
@@ -14,11 +15,10 @@ import org.molgenis.vcf.annotate.model.FeatureType;
 @Builder(toBuilder = true)
 public class AlleleAnnotation {
   @NonNull String allele;
-  @NonNull @Singular
-  List<Consequence> consequences;
+  @NonNull @Singular List<Consequence> consequences;
   String geneSymbol;
   Integer gene;
-  FeatureType featureType;
+  Transcript.Type featureType;
   String feature;
   Gene.BioType biotype;
   String exon;

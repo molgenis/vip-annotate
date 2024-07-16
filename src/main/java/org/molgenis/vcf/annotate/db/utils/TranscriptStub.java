@@ -16,6 +16,7 @@ import org.molgenis.vcf.annotate.db.model.Transcript;
 @SuperBuilder
 public class TranscriptStub extends ClosedInterval {
   @NonNull String id;
+  @NonNull Transcript.Type type;
   Integer geneIndex;
   @Singular @NonNull List<Exon> exons;
   @Singular @NonNull List<CdsStub> codingSequences;
@@ -26,6 +27,7 @@ public class TranscriptStub extends ClosedInterval {
             .start(getStart())
             .length(getLength())
             .id(getId())
+            .type(getType())
             .geneIndex(geneIndex != null ? geneIndex : -1)
             .exons(exons.toArray(Exon[]::new));
     if (!codingSequences.isEmpty()) {

@@ -113,7 +113,7 @@ public class AnnotationDbBuilder {
     if (dbxref != null) {
       for (String ref : dbxref) {
         if (ref.startsWith("GeneID:")) {
-          int id = Integer.valueOf(ref.substring("GeneID:".length()));
+          int id = Integer.parseInt(ref.substring("GeneID:".length()));
           builder.id(id);
           break;
         }
@@ -151,6 +151,7 @@ public class AnnotationDbBuilder {
                     .start(Math.toIntExact(feature.start()))
                     .length(Math.toIntExact(feature.end() - feature.start() + 1))
                     .id(feature.getAttribute("transcript_id"))
+                    .type(Transcript.Type.from(feature.type()))
                     .geneIndex(geneMap.get(feature.getAttributeParent().getFirst()));
 
             transcriptBuilderMap.put(feature.getAttributeId(), transcriptBuilder);

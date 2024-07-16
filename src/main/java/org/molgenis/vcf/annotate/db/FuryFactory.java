@@ -27,6 +27,7 @@ public class FuryFactory {
     fury.register(SequenceType.class);
     fury.register(Strand.class);
     fury.register(Transcript.class);
+    fury.register(Transcript.Type.class);
     fury.register(TranscriptDb.class);
     return fury;
   }

@@ -69,15 +69,7 @@ public class SnpTranscriptEffectAnnotator {
     } else {
       if (isUtrVariant(pos, strand, cds)) {
         annotateUtrVariant(
-            pos,
-            refBases,
-            altBases,
-            strand,
-            transcript,
-            cds,
-            exonIndex,
-            exon,
-            variantEffectBuilder);
+            pos, refBases, altBases, strand, transcript, cds, exonIndex, variantEffectBuilder);
       } else {
         annotateCodingSequenceVariant(
             pos, refBases, altBases, strand, transcript, variantEffectBuilder);
@@ -110,7 +102,7 @@ public class SnpTranscriptEffectAnnotator {
 
     if (annotateHgvs) {
       variantEffectBuilder.hgvsC(
-          HgvsDescriber.calculateNonCodingTranscriptExonVariantHgvsC(
+          SnpHgvsDescriber.calculateNonCodingTranscriptExonVariantHgvsC(
               pos, refBases, altBases, strand, transcript, exonIndex, exon));
     }
   }
@@ -129,15 +121,14 @@ public class SnpTranscriptEffectAnnotator {
       Transcript transcript,
       Cds cds,
       int exonIndex,
-      Exon exon,
       VariantEffectBuilder variantEffectBuilder) {
     boolean isFivePrimeUtrVariant = isFivePrimeUtrVariant(pos, strand, cds);
     if (isFivePrimeUtrVariant) {
       annotateFivePrimeUtrVariant(
-          pos, refBases, altBases, strand, transcript, cds, exonIndex, exon, variantEffectBuilder);
+          pos, refBases, altBases, strand, transcript, exonIndex, variantEffectBuilder);
     } else {
       annotateThreePrimeUtrVariant(
-          pos, refBases, altBases, strand, transcript, cds, exonIndex, exon, variantEffectBuilder);
+          pos, refBases, altBases, strand, transcript, exonIndex, variantEffectBuilder);
     }
   }
 
@@ -153,16 +144,14 @@ public class SnpTranscriptEffectAnnotator {
       byte[] altBases,
       Strand strand,
       Transcript transcript,
-      Cds cds,
       int exonIndex,
-      Exon exon,
       VariantEffectBuilder variantEffectBuilder) {
     variantEffectBuilder.consequence(Consequence.FIVE_PRIME_UTR_VARIANT);
 
     if (annotateHgvs) {
       variantEffectBuilder.hgvsC(
-          HgvsDescriber.calculateHgvsCFivePrimeUtr(
-              pos, refBases, altBases, strand, transcript, cds, exonIndex, exon));
+          SnpHgvsDescriber.calculateHgvsCFivePrimeUtrVariant(
+              pos, refBases, altBases, strand, transcript, exonIndex));
     }
   }
 
@@ -178,16 +167,14 @@ public class SnpTranscriptEffectAnnotator {
       byte[] altBases,
       Strand strand,
       Transcript transcript,
-      Cds cds,
       int exonIndex,
-      Exon exon,
       VariantEffectBuilder variantEffectBuilder) {
     variantEffectBuilder.consequence(Consequence.THREE_PRIME_UTR_VARIANT);
 
     if (annotateHgvs) {
       variantEffectBuilder.hgvsC(
-          HgvsDescriber.calculateHgvsCThreePrime(
-              pos, refBases, altBases, strand, transcript, cds, exonIndex, exon));
+          SnpHgvsDescriber.calculateHgvsCThreePrimeUtrVariant(
+              pos, refBases, altBases, strand, transcript, exonIndex));
     }
   }
 
@@ -223,8 +210,8 @@ public class SnpTranscriptEffectAnnotator {
     }
 
     if (annotateHgvs) {
-      HgvsDescriber.Hgvs hgvs =
-          HgvsDescriber.calculateHgvsCodingSequenceVariant(
+      SnpHgvsDescriber.Hgvs hgvs =
+          SnpHgvsDescriber.calculateHgvsCodingSequenceVariant(
               pos, refBases, altBases, strand, transcript, cdsFragmentId, codonVariant, codonPos);
 
       variantEffectBuilder.hgvsC(hgvs.hgvsC()).hgvsP(hgvs.hgvsP());
@@ -323,7 +310,7 @@ public class SnpTranscriptEffectAnnotator {
 
     if (annotateHgvs) {
       String hgvsC =
-          HgvsDescriber.calculateIntronVariantHgvsC(
+          SnpHgvsDescriber.calculateHgvsCIntronVariant(
               pos,
               refBases,
               altBases,

@@ -15,7 +15,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vcf.annotate.db.model.*;
 import org.molgenis.vcf.annotate.model.Consequence;
-import org.molgenis.vcf.annotate.model.FeatureType;
 import org.molgenis.vcf.annotate.model.Impact;
 import org.molgenis.vcf.annotate.util.ContigUtils;
 
@@ -111,7 +110,7 @@ public class VcfAnnotator {
         builder.geneSymbol(gene.getName());
         builder.gene(gene.getId());
         builder.strand(strand);
-        builder.featureType(FeatureType.TRANSCRIPT);
+        builder.featureType(transcript.getType());
         builder.hgvsC(variantEffect.getHgvsC());
         builder.hgvsP(variantEffect.getHgvsP());
 
@@ -162,13 +161,7 @@ public class VcfAnnotator {
     values.add(geneSymbol != null ? geneSymbol : "");
     Integer gene = annotation.getGene();
     values.add(gene != null ? String.valueOf(gene) : "");
-    FeatureType featureType = annotation.getFeatureType();
-    values.add(
-        featureType != null
-            ? switch (featureType) {
-              case TRANSCRIPT -> "Transcript";
-            }
-            : "");
+    values.add(annotation.getFeatureType() != null ? annotation.getFeatureType().getTerm() : "");
 
     String feature = annotation.getFeature();
     values.add(feature != null ? feature : "");
