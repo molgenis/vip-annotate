@@ -66,7 +66,7 @@ public class AnnotationDbBuilder {
     seqIds.add("NC_000022.11");
     seqIds.add("NC_000023.11"); // X
     seqIds.add("NC_000024.10"); // Y
-    // FIXME enable
+    // FIXME create annotation db for MT chromosome
     // seqIds.add("NC_012920.1"); // MT
 
     Set<String> sources = new HashSet<>();
@@ -123,8 +123,6 @@ public class AnnotationDbBuilder {
 
   private AnnotationDb createAnnotationDb(Chromosome chromosome, Gff3.Features features) {
     LOGGER.info("processing chromosome {}", chromosome.getId());
-
-    Set<String> exonIds = new HashSet<>();
 
     Map<String, Integer> geneMap = new LinkedHashMap<>();
     List<Gene> geneList = new ArrayList<>();

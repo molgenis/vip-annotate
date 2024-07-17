@@ -17,9 +17,13 @@ import org.molgenis.vcf.annotate.db.model.*;
 import org.molgenis.vcf.annotate.model.Consequence;
 import org.molgenis.vcf.annotate.model.Impact;
 import org.molgenis.vcf.annotate.util.ContigUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RequiredArgsConstructor
 public class VcfAnnotator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VcfAnnotator.class);
+
   @NonNull private final GenomeAnnotationDb genomeAnnotationDb;
 
   public long annotate(VCFIterator reader, VariantContextWriter writer) throws IOException {
@@ -37,6 +41,7 @@ public class VcfAnnotator {
       VariantContext vcfRecord = reader.next();
       VariantContext annotatedVcfRecord = annotate(vcfRecord);
       writer.add(annotatedVcfRecord);
+      if (records > 0 && records % 100000 == 0) LOGGER.info("processed {} records", records);
       records++;
     }
     return records;
