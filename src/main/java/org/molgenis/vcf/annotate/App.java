@@ -30,7 +30,8 @@ public class App {
 
     LOGGER.info("annotating vcf records ...");
     long records;
-    try (VCFIterator vcfIterator = new VCFIteratorBuilder().open(new FileInputStream(inputFile));
+    try (VCFIterator vcfIterator =
+            new VCFIteratorBuilder().open(new BufferedInputStream(new FileInputStream(inputFile)));
         VariantContextWriter variantContextWriter =
             new VariantContextWriterBuilder()
                 .setOutputFile(outputFile)

@@ -74,30 +74,22 @@ public class VcfAnnotator {
 
     int start = vcfRecord.getStart();
     Allele ref = vcfRecord.getReference();
-    if (ref.isSymbolic()
-        || ref.isSingleBreakend()
-        || ref.isBreakpoint()
-        || ref.getDisplayBases().length != 1) {
+    if (ref.isSymbolic() || ref.isSingleBreakend() || ref.isBreakpoint()) {
       // FIXME support symbolic alleles
       // FIXME support breakends
-      // FIXME support non-SNPs
       return Collections.emptyList();
     }
 
-    if (alt.isSymbolic()
-        || alt.isSingleBreakend()
-        || alt.isBreakpoint()
-        || alt.getDisplayBases().length != 1) {
+    if (alt.isSymbolic() || alt.isSingleBreakend() || alt.isBreakpoint()) {
       // FIXME support symbolic alleles
       // FIXME support breakends
-      // FIXME support non-SNPs
       return Collections.emptyList();
     }
 
     // determine annotations
     List<AlleleAnnotation> annotations = new ArrayList<>();
 
-    List<Transcript> transcripts = annotationDb.findOverlapTranscripts(start, start);
+    List<Transcript> transcripts = annotationDb.findOverlapTranscripts(start, vcfRecord.getEnd());
 
     if (!transcripts.isEmpty()) {
       for (Transcript transcript : transcripts) {
