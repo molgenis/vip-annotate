@@ -16,6 +16,7 @@
         <lombok.version>1.18.36</lombok.version>
         <apache.fury.version>0.9.0</apache.fury.version>
         <openjdk.jmh.version>1.37</openjdk.jmh.version>
+        <lemire.integercompression.version>0.2.1</lemire.integercompression.version>
     </properties>
 
     <build>
@@ -68,6 +69,11 @@
                 <version>${apache.fury.version}</version>
             </dependency>
             <dependency>
+                <groupId>me.lemire.integercompression</groupId>
+                <artifactId>JavaFastPFOR</artifactId>
+                <version>${lemire.integercompression.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.openjdk.jmh</groupId>
                 <artifactId>jmh-core</artifactId>
                 <version>${openjdk.jmh.version}</version>
@@ -97,6 +103,10 @@
         <dependency>
             <groupId>org.apache.fury</groupId>
             <artifactId>fury-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>me.lemire.integercompression</groupId>
+            <artifactId>JavaFastPFOR</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
