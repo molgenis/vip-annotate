@@ -7,17 +7,17 @@ import java.io.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDb;
+import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDbImpl;
 import org.molgenis.vcf.annotate.db2.gnomad.GnomAdVcfAnnotator;
 
 class GnomAdAnnotatorTest {
-  private AnnotationDb annotationDb;
+  private AnnotationDbImpl annotationDb;
   private GnomAdVcfAnnotator vcfAnnotator;
 
   @BeforeEach
   void beforeEach() throws IOException {
     annotationDb =
-        new AnnotationDb(
+        new AnnotationDbImpl(
             new File("C:\\Users\\Dennis Hendriksen\\Downloads\\gnomAd_chr21-22_v14.zip"));
     vcfAnnotator = new GnomAdVcfAnnotator(annotationDb);
   }

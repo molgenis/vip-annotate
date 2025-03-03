@@ -6,7 +6,7 @@ import htsjdk.variant.variantcontext.writer.VariantContextWriterBuilder;
 import htsjdk.variant.vcf.VCFIterator;
 import htsjdk.variant.vcf.VCFIteratorBuilder;
 import java.io.*;
-import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDb;
+import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDbImpl;
 
 class AppGnomAdVcfAnnotator {
   public static void main(String[] args) throws IOException {
@@ -14,7 +14,7 @@ class AppGnomAdVcfAnnotator {
     File inputDbFile = new File(args[1]);
     File outputFile = new File(args[2]);
 
-    GnomAdVcfAnnotator vcfAnnotator = new GnomAdVcfAnnotator(new AnnotationDb(inputVcfFile));
+    GnomAdVcfAnnotator vcfAnnotator = new GnomAdVcfAnnotator(new AnnotationDbImpl(inputVcfFile));
 
     long start = System.currentTimeMillis();
     try (VCFIterator vcfIterator = new VCFIteratorBuilder().open(inputDbFile);

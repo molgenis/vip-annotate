@@ -47,7 +47,13 @@ public class VariantAltAlleleEncoder {
     int encodedPos = encodePos(pos);
     int encodedRefLength = encodeSmallNrBases(variantAltAllele.getRefAlleleLength());
     int encodedAltLength = encodeSmallNrBases(variantAltAllele.getAltAlleleLength());
-    int encodedAlt = encodeSmallAlt(altBases);
+    int encodedAlt;
+    try {
+      encodedAlt = encodeSmallAlt(altBases);
+    } catch (IllegalArgumentException e) {
+      System.out.println(variantAltAllele);
+      throw e;
+    }
 
     return encodedPos << 12 | encodedRefLength << 10 | encodedAltLength << 8 | encodedAlt;
   }

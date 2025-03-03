@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDb;
+import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDbImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +19,9 @@ import org.slf4j.LoggerFactory;
 @RequiredArgsConstructor
 public class GnomAdVcfAnnotator {
   private static final Logger LOGGER = LoggerFactory.getLogger(GnomAdVcfAnnotator.class);
-  private AnnotationDb annotationDb;
+  private AnnotationDbImpl annotationDb;
 
-  public GnomAdVcfAnnotator(AnnotationDb annotationDb) {
+  public GnomAdVcfAnnotator(AnnotationDbImpl annotationDb) {
     this.annotationDb = requireNonNull(annotationDb);
   }
 

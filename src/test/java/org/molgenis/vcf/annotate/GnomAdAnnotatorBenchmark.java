@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDb;
+import org.molgenis.vcf.annotate.db2.exact.format.AnnotationDbImpl;
 import org.molgenis.vcf.annotate.db2.gnomad.GnomAdVcfAnnotator;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -14,12 +14,13 @@ import org.openjdk.jmh.infra.Blackhole;
 @State(Scope.Benchmark)
 public class GnomAdAnnotatorBenchmark {
 
-  private AnnotationDb annotationDb;
+  private AnnotationDbImpl annotationDb;
 
   @BeforeEach
   void beforeEach() throws IOException {
     annotationDb =
-        new AnnotationDb(new File("C:\\Users\\Dennis Hendriksen\\Downloads\\gnomAd_chr21-22.zip"));
+        new AnnotationDbImpl(
+            new File("C:\\Users\\Dennis Hendriksen\\Downloads\\gnomAd_chr21-22.zip"));
   }
 
   @AfterEach
