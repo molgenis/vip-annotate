@@ -14,7 +14,7 @@
         <samtools.htsjdk.version>4.1.3</samtools.htsjdk.version>
         <logback.classic.version>1.5.16</logback.classic.version>
         <lombok.version>1.18.36</lombok.version>
-        <apache.fury.version>0.9.0</apache.fury.version>
+        <apache.fury.version>0.10.0</apache.fury.version>
         <openjdk.jmh.version>1.37</openjdk.jmh.version>
         <lemire.integercompression.version>0.2.1</lemire.integercompression.version>
     </properties>
@@ -36,6 +36,17 @@
         <repository>
             <id>iitj</id>
             <url>https://raw.githubusercontent.com/wiki/mlin/iitj/mvn-repo/</url>
+        </repository>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -87,6 +98,17 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.28.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+            <version>1.5.7-1</version>
+            <classifier>win_amd64</classifier>
+        </dependency>
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-api</artifactId>

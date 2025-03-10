@@ -18,7 +18,6 @@ public class FuryFactory {
     fury.register(Chromosome.class);
     fury.register(Exon.class);
     fury.register(Gene.class);
-    fury.register(GenomeAnnotationDb.class);
     fury.register(ClosedInterval.class);
     fury.register(IntervalTree.class);
     fury.register(Sequence.class);

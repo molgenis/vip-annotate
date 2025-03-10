@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vcf.annotate.db.model.*;
+import org.molgenis.vcf.annotate.db.utils.AnnotationDbImpl;
 import org.molgenis.vcf.annotate.model.Consequence;
 import org.molgenis.vcf.annotate.model.Impact;
 import org.molgenis.vcf.annotate.util.ContigUtils;
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class VcfAnnotator {
   private static final Logger LOGGER = LoggerFactory.getLogger(VcfAnnotator.class);
 
-  @NonNull private final GenomeAnnotationDb genomeAnnotationDb;
+  @NonNull private final AnnotationDbImpl genomeAnnotationDb;
 
   public long annotate(VCFIterator reader, VariantContextWriter writer) throws IOException {
     VCFHeader vcfHeader = reader.getHeader();
@@ -64,6 +65,8 @@ public class VcfAnnotator {
     return variantContextBuilder.make();
   }
 
+  public static int NR_VAR_ALTS_ANNOTATED = 0;
+
   private List<AlleleAnnotation> annotate(VariantContext vcfRecord, int altAlleleIndex) {
     Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
     AnnotationDb annotationDb = genomeAnnotationDb.get(chromosome);
@@ -86,6 +89,12 @@ public class VcfAnnotator {
       return Collections.emptyList();
     }
 
+    if (vcfRecord.getEnd() - vcfRecord.getStart() != 0) {
+      // FIXME support INDEL
+      return Collections.emptyList();
+    }
+
+    NR_VAR_ALTS_ANNOTATED++;
     // determine annotations
     List<AlleleAnnotation> annotations = new ArrayList<>();
 

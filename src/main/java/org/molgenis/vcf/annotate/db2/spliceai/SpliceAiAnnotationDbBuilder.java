@@ -8,6 +8,7 @@ import htsjdk.variant.vcf.VCFIteratorBuilder;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vcf.annotate.db2.exact.*;
 import org.molgenis.vcf.annotate.db2.exact.AnnotationDbWriter;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class SpliceAiAnnotationDbBuilder {
 
   public void create(File SpliceAiFile, File zipFile) {
     try (VCFIterator vcfIterator = new VCFIteratorBuilder().open(SpliceAiFile);
-        ZipOutputStream zipOutputStream = createWriter(zipFile)) {
+         ZipArchiveOutputStream zipOutputStream = createWriter(zipFile)) {
       new AnnotationDbWriter().create(new SpliceAiVariantIterator(vcfIterator), zipOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
@@ -93,7 +94,7 @@ public class SpliceAiAnnotationDbBuilder {
     }
   }
 
-  private static ZipOutputStream createWriter(File zipFile) throws FileNotFoundException {
-    return new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile), 1048576));
+  private static ZipArchiveOutputStream createWriter(File zipFile) throws FileNotFoundException {
+    return new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile), 1048576));
   }
 }

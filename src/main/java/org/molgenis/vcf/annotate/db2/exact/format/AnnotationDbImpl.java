@@ -1,10 +1,10 @@
 package org.molgenis.vcf.annotate.db2.exact.format;
 
-import static java.util.Objects.requireNonNull;
-
+import com.github.luben.zstd.RecyclingBufferPool;
+import com.github.luben.zstd.ZstdInputStream;
 import java.io.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.fury.Fury;
 import org.apache.fury.io.FuryInputStream;
 import org.apache.fury.memory.MemoryBuffer;
@@ -25,7 +25,7 @@ public class AnnotationDbImpl implements AnnotationDb {
   private int currentBin = -1;
 
   public AnnotationDbImpl(File zipFile) throws IOException {
-    this.zipFile = new ZipFile(requireNonNull(zipFile));
+    this.zipFile = ZipFile.builder().setPath(zipFile.toPath()).get();
     this.variantAltAlleleEncoder = new VariantAltAlleleEncoder();
     this.fury = FuryFactory.createFury();
   }
@@ -40,22 +40,38 @@ public class AnnotationDbImpl implements AnnotationDb {
       currentBin = partitionId;
       long startCurrentTimeMillis = System.currentTimeMillis();
 
-      ZipEntry entry = zipFile.getEntry(contig + "/" + partitionId + ".vdb");
-      try (InputStream inputStream = zipFile.getInputStream(entry)) {
-        currentAnnotationDbPartition = readDatabase(inputStream);
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
+      ZipArchiveEntry entry = zipFile.getEntry(contig + "/" + partitionId + ".zst");
+      if (entry == null) { // no annotations exist for this partition
+        currentAnnotationDbPartition = null;
+      } else {
+        // perf: zipFile.getInputStream creates a buffered stream, but FuryInputStream is already
+        // buffered
+        // perf: ZstdCompressorInputStream collects unnecessary InputStreamStatistics, use
+        // ZstdInputStream instead
+        try (InputStream inputStream =
+            new ZstdInputStream(zipFile.getRawInputStream(entry), RecyclingBufferPool.INSTANCE)) {
+          currentAnnotationDbPartition = readDatabase(inputStream, entry.getSize());
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+        long timeMillis = System.currentTimeMillis() - startCurrentTimeMillis;
+        LOGGER.debug(
+            "loading database took {} ms (chromosome: {} bin: {})",
+            timeMillis,
+            contig,
+            partitionId);
       }
-      long timeMillis = System.currentTimeMillis() - startCurrentTimeMillis;
-      LOGGER.info(
-          "loading database took {} ms (chromosome: {} bin: {})", timeMillis, contig, partitionId);
     }
 
-    return currentAnnotationDbPartition.getVariant(variantAltAllele);
+    return currentAnnotationDbPartition != null
+        ? currentAnnotationDbPartition.getVariant(variantAltAllele)
+        : null;
   }
 
-  private AnnotationDbPartition readDatabase(InputStream inputStream) throws IOException {
-    try (FuryInputStream furyInputStream = new FuryInputStream(inputStream)) {
+  private AnnotationDbPartition readDatabase(InputStream inputStream, long size)
+      throws IOException {
+    try (FuryInputStream furyInputStream =
+        new FuryInputStream(inputStream, Math.toIntExact(size))) {
       return fury.deserializeJavaObject(furyInputStream, AnnotationDbPartition.class);
     }
   }

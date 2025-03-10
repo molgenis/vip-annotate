@@ -21,7 +21,9 @@ public class VariantAltAlleleEncoder {
   }
 
   private static boolean isSmall(int nrBases) {
-    if (nrBases == 0) throw new IllegalArgumentException("number of ref bases must be > 0");
+    if (nrBases == 0) {
+      throw new IllegalArgumentException("number of ref bases must be > 0");
+    }
     return nrBases <= 4;
   }
 

@@ -13,7 +13,13 @@ public class FuryFactory {
     if (fury == null) {
       LoggerFactory.useSlf4jLogging(true);
 
-      fury = Fury.builder().withLanguage(Language.JAVA).requireClassRegistration(true).build();
+      fury =
+          Fury.builder()
+              .withLanguage(Language.JAVA)
+              .requireClassRegistration(true)
+              .registerGuavaTypes(false)
+              .build();
+
       fury.register(AnnotationData.class);
       fury.register(AnnotationDbImpl.class);
       fury.register(AnnotationDbPartition.class);

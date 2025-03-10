@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.*;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vcf.annotate.db2.exact.*;
 import org.molgenis.vcf.annotate.db2.exact.AnnotationDbWriter;
 import org.molgenis.vcf.annotate.util.Quantized16UnitIntervalDouble;
@@ -19,7 +20,7 @@ public class GnomAdAnnotationDbBuilder {
 
   public void create(File gnomAdFile, File zipFile) {
     try (BufferedReader reader = createReader(gnomAdFile);
-        ZipOutputStream zipOutputStream = createWriter(zipFile)) {
+        ZipArchiveOutputStream zipOutputStream = createWriter(zipFile)) {
       new AnnotationDbWriter().create(new GnomAdShortVariantIterator(reader), zipOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
@@ -33,8 +34,9 @@ public class GnomAdAnnotationDbBuilder {
         1048576);
   }
 
-  private static ZipOutputStream createWriter(File zipFile) throws FileNotFoundException {
-    return new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile), 1048576));
+  private static ZipArchiveOutputStream createWriter(File zipFile) throws FileNotFoundException {
+    return new ZipArchiveOutputStream(
+        new BufferedOutputStream(new FileOutputStream(zipFile), 1048576));
   }
 
   private static short toQuantizedShort(String str) {

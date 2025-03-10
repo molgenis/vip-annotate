@@ -34,6 +34,11 @@ class AppGnomAdVcfAnnotator {
             + (end - start)
             + "ms --> "
             + ((GnomAdVcfAnnotator.NR_RECORDS * 1000L) / (end - start))
-            + " records/s");
+            + " records/s hit="
+            + GnomAdVcfAnnotator.NR_RECORDS_HIT
+            + " live="
+            + GnomAdVcfAnnotator.NR_RECORDS_LIVE
+            + " noop="
+            + GnomAdVcfAnnotator.NR_RECORDS_NOOP);
   }
 }

@@ -2,16 +2,17 @@ package org.molgenis.vcf.annotate.db2.exact;
 
 import static java.util.Objects.requireNonNull;
 
+import com.github.luben.zstd.Zstd;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.fury.Fury;
 import org.molgenis.vcf.annotate.db2.exact.format.*;
 import org.slf4j.Logger;
@@ -38,10 +39,10 @@ public class AnnotationDbWriter {
 
   public void create(
       Iterator<VariantAltAlleleAnnotation> variantAltAlleleAnnotationIterator,
-      ZipOutputStream zipOutputStream) {
+      ZipArchiveOutputStream zipOutputStream) {
     reset();
 
-    zipOutputStream.setLevel(Deflater.BEST_COMPRESSION);
+    zipOutputStream.setLevel(Deflater.BEST_COMPRESSION); // FIXME can be removed?
 
     List<EncodedSmallVariantAltAlleleAnnotation> encodedSmallVariantAltAlleleAnnotation =
         new ArrayList<>();
@@ -63,8 +64,8 @@ public class AnnotationDbWriter {
           }
 
           // encode
-          if (variantAltAlleleEncoder.isSmallVariant(variantAltAllele)) {
-            int encodedVariantAltAllele = variantAltAlleleEncoder.encodeSmall(variantAltAllele);
+          if (VariantAltAlleleEncoder.isSmallVariant(variantAltAllele)) {
+            int encodedVariantAltAllele = VariantAltAlleleEncoder.encodeSmall(variantAltAllele);
             byte[] encodedAnnotations = variantAltAlleleAnnotation.encodedAnnotations();
             encodedSmallVariantAltAlleleAnnotation.add(
                 new EncodedSmallVariantAltAlleleAnnotation(
@@ -72,7 +73,7 @@ public class AnnotationDbWriter {
 
           } else {
             BigInteger encodedVariantAltAllele =
-                variantAltAlleleEncoder.encodeBig(variantAltAllele);
+                VariantAltAlleleEncoder.encodeBig(variantAltAllele);
             byte[] encodedAnnotations = variantAltAlleleAnnotation.encodedAnnotations();
             encodedBigVariantAltAlleleAnnotation.add(
                 new EncodedBigVariantAltAlleleAnnotation(
@@ -108,16 +109,12 @@ public class AnnotationDbWriter {
     }
   }
 
-  private void createThrows(
-      Stream<VariantAltAlleleAnnotation> altAlleleAnnotationStream,
-      ZipOutputStream zipOutputStream) {}
-
   private void write(
       String contig,
       int partitionId,
       List<EncodedSmallVariantAltAlleleAnnotation> encodedSmallVariantAltAlleleAnnotation,
       List<EncodedBigVariantAltAlleleAnnotation> encodedBigVariantAltAlleleAnnotation,
-      ZipOutputStream zipOutputStream) {
+      ZipArchiveOutputStream zipOutputStream) {
     // create small item index
     encodedSmallVariantAltAlleleAnnotation.sort(
         Comparator.comparingInt(o -> o.encodedVariantAltAllele));
@@ -158,18 +155,24 @@ public class AnnotationDbWriter {
             bigAnnotationData);
 
     // serialize and write to zip entry
-    LOGGER.info("creating database partition {}", contig + "/" + partitionId + ".vdb");
-    ZipEntry zipEntry = new ZipEntry(contig + "/" + partitionId + ".vdb");
-    try {
-      zipOutputStream.putNextEntry(zipEntry);
+    String zipArchiveEntryName = contig + "/variant/" + partitionId + ".zst";
+    LOGGER.info("creating database partition {}", zipArchiveEntryName);
+    ZipArchiveEntry zipEntry = new ZipArchiveEntry(zipArchiveEntryName);
+    zipEntry.setMethod(ZipMethod.ZSTD.getCode());
 
+    try {
       try (ByteArrayOutputStream byteArrayOutputStream =
           new ByteArrayOutputStream(8388608)) { // 8 MB
         fury.serializeJavaObject(byteArrayOutputStream, gnomAdAnnotationDb);
-        zipOutputStream.write(byteArrayOutputStream.toByteArray());
-      }
+        byte[] uncompressedByteArray = byteArrayOutputStream.toByteArray();
+        zipEntry.setSize(uncompressedByteArray.length);
 
-      zipOutputStream.closeEntry();
+        // do not use ultra 20-22 levels because https://github.com/facebook/zstd/issues/435
+        byte[] compressedByteArray = Zstd.compress(uncompressedByteArray, 19);
+        zipOutputStream.putArchiveEntry(zipEntry);
+        zipOutputStream.write(compressedByteArray);
+        zipOutputStream.closeArchiveEntry();
+      }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
