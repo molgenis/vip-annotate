@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
+import org.molgenis.vcf.annotate.db.Quantized16UnitIntervalDouble;
 
 public class Quantized16UnitIntervalDoubleTest {
   @Test

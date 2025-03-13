@@ -1,10 +1,11 @@
 package org.molgenis.vcf.annotate.util;
 
-import org.molgenis.vcf.annotate.db.model.Chromosome;
+import org.molgenis.vcf.annotate.db.effect.model.Chromosome;
 
 public class ContigUtils {
   private ContigUtils() {}
 
+  // FIXME extend with all GCA_000001405.15_GRCh38_no_alt_analysis_set contigs
   public static Chromosome map(String contig) {
     Chromosome chromosome = Chromosome.from(contig);
     return chromosome != null
@@ -35,7 +36,7 @@ public class ContigUtils {
           case "chrX" -> Chromosome.CHRX;
           case "chrY" -> Chromosome.CHRY;
           case "chrM" -> Chromosome.CHRM;
-          default -> throw new IllegalStateException("Unexpected value: " + contig);
+          default -> null; // FIXME never return null
         };
   }
 }

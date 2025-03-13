@@ -1,42 +1,38 @@
 package org.molgenis.vcf.annotate;
 
-import static org.molgenis.vcf.annotate.VcfAnnotator.NR_VAR_ALTS_ANNOTATED;
-
-import htsjdk.variant.variantcontext.writer.Options;
-import htsjdk.variant.variantcontext.writer.VariantContextWriter;
-import htsjdk.variant.variantcontext.writer.VariantContextWriterBuilder;
-import htsjdk.variant.vcf.*;
 import java.io.*;
-import org.molgenis.vcf.annotate.db.utils.AnnotationDbImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.file.Path;
+import org.apache.fury.logging.LoggerFactory;
+import org.molgenis.vcf.annotate.annotator.VcfAnnotator;
+import org.molgenis.vcf.annotate.annotator.VcfAnnotatorCreator;
+import org.molgenis.vcf.annotate.util.Logger;
 
 public class App {
-  private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
-
   public static void main(String[] args) throws IOException {
-    File inputFile = new File(args[0]);
-    File outputFile = new File(args[1]);
-    File dbFile = new File(args[2]);
-
-    LOGGER.info("annotating vcf records ...");
     long start = System.currentTimeMillis();
-    long records;
-    try (VCFIterator vcfIterator =
-            new VCFIteratorBuilder().open(new BufferedInputStream(new FileInputStream(inputFile)));
-        VariantContextWriter variantContextWriter =
-            new VariantContextWriterBuilder()
-                .setOutputFile(outputFile)
-                .setOutputFileType(VariantContextWriterBuilder.OutputType.VCF)
-                .unsetOption(Options.INDEX_ON_THE_FLY)
-                .build()) {
-      records =
-          new VcfAnnotator(new AnnotationDbImpl(dbFile))
-              .annotate(vcfIterator, variantContextWriter);
+
+    LoggerFactory.disableLogging(); // disable apache fury logging
+
+    AppArgs appArgs = AppArgsParser.parse(args);
+
+    Path inputVcf = appArgs.inputVcf();
+    Path annotationsZip = appArgs.annotationsZip();
+    Path outputVcf = appArgs.outputVcf();
+
+    if (outputVcf == null) {
+      // output vcf is written to System.out, redirect logs to System.err
+      Logger.REDIRECT_STDOUT_TO_STDERR = true;
     }
-    LOGGER.info(
-        "annotated {} vcf records done in {}ms (annotated var-alts={})",
-        records,
-        System.currentTimeMillis() - start, NR_VAR_ALTS_ANNOTATED);
+
+    long nrRecords;
+    try (VcfAnnotator vcfAnnotator =
+        VcfAnnotatorCreator.create(inputVcf, annotationsZip, outputVcf)) {
+      nrRecords = vcfAnnotator.annotate();
+    }
+
+    long duration = System.currentTimeMillis() - start;
+    Logger.info(
+        "annotated %d vcf records in %d ms, %d records/s",
+        nrRecords, duration, Math.round(nrRecords / (duration / 1000d)));
   }
 }
