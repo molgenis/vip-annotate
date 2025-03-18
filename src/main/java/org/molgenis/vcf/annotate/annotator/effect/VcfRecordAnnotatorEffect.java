@@ -39,14 +39,20 @@ public class VcfRecordAnnotatorEffect implements VcfRecordAnnotator {
   public void annotate(VariantContext vcfRecord, VariantContextBuilder vcfRecordBuilder) {
     // determine annotations per alternative allele
     List<AlleleAnnotation> annotationList = new ArrayList<>();
-    for (int i = 0; i < vcfRecord.getNAlleles() - 1; i++) {
-      annotationList.addAll(annotate(vcfRecord, i));
+    int nrAltAlleles = vcfRecord.getNAlleles() - 1;
+    for (int i = 0; i < nrAltAlleles; i++) {
+      List<AlleleAnnotation> altAlleleAnnotations = annotate(vcfRecord, i);
+      if (!altAlleleAnnotations.isEmpty()) {
+        annotationList.addAll(altAlleleAnnotations);
+      }
     }
     if (annotationList.isEmpty()) return;
 
     // create variant context with annotations
-    List<String> attributeValue =
-        annotationList.stream().map(VcfRecordAnnotatorEffect::createAttributeValue).toList();
+    List<String> attributeValue = new ArrayList<>(annotationList.size());
+    for (AlleleAnnotation alleleAnnotation : annotationList) {
+      attributeValue.add(createAttributeValue(alleleAnnotation));
+    }
     vcfRecordBuilder.attribute("CSQ", attributeValue);
   }
 

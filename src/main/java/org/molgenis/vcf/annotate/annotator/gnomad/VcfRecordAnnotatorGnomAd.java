@@ -14,9 +14,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vcf.annotate.annotator.VcfRecordAnnotator;
+import org.molgenis.vcf.annotate.db.effect.model.Chromosome;
 import org.molgenis.vcf.annotate.db.exact.format.AnnotationDbImpl;
 import org.molgenis.vcf.annotate.db.gnomad.GnomAdShortVariantAnnotation;
 import org.molgenis.vcf.annotate.db.gnomad.GnomAdShortVariantAnnotationCodec;
+import org.molgenis.vcf.annotate.util.ContigUtils;
 
 @RequiredArgsConstructor
 public class VcfRecordAnnotatorGnomAd implements VcfRecordAnnotator {
@@ -34,6 +36,11 @@ public class VcfRecordAnnotatorGnomAd implements VcfRecordAnnotator {
 
   @Override
   public void annotate(VariantContext vcfRecord, VariantContextBuilder vcfRecordBuilder) {
+    Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
+    if (chromosome == null) {
+      return;
+    }
+
     List<Double> altAfAnnotations = new ArrayList<>(vcfRecord.getNAlleles() - 1);
     vcfRecord
         .getAlternateAlleles()
@@ -41,7 +48,7 @@ public class VcfRecordAnnotatorGnomAd implements VcfRecordAnnotator {
             alternate -> {
               MemoryBuffer memoryBuffer =
                   annotationDb.findVariant(
-                      vcfRecord.getContig(),
+                      chromosome.getId(),
                       vcfRecord.getStart(),
                       vcfRecord.getEnd(),
                       alternate.getBases());

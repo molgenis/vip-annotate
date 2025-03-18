@@ -1,34 +1,46 @@
 package org.molgenis.vcf.annotate.db.exact.format;
 
-import com.github.luben.zstd.RecyclingBufferPool;
-import com.github.luben.zstd.ZstdInputStream;
+import com.github.luben.zstd.*;
 import java.io.*;
 import java.nio.file.Path;
+import java.util.Enumeration;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.fury.Fury;
-import org.apache.fury.io.FuryInputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vcf.annotate.db.exact.VariantAltAllele;
 import org.molgenis.vcf.annotate.db.exact.VariantAltAlleleEncoder;
+import org.molgenis.vcf.annotate.util.FuryInputStream;
 
 public class AnnotationDbImpl implements AnnotationDb {
-  private final ZipFile zipFile;
   private final VariantAltAlleleEncoder variantAltAlleleEncoder;
   private final Fury fury;
+  private final ZipFile zipFile;
+  private final byte[] bytes;
 
   private AnnotationDbPartition currentAnnotationDbPartition;
   private String currentChromosome;
   private int currentBin = -1;
 
   public AnnotationDbImpl(Path annotationsZip) {
+    this.variantAltAlleleEncoder = new VariantAltAlleleEncoder();
+    this.fury = FuryFactory.createFury();
+
     try {
+      // TODO benchmark .setOpenOptions(StandardOpenOption.READ, ExtendedOpenOption.DIRECT) on HDD
       this.zipFile = ZipFile.builder().setPath(annotationsZip).get();
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-    this.variantAltAlleleEncoder = new VariantAltAlleleEncoder();
-    this.fury = FuryFactory.createFury();
+
+    long maxZipArchiveEntrySize = 0;
+    for (Enumeration<ZipArchiveEntry> e = zipFile.getEntries(); e.hasMoreElements(); ) {
+      long zipArchiveEntrySize = e.nextElement().getSize();
+      if (zipArchiveEntrySize > maxZipArchiveEntrySize) {
+        maxZipArchiveEntrySize = zipArchiveEntrySize;
+      }
+    }
+    this.bytes = new byte[Math.toIntExact(maxZipArchiveEntrySize)];
   }
 
   @Override
@@ -44,13 +56,18 @@ public class AnnotationDbImpl implements AnnotationDb {
       if (entry == null) { // no annotations exist for this partition
         currentAnnotationDbPartition = null;
       } else {
-        // perf: zipFile.getInputStream creates a buffered stream, but FuryInputStream is already
-        // buffered
+        // perf: zipFile.getInputStream creates a buffered stream, but FuryInputStream is
+        // already buffered
         // perf: ZstdCompressorInputStream collects unnecessary InputStreamStatistics, use
         // ZstdInputStream instead
-        try (InputStream inputStream =
-            new ZstdInputStream(zipFile.getRawInputStream(entry), RecyclingBufferPool.INSTANCE)) {
-          currentAnnotationDbPartition = readDatabase(inputStream, entry.getSize());
+        try (FuryInputStream furyInputStream =
+            new FuryInputStream(
+                new ZstdInputStreamNoFinalizer(
+                    zipFile.getRawInputStream(entry), RecyclingBufferPool.INSTANCE),
+                bytes)) {
+          currentAnnotationDbPartition =
+              fury.deserializeJavaObject(furyInputStream.getBuffer(), AnnotationDbPartition.class);
+
         } catch (IOException e) {
           throw new UncheckedIOException(e);
         }
@@ -67,14 +84,6 @@ public class AnnotationDbImpl implements AnnotationDb {
     return currentAnnotationDbPartition != null
         ? currentAnnotationDbPartition.getVariant(variantAltAllele)
         : null;
-  }
-
-  private AnnotationDbPartition readDatabase(InputStream inputStream, long size)
-      throws IOException {
-    try (FuryInputStream furyInputStream =
-        new FuryInputStream(inputStream, Math.toIntExact(size))) {
-      return fury.deserializeJavaObject(furyInputStream, AnnotationDbPartition.class);
-    }
   }
 
   @Override
