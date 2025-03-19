@@ -24,7 +24,6 @@ public class AppDbBuilder {
     long startCreateDb = System.currentTimeMillis();
     GenomeAnnotationDb genomeAnnotationDb =
         new AnnotationDbBuilder(referenceSequenceFile).create(inputFile);
-    long endCreateDb = System.currentTimeMillis();
 
     try (ZipArchiveOutputStream zipArchiveOutputStream = createWriter(outputFile)) {
       new AnnotationDbWriter().create(genomeAnnotationDb, zipArchiveOutputStream);
@@ -32,7 +31,7 @@ public class AppDbBuilder {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-
+    long endCreateDb = System.currentTimeMillis();
     Logger.info("creating database done in %sms", endCreateDb - startCreateDb);
   }
 

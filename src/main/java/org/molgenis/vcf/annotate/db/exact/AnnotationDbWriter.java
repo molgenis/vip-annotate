@@ -5,15 +5,15 @@ import static java.util.Objects.requireNonNull;
 import com.github.luben.zstd.Zstd;
 import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.fury.Fury;
 import org.molgenis.vcf.annotate.db.exact.format.*;
+import org.molgenis.vcf.annotate.db.exact.formatv2.VariantAltAlleleAnnotationIndex;
+import org.molgenis.vcf.annotate.db.exact.formatv2.VariantAltAlleleAnnotationIndexBig;
+import org.molgenis.vcf.annotate.db.exact.formatv2.VariantAltAlleleAnnotationIndexSmall;
 import org.molgenis.vcf.annotate.util.Logger;
 
 public class AnnotationDbWriter {
@@ -119,13 +119,6 @@ public class AnnotationDbWriter {
             .mapToInt(Integer::intValue)
             .toArray();
 
-    // create small item data
-    AnnotationData smallAnnotationData =
-        serializeAnnotations(
-            encodedSmallVariantAltAlleleAnnotation.stream()
-                .map(EncodedSmallVariantAltAlleleAnnotation::encodedAnnotations)
-                .toList());
-
     // create big item index
     encodedBigVariantAltAlleleAnnotation.sort(Comparator.comparing(o -> o.encodedVariantAltAllele));
     BigInteger[] bigIndex =
@@ -134,39 +127,73 @@ public class AnnotationDbWriter {
             .toList()
             .toArray(new BigInteger[0]);
 
-    // create big item data
-    AnnotationData bigAnnotationData =
-        serializeAnnotations(
-            encodedBigVariantAltAlleleAnnotation.stream()
-                .map(EncodedBigVariantAltAlleleAnnotation::encodedAnnotations)
-                .toList());
+    // create small item data
+    List<byte[]> smallList =
+        encodedSmallVariantAltAlleleAnnotation.stream()
+            .map(EncodedSmallVariantAltAlleleAnnotation::encodedAnnotations)
+            .toList();
 
-    AnnotationDbPartition gnomAdAnnotationDb =
-        new AnnotationDbPartition(
-            new SmallVariantIndexLookupTable(new SortedIntArrayWrapper(smallIndex)),
-            smallAnnotationData,
-            new BigVariantIndexLookupTable(bigIndex),
-            bigAnnotationData);
+    // create big item data
+    List<byte[]> bigList =
+        encodedBigVariantAltAlleleAnnotation.stream()
+            .map(EncodedBigVariantAltAlleleAnnotation::encodedAnnotations)
+            .toList();
+
+    // combine item data
+    List<byte[]> allList = new ArrayList<>(smallList.size() + bigList.size());
+    allList.addAll(smallList);
+    allList.addAll(bigList);
+    AnnotationData annotationData = serializeAnnotations(allList);
+
+    VariantAltAlleleAnnotationIndex variantAltAlleleAnnotationIndex =
+        new VariantAltAlleleAnnotationIndex(
+            new VariantAltAlleleAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
+            new VariantAltAlleleAnnotationIndexBig(bigIndex),
+            annotationData.variantOffsets());
 
     // serialize and write to zip entry
-    String zipArchiveEntryName = contig + "/var/" + partitionId + ".zst";
-    Logger.info("creating database partition %s", zipArchiveEntryName);
-    ZipArchiveEntry zipEntry = new ZipArchiveEntry(zipArchiveEntryName);
-    zipEntry.setMethod(ZipMethod.ZSTD.getCode());
+    {
+      String zipArchiveEntryName = contig + "/var/" + partitionId + ".zst";
+      Logger.info("creating database partition %s", zipArchiveEntryName);
+      ZipArchiveEntry zipEntry = new ZipArchiveEntry(zipArchiveEntryName);
+      zipEntry.setMethod(ZipMethod.ZSTD.getCode());
 
+      writeZipArchiveEntryBytes(zipOutputStream, zipEntry, annotationData.variantsBytes());
+    }
+    {
+      String zipArchiveEntryName = contig + "/var/" + partitionId + ".idx.zst";
+      Logger.info("creating database partition %s index", zipArchiveEntryName);
+      ZipArchiveEntry zipEntry = new ZipArchiveEntry(zipArchiveEntryName);
+      zipEntry.setMethod(ZipMethod.ZSTD.getCode());
+
+      writeZipArchiveEntry(zipOutputStream, zipEntry, variantAltAlleleAnnotationIndex);
+    }
+  }
+
+  private void writeZipArchiveEntry(
+      ZipArchiveOutputStream zipOutputStream, ZipArchiveEntry zipArchiveEntry, Object javaObject) {
+
+    try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(8388608)) { // 8 MB
+      fury.serializeJavaObject(byteArrayOutputStream, javaObject);
+      byte[] uncompressedByteArray = byteArrayOutputStream.toByteArray();
+      writeZipArchiveEntryBytes(zipOutputStream, zipArchiveEntry, uncompressedByteArray);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private void writeZipArchiveEntryBytes(
+      ZipArchiveOutputStream zipOutputStream,
+      ZipArchiveEntry zipArchiveEntry,
+      byte[] uncompressedByteArray) {
+    zipArchiveEntry.setSize(uncompressedByteArray.length);
+
+    // do not use ultra 20-22 levels because https://github.com/facebook/zstd/issues/435
+    byte[] compressedByteArray = Zstd.compress(uncompressedByteArray, 19);
     try {
-      try (ByteArrayOutputStream byteArrayOutputStream =
-          new ByteArrayOutputStream(8388608)) { // 8 MB
-        fury.serializeJavaObject(byteArrayOutputStream, gnomAdAnnotationDb);
-        byte[] uncompressedByteArray = byteArrayOutputStream.toByteArray();
-        zipEntry.setSize(uncompressedByteArray.length);
-
-        // do not use ultra 20-22 levels because https://github.com/facebook/zstd/issues/435
-        byte[] compressedByteArray = Zstd.compress(uncompressedByteArray, 19);
-        zipOutputStream.putArchiveEntry(zipEntry);
-        zipOutputStream.write(compressedByteArray);
-        zipOutputStream.closeArchiveEntry();
-      }
+      zipOutputStream.putArchiveEntry(zipArchiveEntry);
+      zipOutputStream.write(compressedByteArray);
+      zipOutputStream.closeArchiveEntry();
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
