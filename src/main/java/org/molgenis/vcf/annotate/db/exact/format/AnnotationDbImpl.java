@@ -1,138 +1,205 @@
 package org.molgenis.vcf.annotate.db.exact.format;
 
-import static java.util.Objects.requireNonNull;
-
 import com.github.luben.zstd.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Enumeration;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.fury.Fury;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vcf.annotate.db.exact.VariantAltAllele;
-import org.molgenis.vcf.annotate.db.exact.VariantAltAlleleEncoder;
+import org.molgenis.vcf.annotate.db.exact.Variant;
+import org.molgenis.vcf.annotate.db.exact.VariantEncoder;
 import org.molgenis.vcf.annotate.db.exact.formatv2.VariantAltAlleleAnnotationIndex;
-import org.molgenis.vcf.annotate.util.FuryInputStream;
+import org.molgenis.vcf.annotate.util.CloseSuppressingFileChannel;
 
-public class AnnotationDbImpl implements AnnotationDb {
-  private final Path annotationsZip;
-  private final VariantAltAlleleEncoder variantAltAlleleEncoder;
+public class AnnotationDbImpl<T> implements AnnotationDb<T> {
+  private final FileChannel annotationsZipFileChannel;
+  private final AnnotationDecoder<T> annotationDecoder;
+
+  private final VariantEncoder variantEncoder;
   private final Fury fury;
   private final ZipFile zipFile;
-  private final ZstdDecompressCtx zstdDecompressCtx;
-  private final byte[] bytes;
 
-  private VariantAltAlleleAnnotationIndex currentVariantAltAlleleAnnotationIndex;
-  private ByteBuffer directByteBuffer;
+  private final ZstdDecompressCtx zstdDecompressCtxIdx;
+  private ByteBuffer directByteBufferIdx;
+  private VariantAltAlleleAnnotationIndex currentVariantAltAlleleAnnotationIdx;
+
+  private final ZstdDecompressCtx zstdDecompressCtxData;
+  private ByteBuffer directByteBufferData;
   private MemoryBuffer currentVariantAltAlleleAnnotationBlob;
+
   private String currentContig;
   private int currentPartitionId = -1;
+  private boolean loadDictionary;
 
-  public AnnotationDbImpl(Path annotationsZip) {
-    this.annotationsZip = requireNonNull(annotationsZip);
-    this.variantAltAlleleEncoder = new VariantAltAlleleEncoder();
+  public AnnotationDbImpl(
+      FileChannel annotationsZipFileChannel, AnnotationDecoder<T> annotationDecoder) {
+    this.annotationsZipFileChannel = new CloseSuppressingFileChannel(annotationsZipFileChannel);
+    this.annotationDecoder = annotationDecoder;
+
+    this.variantEncoder = new VariantEncoder();
     this.fury = FuryFactory.createFury();
 
     try {
-      // TODO benchmark .setOpenOptions(StandardOpenOption.READ, ExtendedOpenOption.DIRECT) on HDD
-      this.zipFile = ZipFile.builder().setPath(annotationsZip).get();
+      this.zipFile = ZipFile.builder().setSeekableByteChannel(this.annotationsZipFileChannel).get();
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-    this.zstdDecompressCtx = new ZstdDecompressCtx();
-    long maxZipArchiveEntrySize = 0;
+    this.zstdDecompressCtxData = new ZstdDecompressCtx();
+    this.zstdDecompressCtxIdx = new ZstdDecompressCtx();
+    long maxZipArchiveEntrySizeZst = 0;
+    long maxZipArchiveEntrySizeIdxZst = 0;
     for (Enumeration<ZipArchiveEntry> e = zipFile.getEntries(); e.hasMoreElements(); ) {
-      long zipArchiveEntrySize = e.nextElement().getSize();
-      if (zipArchiveEntrySize > maxZipArchiveEntrySize) {
-        maxZipArchiveEntrySize = zipArchiveEntrySize;
+      ZipArchiveEntry zipArchiveEntry = e.nextElement();
+      long zipArchiveEntrySize = zipArchiveEntry.getSize();
+      if (zipArchiveEntry.getName().endsWith(".idx.zst")) {
+        if (zipArchiveEntrySize > maxZipArchiveEntrySizeIdxZst) {
+          maxZipArchiveEntrySizeIdxZst = zipArchiveEntrySize;
+        }
+      } else if (zipArchiveEntry.getName().endsWith(".zst")) {
+        if (zipArchiveEntrySize > maxZipArchiveEntrySizeZst) {
+          maxZipArchiveEntrySizeZst = zipArchiveEntrySize;
+        }
       }
     }
-    this.bytes = new byte[Math.toIntExact(maxZipArchiveEntrySize)];
-    this.directByteBuffer = ByteBuffer.allocateDirect(Math.toIntExact(maxZipArchiveEntrySize));
+    this.directByteBufferIdx =
+        ByteBuffer.allocateDirect(Math.toIntExact(maxZipArchiveEntrySizeIdxZst));
+    this.directByteBufferData =
+        ByteBuffer.allocateDirect(Math.toIntExact(maxZipArchiveEntrySizeZst));
+  }
+
+  private ZstdDictDecompress loadDictionary(String contig) {
+    ZipArchiveEntry zipArchiveEntry = zipFile.getEntry(contig + "/var/zst.dict");
+    if (zipArchiveEntry == null) throw new RuntimeException();
+
+    ByteBuffer srcByteBuffer;
+    try {
+      srcByteBuffer =
+          this.annotationsZipFileChannel.map(
+              FileChannel.MapMode.READ_ONLY,
+              zipArchiveEntry.getDataOffset(),
+              zipArchiveEntry.getCompressedSize());
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    return new ZstdDictDecompress(srcByteBuffer);
+  }
+
+  private VariantAltAlleleAnnotationIndex loadAnnotationIndex(String contig, int partitionId) {
+    ZipArchiveEntry zipArchiveEntry = zipFile.getEntry(contig + "/var/" + partitionId + ".idx.zst");
+    if (zipArchiveEntry == null) return null;
+
+    int compressedSize = Math.toIntExact(zipArchiveEntry.getCompressedSize());
+    int uncompressedSize = Math.toIntExact(zipArchiveEntry.getSize());
+
+    directByteBufferIdx.clear();
+    ByteBuffer srcByteBuffer;
+    try {
+      srcByteBuffer =
+          this.annotationsZipFileChannel.map(
+              FileChannel.MapMode.READ_ONLY, zipArchiveEntry.getDataOffset(), compressedSize);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    zstdDecompressCtxIdx.decompressDirectByteBuffer(
+        directByteBufferIdx, 0, uncompressedSize, srcByteBuffer, 0, compressedSize);
+    //noinspection UnusedAssignment
+    srcByteBuffer = null; // mark for garbage collection
+    directByteBufferIdx.position(0);
+    directByteBufferIdx.limit(uncompressedSize);
+
+    MemoryBuffer memoryBuffer =
+        MemoryBuffer.fromDirectByteBuffer(
+            directByteBufferIdx, Math.toIntExact(zipArchiveEntry.getSize()), null);
+
+    return fury.deserializeJavaObject(memoryBuffer, VariantAltAlleleAnnotationIndex.class);
+  }
+
+  private MemoryBuffer loadAnnotationData(String contig, int partitionId) {
+    ZipArchiveEntry zipArchiveEntry = zipFile.getEntry(contig + "/var/" + partitionId + ".zst");
+
+    int compressedSize = Math.toIntExact(zipArchiveEntry.getCompressedSize());
+    int uncompressedSize = Math.toIntExact(zipArchiveEntry.getSize());
+
+    directByteBufferData.clear();
+    ByteBuffer srcByteBuffer;
+    try {
+      srcByteBuffer =
+          this.annotationsZipFileChannel.map(
+              FileChannel.MapMode.READ_ONLY,
+              zipArchiveEntry.getDataOffset(),
+              zipArchiveEntry.getCompressedSize());
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    zstdDecompressCtxData.decompressDirectByteBuffer(
+        directByteBufferData, 0, uncompressedSize, srcByteBuffer, 0, compressedSize);
+    //noinspection UnusedAssignment
+    srcByteBuffer = null; // mark for garbage collection
+    directByteBufferData.position(0);
+
+    return MemoryBuffer.fromDirectByteBuffer(
+        directByteBufferData, Math.toIntExact(zipArchiveEntry.getSize()), null);
   }
 
   @Override
-  public MemoryBuffer findVariant(String contig, int start, int stop, byte[] altBases) {
-    VariantAltAllele variantAltAllele = new VariantAltAllele(contig, start, stop, altBases);
+  public T findAnnotations(Variant variant) {
+    // Partition partition = getPartition(variant)
+    // if(annotationsIdx == null) return null
 
-    int partitionId = variantAltAlleleEncoder.getPartitionId(variantAltAllele);
-    if (partitionId != currentPartitionId || !contig.equals(currentContig)) {
-      currentContig = contig;
-      currentPartitionId = partitionId;
+    String contig = variant.contig();
 
-      ZipArchiveEntry entry = zipFile.getEntry(contig + "/var/" + partitionId + ".idx.zst");
-      if (entry == null) { // no annotations exist for this partition
-        currentVariantAltAlleleAnnotationIndex = null;
-        currentVariantAltAlleleAnnotationBlob = null;
-      } else {
-        // perf: zipFile.getInputStream creates a buffered stream, but FuryInputStream is
-        // already buffered
-        // perf: ZstdCompressorInputStream collects unnecessary InputStreamStatistics, use
-        // ZstdInputStream instead
-        try (FuryInputStream furyInputStream =
-            new FuryInputStream(
-                new ZstdInputStreamNoFinalizer(
-                    zipFile.getRawInputStream(entry), RecyclingBufferPool.INSTANCE),
-                bytes)) {
-          currentVariantAltAlleleAnnotationIndex =
-              fury.deserializeJavaObject(
-                  furyInputStream.getBuffer(), VariantAltAlleleAnnotationIndex.class);
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        }
+    int partitionId = variantEncoder.getPartitionId(variant);
+    boolean contigChanged = !contig.equals(currentContig);
+    boolean partitionIdChanged = partitionId != currentPartitionId;
+    currentContig = contig;
+    currentPartitionId = partitionId;
+    if (contigChanged) {
+      loadDictionary = true;
+    }
 
-        currentVariantAltAlleleAnnotationBlob = null;
-      }
+    if (partitionIdChanged || contigChanged) {
+      currentVariantAltAlleleAnnotationIdx = loadAnnotationIndex(contig, partitionId);
+      currentVariantAltAlleleAnnotationBlob = null;
     }
 
     // FIXME support alternate alleles with 'N'
-    for (byte altBase : altBases) {
+    for (byte altBase : variant.alt()) {
       if (altBase == 'N') {
         return null;
       }
     }
 
     MemoryBuffer memoryBuffer = null;
-    if (currentVariantAltAlleleAnnotationIndex != null) {
-      int dataOffset = currentVariantAltAlleleAnnotationIndex.findDataOffset(variantAltAllele);
+    if (currentVariantAltAlleleAnnotationIdx != null) {
+      int dataOffset = currentVariantAltAlleleAnnotationIdx.findDataOffset(variant);
       if (dataOffset != -1) {
         if (currentVariantAltAlleleAnnotationBlob == null) {
-          ZipArchiveEntry zipArchiveEntry =
-              zipFile.getEntry(contig + "/var/" + partitionId + ".zst");
-          try (FileChannel fileChannel =
-              FileChannel.open(annotationsZip, StandardOpenOption.READ)) {
-            ByteBuffer srcByteBuffer =
-                fileChannel.map(
-                    FileChannel.MapMode.READ_ONLY,
-                    zipArchiveEntry.getDataOffset(),
-                    zipArchiveEntry.getCompressedSize());
-            directByteBuffer.clear();
-            zstdDecompressCtx.decompressDirectByteBufferStream(directByteBuffer, srcByteBuffer);
-            directByteBuffer.position(0);
-
-            currentVariantAltAlleleAnnotationBlob =
-                MemoryBuffer.fromDirectByteBuffer(
-                    directByteBuffer, Math.toIntExact(zipArchiveEntry.getSize()), null);
-          } catch (IOException e) {
-            throw new UncheckedIOException(e);
+          if (loadDictionary) {
+            ZstdDictDecompress zstdDictDecompress = loadDictionary(contig);
+            zstdDecompressCtxData.loadDict(zstdDictDecompress);
+            loadDictionary = false;
           }
+          currentVariantAltAlleleAnnotationBlob = loadAnnotationData(contig, partitionId);
         }
 
         memoryBuffer = currentVariantAltAlleleAnnotationBlob.slice(dataOffset);
       }
     }
 
-    return memoryBuffer;
+    return memoryBuffer != null ? annotationDecoder.decode(memoryBuffer) : null;
   }
 
   @Override
   public void close() throws IOException {
     zipFile.close();
-    zstdDecompressCtx.close();
-    directByteBuffer = null;
+
+    zstdDecompressCtxData.close();
+    directByteBufferData = null; // make available for deallocation
+
+    zstdDecompressCtxIdx.close();
+    directByteBufferIdx = null;
   }
 }

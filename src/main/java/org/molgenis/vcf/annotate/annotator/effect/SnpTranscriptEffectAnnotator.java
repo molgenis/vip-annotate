@@ -230,8 +230,7 @@ public class SnpTranscriptEffectAnnotator {
   }
 
   /**
-   * Annotate a sequence variant whereby at least one of the bases in the terminator codon is
-   * changed.
+   * Annotate a sequence variant whereby at least one of the alt in the terminator codon is changed.
    *
    * @see <a
    *     href="http://sequenceontology.org/browser/current_release/term/SO:0001590">SO:0001590</a>

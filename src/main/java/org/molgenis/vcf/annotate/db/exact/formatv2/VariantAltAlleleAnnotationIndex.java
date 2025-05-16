@@ -1,7 +1,7 @@
 package org.molgenis.vcf.annotate.db.exact.formatv2;
 
-import org.molgenis.vcf.annotate.db.exact.VariantAltAllele;
-import org.molgenis.vcf.annotate.db.exact.VariantAltAlleleEncoder;
+import org.molgenis.vcf.annotate.db.exact.Variant;
+import org.molgenis.vcf.annotate.db.exact.VariantEncoder;
 import org.molgenis.vcf.annotate.db.exact.format.SortedIntArrayWrapper;
 
 public record VariantAltAlleleAnnotationIndex(
@@ -9,13 +9,13 @@ public record VariantAltAlleleAnnotationIndex(
     VariantAltAlleleAnnotationIndexBig variantAltAlleleAnnotationIndexBig,
     SortedIntArrayWrapper variantOffsets) {
 
-  public int findDataOffset(VariantAltAllele variantAltAllele) {
+  public int findDataOffset(Variant variant) {
     int variantAnnotationDataOffset;
-    if (VariantAltAlleleEncoder.isSmallVariant(variantAltAllele)) {
-      int index = variantAltAlleleAnnotationIndexSmall.findIndex(variantAltAllele);
+    if (VariantEncoder.isSmallVariant(variant)) {
+      int index = variantAltAlleleAnnotationIndexSmall.findIndex(variant);
       variantAnnotationDataOffset = index != -1 ? variantOffsets.array()[index] : -1;
     } else {
-      int index = variantAltAlleleAnnotationIndexBig.findIndex(variantAltAllele);
+      int index = variantAltAlleleAnnotationIndexBig.findIndex(variant);
       variantAnnotationDataOffset =
           index != -1
               ? variantOffsets

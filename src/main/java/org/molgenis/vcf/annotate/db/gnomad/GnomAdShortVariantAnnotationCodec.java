@@ -1,11 +1,11 @@
 package org.molgenis.vcf.annotate.db.gnomad;
 
-import java.util.Arrays;
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vcf.annotate.db.exact.format.AnnotationCodec;
 
-public class GnomAdShortVariantAnnotationCodec {
+public class GnomAdShortVariantAnnotationCodec implements AnnotationCodec<GnomAdShortVariantAnnotation> {
   // TODO docs
-  public static byte[] encode(GnomAdShortVariantAnnotation variant) {
+  public MemoryBuffer encode(GnomAdShortVariantAnnotation variant) {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(43);
 
     GnomAdShortVariantAnnotation.VariantData exomes = variant.getExomes();
@@ -50,7 +50,7 @@ public class GnomAdShortVariantAnnotationCodec {
       encodeVariantData(joint, false, false, memoryBuffer);
     }
 
-    return Arrays.copyOfRange(memoryBuffer.getHeapMemory(), 0, memoryBuffer.writerIndex());
+    return memoryBuffer;
   }
 
   private static void encodeVariantData(
@@ -73,7 +73,7 @@ public class GnomAdShortVariantAnnotationCodec {
   }
 
   // TODO docs
-  public static GnomAdShortVariantAnnotation decode(MemoryBuffer memoryBuffer) {
+  public GnomAdShortVariantAnnotation decode(MemoryBuffer memoryBuffer) {
     byte header = memoryBuffer.readByte();
 
     int hasExomes = header >> 5 & 1;

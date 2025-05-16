@@ -19,6 +19,7 @@ public class AppArgsParser {
     }
 
     Path input = null, annotations = null, output = null;
+    Boolean force = null;
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
       switch (arg) {
@@ -41,10 +42,10 @@ public class AppArgsParser {
         case "-o":
         case "--output":
           output = parseArgValue(args, i++, arg);
-          if (Files.exists(output)) {
-            Logger.error("'%s' value '%s' already exists", arg, output);
-            System.exit(1);
-          }
+          break;
+        case "-f":
+        case "--force":
+          force = Boolean.TRUE;
           break;
         default:
           Logger.error("unknown option '%s'", arg);
@@ -54,11 +55,14 @@ public class AppArgsParser {
     }
 
     if (annotations == null) {
-      Logger.error("missing required option %s or %s", "-a", "--annotations");
+      Logger.error("missing required option '%s' or '%s'", "-a", "--annotations");
       System.exit(1);
     }
-
-    return new AppArgs(input, annotations, output);
+    if (output != null && force == null && Files.exists(output)) {
+      Logger.error("'%s' or '%s' value '%s' already exists", "-o", "--output", output);
+      System.exit(1);
+    }
+    return new AppArgs(input, annotations, output, force);
   }
 
   private static Path parseArgValue(String[] args, int i, String arg) {

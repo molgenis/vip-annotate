@@ -38,9 +38,9 @@ public class FuryInputStream extends InputStream implements FuryStreamReader {
   private final int bufferSize;
   private final MemoryBuffer buffer;
 
-  public FuryInputStream(InputStream stream, byte[] bytes) {
+  public FuryInputStream(InputStream stream, byte[] bytes, int bufferSize) {
     this.stream = stream;
-    this.bufferSize = bytes.length;
+    this.bufferSize = bufferSize;
     this.buffer = MemoryBuffer.fromByteArray(bytes, 0, 0, this);
   }
 

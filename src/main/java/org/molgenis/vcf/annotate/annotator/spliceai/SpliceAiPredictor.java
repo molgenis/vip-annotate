@@ -29,7 +29,7 @@ public class SpliceAiPredictor {
    * @param chrom chromosome
    * @param pos 1-based position
    * @param refLength reference sequence length
-   * @param altBases alternate sequence bases
+   * @param altBases alternate sequence alt
    * @param distance maximum distance between the variant and gained/lost splice site
    */
   public void predict(String chrom, int pos, int refLength, byte[] altBases, int distance) {

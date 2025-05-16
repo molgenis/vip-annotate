@@ -1,7 +1,7 @@
 package org.molgenis.vcf.annotate.db.exact.format;
 
-import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vcf.annotate.db.exact.Variant;
 
-public interface AnnotationDb extends AutoCloseable {
-  MemoryBuffer findVariant(String contig, int start, int stop, byte[] altBases);
+public interface AnnotationDb<T> extends AutoCloseable {
+  T findAnnotations(Variant variant);
 }

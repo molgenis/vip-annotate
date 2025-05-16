@@ -44,8 +44,8 @@ public enum Consequence {
    */
   START_LOST("start_lost", Impact.HIGH),
   /**
-   * A sequence variant, that changes one or more bases, resulting in a different amino acid
-   * sequence but where the length is preserved.
+   * A sequence variant, that changes one or more alt, resulting in a different amino acid sequence
+   * but where the length is preserved.
    *
    * @see <a
    *     href="http://sequenceontology.org/browser/current_release/term/SO:0001583">SO:0001583</a>
@@ -61,7 +61,7 @@ public enum Consequence {
   SPLICE_DONOR_5TH_BASE_VARIANT("splice_donor_5th_base_variant", Impact.LOW),
   /**
    * A sequence variant in which a change has occurred within the region of the splice site, either
-   * within 1-3 bases of the exon or 3-8 bases of the intron.
+   * within 1-3 alt of the exon or 3-8 alt of the intron.
    *
    * @see <a
    *     href=http://sequenceontology.org/browser/current_release/term/SO:0001630">SO:0001630</a>
@@ -77,7 +77,7 @@ public enum Consequence {
   SPLICE_DONOR_REGION_VARIANT("splice_donor_region_variant", Impact.LOW),
   /**
    * A sequence variant that falls in the polypyrimidine tract at 3' end of intron between 17 and 3
-   * bases from the end (acceptor -3 to acceptor -17).
+   * alt from the end (acceptor -3 to acceptor -17).
    *
    * @see <a
    *     href="http://sequenceontology.org/browser/current_release/term/SO:0002169">SO:0002169</a>

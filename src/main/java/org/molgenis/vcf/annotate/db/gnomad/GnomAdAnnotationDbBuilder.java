@@ -7,10 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.*;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vcf.annotate.db.Quantized16UnitIntervalDouble;
 import org.molgenis.vcf.annotate.db.effect.model.Chromosome;
 import org.molgenis.vcf.annotate.db.exact.AnnotationDbWriter;
-import org.molgenis.vcf.annotate.db.exact.VariantAltAllele;
+import org.molgenis.vcf.annotate.db.exact.Variant;
 import org.molgenis.vcf.annotate.db.exact.VariantAltAlleleAnnotation;
 import org.molgenis.vcf.annotate.util.ContigUtils;
 
@@ -19,7 +20,15 @@ public class GnomAdAnnotationDbBuilder {
 
   public void create(File gnomAdFile, ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = createReader(gnomAdFile)) {
-      new AnnotationDbWriter().create(new GnomAdShortVariantIterator(reader), zipOutputStream);
+      ZipCompressionContextCreator zipCompressionContextCreator =
+          new ZipCompressionContextCreator();
+      ZipCompressionContext zipCompressionContext =
+          zipCompressionContextCreator.create(new GnomAdShortVariantIterator(reader));
+      try (BufferedReader reader2 = createReader(gnomAdFile)) {
+        new AnnotationDbWriter()
+            .create(
+                new GnomAdShortVariantIterator(reader2), zipCompressionContext, zipOutputStream);
+      }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
@@ -118,10 +127,11 @@ public class GnomAdAnnotationDbBuilder {
                 .build());
       }
 
-      byte[] blob = GnomAdShortVariantAnnotationCodec.encode(annotationBuilder.build());
+      MemoryBuffer memoryBuffer =
+          new GnomAdShortVariantAnnotationCodec().encode(annotationBuilder.build());
+      byte[] blob = Arrays.copyOfRange(memoryBuffer.getHeapMemory(), 0, memoryBuffer.writerIndex());
       return new VariantAltAlleleAnnotation(
-          new VariantAltAllele(
-              chrom, start, start + length - 1, alt.getBytes(StandardCharsets.UTF_8)),
+          new Variant(chrom, start, start + length - 1, alt.getBytes(StandardCharsets.UTF_8)),
           blob);
     }
   }
