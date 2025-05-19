@@ -6,44 +6,41 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
-import org.molgenis.vcf.annotate.db.effect.model.Cds;
-import org.molgenis.vcf.annotate.db.effect.model.ClosedInterval;
-import org.molgenis.vcf.annotate.db.effect.model.Exon;
-import org.molgenis.vcf.annotate.db.effect.model.Transcript;
+import org.molgenis.vcf.annotate.db.effect.model.*;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-public class TranscriptStub extends ClosedInterval {
+public class TranscriptStub extends FuryFactory.ClosedInterval {
   @NonNull String id;
-  @NonNull Transcript.Type type;
+  @NonNull FuryFactory.Transcript.Type type;
   Integer geneIndex;
-  @Singular @NonNull List<Exon> exons;
+  @Singular @NonNull List<FuryFactory.Exon> exons;
   @Singular @NonNull List<CdsStub> codingSequences;
 
-  public Transcript createTranscript() {
-    Transcript.TranscriptBuilder<?, ?> builder =
-        Transcript.builder()
+  public FuryFactory.Transcript createTranscript() {
+    FuryFactory.Transcript.TranscriptBuilder<?, ?> builder =
+        FuryFactory.Transcript.builder()
             .start(getStart())
             .length(getLength())
             .id(getId())
             .type(getType())
             .geneIndex(geneIndex != null ? geneIndex : -1)
-            .exons(exons.toArray(Exon[]::new));
+            .exons(exons.toArray(FuryFactory.Exon[]::new));
     if (!codingSequences.isEmpty()) {
       builder.cds(
-          Cds.builder()
+          FuryFactory.Cds.builder()
               .proteinId(codingSequences.getFirst().getProteinId())
               .fragments(
                   codingSequences.stream()
                       .map(
                           cdsStub ->
-                              Cds.Fragment.builder()
+                              FuryFactory.Cds.Fragment.builder()
                                   .start(cdsStub.getStart())
                                   .length(cdsStub.getLength())
                                   .phase(cdsStub.getPhase())
                                   .build())
-                      .toArray(Cds.Fragment[]::new))
+                      .toArray(FuryFactory.Cds.Fragment[]::new))
               .build());
     }
     return builder.build();

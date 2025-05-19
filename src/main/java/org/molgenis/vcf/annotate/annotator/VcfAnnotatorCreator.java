@@ -9,7 +9,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.molgenis.vcf.annotate.annotator.effect.VcfRecordAnnotatorEffect;
 import org.molgenis.vcf.annotate.annotator.gnomad.VcfRecordAnnotatorGnomAd;
 
 public class VcfAnnotatorCreator {
@@ -29,9 +28,12 @@ public class VcfAnnotatorCreator {
   }
 
   private static List<VcfRecordAnnotator> createRecordAnnotators(Path annotationsZip) {
-    VcfRecordAnnotator vcfRecordAnnotatorEffect = VcfRecordAnnotatorEffect.create(annotationsZip);
+    // FIXME disabled effect annotator due to GraalVm issues
+    //    VcfRecordAnnotator vcfRecordAnnotatorEffect =
+    // VcfRecordAnnotatorEffect.create(annotationsZip);
     VcfRecordAnnotator vcfRecordAnnotatorGnomAd = VcfRecordAnnotatorGnomAd.create(annotationsZip);
-    return List.of(vcfRecordAnnotatorEffect, vcfRecordAnnotatorGnomAd);
+    //    return List.of(vcfRecordAnnotatorEffect, vcfRecordAnnotatorGnomAd);
+    return List.of(vcfRecordAnnotatorGnomAd);
   }
 
   private static InputStream createInputStream(Path inputVcfPath) throws IOException {

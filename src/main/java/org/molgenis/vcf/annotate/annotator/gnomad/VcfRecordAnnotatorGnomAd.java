@@ -18,7 +18,7 @@ import java.util.Objects;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vcf.annotate.annotator.VcfRecordAnnotator;
-import org.molgenis.vcf.annotate.db.effect.model.Chromosome;
+import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
 import org.molgenis.vcf.annotate.db.exact.Variant;
 import org.molgenis.vcf.annotate.db.exact.format.AnnotationDbImpl;
 import org.molgenis.vcf.annotate.db.gnomad.GnomAdShortVariantAnnotation;
@@ -41,7 +41,7 @@ public class VcfRecordAnnotatorGnomAd implements VcfRecordAnnotator {
 
   @Override
   public void annotate(VariantContext vcfRecord, VariantContextBuilder vcfRecordBuilder) {
-    Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
+    FuryFactory.Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
     if (chromosome == null) {
       return;
     }
@@ -80,8 +80,7 @@ public class VcfRecordAnnotatorGnomAd implements VcfRecordAnnotator {
     try {
       // adding ExtendedOpenOption.DIRECT throws exception:
       // Channel position (164368795) is not a multiple of the block size (512)
-      fileChannel =
-          FileChannel.open(annotationsZip, StandardOpenOption.READ);
+      fileChannel = FileChannel.open(annotationsZip, StandardOpenOption.READ);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

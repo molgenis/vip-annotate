@@ -9,7 +9,7 @@ import java.util.zip.*;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vcf.annotate.db.Quantized16UnitIntervalDouble;
-import org.molgenis.vcf.annotate.db.effect.model.Chromosome;
+import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
 import org.molgenis.vcf.annotate.db.exact.AnnotationDbWriter;
 import org.molgenis.vcf.annotate.db.exact.Variant;
 import org.molgenis.vcf.annotate.db.exact.VariantAltAlleleAnnotation;
@@ -72,7 +72,7 @@ public class GnomAdAnnotationDbBuilder {
       String[] tokens = line.split("\t", -1);
 
       // map gnomAD resource contigs to GCA_000001405.15_GRCh38_no_alt_analysis_set contigs
-      Chromosome chromosome = ContigUtils.map(tokens[0]);
+      FuryFactory.Chromosome chromosome = ContigUtils.map(tokens[0]);
       if (chromosome == null) {
         throw new IllegalArgumentException();
       }

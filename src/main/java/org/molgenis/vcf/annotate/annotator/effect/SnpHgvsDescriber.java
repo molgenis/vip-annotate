@@ -1,9 +1,6 @@
 package org.molgenis.vcf.annotate.annotator.effect;
 
-import org.molgenis.vcf.annotate.db.effect.model.Cds;
-import org.molgenis.vcf.annotate.db.effect.model.Exon;
-import org.molgenis.vcf.annotate.db.effect.model.Strand;
-import org.molgenis.vcf.annotate.db.effect.model.Transcript;
+import org.molgenis.vcf.annotate.db.effect.model.*;
 
 /**
  * The HGVS Nomenclature is an internationally-recognized standard for the description of DNA, RNA,
@@ -19,11 +16,11 @@ public class SnpHgvsDescriber {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
-      Exon fivePrimeExon,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
+      FuryFactory.Exon fivePrimeExon,
       int threePrimeExonIndex,
-      Exon threePrimeExon) {
+      FuryFactory.Exon threePrimeExon) {
     if (transcript.getCds() != null) {
       return calculateIntronVariantCodingDnaHgvsC(
           pos,
@@ -75,13 +72,13 @@ public class SnpHgvsDescriber {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
-      Exon fivePrimeExon,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
+      FuryFactory.Exon fivePrimeExon,
       int threePrimeExonIndex,
-      Exon threePrimeExon) {
+      FuryFactory.Exon threePrimeExon) {
 
-    Cds.Fragment[] cdsFragments = transcript.getCds().fragments();
+    FuryFactory.Cds.Fragment[] cdsFragments = transcript.getCds().fragments();
     int exonPos;
     int intronPos;
     String codingReferenceSequencePos;
@@ -188,11 +185,11 @@ public class SnpHgvsDescriber {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int threePrimeExonIndex,
-      Exon fivePrimeExon,
-      Exon threePrimeExon) {
+      FuryFactory.Exon fivePrimeExon,
+      FuryFactory.Exon threePrimeExon) {
     int intronPos;
     int transcriptPos = 0;
     switch (strand) {
@@ -203,7 +200,7 @@ public class SnpHgvsDescriber {
         if (pos <= intronCenter) {
           exonPos = fivePrimeExon.getStop();
 
-          for (Exon exon : transcript.getExons()) {
+          for (FuryFactory.Exon exon : transcript.getExons()) {
             if (exon.isOverlapping(exonPos, exonPos)) {
               transcriptPos += exon.getLength();
               break;
@@ -214,7 +211,7 @@ public class SnpHgvsDescriber {
         } else {
           exonPos = threePrimeExon.getStart();
 
-          for (Exon exon : transcript.getExons()) {
+          for (FuryFactory.Exon exon : transcript.getExons()) {
             if (exon.isOverlapping(exonPos, exonPos)) {
               transcriptPos += 1;
               break;
@@ -231,7 +228,7 @@ public class SnpHgvsDescriber {
         int exonPos;
         if (pos <= intronCenter) {
           exonPos = threePrimeExon.getStop();
-          for (Exon exon : transcript.getExons()) {
+          for (FuryFactory.Exon exon : transcript.getExons()) {
             if (exon.isOverlapping(exonPos, exonPos)) {
               transcriptPos += 1;
               break;
@@ -241,7 +238,7 @@ public class SnpHgvsDescriber {
           }
         } else {
           exonPos = fivePrimeExon.getStart();
-          for (Exon exon : transcript.getExons()) {
+          for (FuryFactory.Exon exon : transcript.getExons()) {
             if (exon.isOverlapping(exonPos, exonPos)) {
               transcriptPos += exon.getLength();
               break;
@@ -286,10 +283,10 @@ public class SnpHgvsDescriber {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int exonIndex,
-      Exon exon) {
+      FuryFactory.Exon exon) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append(transcript.getId()).append(":n.");
     int nPos =
@@ -308,7 +305,7 @@ public class SnpHgvsDescriber {
   }
 
   private static String calculateHgvsP(
-      Cds cds, CodonVariant codonVariant, int codingPos, int codonPos) {
+      FuryFactory.Cds cds, CodonVariant codonVariant, int codingPos, int codonPos) {
     String hgvsP;
     int aaPosition = ((codingPos - codonPos) / 3) + 1;
     if (aaPosition > 1) {
@@ -347,8 +344,8 @@ public class SnpHgvsDescriber {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int overlappingExonIndex) {
     char ref = SequenceUtils.getBase(refBases, strand);
     char alt = SequenceUtils.getBase(altBases, strand);
@@ -360,8 +357,8 @@ public class SnpHgvsDescriber {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int overlappingExonIndex) {
     int cdsPos = getCdsPosThreePrimeUtr(pos, strand, transcript, overlappingExonIndex);
 
@@ -374,8 +371,8 @@ public class SnpHgvsDescriber {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int cdsFragmentId,
       CodonVariant codonVariant,
       int codonPos) {
@@ -398,11 +395,11 @@ public class SnpHgvsDescriber {
    *     region (UTR)</a>
    */
   private static int getCdsPosFivePrimeUtr(
-      int pos, Strand strand, Transcript transcript, int exonIndex) {
+      int pos, FuryFactory.Strand strand, FuryFactory.Transcript transcript, int exonIndex) {
     // hgvs
-    Exon exon = transcript.getExons()[exonIndex];
-    Cds cds = transcript.getCds();
-    Cds.Fragment cdsFragment = cds.fragments()[0];
+    FuryFactory.Exon exon = transcript.getExons()[exonIndex];
+    FuryFactory.Cds cds = transcript.getCds();
+    FuryFactory.Cds.Fragment cdsFragment = cds.fragments()[0];
     int cdsPos;
     switch (strand) {
       case POSITIVE -> {
@@ -448,8 +445,8 @@ public class SnpHgvsDescriber {
    *     coding region</a>
    */
   private static int getCdsPosProteinCodingRegion(
-      int pos, Strand strand, Cds cds, int overlappingCdsFragmentId) {
-    Cds.Fragment overlappingCdsFragment = cds.fragments()[overlappingCdsFragmentId];
+      int pos, FuryFactory.Strand strand, FuryFactory.Cds cds, int overlappingCdsFragmentId) {
+    FuryFactory.Cds.Fragment overlappingCdsFragment = cds.fragments()[overlappingCdsFragmentId];
 
     int codingReferenceSequencePos =
         switch (strand) {
@@ -470,10 +467,10 @@ public class SnpHgvsDescriber {
    *     region (UTR)</a>
    */
   private static int getCdsPosThreePrimeUtr(
-      int pos, Strand strand, Transcript transcript, int exonIndex) {
-    Exon exon = transcript.getExons()[exonIndex];
-    Cds cds = transcript.getCds();
-    Cds.Fragment cdsFragment = cds.fragments()[cds.fragments().length - 1];
+      int pos, FuryFactory.Strand strand, FuryFactory.Transcript transcript, int exonIndex) {
+    FuryFactory.Exon exon = transcript.getExons()[exonIndex];
+    FuryFactory.Cds cds = transcript.getCds();
+    FuryFactory.Cds.Fragment cdsFragment = cds.fragments()[cds.fragments().length - 1];
     int cdsPos;
     switch (strand) {
       case POSITIVE -> {

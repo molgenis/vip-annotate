@@ -1,6 +1,6 @@
 package org.molgenis.vcf.annotate.annotator.effect;
 
-import org.molgenis.vcf.annotate.db.effect.model.Strand;
+import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
 
 public class SequenceUtils {
   private SequenceUtils() {}
@@ -16,7 +16,7 @@ public class SequenceUtils {
     };
   }
 
-  public static char getBase(byte[] bases, Strand strand) {
+  public static char getBase(byte[] bases, FuryFactory.Strand strand) {
     return (char)
         switch (strand) {
           case POSITIVE -> bases[0];

@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 import org.molgenis.vcf.annotate.db.effect.model.*;
-import org.molgenis.vcf.annotate.db.effect.model.Chromosome;
 import org.molgenis.vcf.annotate.db.effect.utils.*;
 import org.molgenis.vcf.annotate.util.Logger;
 
@@ -26,12 +25,12 @@ public class AnnotationDbBuilder {
     Gff3 gff3 = createGff3(gff3File);
 
     // create annotation db
-    EnumMap<Chromosome, AnnotationDb> chromosomeTranscriptDatabaseMap =
-        new EnumMap<>(Chromosome.class);
+    EnumMap<FuryFactory.Chromosome, FuryFactory.AnnotationDb> chromosomeTranscriptDatabaseMap =
+        new EnumMap<>(FuryFactory.Chromosome.class);
     gff3.forEach(
         entry -> {
-          Chromosome chromosome = Chromosome.from(entry.getKey());
-          AnnotationDb annotationDb = createAnnotationDb(chromosome, entry.getValue());
+          FuryFactory.Chromosome chromosome = FuryFactory.Chromosome.from(entry.getKey());
+          FuryFactory.AnnotationDb annotationDb = createAnnotationDb(chromosome, entry.getValue());
           chromosomeTranscriptDatabaseMap.put(chromosome, annotationDb);
         });
     return new GenomeAnnotationDb(chromosomeTranscriptDatabaseMap);
@@ -95,14 +94,15 @@ public class AnnotationDbBuilder {
     return gff3;
   }
 
-  private Gene createGene(Gff3Parser.Feature feature) {
-    Strand strand =
+  private FuryFactory.Gene createGene(Gff3Parser.Feature feature) {
+    FuryFactory.Strand strand =
         switch (feature.strand()) {
-          case PLUS -> Strand.POSITIVE;
-          case MINUS -> Strand.NEGATIVE;
+          case PLUS -> FuryFactory.Strand.POSITIVE;
+          case MINUS -> FuryFactory.Strand.NEGATIVE;
           default -> throw new RuntimeException();
         };
-    Gene.GeneBuilder builder = Gene.builder().name(feature.getAttribute("gene")).strand(strand);
+    FuryFactory.Gene.GeneBuilder builder =
+        FuryFactory.Gene.builder().name(feature.getAttribute("gene")).strand(strand);
 
     List<String> dbxref = feature.getAttributeAsList("Dbxref");
     if (dbxref != null) {
@@ -118,11 +118,12 @@ public class AnnotationDbBuilder {
     return builder.build();
   }
 
-  private AnnotationDb createAnnotationDb(Chromosome chromosome, Gff3.Features features) {
+  private FuryFactory.AnnotationDb createAnnotationDb(
+      FuryFactory.Chromosome chromosome, Gff3.Features features) {
     Logger.info("processing chromosome %s", chromosome.getId());
 
     Map<String, Integer> geneMap = new LinkedHashMap<>();
-    List<Gene> geneList = new ArrayList<>();
+    List<FuryFactory.Gene> geneList = new ArrayList<>();
     Map<String, TranscriptStub.TranscriptStubBuilder> transcriptBuilderMap =
         new LinkedHashMap<>(); // preserve order
 
@@ -132,7 +133,7 @@ public class AnnotationDbBuilder {
         feature -> {
           if (isGene(feature)) {
             // create gene
-            Gene gene = createGene(feature);
+            FuryFactory.Gene gene = createGene(feature);
             geneList.add(gene);
             geneMap.put(feature.getAttributeId(), geneList.size() - 1);
           } else if (isTranscript(feature)) {
@@ -142,7 +143,7 @@ public class AnnotationDbBuilder {
                     .start(Math.toIntExact(feature.start()))
                     .length(Math.toIntExact(feature.end() - feature.start() + 1))
                     .id(feature.getAttribute("transcript_id"))
-                    .type(Transcript.Type.from(feature.type()))
+                    .type(FuryFactory.Transcript.Type.from(feature.type()))
                     .geneIndex(geneMap.get(feature.getAttributeParent().getFirst()));
 
             transcriptBuilderMap.put(feature.getAttributeId(), transcriptBuilder);
@@ -154,8 +155,8 @@ public class AnnotationDbBuilder {
             // FIXME can be null in case of 'miRNA', what to do?
             if (transcriptBuilder != null) {
               // create exon
-              Exon exon =
-                  Exon.builder()
+              FuryFactory.Exon exon =
+                  FuryFactory.Exon.builder()
                       .start(Math.toIntExact(feature.start()))
                       .length(Math.toIntExact(feature.end() - feature.start() + 1))
                       .build();
@@ -198,21 +199,22 @@ public class AnnotationDbBuilder {
         });
 
     // pass 3: create transcript db
-    Transcript[] transcripts =
+    FuryFactory.Transcript[] transcripts =
         transcriptBuilderMap.values().stream()
             .map(transcriptStubBuilder -> transcriptStubBuilder.build().createTranscript())
-            .toArray(Transcript[]::new);
+            .toArray(FuryFactory.Transcript[]::new);
 
-    IntervalTree.Builder intervalTreeBuilder = new IntervalTree.Builder(transcripts.length);
-    for (Transcript transcript : transcripts) {
+    FuryFactory.IntervalTree.Builder intervalTreeBuilder =
+        new FuryFactory.IntervalTree.Builder(transcripts.length);
+    for (FuryFactory.Transcript transcript : transcripts) {
       // end + 1, because interval tree builder requires [x, y) interval
       intervalTreeBuilder.add(transcript.getStart(), transcript.getStop() + 1);
     }
-    IntervalTree intervalTree = intervalTreeBuilder.build();
-    TranscriptDb transcriptDb = new TranscriptDb(intervalTree, transcripts);
+    FuryFactory.IntervalTree intervalTree = intervalTreeBuilder.build();
+    FuryFactory.TranscriptDb transcriptDb = new FuryFactory.TranscriptDb(intervalTree, transcripts);
 
     // pass 4: create sequence db
-    SequenceDb sequenceDb;
+    FuryFactory.SequenceDb sequenceDb;
     if (!sequenceIntervals.isEmpty()) {
       // merge cds intervals
       List<IntervalUtils.MutableInterval> mergedIntervals =
@@ -220,37 +222,43 @@ public class AnnotationDbBuilder {
               sequenceIntervals.toArray(IntervalUtils.MutableInterval[]::new));
 
       // get sequences
-      List<Sequence> sequenceList =
+      List<FuryFactory.Sequence> sequenceList =
           mergedIntervals.stream()
               .map(interval -> createSequence(chromosome, interval.getStart(), interval.getEnd()))
               .toList();
 
       // create interval tree
-      IntervalTree.Builder sequenceIntervalTreeBuilder =
-          new IntervalTree.Builder(mergedIntervals.size());
+      FuryFactory.IntervalTree.Builder sequenceIntervalTreeBuilder =
+          new FuryFactory.IntervalTree.Builder(mergedIntervals.size());
       sequenceList.forEach(
           sequence ->
               // end + 1, because interval tree builder requires [x, y) interval
               sequenceIntervalTreeBuilder.add(sequence.getStart(), sequence.getStop() + 1));
 
-      IntervalTree sequenceIntervalTree = sequenceIntervalTreeBuilder.build();
+      FuryFactory.IntervalTree sequenceIntervalTree = sequenceIntervalTreeBuilder.build();
 
-      sequenceDb = new SequenceDb(sequenceIntervalTree, sequenceList.toArray(Sequence[]::new));
+      sequenceDb =
+          new FuryFactory.SequenceDb(
+              sequenceIntervalTree, sequenceList.toArray(FuryFactory.Sequence[]::new));
     } else {
       sequenceDb = null;
     }
-    return new AnnotationDb(transcriptDb, geneList.toArray(Gene[]::new), sequenceDb);
+    return new FuryFactory.AnnotationDb(
+        transcriptDb, geneList.toArray(FuryFactory.Gene[]::new), sequenceDb);
   }
 
   // TODO keep casing in sequence? see
   // https://gatk.broadinstitute.org/hc/en-us/articles/360035890951-Human-genome-reference-builds-GRCh38-or-hg38-b37-hg19
-  private Sequence createSequence(Chromosome chromosome, long start, long stop) {
+  private FuryFactory.Sequence createSequence(
+      FuryFactory.Chromosome chromosome, long start, long stop) {
     ReferenceSequence sequence =
         referenceSequenceFile.getSubsequenceAt(chromosome.getId(), start, stop);
-    SequenceType sequenceType =
-        sequence.getBaseString().contains("N") ? SequenceType.ACTGN : SequenceType.ACTG;
+    FuryFactory.SequenceType sequenceType =
+        sequence.getBaseString().contains("N")
+            ? FuryFactory.SequenceType.ACTGN
+            : FuryFactory.SequenceType.ACTG;
     BitList bitList;
-    if (sequenceType == SequenceType.ACTGN) {
+    if (sequenceType == FuryFactory.SequenceType.ACTGN) {
       bitList = new BitList(sequence.length() * 3);
 
       int pos = 0;
@@ -287,7 +295,7 @@ public class AnnotationDbBuilder {
       }
     }
 
-    return Sequence.builder()
+    return FuryFactory.Sequence.builder()
         .start(Math.toIntExact(start))
         .length(Math.toIntExact(stop - start + 1))
         .sequenceType(sequenceType)

@@ -64,11 +64,11 @@ public class VcfRecordAnnotatorEffect implements VcfRecordAnnotator {
   public static int NR_VAR_ALTS_ANNOTATED = 0;
 
   private List<AlleleAnnotation> annotate(VariantContext vcfRecord, int altAlleleIndex) {
-    Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
+    FuryFactory.Chromosome chromosome = ContigUtils.map(vcfRecord.getContig());
     if (chromosome == null) {
       return Collections.emptyList();
     }
-    AnnotationDb annotationDb = this.genomeAnnotationDb.get(chromosome);
+    FuryFactory.AnnotationDb annotationDb = this.genomeAnnotationDb.get(chromosome);
     if (annotationDb == null) {
       return Collections.emptyList();
     }
@@ -100,12 +100,13 @@ public class VcfRecordAnnotatorEffect implements VcfRecordAnnotator {
     // determine annotations
     List<AlleleAnnotation> annotations = new ArrayList<>();
 
-    List<Transcript> transcripts = annotationDb.findOverlapTranscripts(start, vcfRecord.getEnd());
+    List<FuryFactory.Transcript> transcripts =
+        annotationDb.findOverlapTranscripts(start, vcfRecord.getEnd());
 
     if (!transcripts.isEmpty()) {
-      for (Transcript transcript : transcripts) {
-        Gene gene = annotationDb.getGene(transcript);
-        Strand strand = gene.getStrand();
+      for (FuryFactory.Transcript transcript : transcripts) {
+        FuryFactory.Gene gene = annotationDb.getGene(transcript);
+        FuryFactory.Strand strand = gene.getStrand();
 
         // TODO merge AlleleAnnotation and VariantEffect
         VariantEffect variantEffect =
@@ -174,14 +175,14 @@ public class VcfRecordAnnotatorEffect implements VcfRecordAnnotator {
     String feature = annotation.getFeature();
     values.add(feature != null ? feature : "");
 
-    Transcript.Type biotype = annotation.getBiotype();
+    FuryFactory.Transcript.Type biotype = annotation.getBiotype();
     values.add(biotype != null ? biotype.getTerm() : "");
     values.add(annotation.getExon() != null ? annotation.getExon() : "");
     values.add(annotation.getIntron() != null ? annotation.getIntron() : "");
     values.add(annotation.getHgvsC() != null ? annotation.getHgvsC() : "");
     values.add(annotation.getHgvsP() != null ? annotation.getHgvsP() : "");
     values.add(String.valueOf(annotation.getAlleleNum()));
-    Strand strand = annotation.getStrand();
+    FuryFactory.Strand strand = annotation.getStrand();
     values.add(
         strand != null
             ? switch (strand) {
@@ -202,12 +203,12 @@ public class VcfRecordAnnotatorEffect implements VcfRecordAnnotator {
     Integer gene;
     String featureType;
     String feature;
-    Transcript.Type biotype;
+    FuryFactory.Transcript.Type biotype;
     String exon;
     String intron;
     String hgvsC;
     String hgvsP;
-    Strand strand;
+    FuryFactory.Strand strand;
     int alleleNum;
     /*
     Allele                done

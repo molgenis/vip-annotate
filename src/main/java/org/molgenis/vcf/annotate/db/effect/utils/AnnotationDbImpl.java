@@ -10,16 +10,14 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.fury.Fury;
 import org.apache.fury.io.FuryInputStream;
-import org.molgenis.vcf.annotate.db.effect.FuryFactory;
-import org.molgenis.vcf.annotate.db.effect.model.AnnotationDb;
-import org.molgenis.vcf.annotate.db.effect.model.Chromosome;
+import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
 
 public class AnnotationDbImpl {
   private final ZipFile zipFile;
   private final Fury fury;
 
   private String currentContigId;
-  private AnnotationDb currentAnnotationDb;
+  private FuryFactory.AnnotationDb currentAnnotationDb;
 
   public AnnotationDbImpl(Path annotationsZip) {
     try {
@@ -30,7 +28,7 @@ public class AnnotationDbImpl {
     this.fury = FuryFactory.createFury();
   }
 
-  public AnnotationDb get(Chromosome chromosome) {
+  public FuryFactory.AnnotationDb get(FuryFactory.Chromosome chromosome) {
     String contig = chromosome.getId();
     if (!contig.equals(currentContigId)) {
       currentContigId = contig;
@@ -55,10 +53,11 @@ public class AnnotationDbImpl {
     return currentAnnotationDb;
   }
 
-  private AnnotationDb readDatabase(InputStream inputStream, long size) throws IOException {
+  private FuryFactory.AnnotationDb readDatabase(InputStream inputStream, long size)
+      throws IOException {
     try (FuryInputStream furyInputStream =
         new FuryInputStream(inputStream, Math.toIntExact(size))) {
-      return fury.deserializeJavaObject(furyInputStream, AnnotationDb.class);
+      return fury.deserializeJavaObject(furyInputStream, FuryFactory.AnnotationDb.class);
     }
   }
 }

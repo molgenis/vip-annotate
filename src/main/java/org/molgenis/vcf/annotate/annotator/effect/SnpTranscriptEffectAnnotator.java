@@ -10,10 +10,10 @@ import org.molgenis.vcf.annotate.annotator.effect.model.Consequence;
 import org.molgenis.vcf.annotate.db.effect.model.*;
 
 public class SnpTranscriptEffectAnnotator {
-  private final AnnotationDb annotationDb;
+  private final FuryFactory.AnnotationDb annotationDb;
   private final boolean annotateHgvs;
 
-  public SnpTranscriptEffectAnnotator(AnnotationDb annotationDb, boolean annotateHgvs) {
+  public SnpTranscriptEffectAnnotator(FuryFactory.AnnotationDb annotationDb, boolean annotateHgvs) {
     this.annotationDb = requireNonNull(annotationDb);
     this.annotateHgvs = annotateHgvs;
   }
@@ -25,12 +25,16 @@ public class SnpTranscriptEffectAnnotator {
    *     href="http://www.sequenceontology.org/browser/current_release/term/SO:0001576">SO:0001576</a>
    */
   public VariantEffect annotateTranscriptVariant(
-      int pos, byte[] ref, byte[] alt, Strand strand, Transcript transcript) {
+      int pos,
+      byte[] ref,
+      byte[] alt,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript) {
     VariantEffectBuilder variantEffectBuilder = VariantEffect.builder();
 
-    Exon[] exons = transcript.getExons();
+    FuryFactory.Exon[] exons = transcript.getExons();
     for (int i = 0; i < exons.length; i++) {
-      Exon exon = exons[i];
+      FuryFactory.Exon exon = exons[i];
 
       if (exon.isOverlapping(pos, pos)) {
         annotateExonVariant(pos, ref, alt, strand, transcript, i, exon, variantEffectBuilder);
@@ -55,13 +59,13 @@ public class SnpTranscriptEffectAnnotator {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int exonIndex,
-      Exon exon,
+      FuryFactory.Exon exon,
       VariantEffectBuilder variantEffectBuilder) {
 
-    Cds cds = transcript.getCds();
+    FuryFactory.Cds cds = transcript.getCds();
     if (cds == null) {
       annotateNonCodingTranscriptExonVariant(
           pos, refBases, altBases, strand, transcript, exonIndex, exon, variantEffectBuilder);
@@ -92,10 +96,10 @@ public class SnpTranscriptEffectAnnotator {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int exonIndex,
-      Exon exon,
+      FuryFactory.Exon exon,
       VariantEffectBuilder variantEffectBuilder) {
     variantEffectBuilder.consequence(Consequence.NON_CODING_TRANSCRIPT_EXON_VARIANT);
 
@@ -116,9 +120,9 @@ public class SnpTranscriptEffectAnnotator {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
-      Cds cds,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
+      FuryFactory.Cds cds,
       int exonIndex,
       VariantEffectBuilder variantEffectBuilder) {
     boolean isFivePrimeUtrVariant = isFivePrimeUtrVariant(pos, strand, cds);
@@ -141,8 +145,8 @@ public class SnpTranscriptEffectAnnotator {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int exonIndex,
       VariantEffectBuilder variantEffectBuilder) {
     variantEffectBuilder.consequence(Consequence.FIVE_PRIME_UTR_VARIANT);
@@ -164,8 +168,8 @@ public class SnpTranscriptEffectAnnotator {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int exonIndex,
       VariantEffectBuilder variantEffectBuilder) {
     variantEffectBuilder.consequence(Consequence.THREE_PRIME_UTR_VARIANT);
@@ -187,12 +191,12 @@ public class SnpTranscriptEffectAnnotator {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       VariantEffectBuilder variantEffectBuilder) {
-    Cds cds = transcript.getCds();
+    FuryFactory.Cds cds = transcript.getCds();
     int cdsFragmentId = cds.findAnyFragmentId(pos, pos);
-    Cds.Fragment cdsFragment = cds.fragments()[cdsFragmentId];
+    FuryFactory.Cds.Fragment cdsFragment = cds.fragments()[cdsFragmentId];
     int codonPos = getCodonPos(pos, strand, cdsFragment);
 
     CodonVariant codonVariant =
@@ -276,11 +280,11 @@ public class SnpTranscriptEffectAnnotator {
       int pos,
       byte[] refBases,
       byte[] altBases,
-      Strand strand,
-      Transcript transcript,
+      FuryFactory.Strand strand,
+      FuryFactory.Transcript transcript,
       int threePrimeExonIndex,
-      Exon fivePrimeExon,
-      Exon threePrimeExon,
+      FuryFactory.Exon fivePrimeExon,
+      FuryFactory.Exon threePrimeExon,
       VariantEffectBuilder variantEffectBuilder) {
     if (isSpliceAcceptorVariant(pos, strand, threePrimeExon)) {
       variantEffectBuilder.consequence(Consequence.SPLICE_ACCEPTOR_VARIANT);
@@ -327,7 +331,8 @@ public class SnpTranscriptEffectAnnotator {
    * @see <a
    *     href="http://www.sequenceontology.org/browser/current_release/term/SO:0001574">SO:0001574</a>
    */
-  private static boolean isSpliceAcceptorVariant(int pos, Strand strand, Exon exon) {
+  private static boolean isSpliceAcceptorVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Exon exon) {
     return switch (strand) {
       case POSITIVE -> exon.getStart() - pos == 1 || exon.getStart() - pos == 2;
       case NEGATIVE -> pos - exon.getStop() == 1 || pos - exon.getStop() == 2;
@@ -340,21 +345,24 @@ public class SnpTranscriptEffectAnnotator {
    * @see <a
    *     href="http://www.sequenceontology.org/browser/current_release/term/SO:0001575">SO:0001575</a>
    */
-  private static boolean isSpliceDonorVariant(int pos, Strand strand, Exon exon) {
+  private static boolean isSpliceDonorVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Exon exon) {
     return switch (strand) {
       case POSITIVE -> pos - exon.getStop() == 1 || pos - exon.getStop() == 2;
       case NEGATIVE -> exon.getStart() - pos == 1 || exon.getStart() - pos == 2;
     };
   }
 
-  private static boolean isIntronVariant(int pos, Strand strand, Exon nextAdjacentExon) {
+  private static boolean isIntronVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Exon nextAdjacentExon) {
     return switch (strand) {
       case POSITIVE -> pos < nextAdjacentExon.getStart();
       case NEGATIVE -> pos > nextAdjacentExon.getStop();
     };
   }
 
-  private static boolean isSpliceDonor5thBaseVariant(int pos, Strand strand, Exon fivePrimeExon) {
+  private static boolean isSpliceDonor5thBaseVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Exon fivePrimeExon) {
     return switch (strand) {
       case POSITIVE -> pos - fivePrimeExon.getStop() == 5;
       case NEGATIVE -> fivePrimeExon.getStart() - pos == 5;
@@ -362,7 +370,7 @@ public class SnpTranscriptEffectAnnotator {
   }
 
   private static boolean isSplicePolypyrimidineTractVariant(
-      int pos, Strand strand, Exon threePrimeExon) {
+      int pos, FuryFactory.Strand strand, FuryFactory.Exon threePrimeExon) {
     return switch (strand) {
       case POSITIVE ->
           threePrimeExon.getStart() - pos >= 3 && threePrimeExon.getStart() - pos <= 17;
@@ -370,20 +378,24 @@ public class SnpTranscriptEffectAnnotator {
     };
   }
 
-  private static boolean isSpliceDonorRegionVariant(int pos, Strand strand, Exon fivePrimeExon) {
+  private static boolean isSpliceDonorRegionVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Exon fivePrimeExon) {
     return switch (strand) {
       case POSITIVE -> pos - fivePrimeExon.getStop() >= 3 && pos - fivePrimeExon.getStop() <= 6;
       case NEGATIVE -> fivePrimeExon.getStart() - pos >= 3 && fivePrimeExon.getStart() - pos <= 6;
     };
   }
 
-  private static boolean isSpliceRegionVariant(int pos, Exon exon) {
+  private static boolean isSpliceRegionVariant(int pos, FuryFactory.Exon exon) {
     return (pos - exon.getStart() + 1 >= 1 && pos - exon.getStart() + 1 <= 3)
         || (exon.getStop() - pos + 1 >= 1 && exon.getStop() - pos + 1 <= 3);
   }
 
   private boolean isSpliceRegionVariant(
-      int pos, Strand strand, Exon threePrimeExon, Exon fivePrimeExon) {
+      int pos,
+      FuryFactory.Strand strand,
+      FuryFactory.Exon threePrimeExon,
+      FuryFactory.Exon fivePrimeExon) {
     return switch (strand) {
       case POSITIVE ->
           (pos - fivePrimeExon.getStop() >= 3 && pos - fivePrimeExon.getStop() <= 8)
@@ -394,8 +406,8 @@ public class SnpTranscriptEffectAnnotator {
     };
   }
 
-  private static boolean isUtrVariant(int pos, Strand strand, Cds cds) {
-    Cds.Fragment[] fragments = cds.fragments();
+  private static boolean isUtrVariant(int pos, FuryFactory.Strand strand, FuryFactory.Cds cds) {
+    FuryFactory.Cds.Fragment[] fragments = cds.fragments();
     return switch (strand) {
       case POSITIVE ->
           pos < fragments[0].getStart() || pos > fragments[fragments.length - 1].getStop();
@@ -404,23 +416,26 @@ public class SnpTranscriptEffectAnnotator {
     };
   }
 
-  private static boolean isTerminatorCodonVariant(int pos, Strand strand, Cds cds) {
-    Cds.Fragment cdsFragment = cds.fragments()[cds.fragments().length - 1];
+  private static boolean isTerminatorCodonVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Cds cds) {
+    FuryFactory.Cds.Fragment cdsFragment = cds.fragments()[cds.fragments().length - 1];
     return switch (strand) {
       case POSITIVE -> cdsFragment.getStop() - pos < Codon.NR_NUCLEOTIDES;
       case NEGATIVE -> pos - cdsFragment.getStart() < Codon.NR_NUCLEOTIDES;
     };
   }
 
-  private static boolean isInitiatorCodonVariant(int pos, Strand strand, Cds cds) {
-    Cds.Fragment cdsFragment = cds.fragments()[0];
+  private static boolean isInitiatorCodonVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Cds cds) {
+    FuryFactory.Cds.Fragment cdsFragment = cds.fragments()[0];
     return switch (strand) {
       case POSITIVE -> pos - cdsFragment.getStart() - cdsFragment.getPhase() < Codon.NR_NUCLEOTIDES;
       case NEGATIVE -> cdsFragment.getStop() - pos - cdsFragment.getPhase() < Codon.NR_NUCLEOTIDES;
     };
   }
 
-  private static boolean isFivePrimeUtrVariant(int pos, Strand strand, Cds cds) {
+  private static boolean isFivePrimeUtrVariant(
+      int pos, FuryFactory.Strand strand, FuryFactory.Cds cds) {
     return switch (strand) {
       case POSITIVE -> pos < cds.fragments()[0].getStart();
       case NEGATIVE -> pos > cds.fragments()[0].getStop();
@@ -434,22 +449,27 @@ public class SnpTranscriptEffectAnnotator {
   /**
    * @return relative position 0, 1 or 2 in the codon
    */
-  private static int getCodonPos(int pos, Strand strand, Cds.Fragment cds) {
+  private static int getCodonPos(int pos, FuryFactory.Strand strand, FuryFactory.Cds.Fragment cds) {
     return switch (strand) {
-      case Strand.POSITIVE -> (3 + (pos - cds.getStart() - cds.getPhase())) % 3;
-      case Strand.NEGATIVE -> (3 + (cds.getStop() - pos - cds.getPhase())) % 3;
+      case FuryFactory.Strand.POSITIVE -> (3 + (pos - cds.getStart() - cds.getPhase())) % 3;
+      case FuryFactory.Strand.NEGATIVE -> (3 + (cds.getStop() - pos - cds.getPhase())) % 3;
     };
   }
 
   private CodonVariant getReferenceSequenceCodon(
-      int pos, byte[] alt, Strand strand, Cds cds, int cdsFragmentId, int codonPos) {
-    Cds.Fragment cdsFragment = cds.fragments()[cdsFragmentId];
+      int pos,
+      byte[] alt,
+      FuryFactory.Strand strand,
+      FuryFactory.Cds cds,
+      int cdsFragmentId,
+      int codonPos) {
+    FuryFactory.Cds.Fragment cdsFragment = cds.fragments()[cdsFragmentId];
     char[] refSequence =
         switch (strand) {
-          case Strand.POSITIVE -> {
+          case FuryFactory.Strand.POSITIVE -> {
             // codon can be spliced
             if (pos - codonPos < cdsFragment.getStart()) {
-              Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId - 1];
+              FuryFactory.Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId - 1];
               char[] second =
                   annotationDb.getSequence(cdsFragment.getStart(), pos + (2 - codonPos), strand);
               char[] first =
@@ -461,7 +481,7 @@ public class SnpTranscriptEffectAnnotator {
               System.arraycopy(second, 0, both, first.length, second.length);
               yield both;
             } else if (pos - codonPos + 2 > cdsFragment.getStop()) {
-              Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId + 1];
+              FuryFactory.Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId + 1];
               char[] first =
                   annotationDb.getSequence(pos - codonPos, cdsFragment.getStop(), strand);
               char[] second =
@@ -476,9 +496,9 @@ public class SnpTranscriptEffectAnnotator {
               yield annotationDb.getSequence(pos - codonPos, pos - codonPos + 2, strand);
             }
           }
-          case Strand.NEGATIVE -> {
+          case FuryFactory.Strand.NEGATIVE -> {
             if (pos + codonPos > cdsFragment.getStop()) {
-              Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId - 1];
+              FuryFactory.Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId - 1];
               char[] second =
                   annotationDb.getSequence(cdsFragment.getStop(), pos - (2 - codonPos), strand);
               char[] first =
@@ -491,7 +511,7 @@ public class SnpTranscriptEffectAnnotator {
               System.arraycopy(second, 0, both, first.length, second.length);
               yield both;
             } else if (pos + codonPos - 2 < cdsFragment.getStart()) {
-              Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId + 1];
+              FuryFactory.Cds.Fragment otherCdsFragment = cds.fragments()[cdsFragmentId + 1];
               char[] first =
                   annotationDb.getSequence(pos + codonPos, cdsFragment.getStart(), strand);
               char[] second =

@@ -7,11 +7,12 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-public record GenomeAnnotationDb(@NonNull EnumMap<Chromosome, AnnotationDb> annotationDbs)
+public record GenomeAnnotationDb(
+    @NonNull EnumMap<FuryFactory.Chromosome, FuryFactory.AnnotationDb> annotationDbs)
     implements Serializable {
   @Serial private static final long serialVersionUID = 1L;
 
-  public AnnotationDb get(Chromosome chromosome) {
+  public FuryFactory.AnnotationDb get(FuryFactory.Chromosome chromosome) {
     return annotationDbs.get(chromosome);
   }
 }

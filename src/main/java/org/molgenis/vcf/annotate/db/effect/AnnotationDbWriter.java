@@ -35,9 +35,9 @@ public class AnnotationDbWriter {
   }
 
   private void write(
-      Chromosome chromosome,
+      FuryFactory.Chromosome chromosome,
       int partitionId,
-      AnnotationDb annotationDb,
+      FuryFactory.AnnotationDb annotationDb,
       ZipArchiveOutputStream zipArchiveOutputStream) {
     // serialize and write to zip entry
     String zipArchiveEntryName = chromosome.getId() + "/ref/" + partitionId + ".zst";
