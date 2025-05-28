@@ -1,45 +1,52 @@
 package org.molgenis.vcf.annotate.annotator;
 
-import htsjdk.variant.variantcontext.writer.Options;
-import htsjdk.variant.variantcontext.writer.VariantContextWriter;
-import htsjdk.variant.variantcontext.writer.VariantContextWriterBuilder;
-import htsjdk.variant.vcf.VCFIterator;
-import htsjdk.variant.vcf.VCFIteratorBuilder;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.molgenis.vcf.annotate.annotator.gnomad.VcfRecordAnnotatorGnomAd;
+import org.molgenis.vcf.annotate.db.chrpos.ncer.VcfRecordAnnotatorNcER;
+import org.molgenis.vcf.annotate.db.chrpos.phylop.VcfRecordAnnotatorPhyloP;
+import org.molgenis.vcf.annotate.db.chrpos.remm.VcfRecordAnnotatorRemm;
+import org.molgenis.vcf.annotate.util.CloseIgnoringInputStream;
+import org.molgenis.vcf.annotate.util.CloseIgnoringOutputStream;
+import org.molgenis.vcf.annotate.util.MappableZipFile;
+import org.molgenis.vcf.annotate.vcf.VcfReader;
+import org.molgenis.vcf.annotate.vcf.VcfWriter;
 
+// FIXME annotation database per annotator
 public class VcfAnnotatorCreator {
   private VcfAnnotatorCreator() {}
 
   public static VcfAnnotator create(Path inputVcf, Path annotationsZip, Path outputVcf)
       throws IOException {
-    VCFIterator vcfIterator = new VCFIteratorBuilder().open(createInputStream(inputVcf));
-    List<VcfRecordAnnotator> vcfRecordAnnotators = createRecordAnnotators(annotationsZip);
-    VariantContextWriter variantContextWriter =
-        new VariantContextWriterBuilder()
-            .setOutputVCFStream(createOutputStream(outputVcf))
-            .unsetOption(Options.INDEX_ON_THE_FLY)
-            .build();
+    VcfReader vcfReader = VcfReader.create(createInputStream(inputVcf));
 
-    return new VcfAnnotator(vcfIterator, vcfRecordAnnotators, variantContextWriter);
+    VcfRecordAnnotatorAggregator vcfRecordAnnotatorAggregator =
+        createRecordAnnotators(annotationsZip);
+    VcfWriter vcfWriter = VcfWriter.create(createOutputStream(outputVcf));
+
+    return new VcfAnnotator(vcfReader, vcfRecordAnnotatorAggregator, vcfWriter);
   }
 
-  private static List<VcfRecordAnnotator> createRecordAnnotators(Path annotationsZip) {
+  private static VcfRecordAnnotatorAggregator createRecordAnnotators(Path annotationsZip) {
+    MappableZipFile zipFile = MappableZipFile.fromFile(annotationsZip);
+
     // FIXME disabled effect annotator due to GraalVm issues
     //    VcfRecordAnnotator vcfRecordAnnotatorEffect =
     // VcfRecordAnnotatorEffect.create(annotationsZip);
-    VcfRecordAnnotator vcfRecordAnnotatorGnomAd = VcfRecordAnnotatorGnomAd.create(annotationsZip);
-    //    return List.of(vcfRecordAnnotatorEffect, vcfRecordAnnotatorGnomAd);
-    return List.of(vcfRecordAnnotatorGnomAd);
+    //    VcfRecordAnnotator vcfRecordAnnotatorGnomAd =
+    // VcfRecordAnnotatorGnomAd.create(annotationsZip);
+    VcfRecordAnnotator vcfRecordAnnotatorPhyloP = VcfRecordAnnotatorPhyloP.create(zipFile);
+    VcfRecordAnnotator vcfRecordAnnotatorNcER = VcfRecordAnnotatorNcER.create(zipFile);
+    VcfRecordAnnotator vcfRecordAnnotatorRemm = VcfRecordAnnotatorRemm.create(zipFile);
+    return new VcfRecordAnnotatorAggregator(
+        List.of(vcfRecordAnnotatorNcER, vcfRecordAnnotatorPhyloP, vcfRecordAnnotatorRemm));
   }
 
   private static InputStream createInputStream(Path inputVcfPath) throws IOException {
     InputStream inputStream;
     if (inputVcfPath != null) {
-      inputStream = new BufferedInputStream(Files.newInputStream(inputVcfPath));
+      inputStream = Files.newInputStream(inputVcfPath);
     } else {
       inputStream = new CloseIgnoringInputStream(System.in);
     }
@@ -49,34 +56,10 @@ public class VcfAnnotatorCreator {
   private static OutputStream createOutputStream(Path outputVcfPath) throws IOException {
     OutputStream outputStream;
     if (outputVcfPath != null) {
-      outputStream = new BufferedOutputStream(Files.newOutputStream(outputVcfPath), 1048576);
+      outputStream = Files.newOutputStream(outputVcfPath);
     } else {
       outputStream = new CloseIgnoringOutputStream(System.out);
     }
     return outputStream;
-  }
-
-  /** Helper class to ensure System.in is not closed */
-  private static class CloseIgnoringInputStream extends FilterInputStream {
-    public CloseIgnoringInputStream(InputStream inputStream) {
-      super(inputStream);
-    }
-
-    @Override
-    public void close() {
-      // noop
-    }
-  }
-
-  /** Helper class to ensure System.out is not closed */
-  private static class CloseIgnoringOutputStream extends FilterOutputStream {
-    public CloseIgnoringOutputStream(OutputStream outputStream) {
-      super(outputStream);
-    }
-
-    @Override
-    public void close() {
-      // noop
-    }
   }
 }

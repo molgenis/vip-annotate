@@ -15,6 +15,10 @@ public class ZipCompressionContext {
   private final Map<String, byte[]> contigZstdDictionaryMap;
   private final Set<String> contigWrittenSet;
 
+  public ZipCompressionContext() {
+    this(null);
+  }
+
   public ZipCompressionContext(Map<String, byte[]> contigZstdDictionaryMap) {
     this.contigZstdDictionaryMap = contigZstdDictionaryMap;
     this.contigWrittenSet = new HashSet<>();
@@ -25,7 +29,7 @@ public class ZipCompressionContext {
       int partitionId,
       byte[] uncompressedBytes,
       ZipArchiveOutputStream zipOutputStream) {
-    if (!contigWrittenSet.contains(contig)) {
+    if (contigZstdDictionaryMap != null && !contigWrittenSet.contains(contig)) {
       writeDataDictionary(contig, zipOutputStream);
       contigWrittenSet.add(contig);
     }

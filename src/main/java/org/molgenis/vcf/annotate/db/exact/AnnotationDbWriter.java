@@ -52,12 +52,14 @@ public class AnnotationDbWriter {
 
             encodedSmallVariantAltAlleleAnnotation.add(
                 new EncodedSmallVariantAltAlleleAnnotation(
-                    encodedVariantAltAllele, encodedAnnotations));
+                    encodedVariantAltAllele,
+                    encodedAnnotations)); // FIXME added to list if contig/partition differs
           } else {
             BigInteger encodedVariantAltAllele = VariantEncoder.encodeBig(variant);
             encodedBigVariantAltAlleleAnnotation.add(
                 new EncodedBigVariantAltAlleleAnnotation(
-                    encodedVariantAltAllele, encodedAnnotations));
+                    encodedVariantAltAllele,
+                    encodedAnnotations)); // FIXME added to list if contig/partition differs
           }
 
           String contig = variant.contig();

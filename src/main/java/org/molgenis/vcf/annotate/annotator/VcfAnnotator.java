@@ -1,37 +1,35 @@
 package org.molgenis.vcf.annotate.annotator;
 
-import htsjdk.variant.variantcontext.VariantContext;
-import htsjdk.variant.variantcontext.VariantContextBuilder;
-import htsjdk.variant.variantcontext.writer.VariantContextWriter;
-import htsjdk.variant.vcf.*;
-import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vcf.annotate.util.Logger;
+import org.molgenis.vcf.annotate.vcf.VcfHeader;
+import org.molgenis.vcf.annotate.vcf.VcfReader;
+import org.molgenis.vcf.annotate.vcf.VcfRecord;
+import org.molgenis.vcf.annotate.vcf.VcfWriter;
 
+// TODO consider annotation of records in batches to improve performance
 @RequiredArgsConstructor
 public class VcfAnnotator implements AutoCloseable {
-  @NonNull private final VCFIterator reader;
-  @NonNull private final List<VcfRecordAnnotator> vcfRecordAnnotators;
-  @NonNull private final VariantContextWriter writer;
+  @NonNull private final VcfReader vcfReader;
+  @NonNull private final VcfRecordAnnotator vcfRecordAnnotator;
+  @NonNull private final VcfWriter vcfWriter;
 
   /**
    * @return number of annotated vcf records
    */
   public long annotate() {
     // update header
-    VCFHeader vcfHeader = reader.getHeader();
-    vcfRecordAnnotators.forEach(annotator -> annotator.updateHeader(vcfHeader));
-    writer.writeHeader(vcfHeader);
+    VcfHeader vcfHeader = vcfReader.getHeader();
+    vcfRecordAnnotator.updateHeader(vcfHeader);
+    vcfWriter.writeHeader(vcfHeader);
 
     // update records
     long records;
-    for (records = 1; reader.hasNext(); records++) {
-      VariantContext vcfRecord = reader.next();
-
-      VariantContextBuilder vcfRecordBuilder = new VariantContextBuilder(vcfRecord);
-      vcfRecordAnnotators.forEach(annotator -> annotator.annotate(vcfRecord, vcfRecordBuilder));
-      writer.add(vcfRecordBuilder.make());
+    for (records = 1; vcfReader.hasNext(); records++) {
+      VcfRecord vcfRecord = vcfReader.next();
+      vcfRecordAnnotator.annotate(vcfRecord);
+      vcfWriter.write(vcfRecord);
 
       if (records % 100000 == 0) Logger.info("annotated %d vcf records", records);
     }
@@ -39,11 +37,9 @@ public class VcfAnnotator implements AutoCloseable {
   }
 
   @Override
-  public void close() {
-    try {
-      reader.close();
-    } finally {
-      writer.close();
-    }
+  public void close() throws Exception {
+    vcfWriter.close();
+    vcfRecordAnnotator.close();
+    vcfReader.close();
   }
 }

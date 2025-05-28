@@ -2,20 +2,20 @@ package org.molgenis.vcf.annotate.db.spliceai;
 
 import java.util.Arrays;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vcf.annotate.db.Quantized8UnitIntervalDoublePrimitive;
+import org.molgenis.vcf.annotate.db.Quantized8UnitIntervalFloatPrimitive;
 
 public class SpliceAiAnnotationCodec {
   public static byte[] encode(SpliceAiAnnotation annotation) {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(9);
 
     byte quantizedDeltaScoreAcceptorGain =
-        Quantized8UnitIntervalDoublePrimitive.toByte(annotation.getDeltaScoreAcceptorGain());
+        Quantized8UnitIntervalFloatPrimitive.toByte(annotation.getDeltaScoreAcceptorGain());
     byte quantizedDeltaScoreAcceptorLoss =
-        Quantized8UnitIntervalDoublePrimitive.toByte(annotation.getDeltaScoreAcceptorLoss());
+        Quantized8UnitIntervalFloatPrimitive.toByte(annotation.getDeltaScoreAcceptorLoss());
     byte quantizedDeltaScoreDonorGain =
-        Quantized8UnitIntervalDoublePrimitive.toByte(annotation.getDeltaScoreDonorGain());
+        Quantized8UnitIntervalFloatPrimitive.toByte(annotation.getDeltaScoreDonorGain());
     byte quantizedDeltaScoreDonorLoss =
-        Quantized8UnitIntervalDoublePrimitive.toByte(annotation.getDeltaScoreDonorLoss());
+        Quantized8UnitIntervalFloatPrimitive.toByte(annotation.getDeltaScoreDonorLoss());
     byte deltaPositionAcceptorGain = annotation.getDeltaPositionAcceptorGain();
     byte deltaPositionAcceptorLoss = annotation.getDeltaPositionAcceptorLoss();
     byte deltaPositionDonorGain = annotation.getDeltaPositionDonorGain();
@@ -72,13 +72,13 @@ public class SpliceAiAnnotationCodec {
   public static SpliceAiAnnotation decode(MemoryBuffer memoryBuffer) {
     // FIXME use control bits
     float deltaScoreAcceptorGain =
-        Quantized8UnitIntervalDoublePrimitive.toFloat(memoryBuffer.readByte());
+        Quantized8UnitIntervalFloatPrimitive.toFloat(memoryBuffer.readByte());
     float deltaScoreAcceptorLoss =
-        Quantized8UnitIntervalDoublePrimitive.toFloat(memoryBuffer.readByte());
+        Quantized8UnitIntervalFloatPrimitive.toFloat(memoryBuffer.readByte());
     float deltaScoreDonorGain =
-        Quantized8UnitIntervalDoublePrimitive.toFloat(memoryBuffer.readByte());
+        Quantized8UnitIntervalFloatPrimitive.toFloat(memoryBuffer.readByte());
     float deltaScoreDonorLoss =
-        Quantized8UnitIntervalDoublePrimitive.toFloat(memoryBuffer.readByte());
+        Quantized8UnitIntervalFloatPrimitive.toFloat(memoryBuffer.readByte());
     byte deltaPositionAcceptorGain = memoryBuffer.readByte();
     byte deltaPositionAcceptorLoss = memoryBuffer.readByte();
     byte deltaPositionDonorGain = memoryBuffer.readByte();

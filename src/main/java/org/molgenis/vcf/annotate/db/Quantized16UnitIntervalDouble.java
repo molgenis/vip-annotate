@@ -5,7 +5,9 @@ public class Quantized16UnitIntervalDouble {
   private Quantized16UnitIntervalDouble() {}
 
   public static Double toDouble(short quantizedDoubleValue) {
-    return quantizedDoubleValue == 0 ? null : Short.toUnsignedInt(quantizedDoubleValue) / 65534d;
+    return quantizedDoubleValue == 0
+        ? null
+        : (Short.toUnsignedInt(quantizedDoubleValue) - 1) / 65534d;
   }
 
   public static short toShort(Double doubleValue) {

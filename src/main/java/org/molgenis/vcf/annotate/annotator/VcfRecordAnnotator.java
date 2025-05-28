@@ -1,15 +1,10 @@
 package org.molgenis.vcf.annotate.annotator;
 
-import htsjdk.variant.variantcontext.VariantContext;
-import htsjdk.variant.variantcontext.VariantContextBuilder;
-import htsjdk.variant.vcf.VCFHeader;
+import org.molgenis.vcf.annotate.vcf.VcfHeader;
+import org.molgenis.vcf.annotate.vcf.VcfRecord;
 
-public interface VcfRecordAnnotator {
-  void updateHeader(VCFHeader vcfHeader);
+public interface VcfRecordAnnotator extends AutoCloseable {
+  void updateHeader(VcfHeader vcfHeader);
 
-  /**
-   * @param vcfRecord VCF record
-   * @param vcfRecordBuilder annotated VCF record
-   */
-  void annotate(VariantContext vcfRecord, VariantContextBuilder vcfRecordBuilder);
+  void annotate(VcfRecord vcfRecord);
 }

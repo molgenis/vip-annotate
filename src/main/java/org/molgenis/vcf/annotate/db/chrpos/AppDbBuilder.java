@@ -1,33 +1,31 @@
-package org.molgenis.vcf.annotate;
+package org.molgenis.vcf.annotate.db.chrpos;
 
 import java.io.*;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.molgenis.vcf.annotate.db.chrpos.ncer.NcERAnnotationDbBuilder;
 import org.molgenis.vcf.annotate.db.chrpos.phylop.PhyloPAnnotationDbBuilder;
+import org.molgenis.vcf.annotate.db.chrpos.remm.RemmAnnotationDbBuilder;
 import org.molgenis.vcf.annotate.util.Logger;
 
 public class AppDbBuilder {
+  // FIXME proper CLI with arg validation etc.
   public static void main(String[] args) {
-    File inputFile = new File(args[0]);
-    File referenceFile = new File(args[1]);
-    File outputFile = new File(args[2]);
-    File gnomAdFile = new File(args[3]);
-    File phyloPFile = new File(args[4]);
-
-    //    ReferenceSequenceFile referenceSequenceFile =
-    //        ReferenceSequenceFileFactory.getReferenceSequenceFile(referenceFile);
+    File ncERFile = new File(args[0]);
+    File phylopFile = new File(args[1]);
+    File remmFile = new File(args[2]);
+    File outputFile = new File(args[3]);
 
     Logger.info("creating database ...");
     long startCreateDb = System.currentTimeMillis();
-    //    GenomeAnnotationDb genomeAnnotationDb =
-    //        new AnnotationDbBuilder(referenceSequenceFile).create(inputFile);
 
     try (ZipArchiveOutputStream zipArchiveOutputStream = createWriter(outputFile)) {
-      //      new AnnotationDbWriter().create(genomeAnnotationDb, zipArchiveOutputStream);
-      //      new GnomAdAnnotationDbBuilder().create(gnomAdFile, zipArchiveOutputStream);
-      new PhyloPAnnotationDbBuilder().create(phyloPFile, zipArchiveOutputStream);
+      new NcERAnnotationDbBuilder().create(ncERFile, zipArchiveOutputStream);
+      new PhyloPAnnotationDbBuilder().create(phylopFile, zipArchiveOutputStream);
+      new RemmAnnotationDbBuilder().create(remmFile, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+
     long endCreateDb = System.currentTimeMillis();
     Logger.info("creating database done in %sms", endCreateDb - startCreateDb);
   }

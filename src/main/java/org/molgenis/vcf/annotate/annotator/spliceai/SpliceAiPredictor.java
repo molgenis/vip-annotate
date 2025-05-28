@@ -37,7 +37,7 @@ public class SpliceAiPredictor {
       throw new IllegalArgumentException("chrom cannot be null");
     }
     if (pos <= 0) {
-      throw new IllegalArgumentException("pos must be greater than 0");
+      throw new IllegalArgumentException("start must be greater than 0");
     }
     if (refLength != 1) {
       throw new IllegalArgumentException("refLength must be 1"); // FIXME support other values

@@ -1,0 +1,56 @@
+package org.molgenis.vcf.annotate.util;
+
+import static java.util.Objects.requireNonNull;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
+
+/** {@link ZipFile} that can map a {@link ZipArchiveEntry} directly into memory. */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class MappableZipFile implements AutoCloseable {
+  private final FileChannel fileChannel;
+  private final ZipFile zipFile;
+
+  public ZipArchiveEntry getEntry(String entryName) {
+    return this.zipFile.getEntry(entryName);
+  }
+
+  public MappedByteBuffer map(ZipArchiveEntry zipArchiveEntry) {
+    long dataOffset = zipArchiveEntry.getDataOffset();
+    long compressedSize = zipArchiveEntry.getCompressedSize();
+    try {
+      return this.fileChannel.map(FileChannel.MapMode.READ_ONLY, dataOffset, compressedSize);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  public static MappableZipFile fromFile(Path path) {
+    requireNonNull(path);
+
+    FileChannel fileChannel;
+    ZipFile zipFile;
+    try {
+      // adding ExtendedOpenOption.DIRECT throws exception:
+      // Channel position (164368795) is not a multiple of the block size (512)
+      fileChannel = FileChannel.open(path, StandardOpenOption.READ);
+      zipFile = ZipFile.builder().setSeekableByteChannel(fileChannel).get();
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    return new MappableZipFile(fileChannel, zipFile);
+  }
+
+  @Override
+  public void close() throws Exception {
+    this.zipFile.close(); // closes fileChannel as well
+  }
+}

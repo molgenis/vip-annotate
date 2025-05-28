@@ -103,7 +103,7 @@ public class VariantEncoder {
    * @return position encoded in 20 bits
    */
   private static int encodePos(int pos) {
-    if (pos < 1) throw new IllegalArgumentException("pos must be greater than or equal to 1");
+    if (pos < 1) throw new IllegalArgumentException("start must be greater than or equal to 1");
     int binIndex = pos >> NR_ENCODED_PARTITION_ID_BITS;
     return pos - (binIndex << NR_ENCODED_PARTITION_ID_BITS);
   }
@@ -168,5 +168,12 @@ public class VariantEncoder {
           throw new IllegalArgumentException(
               "alt base '%s' not allowed, must be one of A,C,G,T".formatted((char) altBase));
     };
+  }
+
+  public static void main(String[] args) {
+    int pos = (2 * 1048576) + 1242;
+    int binIndex = pos >> 20;
+    int relPos = pos - (binIndex << 20);
+    System.out.println(relPos);
   }
 }

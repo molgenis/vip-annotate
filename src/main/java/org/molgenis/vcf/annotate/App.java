@@ -1,6 +1,5 @@
 package org.molgenis.vcf.annotate;
 
-import java.io.*;
 import java.nio.file.Path;
 import org.apache.fury.logging.LoggerFactory;
 import org.molgenis.vcf.annotate.annotator.VcfAnnotator;
@@ -8,7 +7,8 @@ import org.molgenis.vcf.annotate.annotator.VcfAnnotatorCreator;
 import org.molgenis.vcf.annotate.util.Logger;
 
 public class App {
-  public static void main(String[] args) throws IOException {
+  // FIXME exception handling
+  public static void main(String[] args) throws Exception {
     long start = System.currentTimeMillis();
 
     LoggerFactory.disableLogging(); // disable apache fury logging

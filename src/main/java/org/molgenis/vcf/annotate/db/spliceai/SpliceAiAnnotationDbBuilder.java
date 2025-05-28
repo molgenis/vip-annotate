@@ -58,7 +58,7 @@
 //    @Override
 //    public VariantAltAlleleAnnotation next() {
 //      // TODO liftover input data from SpliceAI b38 flavor to vip b38 flavor
-//      String contig = "chr" + variantContext.getContig();
+//      String contig = "contig" + variantContext.getContig();
 //      int start = variantContext.getStart();
 //      int stop = variantContext.getEnd();
 //      byte[] altBases = variantContext.getAlternateAllele(0).getDisplayBases();

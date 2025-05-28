@@ -40,7 +40,7 @@ public class Gff3 implements Iterable<Map.Entry<String, Gff3.Features>> {
       if (parentIds.size() > 1) throw new RuntimeException();
       List<Gff3Parser.Feature> featureList = idToFeatureMap.get(parentIds.getFirst());
       if (featureList.size() != 1)
-        throw new RuntimeException(); // FIXME how to handle multi-line features?
+        throw new RuntimeException(); // FIXME how to handle multi-tokens features?
       return featureList.getFirst();
     }
 

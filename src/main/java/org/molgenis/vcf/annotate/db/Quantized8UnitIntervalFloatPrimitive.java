@@ -1,8 +1,8 @@
 package org.molgenis.vcf.annotate.db;
 
 /** Double greater than or equal to 0 and less than or equal to 1 stored as a byte */
-public class Quantized8UnitIntervalDoublePrimitive {
-  private Quantized8UnitIntervalDoublePrimitive() {}
+public class Quantized8UnitIntervalFloatPrimitive {
+  private Quantized8UnitIntervalFloatPrimitive() {}
 
   public static float toFloat(byte quantizedFloatValue) {
     return Byte.toUnsignedInt(quantizedFloatValue) / 255f;

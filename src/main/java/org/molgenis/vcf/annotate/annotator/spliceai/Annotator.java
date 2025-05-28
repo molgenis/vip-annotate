@@ -20,9 +20,9 @@ class Annotator {
     annotationsUrl.getPath();
   }
 
-  //  public void get_name_and_strand(chrom, pos) {}
+  //  public void get_name_and_strand(chrom, start) {}
   //
-  //    public void get_pos_data(idx, pos){}
+  //    public void get_pos_data(idx, start){}
   //
   //    private record NameAndStrand(genes, strands, idxs){}
 }
