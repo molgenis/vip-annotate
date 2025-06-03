@@ -2,6 +2,7 @@ package org.molgenis.vcf.annotate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.molgenis.vcf.annotate.util.GraalVm;
 import org.molgenis.vcf.annotate.util.Logger;
 import org.molgenis.vcf.annotate.vcf.VcfType;
 
@@ -101,22 +102,26 @@ public class AppArgsParser {
   }
 
   private static void printUsage() {
+    boolean isGraalRuntime = GraalVm.isGraalRuntime();
+    String usage = isGraalRuntime ? "vip-annotate.exe" : "java -jar vip-annotate.jar";
     Logger.info(
         """
         vip-annotate v%s
 
         usage: java -jar vip-annotate.jar [arguments]
-          -i, --input       <file>   input VCF file           (optional, default: stdin)
-          -a, --annotations <file>   annotation database file
-          -o, --output      <file>   output VCF file          (optional, default: stdout)
+          -i, --input           FILE     input VCF file                           (optional, default: stdin       )
+          -a, --annotations-dir DIR      annotation database directory            (required                       )
+          -o, --output          FILE     output VCF file                          (optional, default: stdout      )
+          -O, --output-type     v|z[0-9] uncompressed VCF (v), compressed VCF (z) (optional, default: uncompressed)
+                                         with optional compression level 0-9
 
-        usage: java -jar vip-annotate.jar [arguments]
-          -h, --help                 print this message
+        usage: %s [arguments]
+          -h, --help                     print this message
 
-        usage: java -jar vip-annotate.jar [arguments]
-          -v, --version              print version
+        usage: %s [arguments]
+          -v, --version                  print version
         """,
-        getVersion());
+        getVersion(), usage, usage);
   }
 
   private static void printVersion() {
