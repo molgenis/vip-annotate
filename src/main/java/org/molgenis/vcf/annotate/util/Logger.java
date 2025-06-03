@@ -1,9 +1,15 @@
 package org.molgenis.vcf.annotate.util;
 
 import java.io.PrintStream;
+import org.apache.fury.logging.LoggerFactory;
 
 public class Logger {
+  static {
+    LoggerFactory.disableLogging(); // disable apache fury logging
+  }
+
   public static boolean REDIRECT_STDOUT_TO_STDERR = false;
+  public static boolean ENABLE_DEBUG_LOGGING = false;
 
   public static void info(String format, Object... args) {
     PrintStream printStream = REDIRECT_STDOUT_TO_STDERR ? System.err : System.out;

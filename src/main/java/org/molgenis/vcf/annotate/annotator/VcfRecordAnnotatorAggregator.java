@@ -53,4 +53,11 @@ public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotator {
       vcfRecordAnnotator.annotate(vcfRecord);
     }
   }
+
+  @Override
+  public void annotate(List<VcfRecord> vcfRecord) {
+    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
+      vcfRecordAnnotator.annotate(vcfRecord);
+    }
+  }
 }

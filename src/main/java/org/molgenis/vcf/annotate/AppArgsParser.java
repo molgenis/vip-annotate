@@ -20,6 +20,7 @@ public class AppArgsParser {
 
     Path input = null, annotations = null, output = null;
     Boolean force = null;
+    Boolean debug = null;
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
       switch (arg) {
@@ -47,6 +48,10 @@ public class AppArgsParser {
         case "--force":
           force = Boolean.TRUE;
           break;
+        case "-d":
+        case "--debug":
+          debug = Boolean.TRUE;
+          break;
         default:
           Logger.error("unknown option '%s'", arg);
           System.exit(1);
@@ -62,7 +67,7 @@ public class AppArgsParser {
       Logger.error("'%s' or '%s' value '%s' already exists", "-o", "--output", output);
       System.exit(1);
     }
-    return new AppArgs(input, annotations, output, force);
+    return new AppArgs(input, annotations, output, force, debug);
   }
 
   private static Path parseArgValue(String[] args, int i, String arg) {

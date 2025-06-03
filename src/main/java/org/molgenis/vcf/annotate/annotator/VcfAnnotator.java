@@ -2,7 +2,7 @@ package org.molgenis.vcf.annotate.annotator;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vcf.annotate.util.Logger;
+import org.molgenis.vcf.annotate.util.ReusableBatchIterator;
 import org.molgenis.vcf.annotate.vcf.VcfHeader;
 import org.molgenis.vcf.annotate.vcf.VcfReader;
 import org.molgenis.vcf.annotate.vcf.VcfRecord;
@@ -15,25 +15,21 @@ public class VcfAnnotator implements AutoCloseable {
   @NonNull private final VcfRecordAnnotator vcfRecordAnnotator;
   @NonNull private final VcfWriter vcfWriter;
 
-  /**
-   * @return number of annotated vcf records
-   */
-  public long annotate() {
+  public void annotate() {
+    ReusableBatchIterator<VcfRecord> batchIterator = new ReusableBatchIterator<>(vcfReader, 100);
+
     // update header
     VcfHeader vcfHeader = vcfReader.getHeader();
     vcfRecordAnnotator.updateHeader(vcfHeader);
     vcfWriter.writeHeader(vcfHeader);
 
     // update records
-    long records;
-    for (records = 1; vcfReader.hasNext(); records++) {
-      VcfRecord vcfRecord = vcfReader.next();
-      vcfRecordAnnotator.annotate(vcfRecord);
-      vcfWriter.write(vcfRecord);
 
-      if (records % 100000 == 0) Logger.info("annotated %d vcf records", records);
+    while (batchIterator.hasNext()) {
+      Iterable<VcfRecord> batch = batchIterator.next();
+      vcfRecordAnnotator.annotate(batch);
+      vcfWriter.write(batch);
     }
-    return records;
   }
 
   @Override

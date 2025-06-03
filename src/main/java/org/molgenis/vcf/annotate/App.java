@@ -1,20 +1,28 @@
 package org.molgenis.vcf.annotate;
 
 import java.nio.file.Path;
-import org.apache.fury.logging.LoggerFactory;
 import org.molgenis.vcf.annotate.annotator.VcfAnnotator;
 import org.molgenis.vcf.annotate.annotator.VcfAnnotatorCreator;
 import org.molgenis.vcf.annotate.util.Logger;
 
 public class App {
-  // FIXME exception handling
   public static void main(String[] args) throws Exception {
-    long start = System.currentTimeMillis();
+    AppArgs appArgs = null;
+    try {
+      appArgs = AppArgsParser.parse(args);
+      run(appArgs);
+    } catch (Exception e) {
+      if (appArgs != null && appArgs.debugMode() != null && appArgs.debugMode()) {
+        Logger.error("%s", e.getMessage());
+        e.printStackTrace(System.err);
+      } else {
+        Logger.error("something went wrong");
+      }
+      System.exit(1);
+    }
+  }
 
-    LoggerFactory.disableLogging(); // disable apache fury logging
-
-    AppArgs appArgs = AppArgsParser.parse(args);
-
+  private static void run(AppArgs appArgs) throws Exception {
     Path inputVcf = appArgs.inputVcf();
     Path annotationsZip = appArgs.annotationsZip();
     Path outputVcf = appArgs.outputVcf();
@@ -24,15 +32,9 @@ public class App {
       Logger.REDIRECT_STDOUT_TO_STDERR = true;
     }
 
-    long nrRecords;
     try (VcfAnnotator vcfAnnotator =
         VcfAnnotatorCreator.create(inputVcf, annotationsZip, outputVcf)) {
-      nrRecords = vcfAnnotator.annotate();
+      vcfAnnotator.annotate();
     }
-
-    long duration = System.currentTimeMillis() - start;
-    Logger.info(
-        "annotated %d vcf records in %d ms, %d records/s",
-        nrRecords, duration, Math.round(nrRecords / (duration / 1000d)));
   }
 }

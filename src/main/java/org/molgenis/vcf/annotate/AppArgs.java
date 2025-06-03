@@ -8,4 +8,9 @@ import lombok.NonNull;
  * @param annotationsZip input annotation database zip
  * @param outputVcf output vcf or {@code null} to write to stdout
  */
-public record AppArgs(Path inputVcf, @NonNull Path annotationsZip, Path outputVcf, Boolean force) {}
+public record AppArgs(
+    Path inputVcf,
+    @NonNull Path annotationsZip,
+    Path outputVcf,
+    Boolean force,
+    Boolean debugMode) {}
