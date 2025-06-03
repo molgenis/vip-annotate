@@ -1,4 +1,4 @@
-package org.molgenis.vcf.annotate.db.chrpos.remm;
+package org.molgenis.vcf.annotate.db.chrpos.phylop;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -12,13 +12,12 @@ import org.molgenis.vcf.annotate.util.Zip;
 public class AppDbBuilder {
   // FIXME proper CLI with arg validation etc.
   public static void main(String[] args) {
-    Path remmFile = Path.of(args[1]);
+    Path phyloPFile = Path.of(args[1]);
     Path faiFile = Path.of(args[3]);
     Path outputFile = Path.of(args[5]);
     if (Files.exists(outputFile)) {
       throw new IllegalArgumentException("Output file %s already exists".formatted(outputFile));
     }
-
     Logger.info("creating database ...");
     long startCreateDb = System.currentTimeMillis();
 
@@ -26,7 +25,7 @@ public class AppDbBuilder {
 
     try (ZipArchiveOutputStream zipArchiveOutputStream =
         Zip.createZipArchiveOutputStream(outputFile)) {
-      new RemmAnnotationDbBuilder().create(remmFile, fastaIndex, zipArchiveOutputStream);
+      new PhyloPAnnotationDbBuilder().create(phyloPFile, fastaIndex, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

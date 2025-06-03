@@ -1,28 +1,23 @@
 package org.molgenis.vcf.annotate.db.chrpos.remm;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.zip.*;
+import java.nio.file.Path;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vcf.annotate.db.chrpos.ZipCompressionContext;
+import org.molgenis.vcf.annotate.util.FastaIndex;
+import org.molgenis.vcf.annotate.util.Zip;
 
 public class RemmAnnotationDbBuilder {
   public RemmAnnotationDbBuilder() {}
 
-  public void create(File phyloPFile, ZipArchiveOutputStream zipOutputStream) {
+  public void create(
+      Path phyloPFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     ZipCompressionContext zipCompressionContext = new ZipCompressionContext();
-    try (BufferedReader reader = createReader(phyloPFile)) {
+    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(phyloPFile)) {
       new RemmAnnotationDbWriter()
-          .create(new RemmIterator(reader), zipCompressionContext, zipOutputStream);
+          .create(new RemmIterator(reader), fastaIndex, zipCompressionContext, zipOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-  }
-
-  private static BufferedReader createReader(File ncERFile) throws IOException {
-    return new BufferedReader(
-        new InputStreamReader(
-            new GZIPInputStream(new FileInputStream(ncERFile)), StandardCharsets.UTF_8),
-        1048576);
   }
 }

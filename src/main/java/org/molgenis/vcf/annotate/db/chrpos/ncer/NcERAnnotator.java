@@ -13,15 +13,14 @@ import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
 import org.molgenis.vcf.annotate.db.exact.Variant;
 import org.molgenis.vcf.annotate.util.ContigUtils;
-import org.molgenis.vcf.annotate.util.MappableZipFile;
 import org.molgenis.vcf.annotate.vcf.VcfHeader;
 import org.molgenis.vcf.annotate.vcf.VcfRecord;
 
-public class VcfRecordAnnotatorNcER implements VcfRecordAnnotator {
+public class NcERAnnotator implements VcfRecordAnnotator {
   @NonNull private final ContigPosAnnotationDb annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public VcfRecordAnnotatorNcER(@NonNull ContigPosAnnotationDb annotationDb) {
+  public NcERAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("##.####");
@@ -73,16 +72,6 @@ public class VcfRecordAnnotatorNcER implements VcfRecordAnnotator {
       }
       vcfRecord.addInfo(builder.toString());
     }
-  }
-
-  public static VcfRecordAnnotatorNcER create(MappableZipFile zipFile) {
-    ContigPosAnnotationDb contigPosAnnotationDb =
-        new ContigPosAnnotationDb(
-            zipFile,
-            new NcERAnnotationDecoder(),
-            NcERAnnotationDecoder.NR_ANNOTATION_BYTES,
-            NcERAnnotationDecoder.ANNOTATION_ID);
-    return new VcfRecordAnnotatorNcER(contigPosAnnotationDb);
   }
 
   @Override

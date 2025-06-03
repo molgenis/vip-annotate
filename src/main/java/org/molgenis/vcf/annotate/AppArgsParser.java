@@ -3,6 +3,7 @@ package org.molgenis.vcf.annotate;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.molgenis.vcf.annotate.util.Logger;
+import org.molgenis.vcf.annotate.vcf.VcfType;
 
 public class AppArgsParser {
 
@@ -18,32 +19,53 @@ public class AppArgsParser {
       System.exit(0);
     }
 
-    Path input = null, annotations = null, output = null;
+    Path input = null, annotationsDir = null, output = null;
     Boolean force = null;
     Boolean debug = null;
+    VcfType outputVcfType = null;
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
       switch (arg) {
         case "-i":
         case "--input":
-          input = parseArgValue(args, i++, arg);
+          input = Path.of(parseArgValue(args, i++, arg));
           if (Files.notExists(input)) {
             Logger.error("'%s' value '%s' does not exist", arg, input);
             System.exit(1);
           }
           break;
         case "-a":
-        case "--annotations":
-          annotations = parseArgValue(args, i++, arg);
-          if (Files.notExists(annotations)) {
-            Logger.error("'%s' value '%s' does not exist", arg, annotations);
+        case "--annotations-dir":
+          annotationsDir = Path.of(parseArgValue(args, i++, arg));
+          if (Files.notExists(annotationsDir)) {
+            Logger.error("'%s' value '%s' does not exist", arg, annotationsDir);
+            System.exit(1);
+          }
+          if (!Files.isDirectory(annotationsDir)) {
+            Logger.error("'%s' value '%s' is not a directory", arg, annotationsDir);
             System.exit(1);
           }
           break;
         case "-o":
         case "--output":
-          output = parseArgValue(args, i++, arg);
+          output = Path.of(parseArgValue(args, i++, arg));
           break;
+        case "-O":
+        case "--output-type":
+          String outputType = parseArgValue(args, i++, arg);
+          if (outputType.equals("v")) {
+            outputVcfType = VcfType.UNCOMPRESSED;
+          } else {
+            if (outputType.equals("z")) {
+              outputVcfType = VcfType.COMPRESSED;
+            } else if (outputType.startsWith("z") & outputType.length() == 2) {
+              int compressionLevel = Integer.parseInt(outputType.substring(1));
+              outputVcfType = VcfType.fromCompressionLevel(compressionLevel);
+            } else {
+              Logger.error("'%s' value '%s' is not a valid output type", arg, outputType);
+              System.exit(1);
+            }
+          }
         case "-f":
         case "--force":
           force = Boolean.TRUE;
@@ -59,23 +81,23 @@ public class AppArgsParser {
       }
     }
 
-    if (annotations == null) {
-      Logger.error("missing required option '%s' or '%s'", "-a", "--annotations");
+    if (annotationsDir == null) {
+      Logger.error("missing required option '%s' or '%s'", "-a", "--annotations_dir");
       System.exit(1);
     }
     if (output != null && force == null && Files.exists(output)) {
       Logger.error("'%s' or '%s' value '%s' already exists", "-o", "--output", output);
       System.exit(1);
     }
-    return new AppArgs(input, annotations, output, force, debug);
+    return new AppArgs(input, annotationsDir, output, force, debug, outputVcfType);
   }
 
-  private static Path parseArgValue(String[] args, int i, String arg) {
+  private static String parseArgValue(String[] args, int i, String arg) {
     if (i + 1 == args.length || args[i + 1].startsWith("-")) {
       Logger.error("missing value for option '%s'", arg);
       System.exit(1);
     }
-    return Path.of(args[i + 1]);
+    return args[i + 1];
   }
 
   private static void printUsage() {

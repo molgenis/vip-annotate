@@ -1,4 +1,4 @@
-package org.molgenis.vcf.annotate.db.chrpos.remm;
+package org.molgenis.vcf.annotate.db.chrpos.phylop;
 
 
 import java.nio.charset.StandardCharsets;
@@ -14,15 +14,14 @@ import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
 import org.molgenis.vcf.annotate.db.exact.Variant;
 import org.molgenis.vcf.annotate.util.ContigUtils;
-import org.molgenis.vcf.annotate.util.MappableZipFile;
 import org.molgenis.vcf.annotate.vcf.VcfHeader;
 import org.molgenis.vcf.annotate.vcf.VcfRecord;
 
-public class VcfRecordAnnotatorRemm implements VcfRecordAnnotator {
+public class PhyloPAnnotator implements VcfRecordAnnotator {
   @NonNull private final ContigPosAnnotationDb annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public VcfRecordAnnotatorRemm(@NonNull ContigPosAnnotationDb annotationDb) {
+  public PhyloPAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("#.###");
@@ -32,8 +31,8 @@ public class VcfRecordAnnotatorRemm implements VcfRecordAnnotator {
   public void updateHeader(VcfHeader vcfHeader) {
     vcfHeader.addLine(
         "##INFO=<ID="
-            + RemmAnnotationDecoder.ANNOTATION_ID
-            + ",Number=A,Type=Float,Description=\"REMM score\">");
+            + PhyloPAnnotationDecoder.ANNOTATION_ID
+            + ",Number=A,Type=Float,Description=\"phyloP score\">");
   }
 
   @Override
@@ -64,7 +63,7 @@ public class VcfRecordAnnotatorRemm implements VcfRecordAnnotator {
 
     if (altAnnotations.stream().anyMatch(Objects::nonNull)) {
       StringBuilder builder = new StringBuilder();
-      builder.append(RemmAnnotationDecoder.ANNOTATION_ID).append('=');
+      builder.append(PhyloPAnnotationDecoder.ANNOTATION_ID).append('=');
       for (Double altAnnotation : altAnnotations) {
         if (altAnnotation != null) {
           builder.append(decimalFormat.format(altAnnotation));
@@ -76,18 +75,8 @@ public class VcfRecordAnnotatorRemm implements VcfRecordAnnotator {
     }
   }
 
-  public static VcfRecordAnnotatorRemm create(MappableZipFile zipFile) {
-    ContigPosAnnotationDb contigPosAnnotationDb =
-        new ContigPosAnnotationDb(
-            zipFile,
-            new RemmAnnotationDecoder(),
-            RemmAnnotationDecoder.NR_ANNOTATION_BYTES,
-            RemmAnnotationDecoder.ANNOTATION_ID);
-    return new VcfRecordAnnotatorRemm(contigPosAnnotationDb);
-  }
-
   @Override
   public void close() throws Exception {
-annotationDb.close();
+    annotationDb.close();
   }
 }

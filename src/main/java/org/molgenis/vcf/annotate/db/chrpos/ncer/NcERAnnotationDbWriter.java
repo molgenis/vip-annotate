@@ -5,8 +5,7 @@ import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vcf.annotate.db.chrpos.ZipCompressionContext;
 import org.molgenis.vcf.annotate.db.chrpos.ncer.NcERIterator.NcERFeature;
-import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
-import org.molgenis.vcf.annotate.util.ContigUtils;
+import org.molgenis.vcf.annotate.util.FastaIndex;
 
 public class NcERAnnotationDbWriter {
   private String currentContig;
@@ -14,6 +13,7 @@ public class NcERAnnotationDbWriter {
 
   public void create(
       NcERIterator ncERIterator,
+      FastaIndex fastaIndex,
       ZipCompressionContext zipCompressionContext,
       ZipArchiveOutputStream zipArchiveOutputStream) {
     reset();
@@ -24,13 +24,12 @@ public class NcERAnnotationDbWriter {
     while (ncERIterator.hasNext()) {
       NcERFeature ncERFeature = ncERIterator.next();
 
-      // FIXME liftover ncER score file instead of performing liftover during annotation db creation
-      FuryFactory.Chromosome chromosome = ContigUtils.map(ncERFeature.chr());
-      if (chromosome == null) {
+      String contig = ncERFeature.chr();
+      if (!fastaIndex.containsReferenceSequence(contig)) {
         throw new RuntimeException(
-            "cannot map contig '%s' to reference genome contig".formatted(ncERFeature.chr()));
+            "Fasta index does not contain reference sequence %s".formatted(contig));
       }
-      String contig = chromosome.getId();
+
       int start = ncERFeature.start() + 1; // 0-based --> 1-based
       int end = ncERFeature.end() + 1; // 0-based --> 1-based
       double perc = ncERFeature.perc();
@@ -92,15 +91,7 @@ public class NcERAnnotationDbWriter {
     }
     byte[] uncompressedByteArray = memoryBuffer.getHeapMemory();
 
-    String zipArchiveEntryName =
-        contig
-            + "/"
-            + ContigPosAnnotationDb.ID
-            + "/"
-            + NcERAnnotationDecoder.ANNOTATION_ID
-            + "/"
-            + partitionId
-            + ".zst";
+    String zipArchiveEntryName = contig + "/" + partitionId + "/scores.zst";
     zipCompressionContext.writeData(
         zipArchiveEntryName, uncompressedByteArray, zipArchiveOutputStream);
   }

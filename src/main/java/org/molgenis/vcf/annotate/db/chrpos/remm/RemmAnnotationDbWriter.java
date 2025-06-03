@@ -2,11 +2,9 @@ package org.molgenis.vcf.annotate.db.chrpos.remm;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vcf.annotate.db.chrpos.ZipCompressionContext;
 import org.molgenis.vcf.annotate.db.chrpos.remm.RemmIterator.RemmFeature;
-import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
-import org.molgenis.vcf.annotate.util.ContigUtils;
+import org.molgenis.vcf.annotate.util.FastaIndex;
 
 /** same as v1 but with 8-bit instead of 16-bit quantized scores */
 public class RemmAnnotationDbWriter {
@@ -14,9 +12,9 @@ public class RemmAnnotationDbWriter {
   private Integer currentPartitionId;
 
   public void create(
-      RemmIterator remmIterator,
-      ZipCompressionContext zipCompressionContext,
-      ZipArchiveOutputStream zipArchiveOutputStream) {
+          RemmIterator remmIterator,
+          FastaIndex fastaIndex, ZipCompressionContext zipCompressionContext,
+          ZipArchiveOutputStream zipArchiveOutputStream) {
     reset();
 
     byte[] encodedScores = new byte[1048576]; // partition size: 2 ^ 20
@@ -24,13 +22,12 @@ public class RemmAnnotationDbWriter {
     while (remmIterator.hasNext()) {
       RemmFeature remmFeature = remmIterator.next();
 
-      // FIXME liftover ncER score file instead of performing liftover during annotation db creation
-      FuryFactory.Chromosome chromosome = ContigUtils.map(remmFeature.chr());
-      if (chromosome == null) {
+      String contig = remmFeature.chr();
+      if (!fastaIndex.containsReferenceSequence(contig)) {
         throw new RuntimeException(
-            "cannot map contig '%s' to reference genome contig".formatted(remmFeature.chr()));
+                "Fasta index does not contain reference sequence %s".formatted(contig));
       }
-      String contig = chromosome.getId();
+      
       int pos = remmFeature.start(); // 1-based
       double score = remmFeature.score();
       byte encodedScore = RemmCodec.encode(score);
@@ -86,15 +83,7 @@ public class RemmAnnotationDbWriter {
       memoryBuffer.writeByte(encodedScore);
     }
 
-    String zipArchiveEntryName =
-        contig
-            + "/"
-            + ContigPosAnnotationDb.ID
-            + "/"
-            + RemmAnnotationDecoder.ANNOTATION_ID
-            + "/"
-            + partitionId
-            + ".zst";
+    String zipArchiveEntryName = contig + "/" + partitionId + "/scores.zst";
     byte[] uncompressedByteArray = memoryBuffer.getHeapMemory();
     zipCompressionContext.writeData(
         zipArchiveEntryName, uncompressedByteArray, zipArchiveOutputStream);

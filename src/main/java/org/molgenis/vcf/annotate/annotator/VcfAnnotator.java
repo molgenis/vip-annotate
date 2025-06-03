@@ -1,5 +1,6 @@
 package org.molgenis.vcf.annotate.annotator;
 
+import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vcf.annotate.util.ReusableBatchIterator;
@@ -24,9 +25,8 @@ public class VcfAnnotator implements AutoCloseable {
     vcfWriter.writeHeader(vcfHeader);
 
     // update records
-
     while (batchIterator.hasNext()) {
-      Iterable<VcfRecord> batch = batchIterator.next();
+      List<VcfRecord> batch = batchIterator.next();
       vcfRecordAnnotator.annotate(batch);
       vcfWriter.write(batch);
     }

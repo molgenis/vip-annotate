@@ -11,14 +11,20 @@
 
 ### cli
 
-- [ ] introduce -O / --output-type v|z[0-9] for compressed VCF (z), uncompressed VCF (v) with compression level,
+- [x] introduce -O / --output-type v|z[0-9] for compressed VCF (z), uncompressed VCF (v) with compression level,
   determine
   the output type from the output file if available.
-    - [ ] write bgzip instead of gzip for compressed VCF,
-      see https://github.com/samtools/htsjdk/blob/master/src/main/java/htsjdk/samtools/util/BlockCompressedOutputStream.java.
 - [x] introduce -d / --debug to expose stack traces.
-- [ ] update -a / --annotations to specify annotations directory instead of the annotation database file.
+- [x] update -a / --annotations to specify annotations directory instead of the annotation database file.
 
 ## app: build
 
 - [ ] build annotation database parts separately to allow for parallel building and partial updating.
+- [x] restructure phyloP/ncER/REMM zip folder structure
+- [ ] try: gnomAD annotation file with separate files for each score element to get rid of offset index
+
+## app: annotate
+
+- [ ] write bgzip instead of gzip for compressed VCF,
+  see https://github.com/samtools/htsjdk/blob/master/src/main/java/htsjdk/samtools/util/BlockCompressedOutputStream.java
+  and https://github.com/browning-lab/hap-ibd/blob/master/src/blbutil/BGZIPOutputStream.java.

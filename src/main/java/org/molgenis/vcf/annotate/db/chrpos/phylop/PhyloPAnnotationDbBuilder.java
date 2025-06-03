@@ -3,31 +3,30 @@ package org.molgenis.vcf.annotate.db.chrpos.phylop;
 import static java.util.Objects.requireNonNull;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.zip.*;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotation;
 import org.molgenis.vcf.annotate.db.chrpos.ZipCompressionContext;
+import org.molgenis.vcf.annotate.util.FastaIndex;
+import org.molgenis.vcf.annotate.util.Zip;
 
 public class PhyloPAnnotationDbBuilder {
   public PhyloPAnnotationDbBuilder() {}
 
-  public void create(File phyloPFile, ZipArchiveOutputStream zipOutputStream) {
+  public void create(
+      Path phyloPFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     ZipCompressionContext zipCompressionContext = new ZipCompressionContext();
-    try (BufferedReader reader = createReader(phyloPFile)) {
+    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(phyloPFile)) {
       new PhyloPAnnotationDbWriter()
-          .create(new PhyloPVariantIterator(reader), zipCompressionContext, zipOutputStream);
+          .create(
+              new PhyloPVariantIterator(reader),
+              fastaIndex,
+              zipCompressionContext,
+              zipOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-  }
-
-  private static BufferedReader createReader(File phyloPFile) throws IOException {
-    return new BufferedReader(
-        new InputStreamReader(
-            new GZIPInputStream(new FileInputStream(phyloPFile)), StandardCharsets.UTF_8),
-        1048576);
   }
 
   // TODO use bigwig instead of bed as input

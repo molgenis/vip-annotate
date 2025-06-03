@@ -3,8 +3,6 @@ package org.molgenis.vcf.annotate.vcf;
 import static java.util.Objects.requireNonNull;
 
 import java.io.*;
-import java.util.zip.Deflater;
-import java.util.zip.GZIPOutputStream;
 import org.molgenis.vcf.annotate.util.CharArrayBuffer;
 
 // TODO write bgzip instead of gzip, see
@@ -58,25 +56,6 @@ public class VcfWriter implements AutoCloseable {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-  }
-
-  public static VcfWriter create(OutputStream outputStream) {
-    final int outputStreamWriterBufferSize = 32768;
-
-    Writer writer;
-    try {
-      writer =
-          new OutputStreamWriter(
-              new GZIPOutputStream(outputStream, outputStreamWriterBufferSize) {
-                {
-                  def = new Deflater(Deflater.BEST_SPEED, true); // hack: set protected 'def' field
-                }
-              });
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-
-    return new VcfWriter(writer);
   }
 
   @Override

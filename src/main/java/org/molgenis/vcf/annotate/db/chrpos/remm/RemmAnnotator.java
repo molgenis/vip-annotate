@@ -1,5 +1,4 @@
-package org.molgenis.vcf.annotate.db.chrpos.phylop;
-
+package org.molgenis.vcf.annotate.db.chrpos.remm;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -14,15 +13,14 @@ import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
 import org.molgenis.vcf.annotate.db.exact.Variant;
 import org.molgenis.vcf.annotate.util.ContigUtils;
-import org.molgenis.vcf.annotate.util.MappableZipFile;
 import org.molgenis.vcf.annotate.vcf.VcfHeader;
 import org.molgenis.vcf.annotate.vcf.VcfRecord;
 
-public class VcfRecordAnnotatorPhyloP implements VcfRecordAnnotator {
+public class RemmAnnotator implements VcfRecordAnnotator {
   @NonNull private final ContigPosAnnotationDb annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public VcfRecordAnnotatorPhyloP(@NonNull ContigPosAnnotationDb annotationDb) {
+  public RemmAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("#.###");
@@ -32,8 +30,8 @@ public class VcfRecordAnnotatorPhyloP implements VcfRecordAnnotator {
   public void updateHeader(VcfHeader vcfHeader) {
     vcfHeader.addLine(
         "##INFO=<ID="
-            + PhyloPAnnotationDecoder.ANNOTATION_ID
-            + ",Number=A,Type=Float,Description=\"phyloP score\">");
+            + RemmAnnotationDecoder.ANNOTATION_ID
+            + ",Number=A,Type=Float,Description=\"REMM score\">");
   }
 
   @Override
@@ -52,19 +50,19 @@ public class VcfRecordAnnotatorPhyloP implements VcfRecordAnnotator {
       // value ‘.’ (no variant);an angle-bracketed ID String (“<ID>”); the unspecified allele “<*>”
       // as described in Section 5.5; or a breakend replacement string as described in Section 5.4
       Double altAnnotation =
-              annotationDb.findAnnotations(
-                      new Variant(
-                              chromosome.getId(),
-                              vcfRecord.getPos(),
-                              vcfRecord.getPos() + vcfRecord.getRef().length(),
-                              alt.getBytes(StandardCharsets.UTF_8)));
+          annotationDb.findAnnotations(
+              new Variant(
+                  chromosome.getId(),
+                  vcfRecord.getPos(),
+                  vcfRecord.getPos() + vcfRecord.getRef().length(),
+                  alt.getBytes(StandardCharsets.UTF_8)));
 
       altAnnotations.add(altAnnotation);
     }
 
     if (altAnnotations.stream().anyMatch(Objects::nonNull)) {
       StringBuilder builder = new StringBuilder();
-      builder.append(PhyloPAnnotationDecoder.ANNOTATION_ID).append('=');
+      builder.append(RemmAnnotationDecoder.ANNOTATION_ID).append('=');
       for (Double altAnnotation : altAnnotations) {
         if (altAnnotation != null) {
           builder.append(decimalFormat.format(altAnnotation));
@@ -74,16 +72,6 @@ public class VcfRecordAnnotatorPhyloP implements VcfRecordAnnotator {
       }
       vcfRecord.addInfo(builder.toString());
     }
-  }
-
-  public static VcfRecordAnnotatorPhyloP create(MappableZipFile zipFile) {
-    ContigPosAnnotationDb phyloPAnnotationDb =
-        new ContigPosAnnotationDb(
-            zipFile,
-            new PhyloPAnnotationDecoder(),
-            PhyloPAnnotationDecoder.NR_ANNOTATION_BYTES,
-            PhyloPAnnotationDecoder.ANNOTATION_ID);
-    return new VcfRecordAnnotatorPhyloP(phyloPAnnotationDb);
   }
 
   @Override

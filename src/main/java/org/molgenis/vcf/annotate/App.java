@@ -2,8 +2,9 @@ package org.molgenis.vcf.annotate;
 
 import java.nio.file.Path;
 import org.molgenis.vcf.annotate.annotator.VcfAnnotator;
-import org.molgenis.vcf.annotate.annotator.VcfAnnotatorCreator;
+import org.molgenis.vcf.annotate.annotator.VcfAnnotatorFactory;
 import org.molgenis.vcf.annotate.util.Logger;
+import org.molgenis.vcf.annotate.vcf.VcfType;
 
 public class App {
   public static void main(String[] args) throws Exception {
@@ -24,8 +25,9 @@ public class App {
 
   private static void run(AppArgs appArgs) throws Exception {
     Path inputVcf = appArgs.inputVcf();
-    Path annotationsZip = appArgs.annotationsZip();
+    Path annotationsDir = appArgs.annotationsDir();
     Path outputVcf = appArgs.outputVcf();
+    VcfType outputVcfType = appArgs.vcfType();
 
     if (outputVcf == null) {
       // output vcf is written to System.out, redirect logs to System.err
@@ -33,7 +35,7 @@ public class App {
     }
 
     try (VcfAnnotator vcfAnnotator =
-        VcfAnnotatorCreator.create(inputVcf, annotationsZip, outputVcf)) {
+        VcfAnnotatorFactory.create(inputVcf, annotationsDir, outputVcf, outputVcfType)) {
       vcfAnnotator.annotate();
     }
   }

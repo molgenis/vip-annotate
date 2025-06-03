@@ -6,11 +6,9 @@ import java.util.*;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotation;
-import org.molgenis.vcf.annotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vcf.annotate.db.chrpos.ContigPosEncoder;
 import org.molgenis.vcf.annotate.db.chrpos.ZipCompressionContext;
-import org.molgenis.vcf.annotate.db.effect.model.FuryFactory;
-import org.molgenis.vcf.annotate.util.ContigUtils;
+import org.molgenis.vcf.annotate.util.FastaIndex;
 
 public class PhyloPAnnotationDbWriter {
   private final ContigPosEncoder contigPosEncoder;
@@ -29,6 +27,7 @@ public class PhyloPAnnotationDbWriter {
 
   public void create(
       Iterator<ContigPosAnnotation> chrPosAnnotationIterator,
+      FastaIndex fastaIndex,
       ZipCompressionContext zipCompressionContext,
       ZipArchiveOutputStream zipArchiveOutputStream) {
     reset();
@@ -37,12 +36,13 @@ public class PhyloPAnnotationDbWriter {
 
     while (chrPosAnnotationIterator.hasNext()) {
       ContigPosAnnotation chrPosAnnotation = chrPosAnnotationIterator.next();
-      FuryFactory.Chromosome chromosome =
-          ContigUtils.map(chrPosAnnotation.contig()); // FIXME do proper liftover
-      if (chromosome == null) {
+
+      String contig = chrPosAnnotation.contig();
+      if (!fastaIndex.containsReferenceSequence(contig)) {
         continue;
+        //        throw new RuntimeException("Fasta index does not contain reference sequence
+        // %s".formatted(contig));
       }
-      String contig = chromosome.getId();
 
       int pos = chrPosAnnotation.pos();
       String score = chrPosAnnotation.score();
@@ -101,15 +101,7 @@ public class PhyloPAnnotationDbWriter {
     for (short encodedScore : encodedScores) {
       memoryBuffer.writeInt16(encodedScore);
     }
-    String zipArchiveEntryName =
-        contig
-            + "/"
-            + ContigPosAnnotationDb.ID
-            + "/"
-            + PhyloPAnnotationDecoder.ANNOTATION_ID
-            + "/"
-            + partitionId
-            + ".zst";
+    String zipArchiveEntryName = contig + "/" + partitionId + "/scores.zst";
     byte[] uncompressedByteArray = memoryBuffer.getHeapMemory();
     zipCompressionContext.writeData(
         zipArchiveEntryName, uncompressedByteArray, zipArchiveOutputStream);

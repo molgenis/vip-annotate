@@ -80,7 +80,7 @@ public class ContigPosAnnotationDb implements AnnotationDb<Double> {
 
   private MemoryBuffer loadAnnotationData(String contig, int partitionId) {
     ZipArchiveEntry zipArchiveEntry =
-        zipFile.getEntry(contig + "/" + ID + "/" + annotationId + "/" + partitionId + ".zst");
+        zipFile.getEntry(contig + "/" + partitionId + "/" + "scores.zst");
     if (zipArchiveEntry == null) {
       return null;
     }
