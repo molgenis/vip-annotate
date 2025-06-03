@@ -1,5 +1,8 @@
 package org.molgenis.vcf.annotate.vcf;
 
+import lombok.Getter;
+
+@Getter
 public enum VcfType {
   UNCOMPRESSED(-1),
   COMPRESSED(),
@@ -25,10 +28,6 @@ public enum VcfType {
       throw new IllegalArgumentException("Compression level must be between -1 and 9");
     }
     this.compressionLevel = compressionLevel;
-  }
-
-  public Integer getCompressionLevel() {
-    return compressionLevel;
   }
 
   public static VcfType fromCompressionLevel(Integer compressionLevel) {

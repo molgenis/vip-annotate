@@ -19,8 +19,7 @@ public class NcERAnnotatorFactory {
         new ContigPosAnnotationDb(
             MappableZipFile.fromFile(annotationsFile),
             new NcERAnnotationDecoder(),
-            NcERAnnotationDecoder.NR_ANNOTATION_BYTES,
-            NcERAnnotationDecoder.ANNOTATION_ID);
+            NcERAnnotationDecoder.NR_ANNOTATION_BYTES);
     return new NcERAnnotator(contigPosAnnotationDb);
   }
 }

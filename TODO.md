@@ -25,8 +25,14 @@
 
 ## app: annotate
 
+- [ ] fix: gnomAD annotator
 - [ ] fix: AppArgsParser.getVersion()
 - [ ] fix: native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
+- [ ] perf: batch annotate in VcfRecordAnnotatorAggregator
+- [ ] test: unit tests
+- [ ] test: system tests
+- [ ] build: remove unused dependencies
+- [ ] refactor: code cleanup
 - [ ] write bgzip instead of gzip for compressed VCF,
   see https://github.com/samtools/htsjdk/blob/master/src/main/java/htsjdk/samtools/util/BlockCompressedOutputStream.java
   and https://github.com/browning-lab/hap-ibd/blob/master/src/blbutil/BGZIPOutputStream.java.

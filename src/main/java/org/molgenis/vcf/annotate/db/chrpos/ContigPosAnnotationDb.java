@@ -20,7 +20,6 @@ public class ContigPosAnnotationDb implements AnnotationDb<Double> {
   private final MappableZipFile zipFile;
   private final AnnotationDecoder<Double> annotationDecoder;
   private final int nrAnnotationBytes;
-  private final String annotationId;
   private final ZstdDecompressCtx zstdDecompressCtxData;
 
   private ByteBuffer directByteBufferData;
@@ -30,14 +29,10 @@ public class ContigPosAnnotationDb implements AnnotationDb<Double> {
   private int currentPartitionId = -1;
 
   public ContigPosAnnotationDb(
-      MappableZipFile zipFile,
-      AnnotationDecoder<Double> annotationDecoder,
-      int nrAnnotationBytes,
-      String annotationId) {
+      MappableZipFile zipFile, AnnotationDecoder<Double> annotationDecoder, int nrAnnotationBytes) {
     this.zipFile = requireNonNull(zipFile);
     this.annotationDecoder = requireNonNull(annotationDecoder);
     this.nrAnnotationBytes = nrAnnotationBytes;
-    this.annotationId = requireNonNull(annotationId);
 
     this.zstdDecompressCtxData = new ZstdDecompressCtx();
     int bufferCapacity = ((int) Math.pow(2, NR_PARTITION_ID_BITS)) * nrAnnotationBytes;

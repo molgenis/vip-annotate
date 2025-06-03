@@ -19,8 +19,7 @@ public class RemmAnnotatorFactory {
         new ContigPosAnnotationDb(
             MappableZipFile.fromFile(annotationsFile),
             new RemmAnnotationDecoder(),
-            RemmAnnotationDecoder.NR_ANNOTATION_BYTES,
-            RemmAnnotationDecoder.ANNOTATION_ID);
+            RemmAnnotationDecoder.NR_ANNOTATION_BYTES);
     return new RemmAnnotator(contigPosAnnotationDb);
   }
 }

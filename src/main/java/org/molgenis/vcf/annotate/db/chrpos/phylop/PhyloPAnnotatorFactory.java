@@ -19,8 +19,7 @@ public class PhyloPAnnotatorFactory {
         new ContigPosAnnotationDb(
             MappableZipFile.fromFile(annotationsFile),
             new PhyloPAnnotationDecoder(),
-            PhyloPAnnotationDecoder.NR_ANNOTATION_BYTES,
-            PhyloPAnnotationDecoder.ANNOTATION_ID);
+            PhyloPAnnotationDecoder.NR_ANNOTATION_BYTES);
     return new PhyloPAnnotator(phyloPAnnotationDb);
   }
 }

@@ -1,7 +1,5 @@
 package org.molgenis.vcf.annotate.db.chrpos.phylop;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 class PhyloPScoreCodecTest {
