@@ -1,5 +1,4 @@
-package org.molgenis.vipannotate.db.chrpos.phylop;
-
+package org.molgenis.vipannotate.annotator.ncer;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -11,37 +10,30 @@ import java.util.Objects;
 import lombok.NonNull;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.chrpos.ContigPosAnnotationDb;
-import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 import org.molgenis.vipannotate.db.exact.Variant;
-import org.molgenis.vipannotate.util.ContigUtils;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
-public class PhyloPAnnotator implements VcfRecordAnnotator {
+public class NcERAnnotator implements VcfRecordAnnotator {
   @NonNull private final ContigPosAnnotationDb annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public PhyloPAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
+  public NcERAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
-    this.decimalFormat.applyPattern("#.###");
+    this.decimalFormat.applyPattern("##.####");
   }
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
     vcfHeader.addLine(
         "##INFO=<ID="
-            + PhyloPAnnotationDecoder.ANNOTATION_ID
-            + ",Number=A,Type=Float,Description=\"phyloP score\">");
+            + NcERAnnotationDecoder.ANNOTATION_ID
+            + ",Number=A,Type=Float,Description=\"ncER score\">");
   }
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    FuryFactory.Chromosome chromosome = ContigUtils.map(vcfRecord.getChrom());
-    if (chromosome == null) {
-      return;
-    }
-
     String[] alts = vcfRecord.getAlts();
     List<Double> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
@@ -51,19 +43,19 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
       // value ‘.’ (no variant);an angle-bracketed ID String (“<ID>”); the unspecified allele “<*>”
       // as described in Section 5.5; or a breakend replacement string as described in Section 5.4
       Double altAnnotation =
-              annotationDb.findAnnotations(
-                      new Variant(
-                              chromosome.getId(),
-                              vcfRecord.getPos(),
-                              vcfRecord.getPos() + vcfRecord.getRef().length(),
-                              alt.getBytes(StandardCharsets.UTF_8)));
+          annotationDb.findAnnotations(
+              new Variant(
+                  vcfRecord.getChrom(),
+                  vcfRecord.getPos(),
+                  vcfRecord.getPos() + vcfRecord.getRef().length(),
+                  alt.getBytes(StandardCharsets.UTF_8)));
 
       altAnnotations.add(altAnnotation);
     }
 
     if (altAnnotations.stream().anyMatch(Objects::nonNull)) {
       StringBuilder builder = new StringBuilder();
-      builder.append(PhyloPAnnotationDecoder.ANNOTATION_ID).append('=');
+      builder.append(NcERAnnotationDecoder.ANNOTATION_ID).append('=');
       for (Double altAnnotation : altAnnotations) {
         if (altAnnotation != null) {
           builder.append(decimalFormat.format(altAnnotation));

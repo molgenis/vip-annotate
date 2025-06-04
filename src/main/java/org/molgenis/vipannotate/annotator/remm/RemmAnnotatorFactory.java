@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.db.chrpos.remm;
+package org.molgenis.vipannotate.annotator.remm;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

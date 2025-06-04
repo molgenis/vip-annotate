@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.db.chrpos.ncer;
+package org.molgenis.vipannotate.annotator.phylop;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -6,20 +6,20 @@ import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vipannotate.util.MappableZipFile;
 
-public class NcERAnnotatorFactory {
-  private NcERAnnotatorFactory() {}
+public class PhyloPAnnotatorFactory {
+  private PhyloPAnnotatorFactory() {}
 
   public static VcfRecordAnnotator create(Path annotationsDir) {
-    Path annotationsFile = annotationsDir.resolve("ncer.zip");
+    Path annotationsFile = annotationsDir.resolve("phylop.zip");
     if (Files.notExists(annotationsFile)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(annotationsFile));
     }
 
-    ContigPosAnnotationDb contigPosAnnotationDb =
+    ContigPosAnnotationDb phyloPAnnotationDb =
         new ContigPosAnnotationDb(
             MappableZipFile.fromFile(annotationsFile),
-            new NcERAnnotationDecoder(),
-            NcERAnnotationDecoder.NR_ANNOTATION_BYTES);
-    return new NcERAnnotator(contigPosAnnotationDb);
+            new PhyloPAnnotationDecoder(),
+            PhyloPAnnotationDecoder.NR_ANNOTATION_BYTES);
+    return new PhyloPAnnotator(phyloPAnnotationDb);
   }
 }

@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.db.chrpos.ncer;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vipannotate.annotator.ncer.NcERAnnotationDecoder;
 import org.molgenis.vipannotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vipannotate.db.chrpos.ZipCompressionContext;
 import org.molgenis.vipannotate.db.chrpos.ncer.NcERIterator.NcERFeature;

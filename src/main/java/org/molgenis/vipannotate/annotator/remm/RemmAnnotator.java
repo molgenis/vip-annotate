@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.db.chrpos.remm;
+package org.molgenis.vipannotate.annotator.remm;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -10,9 +10,7 @@ import java.util.Objects;
 import lombok.NonNull;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.chrpos.ContigPosAnnotationDb;
-import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 import org.molgenis.vipannotate.db.exact.Variant;
-import org.molgenis.vipannotate.util.ContigUtils;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
@@ -36,11 +34,6 @@ public class RemmAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    FuryFactory.Chromosome chromosome = ContigUtils.map(vcfRecord.getChrom());
-    if (chromosome == null) {
-      return;
-    }
-
     String[] alts = vcfRecord.getAlts();
     List<Double> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
@@ -52,7 +45,7 @@ public class RemmAnnotator implements VcfRecordAnnotator {
       Double altAnnotation =
           annotationDb.findAnnotations(
               new Variant(
-                  chromosome.getId(),
+                  vcfRecord.getChrom(),
                   vcfRecord.getPos(),
                   vcfRecord.getPos() + vcfRecord.getRef().length(),
                   alt.getBytes(StandardCharsets.UTF_8)));

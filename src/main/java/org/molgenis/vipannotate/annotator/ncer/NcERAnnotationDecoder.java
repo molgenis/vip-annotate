@@ -1,6 +1,7 @@
-package org.molgenis.vipannotate.db.chrpos.ncer;
+package org.molgenis.vipannotate.annotator.ncer;
 
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vipannotate.db.chrpos.ncer.NcERCodec;
 import org.molgenis.vipannotate.db.exact.format.AnnotationDecoder;
 
 public class NcERAnnotationDecoder implements AnnotationDecoder<Double> {

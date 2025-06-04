@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.db.chrpos.phylop;
+package org.molgenis.vipannotate.annotator.phylop;
 
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.db.exact.format.AnnotationDecoder;

@@ -19,6 +19,8 @@
 
 ## app: build
 
+- [ ] feat: validate that annotation reference matches GCA_000001405.15_GRCh38_no_alt_analysis_set reference?
+- [ ] feat: validate that annotation reference is normalized?
 - [ ] build annotation database parts separately to allow for parallel building and partial updating.
 - [x] restructure phyloP/ncER/REMM zip folder structure
 - [ ] try: gnomAD annotation file with separate files for each score element to get rid of offset index

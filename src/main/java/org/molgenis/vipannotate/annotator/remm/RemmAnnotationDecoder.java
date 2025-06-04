@@ -1,6 +1,7 @@
-package org.molgenis.vipannotate.db.chrpos.remm;
+package org.molgenis.vipannotate.annotator.remm;
 
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vipannotate.db.chrpos.remm.RemmCodec;
 import org.molgenis.vipannotate.db.exact.format.AnnotationDecoder;
 
 public class RemmAnnotationDecoder implements AnnotationDecoder<Double> {

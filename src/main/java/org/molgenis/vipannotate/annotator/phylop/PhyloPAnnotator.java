@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.db.chrpos.ncer;
+package org.molgenis.vipannotate.annotator.phylop;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -10,37 +10,30 @@ import java.util.Objects;
 import lombok.NonNull;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.chrpos.ContigPosAnnotationDb;
-import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 import org.molgenis.vipannotate.db.exact.Variant;
-import org.molgenis.vipannotate.util.ContigUtils;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
-public class NcERAnnotator implements VcfRecordAnnotator {
+public class PhyloPAnnotator implements VcfRecordAnnotator {
   @NonNull private final ContigPosAnnotationDb annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public NcERAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
+  public PhyloPAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
-    this.decimalFormat.applyPattern("##.####");
+    this.decimalFormat.applyPattern("#.###");
   }
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
     vcfHeader.addLine(
         "##INFO=<ID="
-            + NcERAnnotationDecoder.ANNOTATION_ID
-            + ",Number=A,Type=Float,Description=\"ncER score\">");
+            + PhyloPAnnotationDecoder.ANNOTATION_ID
+            + ",Number=A,Type=Float,Description=\"phyloP score\">");
   }
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    FuryFactory.Chromosome chromosome = ContigUtils.map(vcfRecord.getChrom());
-    if (chromosome == null) {
-      return;
-    }
-
     String[] alts = vcfRecord.getAlts();
     List<Double> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
@@ -52,7 +45,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
       Double altAnnotation =
           annotationDb.findAnnotations(
               new Variant(
-                  chromosome.getId(),
+                  vcfRecord.getChrom(),
                   vcfRecord.getPos(),
                   vcfRecord.getPos() + vcfRecord.getRef().length(),
                   alt.getBytes(StandardCharsets.UTF_8)));
@@ -62,7 +55,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
 
     if (altAnnotations.stream().anyMatch(Objects::nonNull)) {
       StringBuilder builder = new StringBuilder();
-      builder.append(NcERAnnotationDecoder.ANNOTATION_ID).append('=');
+      builder.append(PhyloPAnnotationDecoder.ANNOTATION_ID).append('=');
       for (Double altAnnotation : altAnnotations) {
         if (altAnnotation != null) {
           builder.append(decimalFormat.format(altAnnotation));

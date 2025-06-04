@@ -2,9 +2,9 @@ package org.molgenis.vipannotate.annotator;
 
 import java.nio.file.Path;
 import java.util.List;
-import org.molgenis.vipannotate.db.chrpos.ncer.NcERAnnotatorFactory;
-import org.molgenis.vipannotate.db.chrpos.phylop.PhyloPAnnotatorFactory;
-import org.molgenis.vipannotate.db.chrpos.remm.RemmAnnotatorFactory;
+import org.molgenis.vipannotate.annotator.ncer.NcERAnnotatorFactory;
+import org.molgenis.vipannotate.annotator.phylop.PhyloPAnnotatorFactory;
+import org.molgenis.vipannotate.annotator.remm.RemmAnnotatorFactory;
 
 public class VcfRecordAnnotatorAggregatorFactory {
   private VcfRecordAnnotatorAggregatorFactory() {}
