@@ -1,26 +1,25 @@
 package org.molgenis.vcf.annotate.db.exact.format;
 
+import static java.util.Objects.requireNonNull;
+
 import com.github.luben.zstd.*;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.Enumeration;
+import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.fury.Fury;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vcf.annotate.db.exact.Variant;
 import org.molgenis.vcf.annotate.db.exact.VariantEncoder;
 import org.molgenis.vcf.annotate.db.exact.formatv2.VariantAltAlleleAnnotationIndex;
-import org.molgenis.vcf.annotate.util.CloseSuppressingFileChannel;
+import org.molgenis.vcf.annotate.util.MappableZipFile;
 
 public class AnnotationDbImpl<T> implements AnnotationDb<T> {
-  private final FileChannel annotationsZipFileChannel;
+  private final MappableZipFile zipFile;
   private final AnnotationDecoder<T> annotationDecoder;
 
   private final VariantEncoder variantEncoder;
   private final Fury fury;
-  private final ZipFile zipFile;
 
   private final ZstdDecompressCtx zstdDecompressCtxIdx;
   private ByteBuffer directByteBufferIdx;
@@ -34,25 +33,19 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
   private int currentPartitionId = -1;
   private boolean loadDictionary;
 
-  public AnnotationDbImpl(
-      FileChannel annotationsZipFileChannel, AnnotationDecoder<T> annotationDecoder) {
-    this.annotationsZipFileChannel = new CloseSuppressingFileChannel(annotationsZipFileChannel);
+  public AnnotationDbImpl(MappableZipFile zipFile, AnnotationDecoder<T> annotationDecoder) {
+    this.zipFile = requireNonNull(zipFile);
     this.annotationDecoder = annotationDecoder;
 
     this.variantEncoder = new VariantEncoder();
     this.fury = FuryFactory.createFury();
 
-    try {
-      this.zipFile = ZipFile.builder().setSeekableByteChannel(this.annotationsZipFileChannel).get();
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
     this.zstdDecompressCtxData = new ZstdDecompressCtx();
     this.zstdDecompressCtxIdx = new ZstdDecompressCtx();
     long maxZipArchiveEntrySizeZst = 0;
     long maxZipArchiveEntrySizeIdxZst = 0;
-    for (Enumeration<ZipArchiveEntry> e = zipFile.getEntries(); e.hasMoreElements(); ) {
-      ZipArchiveEntry zipArchiveEntry = e.nextElement();
+    for (Iterator<ZipArchiveEntry> e = zipFile.getEntries(); e.hasNext(); ) {
+      ZipArchiveEntry zipArchiveEntry = e.next();
       long zipArchiveEntrySize = zipArchiveEntry.getSize();
       if (zipArchiveEntry.getName().endsWith(".idx.zst")) {
         if (zipArchiveEntrySize > maxZipArchiveEntrySizeIdxZst) {
@@ -74,16 +67,7 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
     ZipArchiveEntry zipArchiveEntry = zipFile.getEntry(contig + "/var/zst.dict");
     if (zipArchiveEntry == null) throw new RuntimeException();
 
-    ByteBuffer srcByteBuffer;
-    try {
-      srcByteBuffer =
-          this.annotationsZipFileChannel.map(
-              FileChannel.MapMode.READ_ONLY,
-              zipArchiveEntry.getDataOffset(),
-              zipArchiveEntry.getCompressedSize());
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    ByteBuffer srcByteBuffer = this.zipFile.map(zipArchiveEntry);
     return new ZstdDictDecompress(srcByteBuffer);
   }
 
@@ -95,14 +79,7 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
     int uncompressedSize = Math.toIntExact(zipArchiveEntry.getSize());
 
     directByteBufferIdx.clear();
-    ByteBuffer srcByteBuffer;
-    try {
-      srcByteBuffer =
-          this.annotationsZipFileChannel.map(
-              FileChannel.MapMode.READ_ONLY, zipArchiveEntry.getDataOffset(), compressedSize);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    ByteBuffer srcByteBuffer = this.zipFile.map(zipArchiveEntry);
     zstdDecompressCtxIdx.decompressDirectByteBuffer(
         directByteBufferIdx, 0, uncompressedSize, srcByteBuffer, 0, compressedSize);
     //noinspection UnusedAssignment
@@ -124,16 +101,7 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
     int uncompressedSize = Math.toIntExact(zipArchiveEntry.getSize());
 
     directByteBufferData.clear();
-    ByteBuffer srcByteBuffer;
-    try {
-      srcByteBuffer =
-          this.annotationsZipFileChannel.map(
-              FileChannel.MapMode.READ_ONLY,
-              zipArchiveEntry.getDataOffset(),
-              zipArchiveEntry.getCompressedSize());
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    ByteBuffer srcByteBuffer = this.zipFile.map(zipArchiveEntry);
     zstdDecompressCtxData.decompressDirectByteBuffer(
         directByteBufferData, 0, uncompressedSize, srcByteBuffer, 0, compressedSize);
     //noinspection UnusedAssignment
@@ -194,8 +162,6 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
 
   @Override
   public void close() throws IOException {
-    zipFile.close();
-
     zstdDecompressCtxData.close();
     directByteBufferData = null; // make available for deallocation
 

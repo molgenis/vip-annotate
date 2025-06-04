@@ -13,13 +13,7 @@ public class App {
       appArgs = AppArgsParser.parse(args);
       run(appArgs);
     } catch (Exception e) {
-      if (appArgs != null && appArgs.debugMode() != null && appArgs.debugMode()) {
-        Logger.error("%s", e.getMessage());
-        e.printStackTrace(System.err);
-      } else {
-        Logger.error("something went wrong");
-      }
-      System.exit(1);
+      handleException(e, appArgs != null ? appArgs.debugMode() : null);
     }
   }
 
@@ -38,5 +32,15 @@ public class App {
         VcfAnnotatorFactory.create(inputVcf, annotationsDir, outputVcf, outputVcfType)) {
       vcfAnnotator.annotate();
     }
+  }
+
+  private static void handleException(Exception e, Boolean debugMode) {
+    if (debugMode != null && debugMode) {
+      Logger.error("%s", e.getMessage());
+      e.printStackTrace(System.err);
+    } else {
+      Logger.error("something went wrong");
+    }
+    System.exit(1);
   }
 }

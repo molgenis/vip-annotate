@@ -9,7 +9,7 @@ import org.apache.fury.memory.MemoryBuffer;
  * for rapid annotation and filtering of SNPs and indels</a>.
  */
 public class VariantEncoder {
-  private static final int NR_ENCODED_PARTITION_ID_BITS = 16;
+  private static final int NR_ENCODED_PARTITION_ID_BITS = 20;
 
   public VariantEncoder() {}
 
@@ -29,13 +29,13 @@ public class VariantEncoder {
   }
 
   /**
-   * Returns an encoded variant for variants with [1,4] reference alt and [1,4] alternate alt
+   * Returns an encoded variant for variants with [1,4] reference bases and [1,4] alternate bases
    *
    * <ul>
-   *   <li>{@code 16 bits} encoded position
+   *   <li>{@code 20 bits} encoded position
    *   <li>{@code 02 bits} encoded ref length
    *   <li>{@code 02 bits} encoded alt length
-   *   <li>{@code 12 bits} encoded alt
+   *   <li>{@code 08 bits} encoded alt
    * </ul>
    *
    * @return encoded variant
@@ -55,7 +55,7 @@ public class VariantEncoder {
       throw e;
     }
 
-    return encodedPos << 16 | encodedRefLength << 14 | encodedAltLength << 12 | encodedAlt;
+    return encodedPos << 12 | encodedRefLength << 10 | encodedAltLength << 8 | encodedAlt;
   }
 
   /**
@@ -85,13 +85,13 @@ public class VariantEncoder {
    *
    * <ul>
    *   <li>{@code 00} = 1 reference base
-   *   <li>{@code 01} = 2 reference alt
-   *   <li>{@code 10} = 3 reference alt
-   *   <li>{@code 11} = 4 reference alt
+   *   <li>{@code 01} = 2 reference bases
+   *   <li>{@code 10} = 3 reference bases
+   *   <li>{@code 11} = 4 reference bases
    * </ul>
    *
-   * @param nrBases number of alt in the range of {@code [1,4]}
-   * @return number of alt encoded in two bits
+   * @param nrBases number of bases in the range of {@code [1,4]}
+   * @return number of bases encoded in two bits
    */
   private static int encodeSmallNrBases(int nrBases) {
     validateSmall(nrBases);

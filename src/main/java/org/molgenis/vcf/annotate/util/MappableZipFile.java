@@ -8,6 +8,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Iterator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -21,6 +22,10 @@ public class MappableZipFile implements AutoCloseable {
 
   public ZipArchiveEntry getEntry(String entryName) {
     return this.zipFile.getEntry(entryName);
+  }
+
+  public Iterator<ZipArchiveEntry> getEntries() {
+    return this.zipFile.getEntries().asIterator();
   }
 
   public MappedByteBuffer map(ZipArchiveEntry zipArchiveEntry) {
