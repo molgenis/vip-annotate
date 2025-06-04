@@ -69,7 +69,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.molgenis.vcf.annotate.App</mainClass>
+                            <mainClass>org.molgenis.vipannotate.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
