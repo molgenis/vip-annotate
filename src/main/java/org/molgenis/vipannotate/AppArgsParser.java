@@ -67,6 +67,7 @@ public class AppArgsParser {
               System.exit(1);
             }
           }
+          break;
         case "-f":
         case "--force":
           force = Boolean.TRUE;

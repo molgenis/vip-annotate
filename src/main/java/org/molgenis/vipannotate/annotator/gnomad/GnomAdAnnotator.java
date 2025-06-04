@@ -7,11 +7,9 @@ import java.util.Objects;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
-import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 import org.molgenis.vipannotate.db.exact.Variant;
 import org.molgenis.vipannotate.db.exact.format.AnnotationDbImpl;
 import org.molgenis.vipannotate.db.gnomad.GnomAdShortVariantAnnotation;
-import org.molgenis.vipannotate.util.ContigUtils;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
@@ -27,18 +25,14 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    FuryFactory.Chromosome chromosome = ContigUtils.map(vcfRecord.getChrom());
-    if (chromosome == null) {
-      return;
-    }
-
+    String chromosome = vcfRecord.getChrom();
     String[] alts = vcfRecord.getAlts();
     List<Double> altAfAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
       GnomAdShortVariantAnnotation gnomAdAnnotation =
           annotationDb.findAnnotations(
               new Variant(
-                  chromosome.getId(),
+                  chromosome,
                   vcfRecord.getPos(),
                   vcfRecord.getPos() + vcfRecord.getRef().length(),
                   alt.getBytes(StandardCharsets.UTF_8)));
