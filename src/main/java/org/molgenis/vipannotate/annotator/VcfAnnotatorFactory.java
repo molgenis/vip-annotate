@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.annotator;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
-import org.molgenis.vcf.annotate.vcf.*;
 import org.molgenis.vipannotate.annotator.gnomad.GnomAdAnnotatorFactory;
 import org.molgenis.vipannotate.annotator.ncer.NcERAnnotatorFactory;
 import org.molgenis.vipannotate.annotator.phylop.PhyloPAnnotatorFactory;
@@ -31,6 +30,10 @@ public class VcfAnnotatorFactory {
     VcfRecordAnnotator vcfRecordAnnotatorNcER = NcERAnnotatorFactory.create(annotationsDir);
     VcfRecordAnnotator vcfRecordAnnotatorRemm = RemmAnnotatorFactory.create(annotationsDir);
     return new VcfRecordAnnotatorAggregator(
-        List.of(vcfRecordAnnotatorGnomAd, vcfRecordAnnotatorNcER, vcfRecordAnnotatorPhyloP, vcfRecordAnnotatorRemm));
+        List.of(
+            vcfRecordAnnotatorGnomAd,
+            vcfRecordAnnotatorNcER,
+            vcfRecordAnnotatorPhyloP,
+            vcfRecordAnnotatorRemm));
   }
 }

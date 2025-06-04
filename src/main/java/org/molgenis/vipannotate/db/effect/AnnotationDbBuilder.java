@@ -8,8 +8,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
-import org.molgenis.vcf.annotate.db.effect.model.*;
-import org.molgenis.vcf.annotate.db.effect.utils.*;
 import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 import org.molgenis.vipannotate.db.effect.model.GenomeAnnotationDb;
 import org.molgenis.vipannotate.db.effect.utils.*;

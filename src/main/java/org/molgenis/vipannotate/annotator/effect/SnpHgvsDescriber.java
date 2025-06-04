@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotator.effect;
 
-import org.molgenis.vcf.annotate.db.effect.model.*;
 import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 
 /**

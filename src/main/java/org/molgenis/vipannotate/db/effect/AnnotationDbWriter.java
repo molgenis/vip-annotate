@@ -8,7 +8,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.fury.Fury;
-import org.molgenis.vcf.annotate.db.effect.model.*;
 import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 import org.molgenis.vipannotate.db.effect.model.GenomeAnnotationDb;
 import org.molgenis.vipannotate.util.Logger;
@@ -26,7 +25,7 @@ public class AnnotationDbWriter {
   }
 
   public void create(
-          GenomeAnnotationDb genomeAnnotationDb, ZipArchiveOutputStream zipArchiveOutputStream) {
+      GenomeAnnotationDb genomeAnnotationDb, ZipArchiveOutputStream zipArchiveOutputStream) {
     genomeAnnotationDb
         .annotationDbs()
         .forEach(

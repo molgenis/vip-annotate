@@ -1,12 +1,18 @@
 package org.molgenis.vipannotate;
 
 import java.nio.file.Path;
+import org.apache.fury.logging.LoggerFactory;
 import org.molgenis.vipannotate.annotator.VcfAnnotator;
 import org.molgenis.vipannotate.annotator.VcfAnnotatorFactory;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.vcf.VcfType;
 
 public class App {
+
+  static {
+    LoggerFactory.disableLogging(); // disable apache fury logging
+  }
+
   public static void main(String[] args) throws Exception {
     AppArgs appArgs = null;
     try {

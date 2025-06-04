@@ -6,7 +6,6 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
-import org.molgenis.vcf.annotate.db.effect.model.*;
 import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 
 @Value

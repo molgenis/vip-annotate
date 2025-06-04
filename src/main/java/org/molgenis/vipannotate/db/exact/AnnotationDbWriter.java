@@ -7,7 +7,6 @@ import java.math.BigInteger;
 import java.util.*;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.Fury;
-import org.molgenis.vcf.annotate.db.exact.format.*;
 import org.molgenis.vipannotate.db.exact.format.AnnotationData;
 import org.molgenis.vipannotate.db.exact.format.FuryFactory;
 import org.molgenis.vipannotate.db.exact.format.SortedIntArrayWrapper;

@@ -7,7 +7,6 @@ import java.util.Arrays;
 import org.molgenis.vipannotate.annotator.effect.VariantEffect.VariantEffectBuilder;
 import org.molgenis.vipannotate.annotator.effect.model.Codon;
 import org.molgenis.vipannotate.annotator.effect.model.Consequence;
-import org.molgenis.vcf.annotate.db.effect.model.*;
 import org.molgenis.vipannotate.db.effect.model.FuryFactory;
 
 public class SnpTranscriptEffectAnnotator {
