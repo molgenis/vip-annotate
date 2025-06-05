@@ -44,5 +44,5 @@
 ### build
 
 - [ ] build: remove unused dependencies
-- [ ] build: JaCoCo code coverage (measure / fail the build when coverage to low)
+- [x] build: JaCoCo code coverage (measure / fail the build when coverage to low)
 - [ ] build: Travis 
