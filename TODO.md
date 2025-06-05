@@ -24,6 +24,7 @@
 - [ ] test: unit tests
 - [ ] test: system tests
 - [ ] test: benchmark VEP duration with gnomad/ncer/phylop/remm/spliceai vs without
+- [ ] test: measure how much memory is used including off-heap memory
 
 ### perf
 
