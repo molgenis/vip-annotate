@@ -11,7 +11,7 @@ import org.molgenis.vipannotate.vcf.VcfType;
  * @param force whether to overwrite the output vcf if it exists.
  * @param debugMode whether to run the app in debug mode.
  */
-public record AppArgs(
+public record AppAnnotateArgs(
     Path inputVcf,
     @NonNull Path annotationsDir,
     Path outputVcf,

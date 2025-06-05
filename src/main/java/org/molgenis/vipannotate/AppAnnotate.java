@@ -7,27 +7,27 @@ import org.molgenis.vipannotate.annotator.VcfAnnotatorFactory;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.vcf.VcfType;
 
-public class App {
+public class AppAnnotate {
 
   static {
     LoggerFactory.disableLogging(); // disable apache fury logging
   }
 
   public static void main(String[] args) throws Exception {
-    AppArgs appArgs = null;
+    AppAnnotateArgs appAnnotateArgs = null;
     try {
-      appArgs = AppArgsParser.parse(args);
-      run(appArgs);
+      appAnnotateArgs = new AppAnnotateArgsParser().parse(args);
+      run(appAnnotateArgs);
     } catch (Exception e) {
-      handleException(e, appArgs != null ? appArgs.debugMode() : null);
+      handleException(e, appAnnotateArgs != null ? appAnnotateArgs.debugMode() : null);
     }
   }
 
-  private static void run(AppArgs appArgs) throws Exception {
-    Path inputVcf = appArgs.inputVcf();
-    Path annotationsDir = appArgs.annotationsDir();
-    Path outputVcf = appArgs.outputVcf();
-    VcfType outputVcfType = appArgs.vcfType();
+  private static void run(AppAnnotateArgs appAnnotateArgs) throws Exception {
+    Path inputVcf = appAnnotateArgs.inputVcf();
+    Path annotationsDir = appAnnotateArgs.annotationsDir();
+    Path outputVcf = appAnnotateArgs.outputVcf();
+    VcfType outputVcfType = appAnnotateArgs.vcfType();
 
     if (outputVcf == null) {
       // output vcf is written to System.out, redirect logs to System.err

@@ -6,19 +6,10 @@ import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.vcf.VcfType;
 
-public class AppArgsParser {
-
-  private AppArgsParser() {}
-
-  public static AppArgs parse(String[] args) {
-    if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
-      printUsage();
-      System.exit(0);
-    }
-    if (args.length == 1 && (args[0].equals("-v") || args[0].equals("--version"))) {
-      printVersion();
-      System.exit(0);
-    }
+public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
+  @Override
+  public AppAnnotateArgs parse(String[] args) {
+    super.validate(args);
 
     Path input = null, annotationsDir = null, output = null;
     Boolean force = null;
@@ -91,10 +82,10 @@ public class AppArgsParser {
       Logger.error("'%s' or '%s' value '%s' already exists", "-o", "--output", output);
       System.exit(1);
     }
-    return new AppArgs(input, annotationsDir, output, force, debug, outputVcfType);
+    return new AppAnnotateArgs(input, annotationsDir, output, force, debug, outputVcfType);
   }
 
-  private static String parseArgValue(String[] args, int i, String arg) {
+  private String parseArgValue(String[] args, int i, String arg) {
     if (i + 1 == args.length || args[i + 1].startsWith("-")) {
       Logger.error("missing value for option '%s'", arg);
       System.exit(1);
@@ -102,7 +93,8 @@ public class AppArgsParser {
     return args[i + 1];
   }
 
-  private static void printUsage() {
+  @Override
+  protected void printUsage() {
     boolean isGraalRuntime = GraalVm.isGraalRuntime();
     String usage = isGraalRuntime ? "vip-annotate.exe" : "java -jar vip-annotate.jar";
     Logger.info(
@@ -125,13 +117,14 @@ public class AppArgsParser {
         getVersion(), usage, usage);
   }
 
-  private static void printVersion() {
+  @Override
+  protected void printVersion() {
     Logger.info("%s\n", getVersion());
   }
 
   private static String getVersion() {
     // TODO update pom.xml as described in https://stackoverflow.com/a/2713013
-    String implementationVersion = App.class.getPackage().getImplementationVersion();
+    String implementationVersion = AppAnnotate.class.getPackage().getImplementationVersion();
     return implementationVersion != null ? implementationVersion : "0.0.0-dev";
   }
 }

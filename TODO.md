@@ -10,14 +10,15 @@
 - [ ] feat: write annotations to pipe-separated VIP 'CSQ' field instead of separate annotations
 - [ ] feat(build): validate that annotation reference matches `GCA_000001405.15_GRCh38_no_alt_analysis_set` reference
 - [ ] feat(build): validate that annotation reference is normalized
+- [x] feat(build): one CLI
 
 ### fix
 
 - [x] fix: gnomAD annotator
-- [ ] fix: AppArgsParser.getVersion()
+- [ ] fix: App*ArgsParser.getVersion()
 - [ ] fix: native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
 - [ ] fix: remove existing annotations
-- [ ] fix: build warnings
+- [x] fix: build warnings
 
 ### test
 

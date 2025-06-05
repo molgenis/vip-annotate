@@ -9,7 +9,7 @@ import org.molgenis.vipannotate.util.FastaIndexParser;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.util.Zip;
 
-public class AppDbBuilder {
+public class AppDbNcER {
   // FIXME proper CLI with arg validation etc.
   public static void main(String[] args) {
     Path ncERFile = Path.of(args[1]);
