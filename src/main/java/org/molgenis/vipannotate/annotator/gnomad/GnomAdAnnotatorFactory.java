@@ -12,7 +12,7 @@ public class GnomAdAnnotatorFactory {
   private GnomAdAnnotatorFactory() {}
 
   public static VcfRecordAnnotator create(Path annotationsDir) {
-    Path annotationsFile = annotationsDir.resolve("gnomad_and_effect.zip");
+    Path annotationsFile = annotationsDir.resolve("gnomad.zip");
     if (Files.notExists(annotationsFile)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(annotationsFile));
     }

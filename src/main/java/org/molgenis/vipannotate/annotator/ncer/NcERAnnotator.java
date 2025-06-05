@@ -47,7 +47,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
               new Variant(
                   vcfRecord.getChrom(),
                   vcfRecord.getPos(),
-                  vcfRecord.getPos() + vcfRecord.getRef().length(),
+                  vcfRecord.getPos() + vcfRecord.getRef().length() - 1,
                   alt.getBytes(StandardCharsets.UTF_8)));
 
       altAnnotations.add(altAnnotation);

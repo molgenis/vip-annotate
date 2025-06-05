@@ -20,10 +20,10 @@ public record VcfRecord(String[] tokens) {
   }
 
   public String getInfo() {
-    return tokens[5];
+    return tokens[7];
   }
 
   public void addInfo(String token) {
-    tokens[5] = tokens[5].isEmpty() ? token : tokens[5] + ";" + token;
+    tokens[7] = tokens[7].isEmpty() || tokens[7].equals(".") ? token : tokens[7] + ";" + token;
   }
 }

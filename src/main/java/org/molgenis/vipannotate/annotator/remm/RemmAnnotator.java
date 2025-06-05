@@ -15,7 +15,7 @@ import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
 public class RemmAnnotator implements VcfRecordAnnotator {
-  @NonNull private final ContigPosAnnotationDb annotationDb;
+  private final ContigPosAnnotationDb annotationDb;
   private final DecimalFormat decimalFormat;
 
   public RemmAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
@@ -47,7 +47,7 @@ public class RemmAnnotator implements VcfRecordAnnotator {
               new Variant(
                   vcfRecord.getChrom(),
                   vcfRecord.getPos(),
-                  vcfRecord.getPos() + vcfRecord.getRef().length(),
+                  vcfRecord.getPos() + vcfRecord.getRef().length() - 1,
                   alt.getBytes(StandardCharsets.UTF_8)));
 
       altAnnotations.add(altAnnotation);

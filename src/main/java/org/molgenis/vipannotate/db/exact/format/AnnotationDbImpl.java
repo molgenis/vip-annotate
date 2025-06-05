@@ -114,6 +114,18 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
 
   @Override
   public T findAnnotations(Variant variant) {
+    // FIXME support alternate alleles with 'N'
+    for (byte altBase : variant.alt()) {
+      switch (altBase) {
+        case 'A':
+        case 'C':
+        case 'T':
+        case 'G':
+          break;
+        default:
+          return null;
+      }
+    }
     // Partition partition = getPartition(variant)
     // if(annotationsIdx == null) return null
 
@@ -131,13 +143,6 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
     if (partitionIdChanged || contigChanged) {
       currentVariantAltAlleleAnnotationIdx = loadAnnotationIndex(contig, partitionId);
       currentVariantAltAlleleAnnotationBlob = null;
-    }
-
-    // FIXME support alternate alleles with 'N'
-    for (byte altBase : variant.alt()) {
-      if (altBase == 'N') {
-        return null;
-      }
     }
 
     MemoryBuffer memoryBuffer = null;
