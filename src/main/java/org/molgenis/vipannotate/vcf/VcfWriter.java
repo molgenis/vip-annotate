@@ -18,10 +18,13 @@ public class VcfWriter implements AutoCloseable {
 
   public void writeHeader(VcfHeader vcfHeader) {
     try {
-      for (String line : vcfHeader.lines()) {
-        writer.write(line);
+      VcfMetaInfo vcfMetaInfo = vcfHeader.vcfMetaInfo();
+      for (VcfMetaInfo.Line line : vcfMetaInfo.lines()) {
+        writer.write(line.line());
         writer.write('\n');
       }
+      writer.write(vcfHeader.vcfHeaderLine().line());
+      writer.write('\n');
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

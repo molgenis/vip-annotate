@@ -15,7 +15,7 @@
 ### fix
 
 - [x] fix: gnomAD annotator
-- [ ] fix: App*ArgsParser.getVersion()
+  ref- [x] fix: App*ArgsParser.getVersion()
 - [ ] fix: native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
 - [ ] fix: remove existing annotations
 - [x] fix: build warnings
@@ -37,8 +37,8 @@
 ### refactor
 
 - [x] refactor(build): restructure phyloP/ncER/REMM zip folder structure
-- [ ] refactor: move effect code to branch
-- [ ] refactor: move splice ai code to branch
+- [x] refactor: move effect code to branch
+- [x] refactor: move splice ai code to branch
 - [ ] refactor: code cleanup
 - [ ] refactor: replace commons-compress 1.28.0-SNAPSHOT dependency with something else
 

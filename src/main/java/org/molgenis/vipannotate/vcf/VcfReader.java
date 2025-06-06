@@ -27,7 +27,7 @@ public class VcfReader implements Iterator<VcfRecord>, AutoCloseable {
   }
 
   public static VcfReader create(InputStream inputStream) {
-    final int bufferedReaderBufferSize = 32768; // see BgzipDecompressBenchmark
+    final int bufferedReaderBufferSize = 32768;
     final int inputStreamReaderBufferSize = 32768;
 
     BufferedReader bufferedReader;
@@ -40,7 +40,9 @@ public class VcfReader implements Iterator<VcfRecord>, AutoCloseable {
       throw new UncheckedIOException(e);
     }
 
-    VcfHeader vcfHeader = VcfHeader.create(bufferedReader);
+    VcfHeader vcfHeader =
+        new VcfHeaderParser(new VcfMetaInfoLineParser(), new VcfHeaderLineParser())
+            .parse(bufferedReader);
     VcfRecordIterator vcfRecordIterator = new VcfRecordIterator(bufferedReader);
     return new VcfReader(vcfHeader, vcfRecordIterator);
   }

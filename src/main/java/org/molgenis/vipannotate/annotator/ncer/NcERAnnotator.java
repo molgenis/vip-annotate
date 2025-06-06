@@ -26,10 +26,11 @@ public class NcERAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
-    vcfHeader.addLine(
-        "##INFO=<ID="
-            + NcERAnnotationDecoder.ANNOTATION_ID
-            + ",Number=A,Type=Float,Description=\"ncER score\">");
+    // FIXME version
+    vcfHeader
+        .vcfMetaInfo()
+        .addOrUpdateInfo(
+            NcERAnnotationDecoder.ANNOTATION_ID, "A", "Float", "ncER score", "VIP", "0.0.0-dev");
   }
 
   @Override

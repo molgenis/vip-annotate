@@ -38,7 +38,9 @@ public class VcfReaderFactory {
       throw new UncheckedIOException(e);
     }
 
-    VcfHeader vcfHeader = VcfHeader.create(bufferedReader);
+    VcfHeader vcfHeader =
+        new VcfHeaderParser(new VcfMetaInfoLineParser(), new VcfHeaderLineParser())
+            .parse(bufferedReader);
     VcfRecordIterator vcfRecordIterator = new VcfRecordIterator(bufferedReader);
     return new VcfReader(vcfHeader, vcfRecordIterator);
   }

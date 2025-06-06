@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import org.apache.fury.logging.LoggerFactory;
 import org.molgenis.vipannotate.annotator.VcfAnnotator;
 import org.molgenis.vipannotate.annotator.VcfAnnotatorFactory;
+import org.molgenis.vipannotate.db.exact.format.AnnotationDbImpl;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.vcf.VcfType;
 
@@ -21,6 +22,9 @@ public class AppAnnotate {
     } catch (Exception e) {
       handleException(e, appAnnotateArgs != null ? appAnnotateArgs.debugMode() : null);
     }
+    System.out.println("findAnnotationsCount    : " + AnnotationDbImpl.findAnnotationsCount);
+    System.out.println("findAnnotationsActgCount: " + AnnotationDbImpl.findAnnotationsActgCount);
+    System.out.println("loadAnnotationDataCount : " + AnnotationDbImpl.loadAnnotationDataCount);
   }
 
   private static void run(AppAnnotateArgs appAnnotateArgs) throws Exception {

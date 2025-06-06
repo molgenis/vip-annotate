@@ -4,10 +4,7 @@ import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.util.ReusableBatchIterator;
-import org.molgenis.vipannotate.vcf.VcfHeader;
-import org.molgenis.vipannotate.vcf.VcfReader;
-import org.molgenis.vipannotate.vcf.VcfRecord;
-import org.molgenis.vipannotate.vcf.VcfWriter;
+import org.molgenis.vipannotate.vcf.*;
 
 // TODO consider annotation of records in batches to improve performance
 @RequiredArgsConstructor

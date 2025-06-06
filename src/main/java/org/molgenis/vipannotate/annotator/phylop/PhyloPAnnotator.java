@@ -26,10 +26,9 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
-    vcfHeader.addLine(
-        "##INFO=<ID="
-            + PhyloPAnnotationDecoder.ANNOTATION_ID
-            + ",Number=A,Type=Float,Description=\"phyloP score\">");
+    // FIXME version
+    vcfHeader.vcfMetaInfo().addOrUpdateInfo(
+        PhyloPAnnotationDecoder.ANNOTATION_ID, "A", "Float", "phyloP score", "VIP", "0.0.0-dev");
   }
 
   @Override

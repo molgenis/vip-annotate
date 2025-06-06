@@ -27,8 +27,8 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
-    vcfHeader.addLine(
-        "##INFO=<ID=" + "gnomAD_AF" + ",Number=A,Type=Float,Description=\"gnomAD AF\">");
+    // FIXME version
+    vcfHeader.vcfMetaInfo().addOrUpdateInfo("gnomAD_AF", "A", "Float", "gnomAD AF", "VIP", "0.0.0-dev");
   }
 
   @Override

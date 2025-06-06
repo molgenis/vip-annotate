@@ -26,10 +26,9 @@ public class RemmAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
-    vcfHeader.addLine(
-        "##INFO=<ID="
-            + RemmAnnotationDecoder.ANNOTATION_ID
-            + ",Number=A,Type=Float,Description=\"REMM score\">");
+    // FIXME version
+    vcfHeader.vcfMetaInfo().addOrUpdateInfo(
+        RemmAnnotationDecoder.ANNOTATION_ID, "A", "Float", "REMM score", "VIP", "0.0.0-dev");
   }
 
   @Override
