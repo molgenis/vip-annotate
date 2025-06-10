@@ -56,7 +56,6 @@ public class ListTransformBenchmark {
   public void benchmarkFor(Blackhole blackhole, BenchmarkState state) {
     int size = state.stringList.size();
     List<String> trimmedStringList = new ArrayList<>(size);
-    //noinspection ForLoopReplaceableByForEach
     for (int i = 0; i < size; i++) {
       trimmedStringList.add(state.stringList.get(i).trim());
     }

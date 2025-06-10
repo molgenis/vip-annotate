@@ -11,7 +11,7 @@ public class Quantizer {
    *   <li>Maximum absolute error: 1 / (2 × 254) ≈ 0.0019685
    * </ul>
    *
-   * @param value The Double value (may be null).
+   * @param value The double value or <code>null</code>.
    * @return An int in [0, 255]; 0 indicates null, and 1–255 represent values in [0.0, 1.0].
    * @throws IllegalArgumentException if value is not in [0.0, 1.0]
    */

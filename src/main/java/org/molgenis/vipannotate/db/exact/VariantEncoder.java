@@ -59,7 +59,7 @@ public class VariantEncoder {
   }
 
   /**
-   * Returns an encoded variant for variants with > 4 reference alt or > 4 alternate alt
+   * Returns an encoded variant for variants with > 4 reference bases or > 4 alternate bases
    *
    * @return encoded variant
    */
@@ -124,7 +124,7 @@ public class VariantEncoder {
    *   <li>{@code 2 bits} = alternate base 1
    * </ul>
    *
-   * @param altBases [1,4] alternate alt (each base must be one of A,C,G,T)
+   * @param altBases [1,4] alternate bases (each base must be one of [A, C, G, T])
    * @return alternate alt encoded in 8 bits
    */
   private static int encodeSmallAlt(byte[] altBases) {

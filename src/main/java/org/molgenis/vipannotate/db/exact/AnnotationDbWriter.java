@@ -91,7 +91,7 @@ public class AnnotationDbWriter {
           }
         });
 
-    // write remainder
+    // write the remainder
     if (!encodedSmallVariantAltAlleleAnnotation.isEmpty()
         || !encodedBigVariantAltAlleleAnnotation.isEmpty()) {
       write(
