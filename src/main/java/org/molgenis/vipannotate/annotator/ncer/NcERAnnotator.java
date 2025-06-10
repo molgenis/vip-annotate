@@ -35,7 +35,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    String[] alts = vcfRecord.getAlts();
+    String[] alts = vcfRecord.alt();
     List<Double> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
       // FIXME handle all alt cases
@@ -46,9 +46,12 @@ public class NcERAnnotator implements VcfRecordAnnotator {
       Double altAnnotation =
           annotationDb.findAnnotations(
               new Variant(
-                  vcfRecord.getChrom(),
-                  vcfRecord.getPos(),
-                  vcfRecord.getPos() + vcfRecord.getRef().length() - 1,
+                  vcfRecord.chrom(),
+                  Math.toIntExact(vcfRecord.pos()), // FIXME annotationDb should accept long?
+                  Math.toIntExact(
+                      vcfRecord.pos()
+                          + vcfRecord.ref().length()
+                          - 1), // FIXME annotationDb should accept long?
                   alt.getBytes(StandardCharsets.UTF_8)));
 
       altAnnotations.add(altAnnotation);
@@ -56,7 +59,6 @@ public class NcERAnnotator implements VcfRecordAnnotator {
 
     if (altAnnotations.stream().anyMatch(Objects::nonNull)) {
       StringBuilder builder = new StringBuilder();
-      builder.append(NcERAnnotationDecoder.ANNOTATION_ID).append('=');
       for (Double altAnnotation : altAnnotations) {
         if (altAnnotation != null) {
           builder.append(decimalFormat.format(altAnnotation));
@@ -64,7 +66,9 @@ public class NcERAnnotator implements VcfRecordAnnotator {
           builder.append('.');
         }
       }
-      vcfRecord.addInfo(builder.toString());
+      vcfRecord.info().put(NcERAnnotationDecoder.ANNOTATION_ID, builder.toString());
+    } else {
+      vcfRecord.info().remove(NcERAnnotationDecoder.ANNOTATION_ID);
     }
   }
 

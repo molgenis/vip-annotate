@@ -1,29 +1,20 @@
 package org.molgenis.vipannotate.vcf;
 
-public record VcfRecord(String[] tokens) {
-  public String getChrom() {
-    return tokens[0];
-  }
+import java.util.Map;
+import lombok.NonNull;
 
-  // TODO improve performance (method likely called multiple)
-  public int getPos() {
-    return Integer.parseInt(tokens[1]);
-  }
-
-  public String getRef() {
-    return tokens[3];
-  }
-
-  // TODO improve performance (method likely called multiple)
-  public String[] getAlts() {
-    return tokens[4].split(",", -1);
-  }
-
-  public String getInfo() {
-    return tokens[7];
-  }
-
-  public void addInfo(String token) {
-    tokens[7] = tokens[7].isEmpty() || tokens[7].equals(".") ? token : tokens[7] + ";" + token;
+public record VcfRecord(
+    @NonNull String chrom,
+    long pos,
+    @NonNull String[] id,
+    @NonNull String ref,
+    @NonNull String[] alt,
+    String qual,
+    @NonNull String[] filter,
+    @NonNull Map<String, String> info,
+    String[] format,
+    String[] sampleData) {
+  public VcfRecord {
+    if (pos < 0) throw new IllegalArgumentException("Position is negative");
   }
 }

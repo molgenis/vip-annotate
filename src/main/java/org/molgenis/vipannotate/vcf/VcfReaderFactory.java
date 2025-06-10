@@ -7,33 +7,71 @@ import java.util.zip.GZIPInputStream;
 import org.molgenis.vipannotate.util.CloseIgnoringInputStream;
 
 public class VcfReaderFactory {
+  public enum InputType {
+    COMPRESSED,
+    UNCOMPRESSED
+  }
+
   private VcfReaderFactory() {}
 
   public static VcfReader create(Path inputVcfPath) {
+    InputType inputType;
     InputStream inputStream;
     if (inputVcfPath != null) {
+      String inputVcfFilename = inputVcfPath.getFileName().toString();
+      inputType =
+          inputVcfFilename.endsWith(".gz") || inputVcfFilename.endsWith(".bgz")
+              ? InputType.COMPRESSED
+              : InputType.UNCOMPRESSED;
       try {
         inputStream = Files.newInputStream(inputVcfPath);
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
     } else {
-      inputStream = new CloseIgnoringInputStream(System.in);
+      int pushbackBufferSize = 2;
+      PushbackInputStream pushbackInputStream =
+          new PushbackInputStream(new CloseIgnoringInputStream(System.in), pushbackBufferSize);
+
+      byte[] buffer = new byte[pushbackBufferSize];
+      int bytesRead;
+      try {
+        bytesRead = pushbackInputStream.read(buffer);
+        if (bytesRead != 2) {
+          throw new RuntimeException(); // FIXME proper exception type and message
+        }
+
+        // gzip magic number: 1F 8B
+        inputType =
+            (buffer[0] == ((byte) 0x1F) && buffer[1] == ((byte) 0x8B))
+                ? InputType.COMPRESSED
+                : InputType.UNCOMPRESSED;
+
+        pushbackInputStream.unread(buffer, 0, bytesRead);
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+
+      inputStream = pushbackInputStream;
     }
 
-    return create(inputStream);
+    return create(inputStream, inputType);
   }
 
-  public static VcfReader create(InputStream inputStream) {
+  private static VcfReader create(InputStream inputStream, InputType inputType) {
     final int bufferedReaderBufferSize = 32768; // see BgzipDecompressBenchmark
     final int inputStreamReaderBufferSize = 32768;
 
     BufferedReader bufferedReader;
     try {
+      InputStream inputStreamReaderInputStream =
+          switch (inputType) {
+            case COMPRESSED -> new GZIPInputStream(inputStream, inputStreamReaderBufferSize);
+            case UNCOMPRESSED -> inputStream;
+          };
       bufferedReader =
           new BufferedReader(
-              new InputStreamReader(new GZIPInputStream(inputStream, inputStreamReaderBufferSize)),
-              bufferedReaderBufferSize);
+              new InputStreamReader(inputStreamReaderInputStream), bufferedReaderBufferSize);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

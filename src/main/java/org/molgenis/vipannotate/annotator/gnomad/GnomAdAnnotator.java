@@ -28,21 +28,26 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
     // FIXME version
-    vcfHeader.vcfMetaInfo().addOrUpdateInfo("gnomAD_AF", "A", "Float", "gnomAD AF", "VIP", "0.0.0-dev");
+    vcfHeader
+        .vcfMetaInfo()
+        .addOrUpdateInfo("gnomAD_AF", "A", "Float", "gnomAD AF", "VIP", "0.0.0-dev");
   }
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    String chromosome = vcfRecord.getChrom();
-    String[] alts = vcfRecord.getAlts();
+    String chromosome = vcfRecord.chrom();
+    String[] alts = vcfRecord.alt();
     List<Double> altAfAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
       GnomAdShortVariantAnnotation gnomAdAnnotation =
           annotationDb.findAnnotations(
               new Variant(
                   chromosome,
-                  vcfRecord.getPos(),
-                  vcfRecord.getPos() + vcfRecord.getRef().length() - 1,
+                  Math.toIntExact(vcfRecord.pos()), // FIXME annotationDb should accept long?
+                  Math.toIntExact(
+                      vcfRecord.pos()
+                          + vcfRecord.ref().length()
+                          - 1), // FIXME annotationDb should accept long?
                   alt.getBytes(StandardCharsets.UTF_8)));
 
       Double altAnnotation;
@@ -61,7 +66,6 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
 
     if (altAfAnnotations.stream().anyMatch(Objects::nonNull)) {
       StringBuilder builder = new StringBuilder();
-      builder.append("gnomAD_AF").append('=');
       for (Double altAnnotation : altAfAnnotations) {
         if (altAnnotation != null) {
           builder.append(decimalFormat.format(altAnnotation));
@@ -69,7 +73,9 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
           builder.append('.');
         }
       }
-      vcfRecord.addInfo(builder.toString());
+      vcfRecord.info().put("gnomAD_AF", builder.toString());
+    } else {
+      vcfRecord.info().remove("gnomAD_AF");
     }
   }
 
