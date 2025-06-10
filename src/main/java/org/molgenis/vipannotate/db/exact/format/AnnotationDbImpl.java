@@ -94,7 +94,6 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
   }
 
   private MemoryBuffer loadAnnotationData(String contig, int partitionId) {
-    ++loadAnnotationDataCount;
     ZipArchiveEntry zipArchiveEntry = zipFile.getEntry(contig + "/var/" + partitionId + ".zst");
 
     int compressedSize = Math.toIntExact(zipArchiveEntry.getCompressedSize());
@@ -112,14 +111,8 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
         directByteBufferData, Math.toIntExact(zipArchiveEntry.getSize()), null);
   }
 
-  public static int findAnnotationsCount = 0;
-  public static int findAnnotationsActgCount = 0;
-  public static int loadAnnotationDataCount = 0;
-
   @Override
   public T findAnnotations(Variant variant) {
-    ++findAnnotationsCount;
-
     // FIXME support alternate alleles with 'N'
     for (byte altBase : variant.alt()) {
       switch (altBase) {
@@ -132,7 +125,6 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
           return null;
       }
     }
-    ++findAnnotationsActgCount;
     // Partition partition = getPartition(variant)
     // if(annotationsIdx == null) return null
 
