@@ -23,7 +23,7 @@ public class AppAnnotate {
     }
   }
 
-  private static void run(AppAnnotateArgs appAnnotateArgs) throws Exception {
+  private static void run(AppAnnotateArgs appAnnotateArgs) {
     Path inputVcf = appAnnotateArgs.inputVcf();
     Path annotationsDir = appAnnotateArgs.annotationsDir();
     Path outputVcf = appAnnotateArgs.outputVcf();
