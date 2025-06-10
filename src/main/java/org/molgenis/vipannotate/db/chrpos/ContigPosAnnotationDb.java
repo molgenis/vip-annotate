@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.db.chrpos;
 import static java.util.Objects.requireNonNull;
 
 import com.github.luben.zstd.*;
-import java.io.*;
 import java.nio.ByteBuffer;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.fury.memory.MemoryBuffer;

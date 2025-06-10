@@ -13,7 +13,7 @@ public class AppAnnotate {
     LoggerFactory.disableLogging(); // disable apache fury logging
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     AppAnnotateArgs appAnnotateArgs = null;
     try {
       appAnnotateArgs = new AppAnnotateArgsParser().parse(args);

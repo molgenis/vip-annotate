@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotator;
 
-import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
 import org.molgenis.vipannotate.annotator.gnomad.GnomAdAnnotatorFactory;
@@ -13,8 +12,7 @@ public class VcfAnnotatorFactory {
   private VcfAnnotatorFactory() {}
 
   public static VcfAnnotator create(
-      Path inputVcf, Path annotationsZip, Path outputVcf, VcfType outputVcfType)
-      throws IOException {
+      Path inputVcf, Path annotationsZip, Path outputVcf, VcfType outputVcfType) {
     VcfReader vcfReader = VcfReaderFactory.create(inputVcf);
     VcfRecordAnnotator vcfRecordAnnotator = createVcfRecordAnnotator(annotationsZip);
     VcfWriter vcfWriter = VcfWriterFactory.create(outputVcf, outputVcfType);
