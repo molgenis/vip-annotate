@@ -15,7 +15,7 @@
 ### fix
 
 - [x] fix: gnomAD annotator
-  ref- [x] fix: App*ArgsParser.getVersion()
+- [x] fix: App*ArgsParser.getVersion()
 - [ ] fix: native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
 - [ ] fix: remove existing annotations
 - [x] fix: build warnings

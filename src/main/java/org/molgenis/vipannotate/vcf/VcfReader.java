@@ -4,12 +4,13 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class VcfReader implements Iterator<VcfRecord>, AutoCloseable {
-  @Getter private final VcfHeader header;
-  private final VcfRecordIterator recordIterator;
+  @Getter @NonNull private final VcfHeader header;
+  @NonNull private final VcfRecordIterator recordIterator;
 
   @Override
   public boolean hasNext() {

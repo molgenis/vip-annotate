@@ -6,15 +6,18 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.util.ReusableBatchIterator;
 import org.molgenis.vipannotate.vcf.*;
 
-// TODO consider annotation of records in batches to improve performance
 @RequiredArgsConstructor
 public class VcfAnnotator implements AutoCloseable {
+  private static final int ANNOTATE_BATCH_SIZE = 100;
+
   @NonNull private final VcfReader vcfReader;
   @NonNull private final VcfRecordAnnotator vcfRecordAnnotator;
   @NonNull private final VcfWriter vcfWriter;
 
   public void annotate() {
-    ReusableBatchIterator<VcfRecord> batchIterator = new ReusableBatchIterator<>(vcfReader, 100);
+
+    ReusableBatchIterator<VcfRecord> batchIterator =
+        new ReusableBatchIterator<>(vcfReader, ANNOTATE_BATCH_SIZE);
 
     // update header
     VcfHeader vcfHeader = vcfReader.getHeader();
@@ -32,11 +35,7 @@ public class VcfAnnotator implements AutoCloseable {
   @Override
   public void close() {
     vcfWriter.close();
-    try {
-      vcfRecordAnnotator.close();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    vcfRecordAnnotator.close();
     vcfReader.close();
   }
 }
