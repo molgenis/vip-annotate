@@ -30,6 +30,7 @@
 ### refactor
 
 - [ ] refactor(annotate+db): code cleanup
+- [ ] refactor(annotate+db): code deduplication
 - [ ] refactor(annotate+db): replace commons-compress 1.28.0-SNAPSHOT dependency with something else
 
 ### build

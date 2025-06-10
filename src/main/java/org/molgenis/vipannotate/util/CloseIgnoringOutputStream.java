@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.util;
 import java.io.FilterOutputStream;
 import java.io.OutputStream;
 
-/** Helper class to ensure System.out is not closed */
+/** Helper class to ensure the System.out is not closed */
 public class CloseIgnoringOutputStream extends FilterOutputStream {
   public CloseIgnoringOutputStream(OutputStream outputStream) {
     super(outputStream);
