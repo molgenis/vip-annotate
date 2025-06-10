@@ -38,7 +38,7 @@ public class PhyloPAnnotationDbWriter {
       ContigPosAnnotation chrPosAnnotation = chrPosAnnotationIterator.next();
 
       String contig = chrPosAnnotation.contig();
-      if (!fastaIndex.containsReferenceSequence(contig)) {
+      if (fastaIndex.notContainsReferenceSequence(contig)) {
         continue;
         //        throw new RuntimeException("Fasta index does not contain reference sequence
         // %s".formatted(contig));

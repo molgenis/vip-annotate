@@ -63,18 +63,7 @@ public class VcfWriter implements AutoCloseable {
 
     // id
     String[] id = vcfRecord.id();
-    if (id.length == 0) {
-      reusableCharArrayBuffer.append('.');
-    } else if (id.length == 1) {
-      reusableCharArrayBuffer.append(id[0]);
-    } else {
-      int i;
-      for (i = 0; i < id.length - 1; ++i) {
-        reusableCharArrayBuffer.append(id[i]);
-        reusableCharArrayBuffer.append(',');
-      }
-      reusableCharArrayBuffer.append(id[i]);
-    }
+    writeStringValueList(id, reusableCharArrayBuffer, ',');
     reusableCharArrayBuffer.append('\t');
 
     // ref
@@ -83,55 +72,17 @@ public class VcfWriter implements AutoCloseable {
 
     // alt
     String[] alt = vcfRecord.alt();
-    if (alt.length == 0) {
-      reusableCharArrayBuffer.append('.');
-    } else if (alt.length == 1) {
-      if (alt[0] != null) {
-        reusableCharArrayBuffer.append(alt[0]);
-      } else {
-        reusableCharArrayBuffer.append('.');
-      }
-    } else {
-      int i;
-      for (i = 0; i < alt.length - 1; ++i) {
-        if (alt[i] != null) {
-          reusableCharArrayBuffer.append(alt[i]);
-        } else {
-          reusableCharArrayBuffer.append('.');
-        }
-        reusableCharArrayBuffer.append(',');
-      }
-      if (alt[i] != null) {
-        reusableCharArrayBuffer.append(alt[i]);
-      } else {
-        reusableCharArrayBuffer.append('.');
-      }
-    }
+    writeStringValueList(alt, reusableCharArrayBuffer, ',');
     reusableCharArrayBuffer.append('\t');
 
     // qual
     String qual = vcfRecord.qual();
-    if (qual != null) {
-      reusableCharArrayBuffer.append(qual);
-    } else {
-      reusableCharArrayBuffer.append('.');
-    }
+    writeStringValue(qual, reusableCharArrayBuffer);
     reusableCharArrayBuffer.append('\t');
 
     // filter
     String[] filter = vcfRecord.filter();
-    if (filter.length == 0) {
-      reusableCharArrayBuffer.append('.');
-    } else if (filter.length == 1) {
-      reusableCharArrayBuffer.append(filter[0]);
-    } else {
-      int i;
-      for (i = 0; i < filter.length - 1; ++i) {
-        reusableCharArrayBuffer.append(filter[i]);
-        reusableCharArrayBuffer.append(',');
-      }
-      reusableCharArrayBuffer.append(filter[i]);
-    }
+    writeStringValueList(filter, reusableCharArrayBuffer, ';');
     reusableCharArrayBuffer.append('\t');
 
     // info
@@ -164,34 +115,40 @@ public class VcfWriter implements AutoCloseable {
     if (hasGenotypeInfo) {
       // format
       String[] format = vcfRecord.format();
-      if (format.length == 0) {
-        reusableCharArrayBuffer.append('.');
-      } else {
-        int i;
-        for (i = 0; i < format.length - 1; ++i) {
-          reusableCharArrayBuffer.append(format[i]);
-          reusableCharArrayBuffer.append(':');
-        }
-        reusableCharArrayBuffer.append(format[i]);
-      }
+      writeStringValueList(format, reusableCharArrayBuffer, ':');
       reusableCharArrayBuffer.append('\t');
 
       // sample data
       String[] sampleData = vcfRecord.sampleData();
-      if (sampleData.length == 1) {
-        reusableCharArrayBuffer.append(sampleData[0]);
-      } else {
-        int i;
-        for (i = 0; i < sampleData.length - 1; ++i) {
-          reusableCharArrayBuffer.append(sampleData[i]);
-          reusableCharArrayBuffer.append('\t');
-        }
-        reusableCharArrayBuffer.append(sampleData[i]);
-      }
+      writeStringValueList(sampleData, reusableCharArrayBuffer, '\t');
     }
 
     // newline
     reusableCharArrayBuffer.append('\n');
+  }
+
+  private static void writeStringValue(String token, CharArrayBuffer charArrayBuffer) {
+    if (token != null) {
+      charArrayBuffer.append(token);
+    } else {
+      charArrayBuffer.append('.');
+    }
+  }
+
+  private static void writeStringValueList(
+      String[] token, CharArrayBuffer charArrayBuffer, char separator) {
+    if (token.length == 0) {
+      charArrayBuffer.append('.');
+    } else if (token.length == 1) {
+      writeStringValue(token[0], charArrayBuffer);
+    } else {
+      int i;
+      for (i = 0; i < token.length - 1; ++i) {
+        writeStringValue(token[i], charArrayBuffer);
+        charArrayBuffer.append(separator);
+      }
+      writeStringValue(token[i], charArrayBuffer);
+    }
   }
 
   @Override

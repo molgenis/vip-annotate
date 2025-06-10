@@ -12,9 +12,10 @@ public class RemmAnnotationDbWriter {
   private Integer currentPartitionId;
 
   public void create(
-          RemmIterator remmIterator,
-          FastaIndex fastaIndex, ZipCompressionContext zipCompressionContext,
-          ZipArchiveOutputStream zipArchiveOutputStream) {
+      RemmIterator remmIterator,
+      FastaIndex fastaIndex,
+      ZipCompressionContext zipCompressionContext,
+      ZipArchiveOutputStream zipArchiveOutputStream) {
     reset();
 
     byte[] encodedScores = new byte[1048576]; // partition size: 2 ^ 20
@@ -23,11 +24,11 @@ public class RemmAnnotationDbWriter {
       RemmFeature remmFeature = remmIterator.next();
 
       String contig = remmFeature.chr();
-      if (!fastaIndex.containsReferenceSequence(contig)) {
+      if (!fastaIndex.notContainsReferenceSequence(contig)) {
         throw new RuntimeException(
-                "Fasta index does not contain reference sequence %s".formatted(contig));
+            "Fasta index does not contain reference sequence %s".formatted(contig));
       }
-      
+
       int pos = remmFeature.start(); // 1-based
       double score = remmFeature.score();
       byte encodedScore = RemmCodec.encode(score);

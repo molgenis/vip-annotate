@@ -26,7 +26,7 @@ public class NcERAnnotationDbWriter {
       NcERFeature ncERFeature = ncERIterator.next();
 
       String contig = ncERFeature.chr();
-      if (!fastaIndex.containsReferenceSequence(contig)) {
+      if (!fastaIndex.notContainsReferenceSequence(contig)) {
         throw new RuntimeException(
             "Fasta index does not contain reference sequence %s".formatted(contig));
       }
