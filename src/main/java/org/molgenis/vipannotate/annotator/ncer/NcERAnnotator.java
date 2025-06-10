@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import lombok.NonNull;
+import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.chrpos.ContigPosAnnotationDb;
 import org.molgenis.vipannotate.db.exact.Variant;
@@ -26,11 +27,15 @@ public class NcERAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
-    // FIXME version
     vcfHeader
         .vcfMetaInfo()
         .addOrUpdateInfo(
-            NcERAnnotationDecoder.ANNOTATION_ID, "A", "Float", "ncER score", "VIP", "0.0.0-dev");
+            NcERAnnotationDecoder.ANNOTATION_ID,
+            "A",
+            "Float",
+            "ncER score",
+            App.getName(),
+            App.getVersion());
   }
 
   @Override

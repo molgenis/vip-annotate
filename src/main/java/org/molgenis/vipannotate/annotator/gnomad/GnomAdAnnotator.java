@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import lombok.NonNull;
+import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.exact.Variant;
 import org.molgenis.vipannotate.db.exact.format.AnnotationDbImpl;
@@ -27,10 +28,9 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
-    // FIXME version
     vcfHeader
         .vcfMetaInfo()
-        .addOrUpdateInfo("gnomAD_AF", "A", "Float", "gnomAD AF", "VIP", "0.0.0-dev");
+        .addOrUpdateInfo("gnomAD_AF", "A", "Float", "gnomAD AF", App.getName(), App.getVersion());
   }
 
   @Override

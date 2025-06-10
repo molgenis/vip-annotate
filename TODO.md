@@ -18,7 +18,7 @@
 - [x] fix: gnomAD annotator
 - [x] fix: App*ArgsParser.getVersion()
 - [ ] fix: native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
-- [ ] fix: remove existing annotations
+- [x] fix: remove existing annotations
 - [x] fix: build warnings
 - [x] fix: read unzipped vcf
 
@@ -46,6 +46,6 @@
 
 ### build
 
-- [ ] build: remove unused dependencies
+- [x] build: remove unused dependencies
 - [x] build: JaCoCo code coverage (measure / fail the build when coverage to low)
 - [ ] build: Travis 

@@ -133,6 +133,7 @@
                         <archive>
                             <manifest>
                                 <mainClass>${package.main.class}</mainClass>
+                                <!-- enabled reading vip-annotate version at runtime -->
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                             </manifest>
@@ -167,6 +168,7 @@
                     <archive>
                         <manifest>
                             <mainClass>${package.main.class}</mainClass>
+                            <!-- enabled reading vip-annotate version at runtime -->
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>

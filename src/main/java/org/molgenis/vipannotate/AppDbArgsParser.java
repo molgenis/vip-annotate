@@ -41,17 +41,11 @@ public class AppDbArgsParser extends ArgsParser<AppDbArgs> {
         usage: %s -h, --help                     print this message
         usage: %s -v, --version                  print version
         """,
-        getVersion(), usage, usage);
+        App.getVersion(), usage, usage);
   }
 
   @Override
   protected void printVersion() {
-    Logger.info("%s\n", getVersion());
-  }
-
-  private static String getVersion() {
-    // TODO update pom.xml as described in https://stackoverflow.com/a/2713013
-    String implementationVersion = AppAnnotate.class.getPackage().getImplementationVersion();
-    return implementationVersion != null ? implementationVersion : "0.0.0-dev";
+    Logger.info("%s\n", App.getVersion());
   }
 }
