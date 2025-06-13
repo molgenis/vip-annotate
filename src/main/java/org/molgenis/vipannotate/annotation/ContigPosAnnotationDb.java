@@ -8,6 +8,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.zip.MappableZipFile;
 
+// TODO can we use AnnotationDbImpl?
 // TODO replace Double with container that will contain min/max/mean/median for non-SNPs later
 public class ContigPosAnnotationDb implements AnnotationDb<Double> {
   public static final String ID = "pos";
