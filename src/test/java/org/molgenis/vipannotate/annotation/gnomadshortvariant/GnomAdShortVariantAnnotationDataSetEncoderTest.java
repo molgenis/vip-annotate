@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.db.gnomad.shortvariant;
+package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,13 +8,11 @@ import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData;
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
-import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationDataSetEncoder;
-import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationDatasetDecoder;
 import org.molgenis.vipannotate.util.SizedIterator;
 
-class GnomAdShortVariantTsvRecordAnnotationDataSetEncoderTest {
+// FIXME unit test instead of integration test
+class GnomAdShortVariantAnnotationDataSetEncoderTest {
   private GnomAdShortVariantAnnotationDataSetEncoder gnomAdShortVariantAnnotationDataSetEncoder;
   private GnomAdShortVariantAnnotationDatasetDecoder gnomAdShortVariantAnnotationDatasetDecoder;
 

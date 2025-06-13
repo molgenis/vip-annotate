@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.benchmark;
 
 import com.github.luben.zstd.ZstdDecompressCtx;
 import java.io.IOException;
@@ -48,8 +48,7 @@ public class ZstdDecompressBenchmark {
 
     ByteBuffer dstByteBuffer = ByteBuffer.allocateDirect(Math.toIntExact(maxZipArchiveEntrySize));
 
-    try (FileChannel fileChannel =
-        FileChannel.open(annotationsZipPath, StandardOpenOption.READ)) {
+    try (FileChannel fileChannel = FileChannel.open(annotationsZipPath, StandardOpenOption.READ)) {
       long start = System.currentTimeMillis();
       try (ZstdDecompressCtx zstdDecompressCtx = new ZstdDecompressCtx()) {
         for (ZipArchiveEntry zipArchiveEntry : zipArchiveEntries) {

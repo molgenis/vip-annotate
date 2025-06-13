@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.benchmark;
 
 import java.util.ArrayList;
 import java.util.List;
