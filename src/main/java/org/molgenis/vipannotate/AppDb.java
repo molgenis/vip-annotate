@@ -17,12 +17,12 @@ public class AppDb {
   }
 
   private static Command getCommand(AppDbArgs appDbArgs) {
-    switch (appDbArgs.command()) {
+    return switch (appDbArgs.command()) {
       case GNOMAD_SHORT_VARIANT -> new GnomAdShortVariantAnnotationDbBuilderCommand();
       case NCER -> new NcERAnnotationDbBuilderCommand();
       case PHYLOP -> new PhyloPAnnotationDbBuilderCommand();
       case REMM -> new RemmAnnotationDbBuilderCommand();
-    }
+    };
   }
 
   private static void handleException(Exception e) {
