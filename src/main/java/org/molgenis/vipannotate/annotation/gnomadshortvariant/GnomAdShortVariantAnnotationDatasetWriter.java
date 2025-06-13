@@ -1,9 +1,8 @@
-package org.molgenis.vipannotate.db.gnomad.shortvariant.db;
+package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData;
 import org.molgenis.vipannotate.db.v2.AnnotationDatasetWriter;
 import org.molgenis.vipannotate.db.v2.GenomePartitionKey;
 import org.molgenis.vipannotate.db.v2.ZipZstdCompressionContext;

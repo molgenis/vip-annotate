@@ -1,9 +1,9 @@
 package org.molgenis.vipannotate;
 
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantCommand;
 import org.molgenis.vipannotate.db.chrpos.ncer.AppDbNcER;
 import org.molgenis.vipannotate.db.chrpos.phylop.AppDbPhyloP;
 import org.molgenis.vipannotate.db.chrpos.remm.AppDbRemm;
-import org.molgenis.vipannotate.db.gnomad.AppDbGnomAd;
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppDb {
@@ -18,7 +18,7 @@ public class AppDb {
 
   private static void run(AppDbArgs appDbArgs) {
     switch (appDbArgs.command()) {
-      case GNOMAD -> AppDbGnomAd.main(appDbArgs.args());
+      case GNOMAD_SHORT_VARIANT -> new GnomAdShortVariantCommand().run(appDbArgs.args());
       case NCER -> AppDbNcER.main(appDbArgs.args());
       case PHYLOP -> AppDbPhyloP.main(appDbArgs.args());
       case REMM -> AppDbRemm.main(appDbArgs.args());

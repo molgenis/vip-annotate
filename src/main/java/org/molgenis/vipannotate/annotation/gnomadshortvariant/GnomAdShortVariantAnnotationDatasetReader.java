@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.db.gnomad.shortvariant;
+package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -6,7 +6,7 @@ package org.molgenis.vipannotate;
  */
 public record AppDbArgs(Command command, String[] args) {
   public enum Command {
-    GNOMAD,
+    GNOMAD_SHORT_VARIANT,
     NCER,
     PHYLOP,
     REMM,

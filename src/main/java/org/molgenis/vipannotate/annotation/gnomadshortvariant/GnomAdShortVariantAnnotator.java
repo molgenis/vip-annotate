@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotator.gnomad;
+package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -12,15 +12,15 @@ import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.exact.Variant;
 import org.molgenis.vipannotate.db.exact.format.AnnotationDb;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
-public class GnomAdAnnotator implements VcfRecordAnnotator {
+public class GnomAdShortVariantAnnotator implements VcfRecordAnnotator {
   private final AnnotationDb<GnomAdShortVariantAnnotationData> annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public GnomAdAnnotator(@NonNull AnnotationDb<GnomAdShortVariantAnnotationData> annotationDb) {
+  public GnomAdShortVariantAnnotator(
+      @NonNull AnnotationDb<GnomAdShortVariantAnnotationData> annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("#.####");

@@ -8,11 +8,13 @@ import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData.Source;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.db.GnomAdShortVariantAnnotationDataSetEncoder;
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData;
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationDataSetEncoder;
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationDatasetDecoder;
 import org.molgenis.vipannotate.util.SizedIterator;
 
-class GnomAdShortVariantAnnotationDataSetEncoderTest {
+class GnomAdShortVariantTsvRecordAnnotationDataSetEncoderTest {
   private GnomAdShortVariantAnnotationDataSetEncoder gnomAdShortVariantAnnotationDataSetEncoder;
   private GnomAdShortVariantAnnotationDatasetDecoder gnomAdShortVariantAnnotationDatasetDecoder;
 

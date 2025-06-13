@@ -15,12 +15,13 @@ public class AppDbArgsParser extends ArgsParser<AppDbArgs> {
 
   private AppDbArgs.Command parseArgCommandValue(String arg) {
     return switch (arg) {
-      case "gnomad" -> AppDbArgs.Command.GNOMAD;
+      case "gnomad_short_variant" -> AppDbArgs.Command.GNOMAD_SHORT_VARIANT;
       case "ncer" -> AppDbArgs.Command.NCER;
       case "phylop" -> AppDbArgs.Command.PHYLOP;
       case "remm" -> AppDbArgs.Command.REMM;
       default -> {
-        Logger.error("command '%s' unknown, valid values are [gnomad, ncer, phylop, remm]");
+        Logger.error(
+            "command '%s' unknown, valid values are [gnomad_short_variant, ncer, phylop, remm]");
         System.exit(1);
         throw new RuntimeException(); // unreachable, but suppresses IntelliJ warning
       }
@@ -34,10 +35,10 @@ public class AppDbArgsParser extends ArgsParser<AppDbArgs> {
         """
         vip-annotate-db v%s
 
-        usage: %s gnomad [arguments]
-        usage: %s ncer   [arguments]
-        usage: %s phylop [arguments]
-        usage: %s remm   [arguments]
+        usage: %s gnomad_short_variant [arguments]
+        usage: %s ncer                 [arguments]
+        usage: %s phylop               [arguments]
+        usage: %s remm                 [arguments]
         usage: %s -h, --help                     print this message
         usage: %s -v, --version                  print version
         """,

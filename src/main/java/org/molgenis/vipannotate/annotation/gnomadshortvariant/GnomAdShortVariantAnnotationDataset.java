@@ -1,11 +1,11 @@
-package org.molgenis.vipannotate.db.gnomad.shortvariant;
+package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import java.util.EnumSet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData.Filter;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Filter;
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
 import org.molgenis.vipannotate.db.v2.AnnotationDataset;
 
 @RequiredArgsConstructor

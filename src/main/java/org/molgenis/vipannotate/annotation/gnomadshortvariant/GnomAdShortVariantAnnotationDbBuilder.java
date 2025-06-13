@@ -1,11 +1,10 @@
-package org.molgenis.vipannotate.db.gnomad.shortvariant.db;
+package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.db.exact.format.FuryFactory;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData;
 import org.molgenis.vipannotate.db.v2.AnnotationDbWriter;
 import org.molgenis.vipannotate.db.v2.AnnotationIndexWriter;
 import org.molgenis.vipannotate.db.v2.VariantAnnotation;

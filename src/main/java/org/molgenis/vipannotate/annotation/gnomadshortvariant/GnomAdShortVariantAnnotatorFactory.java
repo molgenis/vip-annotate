@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotator.gnomad;
+package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,15 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fury.Fury;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.exact.format.FuryFactory;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationDatasetDecoder;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationDatasetFactory;
-import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationDatasetReader;
 import org.molgenis.vipannotate.db.v2.*;
 import org.molgenis.vipannotate.util.MappableZipFile;
 
 @RequiredArgsConstructor
-public class GnomAdAnnotatorFactory {
+public class GnomAdShortVariantAnnotatorFactory {
   @NonNull private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
@@ -49,6 +45,6 @@ public class GnomAdAnnotatorFactory {
     org.molgenis.vipannotate.db.v2.AnnotationDbImpl<GnomAdShortVariantAnnotationData> annotationDb =
         new org.molgenis.vipannotate.db.v2.AnnotationDbImpl<>(
             annotationIndexReader, annotationDatasetReader);
-    return new GnomAdAnnotator(annotationDb);
+    return new GnomAdShortVariantAnnotator(annotationDb);
   }
 }
