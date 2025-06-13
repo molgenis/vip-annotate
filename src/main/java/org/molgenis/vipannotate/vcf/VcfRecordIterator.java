@@ -140,7 +140,9 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
 
     for (String infoToken : infoTokens) {
       String[] infoTokenKeyValue = infoToken.split("=", -1);
-      info.put(infoTokenKeyValue[0], infoTokenKeyValue[1]);
+      info.put(
+          infoTokenKeyValue[0],
+          infoTokenKeyValue.length != 1 ? infoTokenKeyValue[1] : null); // null for flag
     }
     return info;
   }

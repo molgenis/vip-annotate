@@ -2,16 +2,23 @@ package org.molgenis.vipannotate.annotator;
 
 import java.nio.file.Path;
 import java.util.List;
+import lombok.NonNull;
 import org.molgenis.vipannotate.annotator.gnomad.GnomAdAnnotatorFactory;
-import org.molgenis.vipannotate.annotator.ncer.NcERAnnotatorFactory;
-import org.molgenis.vipannotate.annotator.phylop.PhyloPAnnotatorFactory;
-import org.molgenis.vipannotate.annotator.remm.RemmAnnotatorFactory;
+import org.molgenis.vipannotate.db.v2.AnnotationBlobReaderFactory;
 import org.molgenis.vipannotate.vcf.*;
 
-public class VcfAnnotatorFactory {
-  private VcfAnnotatorFactory() {}
+public class VcfAnnotatorFactory implements AutoCloseable {
+  public final AnnotationBlobReaderFactory annotationBlobReaderFactory;
 
-  public static VcfAnnotator create(
+  public VcfAnnotatorFactory() {
+    this(new AnnotationBlobReaderFactory());
+  }
+
+  VcfAnnotatorFactory(@NonNull AnnotationBlobReaderFactory annotationBlobReaderFactory) {
+    this.annotationBlobReaderFactory = annotationBlobReaderFactory;
+  }
+
+  public VcfAnnotator create(
       Path inputVcf, Path annotationsZip, Path outputVcf, VcfType outputVcfType) {
     VcfReader vcfReader = VcfReaderFactory.create(inputVcf);
     VcfRecordAnnotator vcfRecordAnnotator = createVcfRecordAnnotator(annotationsZip);
@@ -19,19 +26,21 @@ public class VcfAnnotatorFactory {
     return new VcfAnnotator(vcfReader, vcfRecordAnnotator, vcfWriter);
   }
 
-  private static VcfRecordAnnotatorAggregator createVcfRecordAnnotator(Path annotationsDir) {
-    // FIXME disabled effect annotator due to GraalVm issues
-    //    VcfRecordAnnotator vcfRecordAnnotatorEffect =
-    // VcfRecordAnnotatorEffect.create(annotationsZip);
-    VcfRecordAnnotator vcfRecordAnnotatorGnomAd = GnomAdAnnotatorFactory.create(annotationsDir);
-    VcfRecordAnnotator vcfRecordAnnotatorPhyloP = PhyloPAnnotatorFactory.create(annotationsDir);
-    VcfRecordAnnotator vcfRecordAnnotatorNcER = NcERAnnotatorFactory.create(annotationsDir);
-    VcfRecordAnnotator vcfRecordAnnotatorRemm = RemmAnnotatorFactory.create(annotationsDir);
-    return new VcfRecordAnnotatorAggregator(
-        List.of(
-            vcfRecordAnnotatorGnomAd,
+  private VcfRecordAnnotatorAggregator createVcfRecordAnnotator(Path annotationsDir) {
+    VcfRecordAnnotator vcfRecordAnnotatorGnomAd =
+        new GnomAdAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+    // FIXME enable annotators
+//    VcfRecordAnnotator vcfRecordAnnotatorPhyloP = PhyloPAnnotatorFactory.create(annotationsDir);
+//    VcfRecordAnnotator vcfRecordAnnotatorNcER = NcERAnnotatorFactory.create(annotationsDir);
+//    VcfRecordAnnotator vcfRecordAnnotatorRemm = RemmAnnotatorFactory.create(annotationsDir);
+    return new VcfRecordAnnotatorAggregator(List.of(vcfRecordAnnotatorGnomAd /*,
             vcfRecordAnnotatorNcER,
             vcfRecordAnnotatorPhyloP,
-            vcfRecordAnnotatorRemm));
+            vcfRecordAnnotatorRemm*/));
+  }
+
+  @Override
+  public void close() {
+    annotationBlobReaderFactory.close();
   }
 }

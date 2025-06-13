@@ -8,7 +8,7 @@ import org.molgenis.vipannotate.db.Quantized16UnitIntervalDoublePrimitive;
 public class Quantized16UnitIntervalDoublePrimitiveTest {
   @Test
   public void test() {
-    // test [0,1)
+    // shortvariant [0,1)
     for (int i = 0; i < 10000; ++i) {
       double x = Math.random();
       double xQuantized =
@@ -20,7 +20,7 @@ public class Quantized16UnitIntervalDoublePrimitiveTest {
 
   @Test
   public void test1() {
-    // test 1
+    // shortvariant 1
     double x = 1d;
     double xQuantized =
         Quantized16UnitIntervalDoublePrimitive.toDouble(

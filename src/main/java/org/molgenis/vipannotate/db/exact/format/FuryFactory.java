@@ -5,6 +5,7 @@ import org.apache.fury.config.Language;
 import org.molgenis.vipannotate.db.exact.formatv2.VariantAltAlleleAnnotationIndex;
 import org.molgenis.vipannotate.db.exact.formatv2.VariantAltAlleleAnnotationIndexBig;
 import org.molgenis.vipannotate.db.exact.formatv2.VariantAltAlleleAnnotationIndexSmall;
+import org.molgenis.vipannotate.db.v2.AnnotationIndexImpl;
 
 public class FuryFactory {
   // allow use of Fury in GraalVM native image, see
@@ -30,6 +31,9 @@ public class FuryFactory {
     fury.register(VariantAltAlleleAnnotationIndexSmall.class, true);
     fury.register(VariantAltAlleleAnnotationIndexBig.class, true);
     fury.register(VariantAltAlleleAnnotationIndex.class, true);
+
+    // for gnomad shortvariant
+    fury.register(AnnotationIndexImpl.class, true);
   }
 
   private FuryFactory() {}

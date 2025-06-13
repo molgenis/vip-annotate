@@ -17,7 +17,8 @@ public class VcfAnnotator implements AutoCloseable {
   public void annotate() {
 
     ReusableBatchIterator<VcfRecord> batchIterator =
-        new ReusableBatchIterator<>(vcfReader, ANNOTATE_BATCH_SIZE);
+        new ReusableBatchIterator<>(
+            vcfReader, ANNOTATE_BATCH_SIZE); // FIXME do not batch over partition borders
 
     // update header
     VcfHeader vcfHeader = vcfReader.getHeader();

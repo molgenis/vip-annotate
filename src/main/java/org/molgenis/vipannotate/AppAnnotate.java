@@ -34,9 +34,11 @@ public class AppAnnotate {
       Logger.REDIRECT_STDOUT_TO_STDERR = true;
     }
 
-    try (VcfAnnotator vcfAnnotator =
-        VcfAnnotatorFactory.create(inputVcf, annotationsDir, outputVcf, outputVcfType)) {
-      vcfAnnotator.annotate();
+    try (VcfAnnotatorFactory vcfAnnotatorFactory = new VcfAnnotatorFactory()) {
+      try (VcfAnnotator vcfAnnotator =
+          vcfAnnotatorFactory.create(inputVcf, annotationsDir, outputVcf, outputVcfType)) {
+        vcfAnnotator.annotate();
+      }
     }
   }
 

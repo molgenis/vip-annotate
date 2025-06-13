@@ -11,16 +11,16 @@ import lombok.NonNull;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
 import org.molgenis.vipannotate.db.exact.Variant;
-import org.molgenis.vipannotate.db.exact.format.AnnotationDbImpl;
-import org.molgenis.vipannotate.db.gnomad.GnomAdShortVariantAnnotation;
+import org.molgenis.vipannotate.db.exact.format.AnnotationDb;
+import org.molgenis.vipannotate.db.gnomad.shortvariant.GnomAdShortVariantAnnotationData;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
 public class GnomAdAnnotator implements VcfRecordAnnotator {
-  private final AnnotationDbImpl<GnomAdShortVariantAnnotation> annotationDb;
+  private final AnnotationDb<GnomAdShortVariantAnnotationData> annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public GnomAdAnnotator(@NonNull AnnotationDbImpl<GnomAdShortVariantAnnotation> annotationDb) {
+  public GnomAdAnnotator(@NonNull AnnotationDb<GnomAdShortVariantAnnotationData> annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("#.####");
@@ -39,7 +39,7 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
     String[] alts = vcfRecord.alt();
     List<Double> altAfAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
-      GnomAdShortVariantAnnotation gnomAdAnnotation =
+      GnomAdShortVariantAnnotationData gnomAdAnnotation =
           annotationDb.findAnnotations(
               new Variant(
                   chromosome,
@@ -52,11 +52,8 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
 
       Double altAnnotation;
       if (gnomAdAnnotation != null) {
-        GnomAdShortVariantAnnotation.VariantData variantData = gnomAdAnnotation.getJoint();
-        if (variantData == null) variantData = gnomAdAnnotation.getGenomes();
-        if (variantData == null) variantData = gnomAdAnnotation.getExomes();
-
-        altAnnotation = variantData.getAf();
+        altAnnotation = gnomAdAnnotation.af();
+        // FIXME add other annotations
       } else {
         altAnnotation = null;
       }

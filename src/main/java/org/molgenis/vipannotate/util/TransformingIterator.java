@@ -1,0 +1,27 @@
+package org.molgenis.vipannotate.util;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class TransformingIterator<S, T> implements Iterator<T> {
+  @NonNull private final Iterator<S> sourceIterator;
+  @NonNull private final Function<S, T> transformFunction;
+
+  @Override
+  public boolean hasNext() {
+    return sourceIterator.hasNext();
+  }
+
+  @Override
+  public T next() {
+    if (!hasNext()) {
+      throw new NoSuchElementException();
+    }
+    S element = sourceIterator.next();
+    return transformFunction.apply(element);
+  }
+}

@@ -8,6 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Batch iterator that reuses the list returned by <code>next()</code> on later calls.
+ *
+ * @param <T> the type of elements returned by this iterator
+ */
 public class ReusableBatchIterator<T> implements Iterator<List<T>> {
   private final Iterator<T> source;
   private final int batchSize;
@@ -25,8 +30,11 @@ public class ReusableBatchIterator<T> implements Iterator<List<T>> {
 
   @Override
   public List<T> next() {
-    if (!hasNext()) throw new NoSuchElementException();
+    if (!hasNext()) {
+      throw new NoSuchElementException();
+    }
 
+    // lazy init
     if (reusableBatch == null) {
       reusableBatch = new ArrayList<>(batchSize);
     } else {

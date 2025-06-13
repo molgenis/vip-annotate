@@ -100,8 +100,11 @@ public class VcfWriter implements AutoCloseable {
       int i;
       for (i = 0; i < infoSize - 1; ++i) {
         reusableCharArrayBuffer.append(keyIterator.next());
-        reusableCharArrayBuffer.append('=');
-        reusableCharArrayBuffer.append(valueIterator.next());
+        String value = valueIterator.next();
+        if (value != null) { // value is null for flag
+          reusableCharArrayBuffer.append('=');
+          reusableCharArrayBuffer.append(value);
+        }
         reusableCharArrayBuffer.append(';');
       }
       reusableCharArrayBuffer.append(keyIterator.next());
