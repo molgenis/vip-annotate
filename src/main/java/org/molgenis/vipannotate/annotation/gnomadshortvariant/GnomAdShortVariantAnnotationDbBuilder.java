@@ -4,15 +4,15 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.molgenis.vipannotate.db.exact.format.FuryFactory;
-import org.molgenis.vipannotate.db.v2.AnnotationDbWriter;
-import org.molgenis.vipannotate.db.v2.AnnotationIndexWriter;
-import org.molgenis.vipannotate.db.v2.VariantAnnotation;
-import org.molgenis.vipannotate.db.v2.ZipZstdCompressionContext;
+import org.molgenis.vipannotate.annotation.AnnotationDbWriter;
+import org.molgenis.vipannotate.annotation.AnnotationIndexWriter;
+import org.molgenis.vipannotate.annotation.VariantAnnotation;
+import org.molgenis.vipannotate.serialization.FuryFactory;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.util.TransformingIterator;
 import org.molgenis.vipannotate.util.TsvIterator;
-import org.molgenis.vipannotate.util.Zip;
+import org.molgenis.vipannotate.zip.Zip;
+import org.molgenis.vipannotate.zip.ZipZstdCompressionContext;
 
 public class GnomAdShortVariantAnnotationDbBuilder {
   public GnomAdShortVariantAnnotationDbBuilder() {}

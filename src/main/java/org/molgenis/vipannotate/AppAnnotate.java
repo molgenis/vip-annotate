@@ -2,8 +2,8 @@ package org.molgenis.vipannotate;
 
 import java.nio.file.Path;
 import org.apache.fury.logging.LoggerFactory;
-import org.molgenis.vipannotate.annotator.VcfAnnotator;
-import org.molgenis.vipannotate.annotator.VcfAnnotatorFactory;
+import org.molgenis.vipannotate.annotation.VcfAnnotator;
+import org.molgenis.vipannotate.annotation.VcfAnnotatorFactory;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.vcf.VcfType;
 

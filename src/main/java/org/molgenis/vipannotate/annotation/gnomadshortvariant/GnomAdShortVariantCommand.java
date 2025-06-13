@@ -8,7 +8,7 @@ import org.molgenis.vipannotate.Command;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.util.FastaIndexParser;
 import org.molgenis.vipannotate.util.Logger;
-import org.molgenis.vipannotate.util.Zip;
+import org.molgenis.vipannotate.zip.Zip;
 
 public class GnomAdShortVariantCommand implements Command {
   @Override

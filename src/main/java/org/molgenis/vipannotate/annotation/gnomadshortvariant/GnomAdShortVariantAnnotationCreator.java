@@ -2,10 +2,10 @@ package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
+import org.molgenis.vipannotate.annotation.Variant;
+import org.molgenis.vipannotate.annotation.VariantAnnotation;
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Filter;
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
-import org.molgenis.vipannotate.db.exact.Variant;
-import org.molgenis.vipannotate.db.v2.VariantAnnotation;
 
 public class GnomAdShortVariantAnnotationCreator {
   public VariantAnnotation<GnomAdShortVariantAnnotationData> annotate(

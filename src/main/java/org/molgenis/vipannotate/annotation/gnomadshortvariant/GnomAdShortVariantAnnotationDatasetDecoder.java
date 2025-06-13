@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 import java.util.EnumSet;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
-import org.molgenis.vipannotate.db.Quantized16UnitIntervalDoublePrimitive;
+import org.molgenis.vipannotate.util.Quantized16UnitIntervalDoublePrimitive;
 
 public class GnomAdShortVariantAnnotationDatasetDecoder {
   public Source decodeSource(MemoryBuffer memoryBuffer, int sourceIndex) {

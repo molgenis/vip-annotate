@@ -5,10 +5,9 @@ import java.nio.file.Path;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.Fury;
-import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
-import org.molgenis.vipannotate.db.exact.format.FuryFactory;
-import org.molgenis.vipannotate.db.v2.*;
-import org.molgenis.vipannotate.util.MappableZipFile;
+import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.zip.MappableZipFile;
 
 @RequiredArgsConstructor
 public class GnomAdShortVariantAnnotatorFactory {
@@ -42,9 +41,8 @@ public class GnomAdShortVariantAnnotatorFactory {
             annotationBlobReaderFactory.create(mappableZipFile, "filters"),
             annotationBlobReaderFactory.create(mappableZipFile, "cov"));
 
-    org.molgenis.vipannotate.db.v2.AnnotationDbImpl<GnomAdShortVariantAnnotationData> annotationDb =
-        new org.molgenis.vipannotate.db.v2.AnnotationDbImpl<>(
-            annotationIndexReader, annotationDatasetReader);
+    AnnotationDbImpl<GnomAdShortVariantAnnotationData> annotationDb =
+        new AnnotationDbImpl<>(annotationIndexReader, annotationDatasetReader);
     return new GnomAdShortVariantAnnotator(annotationDb);
   }
 }

@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.db.v2.*;
+import org.molgenis.vipannotate.annotation.*;
 
 @RequiredArgsConstructor
 public class GnomAdShortVariantAnnotationDatasetReader

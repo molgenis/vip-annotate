@@ -3,12 +3,12 @@ package org.molgenis.vipannotate.annotation.gnomadshortvariant;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.db.v2.AnnotationDatasetWriter;
-import org.molgenis.vipannotate.db.v2.GenomePartitionKey;
-import org.molgenis.vipannotate.db.v2.ZipZstdCompressionContext;
+import org.molgenis.vipannotate.annotation.AnnotationDatasetWriter;
+import org.molgenis.vipannotate.annotation.GenomePartitionKey;
 import org.molgenis.vipannotate.util.SizedIterable;
 import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
+import org.molgenis.vipannotate.zip.ZipZstdCompressionContext;
 
 @RequiredArgsConstructor
 public class GnomAdShortVariantAnnotationDatasetWriter

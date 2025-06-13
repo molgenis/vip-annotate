@@ -1,9 +1,9 @@
 package org.molgenis.vipannotate;
 
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantCommand;
-import org.molgenis.vipannotate.db.chrpos.ncer.AppDbNcER;
-import org.molgenis.vipannotate.db.chrpos.phylop.AppDbPhyloP;
-import org.molgenis.vipannotate.db.chrpos.remm.AppDbRemm;
+import org.molgenis.vipannotate.annotation.ncer.AppDbNcER;
+import org.molgenis.vipannotate.annotation.phylop.AppDbPhyloP;
+import org.molgenis.vipannotate.annotation.remm.AppDbRemm;
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppDb {

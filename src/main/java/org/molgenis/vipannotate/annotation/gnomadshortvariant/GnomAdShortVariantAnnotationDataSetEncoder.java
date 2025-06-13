@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
-import org.molgenis.vipannotate.db.Quantized16UnitIntervalDoublePrimitive;
+import org.molgenis.vipannotate.util.Quantized16UnitIntervalDoublePrimitive;
 import org.molgenis.vipannotate.util.ReusableBatchIterator;
 import org.molgenis.vipannotate.util.SizedIterator;
 

@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.molgenis.vipannotate.db.Quantized16UnitIntervalDoublePrimitive;
 
 public class Quantized16UnitIntervalDoublePrimitiveTest {
   @Test

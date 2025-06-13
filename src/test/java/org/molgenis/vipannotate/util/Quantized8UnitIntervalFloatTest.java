@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.molgenis.vipannotate.db.Quantized8UnitIntervalFloat;
 
 public class Quantized8UnitIntervalFloatTest {
   @Test

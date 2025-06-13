@@ -9,9 +9,9 @@ import java.util.Locale;
 import java.util.Objects;
 import lombok.NonNull;
 import org.molgenis.vipannotate.App;
-import org.molgenis.vipannotate.annotator.VcfRecordAnnotator;
-import org.molgenis.vipannotate.db.exact.Variant;
-import org.molgenis.vipannotate.db.exact.format.AnnotationDb;
+import org.molgenis.vipannotate.annotation.AnnotationDb;
+import org.molgenis.vipannotate.annotation.Variant;
+import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 

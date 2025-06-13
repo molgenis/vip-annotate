@@ -4,9 +4,9 @@ import java.util.EnumSet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vipannotate.annotation.AnnotationDataset;
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Filter;
 import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
-import org.molgenis.vipannotate.db.v2.AnnotationDataset;
 
 @RequiredArgsConstructor
 public class GnomAdShortVariantAnnotationDataset

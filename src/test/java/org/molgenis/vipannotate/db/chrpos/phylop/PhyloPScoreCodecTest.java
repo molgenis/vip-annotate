@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.db.chrpos.phylop;
 
 import org.junit.jupiter.api.Test;
+import org.molgenis.vipannotate.annotation.phylop.PhyloPScoreCodec;
 
 class PhyloPScoreCodecTest {
   @Test
