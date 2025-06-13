@@ -36,7 +36,7 @@ public class GnomAdAnnotationDbBuilder {
   }
 
   private Iterator<VariantAnnotation<GnomAdAnnotationData>> create(
-      BufferedReader bufferedReader, FastaIndex fastaIndex) throws IOException {
+      BufferedReader bufferedReader, FastaIndex fastaIndex) {
     GnomAdParser gnomAdParser = new GnomAdParser(fastaIndex);
     GnomAdAnnotationCreator gnomadAnnotationCreator = new GnomAdAnnotationCreator();
     return new TransformingIterator<>(

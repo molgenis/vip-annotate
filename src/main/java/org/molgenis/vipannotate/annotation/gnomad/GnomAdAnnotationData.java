@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 public record GnomAdAnnotationData(
     @NonNull Source source,
-    double af,
+    double af, // FIXME must be Double instead of double
     double faf95,
     double faf99,
     int hn,
