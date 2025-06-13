@@ -3,6 +3,8 @@ package org.molgenis.vipannotate.serialization;
 import org.apache.fury.Fury;
 import org.apache.fury.config.Language;
 import org.molgenis.vipannotate.annotation.AnnotationIndexImpl;
+import org.molgenis.vipannotate.annotation.VariantAltAlleleAnnotationIndexBig;
+import org.molgenis.vipannotate.annotation.VariantAltAlleleAnnotationIndexSmall;
 
 public class FuryFactory {
   // allow use of Fury in GraalVM native image, see
@@ -22,6 +24,8 @@ public class FuryFactory {
     // register and generate serializer code.
     // order matters
     fury.registerSerializer(SortedIntArrayWrapper.class, SortedIntArrayWrapperSerializer.class);
+    fury.register(VariantAltAlleleAnnotationIndexSmall.class, true);
+    fury.register(VariantAltAlleleAnnotationIndexBig.class, true);
     fury.register(AnnotationIndexImpl.class, true);
   }
 
