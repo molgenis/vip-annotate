@@ -10,17 +10,20 @@ import org.apache.fury.Fury;
 import org.molgenis.vipannotate.db.exact.format.AnnotationData;
 import org.molgenis.vipannotate.db.exact.format.FuryFactory;
 import org.molgenis.vipannotate.db.exact.format.SortedIntArrayWrapper;
-import org.molgenis.vipannotate.db.exact.formatv2.VariantAltAlleleAnnotationIndex;
 import org.molgenis.vipannotate.db.exact.formatv2.VariantAltAlleleAnnotationIndexBig;
 import org.molgenis.vipannotate.db.exact.formatv2.VariantAltAlleleAnnotationIndexSmall;
 import org.molgenis.vipannotate.db.gnomad.ZipCompressionContext;
+import org.molgenis.vipannotate.db.v2.AnnotationIndex;
+import org.molgenis.vipannotate.db.v2.AnnotationIndexImpl;
+import org.molgenis.vipannotate.db.v2.GenomePartition;
+import org.molgenis.vipannotate.db.v2.GenomePartitionKey;
+import org.molgenis.vipannotate.util.PushbackIterator;
 
 public class AnnotationDbWriter {
   private final VariantEncoder variantEncoder;
   private final Fury fury;
 
-  private String currentContig;
-  private Integer currentPartitionId;
+  private GenomePartitionKey activeGenomePartitionKey;
 
   public AnnotationDbWriter() {
     this(new VariantEncoder(), FuryFactory.createFury());
@@ -43,60 +46,55 @@ public class AnnotationDbWriter {
     List<EncodedBigVariantAltAlleleAnnotation> encodedBigVariantAltAlleleAnnotation =
         new ArrayList<>();
 
-    variantAltAlleleAnnotationIterator.forEachRemaining(
-        variantAltAlleleAnnotation -> {
-          Variant variant = variantAltAlleleAnnotation.variant();
-          byte[] encodedAnnotations = variantAltAlleleAnnotation.encodedAnnotations();
+    for (PushbackIterator<VariantAltAlleleAnnotation> iterator =
+            new PushbackIterator<>(variantAltAlleleAnnotationIterator);
+        iterator.hasNext(); ) {
+      VariantAltAlleleAnnotation variantAltAlleleAnnotation = iterator.next();
 
-          // encode
-          if (VariantEncoder.isSmallVariant(variant)) {
-            int encodedVariantAltAllele = VariantEncoder.encodeSmall(variant);
+      // determine partition
+      Variant variant = variantAltAlleleAnnotation.variant();
+      GenomePartitionKey genomePartitionKey =
+          new GenomePartitionKey(variant.contig(), GenomePartition.calcBin(variant.start()));
 
-            encodedSmallVariantAltAlleleAnnotation.add(
-                new EncodedSmallVariantAltAlleleAnnotation(
-                    encodedVariantAltAllele,
-                    encodedAnnotations)); // FIXME added to list if contig/partition differs
-          } else {
-            BigInteger encodedVariantAltAllele = VariantEncoder.encodeBig(variant);
-            encodedBigVariantAltAlleleAnnotation.add(
-                new EncodedBigVariantAltAlleleAnnotation(
-                    encodedVariantAltAllele,
-                    encodedAnnotations)); // FIXME added to list if contig/partition differs
-          }
+      // write partition
+      if (!genomePartitionKey.equals(activeGenomePartitionKey)) {
+        if (!encodedSmallVariantAltAlleleAnnotation.isEmpty()
+            || !encodedBigVariantAltAlleleAnnotation.isEmpty()) {
+          write(
+              activeGenomePartitionKey,
+              encodedSmallVariantAltAlleleAnnotation,
+              encodedBigVariantAltAlleleAnnotation,
+              zipCompressionContext,
+              zipArchiveOutputStream);
 
-          String contig = variant.contig();
-          if (currentContig == null) {
-            currentContig = contig;
-          }
+          // reset
+          encodedSmallVariantAltAlleleAnnotation.clear();
+          encodedBigVariantAltAlleleAnnotation.clear();
+        }
 
-          int partitionId = variantEncoder.getPartitionId(variant);
-          if (currentPartitionId == null) {
-            currentPartitionId = partitionId;
-          }
+        activeGenomePartitionKey = genomePartitionKey;
+      }
 
-          if (partitionId != currentPartitionId || !contig.equals(currentContig)) {
-            write(
-                currentContig,
-                currentPartitionId,
-                encodedSmallVariantAltAlleleAnnotation,
-                encodedBigVariantAltAlleleAnnotation,
-                zipCompressionContext,
-                zipArchiveOutputStream);
+      // process variant
+      byte[] encodedAnnotations = variantAltAlleleAnnotation.encodedAnnotations();
+      if (VariantEncoder.isSmallVariant(variant)) {
+        int encodedVariantAltAllele = VariantEncoder.encodeSmall(variant);
 
-            // reset
-            encodedSmallVariantAltAlleleAnnotation.clear();
-            encodedBigVariantAltAlleleAnnotation.clear();
-            currentContig = contig;
-            currentPartitionId = partitionId;
-          }
-        });
+        encodedSmallVariantAltAlleleAnnotation.add(
+            new EncodedSmallVariantAltAlleleAnnotation(
+                encodedVariantAltAllele, encodedAnnotations));
+      } else {
+        BigInteger encodedVariantAltAllele = VariantEncoder.encodeBig(variant);
+        encodedBigVariantAltAlleleAnnotation.add(
+            new EncodedBigVariantAltAlleleAnnotation(encodedVariantAltAllele, encodedAnnotations));
+      }
+    }
 
     // write the remainder
     if (!encodedSmallVariantAltAlleleAnnotation.isEmpty()
         || !encodedBigVariantAltAlleleAnnotation.isEmpty()) {
       write(
-          currentContig,
-          currentPartitionId,
+          activeGenomePartitionKey,
           encodedSmallVariantAltAlleleAnnotation,
           encodedBigVariantAltAlleleAnnotation,
           zipCompressionContext,
@@ -105,12 +103,14 @@ public class AnnotationDbWriter {
   }
 
   private void write(
-      String contig,
-      int partitionId,
+      GenomePartitionKey genomePartitionKey,
       List<EncodedSmallVariantAltAlleleAnnotation> encodedSmallVariantAltAlleleAnnotation,
       List<EncodedBigVariantAltAlleleAnnotation> encodedBigVariantAltAlleleAnnotation,
       ZipCompressionContext zipCompressionContext,
       ZipArchiveOutputStream zipArchiveOutputStream) {
+    String contig = genomePartitionKey.contig();
+    int partitionId = genomePartitionKey.bin();
+
     // create small item index
     encodedSmallVariantAltAlleleAnnotation.sort(
         Comparator.comparingInt(o -> o.encodedVariantAltAllele));
@@ -148,11 +148,10 @@ public class AnnotationDbWriter {
 
     AnnotationData annotationData = serializeAnnotations(allList);
 
-    VariantAltAlleleAnnotationIndex variantAltAlleleAnnotationIndex =
-        new VariantAltAlleleAnnotationIndex(
+    AnnotationIndex variantAltAlleleAnnotationIndex =
+        new AnnotationIndexImpl(
             new VariantAltAlleleAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
-            new VariantAltAlleleAnnotationIndexBig(bigIndex),
-            annotationData.variantOffsets());
+            new VariantAltAlleleAnnotationIndexBig(bigIndex));
 
     //    try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(8388608)) {
     // // 8 MB
@@ -199,8 +198,7 @@ public class AnnotationDbWriter {
   }
 
   private void reset() {
-    currentContig = null;
-    currentPartitionId = null;
+    activeGenomePartitionKey = null;
   }
 
   private record EncodedSmallVariantAltAlleleAnnotation(

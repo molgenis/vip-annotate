@@ -25,8 +25,9 @@
 
 ### perf
 
+- [x] perf(build): gnomAD index file
 - [ ] perf(build): build annotation database parts separately to allow for parallel building and partial updating.
-- [ ] perf(build): gnomAD annotation file with separate files for each score element to get rid of offset index
+- [x] perf(build): gnomAD annotation file with separate files for each score element to get rid of offset index
 - [ ] perf(build): zstd dictionary for ncer/phylop/remm
 - [ ] perf(build): space-efficient alternative to BigInteger (Java bincode alternative?)
 - [ ] perf(annotate): do not batch over partition borders (?)

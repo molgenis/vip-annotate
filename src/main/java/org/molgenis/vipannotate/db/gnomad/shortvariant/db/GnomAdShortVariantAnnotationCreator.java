@@ -54,7 +54,11 @@ public class GnomAdShortVariantAnnotationCreator {
 
   private static double createAnnotationAf(GnomAdShortVariant gnomAdShortVariant, Source source) {
     return switch (source) {
-      case EXOMES -> gnomAdShortVariant.afExomes();
+      case EXOMES -> {
+        Double af = gnomAdShortVariant.afExomes();
+        // FIXME investigate possible bug in gnomAD data e.g. a variant near chr3/86
+        yield af != null ? af : 0;
+      }
       case GENOMES -> {
         Double af = gnomAdShortVariant.afGenomes();
         // FIXME investigate possible bug in gnomAD data e.g. 21-5029882-CAA-A

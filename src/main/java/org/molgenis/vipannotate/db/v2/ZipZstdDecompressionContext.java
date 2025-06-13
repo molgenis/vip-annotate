@@ -34,7 +34,6 @@ public class ZipZstdDecompressionContext {
     directByteBuffer.position(0);
     directByteBuffer.limit(uncompressedSize);
 
-    return MemoryBuffer.fromDirectByteBuffer(
-        directByteBuffer, Math.toIntExact(zipArchiveEntry.getSize()), null);
+    return MemoryBuffer.fromDirectByteBuffer(directByteBuffer, uncompressedSize, null);
   }
 }
