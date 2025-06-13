@@ -6,6 +6,7 @@ import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
 import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
 import org.molgenis.vipannotate.zip.MappableZipFile;
 
+// FIXME refactor, see GnomAdAnnotatorFactory
 public class PhyloPAnnotatorFactory {
   private PhyloPAnnotatorFactory() {}
 

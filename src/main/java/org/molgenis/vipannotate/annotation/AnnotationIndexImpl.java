@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AnnotationIndexImpl implements AnnotationIndex {
-  @NonNull private VariantAltAlleleAnnotationIndexSmall variantAnnotationIndexSmall;
-  @NonNull private VariantAltAlleleAnnotationIndexBig variantAnnotationIndexBig;
+  @NonNull private VariantAnnotationIndexSmall variantAnnotationIndexSmall;
+  @NonNull private VariantAnnotationIndexBig variantAnnotationIndexBig;
 
   public int findIndex(Variant variant) {
     // FIXME solve elsewhere

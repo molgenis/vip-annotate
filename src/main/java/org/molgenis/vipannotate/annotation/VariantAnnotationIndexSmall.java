@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import org.molgenis.vipannotate.serialization.SortedIntArrayWrapper;
 
-public record VariantAltAlleleAnnotationIndexSmall(SortedIntArrayWrapper encodedVariants)
+public record VariantAnnotationIndexSmall(SortedIntArrayWrapper encodedVariants)
     implements Serializable {
   public int findIndex(Variant variant) {
     int encodedSmallVariant = VariantEncoder.encodeSmall(variant);

@@ -63,26 +63,26 @@ public class AnnotationDbWriter<T> {
       List<EncodedSmallVariantAnnotation<T>> encodedSmallVariantAnnotations,
       List<EncodedBigVariantAnnotation<T>> encodedBigVariantAnnotations) {
     // create small item index
-    encodedSmallVariantAnnotations.sort(Comparator.comparingInt(o -> o.encodedVariantAltAllele));
+    encodedSmallVariantAnnotations.sort(Comparator.comparingInt(o -> o.encodedVariant));
     int[] smallIndex =
         encodedSmallVariantAnnotations.stream()
-            .map(EncodedSmallVariantAnnotation::encodedVariantAltAllele)
+            .map(EncodedSmallVariantAnnotation::encodedVariant)
             .mapToInt(Integer::intValue)
             .toArray();
 
     // create big item index
-    encodedBigVariantAnnotations.sort(Comparator.comparing(o -> o.encodedVariantAltAllele));
+    encodedBigVariantAnnotations.sort(Comparator.comparing(o -> o.encodedVariant));
     BigInteger[] bigIndex =
         encodedBigVariantAnnotations.stream()
-            .map(EncodedBigVariantAnnotation::encodedVariantAltAllele)
+            .map(EncodedBigVariantAnnotation::encodedVariant)
             .toList()
             .toArray(new BigInteger[0]);
 
     // write index
     AnnotationIndex annotationIndex =
         new AnnotationIndexImpl(
-            new VariantAltAlleleAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
-            new VariantAltAlleleAnnotationIndexBig(bigIndex));
+            new VariantAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
+            new VariantAnnotationIndexBig(bigIndex));
     annotationIndexWriter.write(genomePartitionKey, annotationIndex);
 
     // combine item data
@@ -101,8 +101,8 @@ public class AnnotationDbWriter<T> {
   }
 
   private record EncodedSmallVariantAnnotation<T>(
-      int encodedVariantAltAllele, VariantAnnotation<T> variantAnnotation) {}
+      int encodedVariant, VariantAnnotation<T> variantAnnotation) {}
 
   private record EncodedBigVariantAnnotation<T>(
-      BigInteger encodedVariantAltAllele, VariantAnnotation<T> variantAnnotation) {}
+      BigInteger encodedVariant, VariantAnnotation<T> variantAnnotation) {}
 }
