@@ -7,14 +7,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
 
-public class RemmIterator implements Iterator<RemmIterator.RemmFeature> {
-  /**
-   * @param chr chromosome
-   * @param start start position (1-based)
-   * @param score Regulatory Mendelian Mutation (ReMM) score
-   */
-  public record RemmFeature(String chr, int start, double score) {}
-
+public class RemmIterator implements Iterator<RemmTsvRecord> {
   private final BufferedReader bufferedReader;
   private String line;
 
@@ -35,11 +28,11 @@ public class RemmIterator implements Iterator<RemmIterator.RemmFeature> {
   }
 
   @Override
-  public RemmFeature next() {
+  public RemmTsvRecord next() {
     String[] tokens = line.split("\t", -1);
     String chr = tokens[0];
     int start = Integer.parseInt(tokens[1]);
     double score = Double.parseDouble(tokens[2]);
-    return new RemmFeature(chr, start, score);
+    return new RemmTsvRecord(chr, start, score);
   }
 }

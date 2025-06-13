@@ -1,27 +1,27 @@
 package org.molgenis.vipannotate;
 
-import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantCommand;
-import org.molgenis.vipannotate.annotation.ncer.AppDbNcER;
-import org.molgenis.vipannotate.annotation.phylop.AppDbPhyloP;
-import org.molgenis.vipannotate.annotation.remm.AppDbRemm;
+import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationDbBuilderCommand;
+import org.molgenis.vipannotate.annotation.ncer.NcERAnnotationDbBuilderCommand;
+import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotationDbBuilderCommand;
+import org.molgenis.vipannotate.annotation.remm.RemmAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppDb {
   public static void main(String[] args) {
     try {
       AppDbArgs appDbArgs = new AppDbArgsParser().parse(args);
-      run(appDbArgs);
+      getCommand(appDbArgs).run(appDbArgs.args());
     } catch (Exception e) {
       handleException(e);
     }
   }
 
-  private static void run(AppDbArgs appDbArgs) {
+  private static Command getCommand(AppDbArgs appDbArgs) {
     switch (appDbArgs.command()) {
-      case GNOMAD_SHORT_VARIANT -> new GnomAdShortVariantCommand().run(appDbArgs.args());
-      case NCER -> AppDbNcER.main(appDbArgs.args());
-      case PHYLOP -> AppDbPhyloP.main(appDbArgs.args());
-      case REMM -> AppDbRemm.main(appDbArgs.args());
+      case GNOMAD_SHORT_VARIANT -> new GnomAdShortVariantAnnotationDbBuilderCommand();
+      case NCER -> new NcERAnnotationDbBuilderCommand();
+      case PHYLOP -> new PhyloPAnnotationDbBuilderCommand();
+      case REMM -> new RemmAnnotationDbBuilderCommand();
     }
   }
 

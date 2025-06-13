@@ -4,14 +4,16 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.molgenis.vipannotate.Command;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.util.FastaIndexParser;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.zip.Zip;
 
-public class AppDbRemm {
-  // FIXME proper CLI with arg validation etc.
-  public static void main(String[] args) {
+// FIXME proper CLI with arg validation etc.
+public class RemmAnnotationDbBuilderCommand implements Command {
+  @Override
+  public void run(String[] args) {
     Path remmFile = Path.of(args[1]);
     Path faiFile = Path.of(args[3]);
     Path outputFile = Path.of(args[5]);

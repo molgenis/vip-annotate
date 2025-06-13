@@ -3,10 +3,10 @@ package org.molgenis.vipannotate.annotation.ncer;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
-import org.molgenis.vipannotate.annotation.ncer.NcERIterator.NcERFeature;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.zip.ZipCompressionContextOther;
 
+// TODO refactor: use generic AnnotationDbWriter, remove this class
 public class NcERAnnotationDbWriter {
   private String currentContig;
   private Integer currentPartitionId;
@@ -22,17 +22,17 @@ public class NcERAnnotationDbWriter {
         new short[(int) (Math.pow(2, ContigPosAnnotationDb.NR_PARTITION_ID_BITS))];
 
     while (ncERIterator.hasNext()) {
-      NcERFeature ncERFeature = ncERIterator.next();
+      NcERBedFeature ncERBedFeature = ncERIterator.next();
 
-      String contig = ncERFeature.chr();
+      String contig = ncERBedFeature.chr();
       if (!fastaIndex.notContainsReferenceSequence(contig)) {
         throw new RuntimeException(
             "Fasta index does not contain reference sequence %s".formatted(contig));
       }
 
-      int start = ncERFeature.start() + 1; // 0-based --> 1-based
-      int end = ncERFeature.end() + 1; // 0-based --> 1-based
-      double perc = ncERFeature.perc();
+      int start = ncERBedFeature.start() + 1; // 0-based --> 1-based
+      int end = ncERBedFeature.end() + 1; // 0-based --> 1-based
+      double perc = ncERBedFeature.perc();
       short encodedPerc = NcERCodec.encode(perc);
 
       for (int pos = start; pos < end; pos++) {

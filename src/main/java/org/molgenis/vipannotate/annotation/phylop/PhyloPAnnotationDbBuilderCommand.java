@@ -1,24 +1,25 @@
-package org.molgenis.vipannotate.annotation.ncer;
+package org.molgenis.vipannotate.annotation.phylop;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.molgenis.vipannotate.Command;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.util.FastaIndexParser;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.zip.Zip;
 
-public class AppDbNcER {
-  // FIXME proper CLI with arg validation etc.
-  public static void main(String[] args) {
-    Path ncERFile = Path.of(args[1]);
+// FIXME proper CLI with arg validation etc.
+public class PhyloPAnnotationDbBuilderCommand implements Command {
+  @Override
+  public void run(String[] args) {
+    Path phyloPFile = Path.of(args[1]);
     Path faiFile = Path.of(args[3]);
     Path outputFile = Path.of(args[5]);
     if (Files.exists(outputFile)) {
       throw new IllegalArgumentException("Output file %s already exists".formatted(outputFile));
     }
-
     Logger.info("creating database ...");
     long startCreateDb = System.currentTimeMillis();
 
@@ -26,7 +27,7 @@ public class AppDbNcER {
 
     try (ZipArchiveOutputStream zipArchiveOutputStream =
         Zip.createZipArchiveOutputStream(outputFile)) {
-      new NcERAnnotationDbBuilder().create(ncERFile, fastaIndex, zipArchiveOutputStream);
+      new PhyloPAnnotationDbBuilder().create(phyloPFile, fastaIndex, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

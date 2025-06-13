@@ -2,10 +2,10 @@ package org.molgenis.vipannotate.annotation.remm;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.annotation.remm.RemmIterator.RemmFeature;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.zip.ZipCompressionContextOther;
 
+// TODO refactor: use generic AnnotationDbWriter, remove this class
 /** same as v1 but with 8-bit instead of 16-bit quantized scores */
 public class RemmAnnotationDbWriter {
   private String currentContig;
@@ -21,16 +21,16 @@ public class RemmAnnotationDbWriter {
     byte[] encodedScores = new byte[1048576]; // partition size: 2 ^ 20
 
     while (remmIterator.hasNext()) {
-      RemmFeature remmFeature = remmIterator.next();
+      RemmTsvRecord remmTsvRecord = remmIterator.next();
 
-      String contig = remmFeature.chr();
+      String contig = remmTsvRecord.chr();
       if (!fastaIndex.notContainsReferenceSequence(contig)) {
         throw new RuntimeException(
             "Fasta index does not contain reference sequence %s".formatted(contig));
       }
 
-      int pos = remmFeature.start(); // 1-based
-      double score = remmFeature.score();
+      int pos = remmTsvRecord.start(); // 1-based
+      double score = remmTsvRecord.score();
       byte encodedScore = RemmCodec.encode(score);
 
       if (currentContig == null) {

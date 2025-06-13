@@ -10,7 +10,8 @@ import org.molgenis.vipannotate.util.FastaIndexParser;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.zip.Zip;
 
-public class GnomAdShortVariantCommand implements Command {
+// FIXME proper CLI with arg validation etc.
+public class GnomAdShortVariantAnnotationDbBuilderCommand implements Command {
   @Override
   public void run(String[] args) {
     Path gnomAdFile = Path.of(args[1]);

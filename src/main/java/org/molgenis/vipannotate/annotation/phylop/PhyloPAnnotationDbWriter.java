@@ -10,6 +10,7 @@ import org.molgenis.vipannotate.annotation.ContigPosEncoder;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.zip.ZipCompressionContextOther;
 
+// TODO refactor: use generic AnnotationDbWriter, remove this class
 public class PhyloPAnnotationDbWriter {
   private final ContigPosEncoder contigPosEncoder;
 
