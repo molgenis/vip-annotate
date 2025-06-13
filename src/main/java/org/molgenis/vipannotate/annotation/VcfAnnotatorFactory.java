@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.NonNull;
-import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotatorFactory;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotatorFactory;
 import org.molgenis.vipannotate.vcf.*;
 
 public class VcfAnnotatorFactory implements AutoCloseable {
@@ -27,7 +27,7 @@ public class VcfAnnotatorFactory implements AutoCloseable {
 
   private VcfRecordAnnotatorAggregator createVcfRecordAnnotator(Path annotationsDir) {
     VcfRecordAnnotator vcfRecordAnnotatorGnomAd =
-        new GnomAdShortVariantAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+        new GnomAdAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
     // FIXME enable annotators
     //    VcfRecordAnnotator vcfRecordAnnotatorPhyloP =
     // PhyloPAnnotatorFactory.create(annotationsDir);

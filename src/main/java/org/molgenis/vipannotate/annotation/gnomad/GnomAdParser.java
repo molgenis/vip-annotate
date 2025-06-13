@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
 import lombok.NonNull;
@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.util.FastaIndex;
 
 @RequiredArgsConstructor
-public class GnomAdShortVariantParser {
+public class GnomAdParser {
   @NonNull private final FastaIndex fastaIndex;
 
-  public GnomAdShortVariantTsvRecord parse(String[] tokens) {
+  public GnomAdTsvRecord parse(String[] tokens) {
     if (tokens.length != 23) {
       throw new IllegalArgumentException("GnomAd short variant parser expects 23 tokens");
     }
@@ -31,15 +31,15 @@ public class GnomAdShortVariantParser {
     Integer nhomaltExomes = parseInteger(tokens[i++]);
     Integer nhomaltGenomes = parseInteger(tokens[i++]);
     Integer nhomaltJoint = parseInteger(tokens[i++]);
-    EnumSet<GnomAdShortVariantTsvRecord.Filter> exomesFilters = parseFilters(tokens[i++]);
-    EnumSet<GnomAdShortVariantTsvRecord.Filter> genomesFilters = parseFilters(tokens[i++]);
+    EnumSet<GnomAdTsvRecord.Filter> exomesFilters = parseFilters(tokens[i++]);
+    EnumSet<GnomAdTsvRecord.Filter> genomesFilters = parseFilters(tokens[i++]);
     boolean notCalledInExomes = parseBoolean(tokens[i++]);
     boolean notCalledInGenomes = parseBoolean(tokens[i++]);
     Double covExomes = parseDouble(tokens[i++]);
     Double covGenomes = parseDouble(tokens[i++]);
     Double covJoint = parseDouble(tokens[i]);
 
-    return new GnomAdShortVariantTsvRecord(
+    return new GnomAdTsvRecord(
         chrom,
         pos,
         ref,
@@ -84,12 +84,11 @@ public class GnomAdShortVariantParser {
     return token.isEmpty() ? null : Integer.parseInt(token);
   }
 
-  private static EnumSet<GnomAdShortVariantTsvRecord.Filter> parseFilters(String token) {
+  private static EnumSet<GnomAdTsvRecord.Filter> parseFilters(String token) {
     if (token == null)
       throw new IllegalArgumentException("GnomAd short variant parser expects a non-null token");
 
-    EnumSet<GnomAdShortVariantTsvRecord.Filter> filters =
-        EnumSet.noneOf(GnomAdShortVariantTsvRecord.Filter.class);
+    EnumSet<GnomAdTsvRecord.Filter> filters = EnumSet.noneOf(GnomAdTsvRecord.Filter.class);
     if (!token.isEmpty()) {
       String[] filterTokens = token.split(",", -1);
       for (String filterToken : filterTokens) {
@@ -100,11 +99,11 @@ public class GnomAdShortVariantParser {
     return filters;
   }
 
-  private static GnomAdShortVariantTsvRecord.Filter parseFilter(String token) {
+  private static GnomAdTsvRecord.Filter parseFilter(String token) {
     return switch (token) {
-      case "AC0" -> GnomAdShortVariantTsvRecord.Filter.AC0;
-      case "AS_VQSR" -> GnomAdShortVariantTsvRecord.Filter.AS_VQSR;
-      case "InbreedingCoeff" -> GnomAdShortVariantTsvRecord.Filter.INBREEDING_COEFF;
+      case "AC0" -> GnomAdTsvRecord.Filter.AC0;
+      case "AS_VQSR" -> GnomAdTsvRecord.Filter.AS_VQSR;
+      case "InbreedingCoeff" -> GnomAdTsvRecord.Filter.INBREEDING_COEFF;
       default -> throw new IllegalStateException("Unexpected value: " + token);
     };
   }

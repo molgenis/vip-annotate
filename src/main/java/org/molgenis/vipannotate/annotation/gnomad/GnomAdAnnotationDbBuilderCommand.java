@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.zip.Zip;
 
 // FIXME proper CLI with arg validation etc.
-public class GnomAdShortVariantAnnotationDbBuilderCommand implements Command {
+public class GnomAdAnnotationDbBuilderCommand implements Command {
   @Override
   public void run(String[] args) {
     Path gnomAdFile = Path.of(args[1]);
@@ -37,8 +37,7 @@ public class GnomAdShortVariantAnnotationDbBuilderCommand implements Command {
 
     try (ZipArchiveOutputStream zipArchiveOutputStream =
         Zip.createZipArchiveOutputStream(outputFile)) {
-      new GnomAdShortVariantAnnotationDbBuilder()
-          .create(gnomAdFile, fastaIndex, zipArchiveOutputStream);
+      new GnomAdAnnotationDbBuilder().create(gnomAdFile, fastaIndex, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

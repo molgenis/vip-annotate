@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -15,12 +15,11 @@ import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
-public class GnomAdShortVariantAnnotator implements VcfRecordAnnotator {
-  private final AnnotationDb<GnomAdShortVariantAnnotationData> annotationDb;
+public class GnomAdAnnotator implements VcfRecordAnnotator {
+  private final AnnotationDb<GnomAdAnnotationData> annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public GnomAdShortVariantAnnotator(
-      @NonNull AnnotationDb<GnomAdShortVariantAnnotationData> annotationDb) {
+  public GnomAdAnnotator(@NonNull AnnotationDb<GnomAdAnnotationData> annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("#.####");
@@ -39,7 +38,7 @@ public class GnomAdShortVariantAnnotator implements VcfRecordAnnotator {
     String[] alts = vcfRecord.alt();
     List<Double> altAfAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
-      GnomAdShortVariantAnnotationData gnomAdAnnotation =
+      GnomAdAnnotationData gnomAdAnnotation =
           annotationDb.findAnnotations(
               new Variant(
                   chromosome,

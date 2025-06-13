@@ -1,14 +1,14 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
-public class GnomAdShortVariantAnnotationDatasetFactory {
-  @NonNull private final GnomAdShortVariantAnnotationDatasetDecoder annotationDataDecoder;
+public class GnomAdAnnotationDatasetFactory {
+  @NonNull private final GnomAdAnnotationDatasetDecoder annotationDataDecoder;
 
-  public GnomAdShortVariantAnnotationDataset create(
+  public GnomAdAnnotationDataset create(
       @NonNull MemoryBuffer srcMemoryBuffer,
       @NonNull MemoryBuffer afMemoryBuffer,
       @NonNull MemoryBuffer faf95MemoryBuffer,
@@ -16,7 +16,7 @@ public class GnomAdShortVariantAnnotationDatasetFactory {
       @NonNull MemoryBuffer hnMemoryBuffer,
       @NonNull MemoryBuffer filtersMemoryBuffer,
       @NonNull MemoryBuffer covMemoryBuffer) {
-    return new GnomAdShortVariantAnnotationDataset(
+    return new GnomAdAnnotationDataset(
         annotationDataDecoder,
         srcMemoryBuffer,
         afMemoryBuffer,

@@ -1,0 +1,131 @@
+package org.molgenis.vipannotate.annotation.gnomad;
+
+import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
+import org.molgenis.vipannotate.annotation.Variant;
+import org.molgenis.vipannotate.annotation.VariantAnnotation;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Filter;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
+
+public class GnomAdAnnotationCreator {
+  public VariantAnnotation<GnomAdAnnotationData> annotate(GnomAdTsvRecord gnomAdTsvRecord) {
+    Variant variant = createVariant(gnomAdTsvRecord);
+    GnomAdAnnotationData annotation = createAnnotation(gnomAdTsvRecord);
+    return new VariantAnnotation<>(variant, annotation);
+  }
+
+  private static Variant createVariant(GnomAdTsvRecord gnomAdTsvRecord) {
+    String chrom = gnomAdTsvRecord.chrom();
+    int start = gnomAdTsvRecord.pos();
+    int end = start + gnomAdTsvRecord.ref().length() - 1;
+    byte[] alt = gnomAdTsvRecord.alt().getBytes(StandardCharsets.UTF_8);
+    return new Variant(chrom, start, end, alt);
+  }
+
+  private static GnomAdAnnotationData createAnnotation(GnomAdTsvRecord gnomAdTsvRecord) {
+    Source source = createAnnotationSource(gnomAdTsvRecord);
+    double af = createAnnotationAf(gnomAdTsvRecord, source);
+    double faf95 = createAnnotationFaf95(gnomAdTsvRecord, source);
+    double faf99 = createAnnotationFaf99(gnomAdTsvRecord, source);
+    int hn = createAnnotationHn(gnomAdTsvRecord, source);
+    EnumSet<Filter> filters = createAnnotationFilters(gnomAdTsvRecord, source);
+    double cov = createAnnotationCov(gnomAdTsvRecord, source);
+    return new GnomAdAnnotationData(source, af, faf95, faf99, hn, filters, cov);
+  }
+
+  private static Source createAnnotationSource(GnomAdTsvRecord gnomAdTsvRecord) {
+    boolean notCalledInExomes = gnomAdTsvRecord.notCalledInExomes();
+    boolean notCalledInGenomes = gnomAdTsvRecord.notCalledInGenomes();
+
+    Source source;
+    if (!notCalledInExomes && !notCalledInGenomes) {
+      source = Source.TOTAL;
+    } else if (!notCalledInExomes) {
+      source = Source.EXOMES;
+    } else {
+      source = Source.GENOMES;
+      return source;
+    }
+    return source;
+  }
+
+  private static double createAnnotationAf(GnomAdTsvRecord gnomAdTsvRecord, Source source) {
+    return switch (source) {
+      case EXOMES -> {
+        Double af = gnomAdTsvRecord.afExomes();
+        // FIXME investigate possible bug in gnomAD data e.g. a variant near chr3/86
+        yield af != null ? af : 0;
+      }
+      case GENOMES -> {
+        Double af = gnomAdTsvRecord.afGenomes();
+        // FIXME investigate possible bug in gnomAD data e.g. 21-5029882-CAA-A
+        yield af != null ? af : 0;
+      }
+      case TOTAL -> {
+        Double af = gnomAdTsvRecord.afJoint();
+        // FIXME investigate possible bug in gnomAD data e.g. 21-5087539-G-A
+        yield af != null ? gnomAdTsvRecord.afJoint() : 0;
+      }
+    };
+  }
+
+  private static double createAnnotationFaf95(GnomAdTsvRecord gnomAdTsvRecord, Source source) {
+    return switch (source) {
+      case EXOMES -> gnomAdTsvRecord.faf95Exomes();
+      case GENOMES -> gnomAdTsvRecord.faf95Genomes();
+      case TOTAL -> gnomAdTsvRecord.faf95Joint();
+    };
+  }
+
+  private static double createAnnotationFaf99(GnomAdTsvRecord gnomAdTsvRecord, Source source) {
+    return switch (source) {
+      case EXOMES -> gnomAdTsvRecord.faf99Exomes();
+      case GENOMES -> gnomAdTsvRecord.faf99Genomes();
+      case TOTAL -> gnomAdTsvRecord.faf99Joint();
+    };
+  }
+
+  private static int createAnnotationHn(GnomAdTsvRecord gnomAdTsvRecord, Source source) {
+    return switch (source) {
+      case EXOMES -> gnomAdTsvRecord.nhomaltExomes();
+      case GENOMES -> gnomAdTsvRecord.nhomaltGenomes();
+      case TOTAL -> gnomAdTsvRecord.nhomaltJoint();
+    };
+  }
+
+  private static EnumSet<Filter> createAnnotationFilters(
+      GnomAdTsvRecord gnomAdTsvRecord, Source source) {
+    return switch (source) {
+      case EXOMES -> mapFilters(gnomAdTsvRecord.exomesFilters());
+      case GENOMES -> mapFilters(gnomAdTsvRecord.genomesFilters());
+      case TOTAL -> {
+        EnumSet<Filter> mappedFilters = EnumSet.noneOf(Filter.class);
+        mappedFilters.addAll(mapFilters(gnomAdTsvRecord.exomesFilters()));
+        mappedFilters.addAll(mapFilters(gnomAdTsvRecord.genomesFilters()));
+        yield mappedFilters;
+      }
+    };
+  }
+
+  private static EnumSet<Filter> mapFilters(EnumSet<GnomAdTsvRecord.Filter> filters) {
+    EnumSet<Filter> mappedFilters = EnumSet.noneOf(Filter.class);
+    filters.forEach(filter -> mappedFilters.add(mapFilter(filter)));
+    return mappedFilters;
+  }
+
+  private static Filter mapFilter(GnomAdTsvRecord.Filter filter) {
+    return switch (filter) {
+      case AC0 -> Filter.AC0;
+      case AS_VQSR -> Filter.AS_VQSR;
+      case INBREEDING_COEFF -> Filter.INBREEDING_COEFF;
+    };
+  }
+
+  private static double createAnnotationCov(GnomAdTsvRecord gnomAdTsvRecord, Source source) {
+    return switch (source) {
+      case EXOMES -> gnomAdTsvRecord.covExomes();
+      case GENOMES -> gnomAdTsvRecord.covGenomes();
+      case TOTAL -> gnomAdTsvRecord.covJoint();
+    };
+  }
+}

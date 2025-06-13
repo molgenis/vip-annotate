@@ -1,11 +1,11 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import static org.molgenis.vipannotate.util.ParameterValidation.*;
 
 import java.util.EnumSet;
 import lombok.NonNull;
 
-public record GnomAdShortVariantAnnotationData(
+public record GnomAdAnnotationData(
     @NonNull Source source,
     double af,
     double faf95,
@@ -25,7 +25,7 @@ public record GnomAdShortVariantAnnotationData(
     INBREEDING_COEFF
   }
 
-  public GnomAdShortVariantAnnotationData {
+  public GnomAdAnnotationData {
     validateNonNegative(af);
     validateNonNegative(faf95);
     validateNonNegative(faf99);

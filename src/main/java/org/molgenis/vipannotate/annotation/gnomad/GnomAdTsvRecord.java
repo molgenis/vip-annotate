@@ -1,11 +1,11 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import static org.molgenis.vipannotate.util.ParameterValidation.*;
 
 import java.util.EnumSet;
 import lombok.NonNull;
 
-public record GnomAdShortVariantTsvRecord(
+public record GnomAdTsvRecord(
     @NonNull String chrom,
     int pos,
     @NonNull String ref,
@@ -36,7 +36,7 @@ public record GnomAdShortVariantTsvRecord(
     INBREEDING_COEFF
   }
 
-  public GnomAdShortVariantTsvRecord {
+  public GnomAdTsvRecord {
     validatePositive(pos);
     validateAllele(ref);
     validateAllele(alt);

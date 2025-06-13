@@ -1,17 +1,16 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotationDataset;
-import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Filter;
-import org.molgenis.vipannotate.annotation.gnomadshortvariant.GnomAdShortVariantAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Filter;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
 
 @RequiredArgsConstructor
-public class GnomAdShortVariantAnnotationDataset
-    implements AnnotationDataset<GnomAdShortVariantAnnotationData> {
-  @NonNull private final GnomAdShortVariantAnnotationDatasetDecoder annotationDataDecoder;
+public class GnomAdAnnotationDataset implements AnnotationDataset<GnomAdAnnotationData> {
+  @NonNull private final GnomAdAnnotationDatasetDecoder annotationDataDecoder;
   @NonNull private final MemoryBuffer srcMemoryBuffer;
   @NonNull private final MemoryBuffer afMemoryBuffer;
   @NonNull private final MemoryBuffer faf95MemoryBuffer;
@@ -21,7 +20,7 @@ public class GnomAdShortVariantAnnotationDataset
   @NonNull private final MemoryBuffer covMemoryBuffer;
 
   @Override
-  public GnomAdShortVariantAnnotationData findById(int index) {
+  public GnomAdAnnotationData findById(int index) {
     Source source = annotationDataDecoder.decodeSource(srcMemoryBuffer, index);
     double af = annotationDataDecoder.decodeAf(afMemoryBuffer, index);
     double faf95 = annotationDataDecoder.decodeFaf95(faf95MemoryBuffer, index);
@@ -30,6 +29,6 @@ public class GnomAdShortVariantAnnotationDataset
     EnumSet<Filter> filters = annotationDataDecoder.decodeFilters(filtersMemoryBuffer, index);
     double cov = annotationDataDecoder.decodeCov(covMemoryBuffer, index);
 
-    return new GnomAdShortVariantAnnotationData(source, af, faf95, faf99, hn, filters, cov);
+    return new GnomAdAnnotationData(source, af, faf95, faf99, hn, filters, cov);
   }
 }

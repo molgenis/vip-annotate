@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -14,36 +14,33 @@ import org.molgenis.vipannotate.util.TsvIterator;
 import org.molgenis.vipannotate.zip.Zip;
 import org.molgenis.vipannotate.zip.ZipZstdCompressionContext;
 
-public class GnomAdShortVariantAnnotationDbBuilder {
-  public GnomAdShortVariantAnnotationDbBuilder() {}
+public class GnomAdAnnotationDbBuilder {
+  public GnomAdAnnotationDbBuilder() {}
 
   public void create(
       Path gnomAdFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(gnomAdFile)) {
-      Iterator<VariantAnnotation<GnomAdShortVariantAnnotationData>> gnomAdShortVariantIterator =
-          create(reader, fastaIndex);
-      GnomAdShortVariantAnnotationDataSetEncoder gnomAdShortVariantAnnotationDataSetEncoder =
-          new GnomAdShortVariantAnnotationDataSetEncoder();
+      Iterator<VariantAnnotation<GnomAdAnnotationData>> gnomAdIterator = create(reader, fastaIndex);
+      GnomAdAnnotationDataSetEncoder gnomAdAnnotationDataSetEncoder =
+          new GnomAdAnnotationDataSetEncoder();
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
       new AnnotationDbWriter<>(
               new AnnotationIndexWriter(FuryFactory.createFury(), zipZstdCompressionContext),
-              new GnomAdShortVariantAnnotationDatasetWriter(
-                  gnomAdShortVariantAnnotationDataSetEncoder, zipZstdCompressionContext))
-          .create(gnomAdShortVariantIterator);
+              new GnomAdAnnotationDatasetWriter(
+                  gnomAdAnnotationDataSetEncoder, zipZstdCompressionContext))
+          .create(gnomAdIterator);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
   }
 
-  private Iterator<VariantAnnotation<GnomAdShortVariantAnnotationData>> create(
+  private Iterator<VariantAnnotation<GnomAdAnnotationData>> create(
       BufferedReader bufferedReader, FastaIndex fastaIndex) throws IOException {
-    GnomAdShortVariantParser gnomAdShortVariantParser = new GnomAdShortVariantParser(fastaIndex);
-    GnomAdShortVariantAnnotationCreator gnomadShortVariantAnnotationCreator =
-        new GnomAdShortVariantAnnotationCreator();
+    GnomAdParser gnomAdParser = new GnomAdParser(fastaIndex);
+    GnomAdAnnotationCreator gnomadAnnotationCreator = new GnomAdAnnotationCreator();
     return new TransformingIterator<>(
-        new TransformingIterator<>(
-            new TsvIterator(bufferedReader), gnomAdShortVariantParser::parse),
-        gnomadShortVariantAnnotationCreator::annotate);
+        new TransformingIterator<>(new TsvIterator(bufferedReader), gnomAdParser::parse),
+        gnomadAnnotationCreator::annotate);
   }
 }

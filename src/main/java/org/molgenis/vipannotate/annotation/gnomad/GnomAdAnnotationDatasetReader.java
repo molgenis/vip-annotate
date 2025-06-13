@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -6,11 +6,9 @@ import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
 
 @RequiredArgsConstructor
-public class GnomAdShortVariantAnnotationDatasetReader
-    implements AnnotationDatasetReader<GnomAdShortVariantAnnotationData> {
-  @NonNull
-  private final GnomAdShortVariantAnnotationDatasetFactory
-      gnomAdShortVariantAnnotationDatasetFactory;
+public class GnomAdAnnotationDatasetReader
+    implements AnnotationDatasetReader<GnomAdAnnotationData> {
+  @NonNull private final GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory;
 
   @NonNull private final AnnotationBlobReader sourceAnnotationBlobReader;
   @NonNull private final AnnotationBlobReader afAnnotationBlobReader;
@@ -21,7 +19,7 @@ public class GnomAdShortVariantAnnotationDatasetReader
   @NonNull private final AnnotationBlobReader covAnnotationBlobReader;
 
   @Override
-  public AnnotationDataset<GnomAdShortVariantAnnotationData> read(GenomePartitionKey key) {
+  public AnnotationDataset<GnomAdAnnotationData> read(GenomePartitionKey key) {
     MemoryBuffer srcMemoryBuffer = sourceAnnotationBlobReader.read(key);
     MemoryBuffer afMemoryBuffer = afAnnotationBlobReader.read(key);
     MemoryBuffer faf95MemoryBuffer = faf95AnnotationBlobReader.read(key);
@@ -30,7 +28,7 @@ public class GnomAdShortVariantAnnotationDatasetReader
     MemoryBuffer filtersMemoryBuffer = filtersAnnotationBlobReader.read(key);
     MemoryBuffer covMemoryBuffer = covAnnotationBlobReader.read(key);
 
-    AnnotationDataset<GnomAdShortVariantAnnotationData> annotationDataset;
+    AnnotationDataset<GnomAdAnnotationData> annotationDataset;
     if (srcMemoryBuffer != null
         && afMemoryBuffer != null
         && faf95MemoryBuffer != null
@@ -39,7 +37,7 @@ public class GnomAdShortVariantAnnotationDatasetReader
         && filtersMemoryBuffer != null
         && covMemoryBuffer != null) {
       annotationDataset =
-          gnomAdShortVariantAnnotationDatasetFactory.create(
+          gnomAdAnnotationDatasetFactory.create(
               srcMemoryBuffer,
               afMemoryBuffer,
               faf95MemoryBuffer,

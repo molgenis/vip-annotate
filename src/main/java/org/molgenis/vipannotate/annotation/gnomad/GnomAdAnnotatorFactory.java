@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.gnomadshortvariant;
+package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +10,7 @@ import org.molgenis.vipannotate.serialization.FuryFactory;
 import org.molgenis.vipannotate.zip.MappableZipFile;
 
 @RequiredArgsConstructor
-public class GnomAdShortVariantAnnotatorFactory {
+public class GnomAdAnnotatorFactory {
   @NonNull private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
@@ -27,12 +27,11 @@ public class GnomAdShortVariantAnnotatorFactory {
     AnnotationIndexReader annotationIndexReader =
         new AnnotationIndexReader(annotationBlobReader, fury);
 
-    GnomAdShortVariantAnnotationDatasetFactory gnomAdShortVariantAnnotationDatasetFactory =
-        new GnomAdShortVariantAnnotationDatasetFactory(
-            new GnomAdShortVariantAnnotationDatasetDecoder());
-    AnnotationDatasetReader<GnomAdShortVariantAnnotationData> annotationDatasetReader =
-        new GnomAdShortVariantAnnotationDatasetReader(
-            gnomAdShortVariantAnnotationDatasetFactory,
+    GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory =
+        new GnomAdAnnotationDatasetFactory(new GnomAdAnnotationDatasetDecoder());
+    AnnotationDatasetReader<GnomAdAnnotationData> annotationDatasetReader =
+        new GnomAdAnnotationDatasetReader(
+            gnomAdAnnotationDatasetFactory,
             annotationBlobReaderFactory.create(mappableZipFile, "src"),
             annotationBlobReaderFactory.create(mappableZipFile, "af"),
             annotationBlobReaderFactory.create(mappableZipFile, "faf95"),
@@ -41,8 +40,8 @@ public class GnomAdShortVariantAnnotatorFactory {
             annotationBlobReaderFactory.create(mappableZipFile, "filters"),
             annotationBlobReaderFactory.create(mappableZipFile, "cov"));
 
-    AnnotationDbImpl<GnomAdShortVariantAnnotationData> annotationDb =
+    AnnotationDbImpl<GnomAdAnnotationData> annotationDb =
         new AnnotationDbImpl<>(annotationIndexReader, annotationDatasetReader);
-    return new GnomAdShortVariantAnnotator(annotationDb);
+    return new GnomAdAnnotator(annotationDb);
   }
 }
