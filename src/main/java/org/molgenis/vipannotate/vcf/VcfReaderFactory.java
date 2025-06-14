@@ -38,7 +38,7 @@ public class VcfReaderFactory {
       try {
         bytesRead = pushbackInputStream.read(buffer);
         if (bytesRead != 2) {
-          throw new RuntimeException(); // FIXME proper exception type and message
+          throw new VcfParserException("vcf file is not a valid gzip file");
         }
 
         // gzip magic number: 1F 8B

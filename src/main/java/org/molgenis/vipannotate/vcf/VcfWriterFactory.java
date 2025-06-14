@@ -43,9 +43,9 @@ public class VcfWriterFactory {
     if (outputVcfType != VcfType.UNCOMPRESSED) {
       Integer compressionLevel = outputVcfType.getCompressionLevel();
       if (compressionLevel != null) {
-        vcfWriter = createBgzip(outputStream, compressionLevel);
+        vcfWriter = createGzip(outputStream, compressionLevel);
       } else {
-        vcfWriter = createBgzip(outputStream);
+        vcfWriter = createGzip(outputStream);
       }
     } else {
       vcfWriter = create(outputStream);
@@ -58,12 +58,11 @@ public class VcfWriterFactory {
     return new VcfWriter(writer);
   }
 
-  public static VcfWriter createBgzip(@NonNull OutputStream outputStream) {
-    return createBgzip(outputStream, 1);
+  public static VcfWriter createGzip(@NonNull OutputStream outputStream) {
+    return createGzip(outputStream, 1);
   }
 
-  // FIXME create bgzip instead of gzip
-  public static VcfWriter createBgzip(@NonNull OutputStream outputStream, int level) {
+  public static VcfWriter createGzip(@NonNull OutputStream outputStream, int level) {
     if (level < 0 || level > 9) throw new IllegalArgumentException("level must be between 0 and 9");
 
     GZIPOutputStream gzipOutputStream;

@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.vcf;
 
-
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
@@ -8,8 +7,6 @@ import java.util.Map;
 import lombok.NonNull;
 import org.molgenis.vipannotate.util.CharArrayBuffer;
 
-// TODO write bgzip instead of gzip, see
-// https://github.com/samtools/htsjdk/blob/master/src/main/java/htsjdk/samtools/util/BlockCompressedOutputStream.java
 public class VcfWriter implements AutoCloseable {
   private final Writer writer;
   private final CharArrayBuffer reusableCharArrayBuffer;
