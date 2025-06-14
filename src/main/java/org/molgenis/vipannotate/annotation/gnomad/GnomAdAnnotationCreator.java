@@ -24,7 +24,7 @@ public class GnomAdAnnotationCreator {
 
   private static GnomAdAnnotationData createAnnotation(GnomAdTsvRecord gnomAdTsvRecord) {
     Source source = createAnnotationSource(gnomAdTsvRecord);
-    double af = createAnnotationAf(gnomAdTsvRecord, source);
+    Double af = createAnnotationAf(gnomAdTsvRecord, source);
     double faf95 = createAnnotationFaf95(gnomAdTsvRecord, source);
     double faf99 = createAnnotationFaf99(gnomAdTsvRecord, source);
     int hn = createAnnotationHn(gnomAdTsvRecord, source);
@@ -49,23 +49,12 @@ public class GnomAdAnnotationCreator {
     return source;
   }
 
-  private static double createAnnotationAf(GnomAdTsvRecord gnomAdTsvRecord, Source source) {
+  // AF can be null for the source e.g., 21-5029882-CAA-A or 21-5087539-G-A
+  private static Double createAnnotationAf(GnomAdTsvRecord gnomAdTsvRecord, Source source) {
     return switch (source) {
-      case EXOMES -> {
-        Double af = gnomAdTsvRecord.afExomes();
-        // FIXME investigate possible bug in gnomAD data e.g. a variant near chr3/86
-        yield af != null ? af : 0;
-      }
-      case GENOMES -> {
-        Double af = gnomAdTsvRecord.afGenomes();
-        // FIXME investigate possible bug in gnomAD data e.g. 21-5029882-CAA-A
-        yield af != null ? af : 0;
-      }
-      case TOTAL -> {
-        Double af = gnomAdTsvRecord.afJoint();
-        // FIXME investigate possible bug in gnomAD data e.g. 21-5087539-G-A
-        yield af != null ? gnomAdTsvRecord.afJoint() : 0;
-      }
+      case EXOMES -> gnomAdTsvRecord.afExomes();
+      case GENOMES -> gnomAdTsvRecord.afGenomes();
+      case TOTAL -> gnomAdTsvRecord.afJoint();
     };
   }
 

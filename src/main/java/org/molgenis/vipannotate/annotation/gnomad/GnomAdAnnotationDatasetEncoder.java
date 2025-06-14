@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
+import org.molgenis.vipannotate.util.Quantized16UnitIntervalDouble;
 import org.molgenis.vipannotate.util.Quantized16UnitIntervalDoublePrimitive;
 import org.molgenis.vipannotate.util.ReusableBatchIterator;
 import org.molgenis.vipannotate.util.SizedIterator;
@@ -42,18 +43,30 @@ public class GnomAdAnnotationDatasetEncoder {
     };
   }
 
+  /**
+   * @param afIt iterator element can be <code>null</code>
+   */
   public MemoryBuffer encodeAf(SizedIterator<Double> afIt) {
-    return encodeQuantized16UnitIntervalDoublePrimitive(afIt);
+    return encodeQuantized16UnitIntervalDouble(afIt);
   }
 
+  /**
+   * @param faf95It iterator element must not be <code>null</code>
+   */
   public MemoryBuffer encodeFaf95(SizedIterator<Double> faf95It) {
     return encodeQuantized16UnitIntervalDoublePrimitive(faf95It);
   }
 
+  /**
+   * @param faf99It iterator element must not be <code>null</code>
+   */
   public MemoryBuffer encodeFaf99(SizedIterator<Double> faf99It) {
     return encodeQuantized16UnitIntervalDoublePrimitive(faf99It);
   }
 
+  /**
+   * @param hnIt iterator element must not be <code>null</code>
+   */
   public MemoryBuffer encodeHn(SizedIterator<Integer> hnIt) {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(hnIt.size() * 8);
     hnIt.forEachRemaining(memoryBuffer::writeInt32);
@@ -96,15 +109,26 @@ public class GnomAdAnnotationDatasetEncoder {
     return encodedFiltersBatch;
   }
 
+  /**
+   * @param covIt iterator element must not be <code>null</code>
+   */
   public MemoryBuffer encodeCov(SizedIterator<Double> covIt) {
     return encodeQuantized16UnitIntervalDoublePrimitive(covIt);
   }
 
-  public MemoryBuffer encodeQuantized16UnitIntervalDoublePrimitive(SizedIterator<Double> doubleIt) {
+  private MemoryBuffer encodeQuantized16UnitIntervalDoublePrimitive(
+      SizedIterator<Double> doubleIt) {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * 8);
     doubleIt.forEachRemaining(
         aDouble ->
             memoryBuffer.writeInt16(Quantized16UnitIntervalDoublePrimitive.toShort(aDouble)));
+    return memoryBuffer;
+  }
+
+  private MemoryBuffer encodeQuantized16UnitIntervalDouble(SizedIterator<Double> doubleIt) {
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * 8);
+    doubleIt.forEachRemaining(
+        aDouble -> memoryBuffer.writeInt16(Quantized16UnitIntervalDouble.toShort(aDouble)));
     return memoryBuffer;
   }
 }
