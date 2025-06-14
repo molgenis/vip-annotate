@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.vcf;
 
 import java.io.*;
 import java.util.Iterator;
-import java.util.zip.GZIPInputStream;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -25,26 +24,5 @@ public class VcfReader implements Iterator<VcfRecord>, AutoCloseable {
   @Override
   public void close() {
     this.recordIterator.close();
-  }
-
-  public static VcfReader create(InputStream inputStream) {
-    final int bufferedReaderBufferSize = 32768;
-    final int inputStreamReaderBufferSize = 32768;
-
-    BufferedReader bufferedReader;
-    try {
-      bufferedReader =
-          new BufferedReader(
-              new InputStreamReader(new GZIPInputStream(inputStream, inputStreamReaderBufferSize)),
-              bufferedReaderBufferSize);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-
-    VcfHeader vcfHeader =
-        new VcfHeaderParser(new VcfMetaInfoLineParser(), new VcfHeaderLineParser())
-            .parse(bufferedReader);
-    VcfRecordIterator vcfRecordIterator = new VcfRecordIterator(bufferedReader);
-    return new VcfReader(vcfHeader, vcfRecordIterator);
   }
 }

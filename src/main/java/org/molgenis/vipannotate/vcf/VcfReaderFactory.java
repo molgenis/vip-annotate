@@ -59,6 +59,16 @@ public class VcfReaderFactory {
   }
 
   private static VcfReader create(InputStream inputStream, InputType inputType) {
+    BufferedReader bufferedReader = createBufferedReader(inputStream, inputType);
+
+    VcfHeader vcfHeader =
+        new VcfHeaderParser(new VcfMetaInfoLineParser(), new VcfHeaderLineParser())
+            .parse(bufferedReader);
+    VcfRecordIterator vcfRecordIterator = new VcfRecordIterator(bufferedReader);
+    return new VcfReader(vcfHeader, vcfRecordIterator);
+  }
+
+  private static BufferedReader createBufferedReader(InputStream inputStream, InputType inputType) {
     final int bufferedReaderBufferSize = 32768; // see BgzipDecompressBenchmark
     final int inputStreamReaderBufferSize = 32768;
 
@@ -75,11 +85,6 @@ public class VcfReaderFactory {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-
-    VcfHeader vcfHeader =
-        new VcfHeaderParser(new VcfMetaInfoLineParser(), new VcfHeaderLineParser())
-            .parse(bufferedReader);
-    VcfRecordIterator vcfRecordIterator = new VcfRecordIterator(bufferedReader);
-    return new VcfReader(vcfHeader, vcfRecordIterator);
+    return bufferedReader;
   }
 }

@@ -10,8 +10,7 @@ public class FuryFactory {
   // allow use of Fury in GraalVM native image, see
   // https://fury.apache.org/docs/guide/graalvm_guide/
 
-  // TODO check if can be private
-  static Fury fury;
+  private static final Fury fury;
 
   static {
     fury =

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class Quantized16UnitIntervalDoubleTest {
   @Test
   public void test() {
-    // shortvariant [0,1)
+    // [0,1)
     for (int i = 0; i < 10000; ++i) {
       double x = Math.random();
       double xQuantized =
@@ -19,7 +19,6 @@ public class Quantized16UnitIntervalDoubleTest {
 
   @Test
   public void test1() {
-    // shortvariant 1
     double x = 1d;
     double xQuantized =
         Quantized16UnitIntervalDouble.toDouble(Quantized16UnitIntervalDouble.toShort(x));
@@ -28,7 +27,6 @@ public class Quantized16UnitIntervalDoubleTest {
 
   @Test
   public void testNull() {
-    // shortvariant 1
     Double x = null;
     Double xQuantized =
         Quantized16UnitIntervalDouble.toDouble(Quantized16UnitIntervalDouble.toShort(x));

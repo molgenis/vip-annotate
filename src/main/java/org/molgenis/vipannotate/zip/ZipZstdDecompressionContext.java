@@ -29,6 +29,7 @@ public class ZipZstdDecompressionContext {
     ByteBuffer srcByteBuffer = this.zipFile.map(zipArchiveEntry);
     zstdDecompressCtx.decompressDirectByteBuffer(
         directByteBuffer, 0, uncompressedSize, srcByteBuffer, 0, compressedSize);
+    //noinspection UnusedAssignment
     srcByteBuffer = null; // make available for deallocation
 
     directByteBuffer.position(0);
