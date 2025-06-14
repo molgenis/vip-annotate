@@ -44,6 +44,7 @@ public class IndexedAnnotationDb<T> implements AnnotationDb<T> {
 
   @Override
   public void close() {
-    // FIXME close annotationIndexReader and annotationDatasetReader
+    annotationIndexReader.close();
+    annotationDatasetReader.close();
   }
 }

@@ -32,6 +32,6 @@ public class ContigPosAnnotationDb<T> implements AnnotationDb<T> {
 
   @Override
   public void close() {
-    // FIXME close annotationDatasetReader
+    annotationDatasetReader.close();
   }
 }

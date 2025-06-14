@@ -13,8 +13,7 @@
 ### fix
 
 - [ ] fix(annotate+db): native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
-- [ ] fix(db): investigate possible bug in gnomAD data e.g. 21-5029882-CAA-A
-- [ ] fix(db): investigate possible bug in gnomAD data e.g. 21-5087539-G-A
+- [ ] fix(annotations): investigate af-is-null-for-source issue in gnomAD, e.g., 21-5029882-CAA-A and 21-5087539-G-A
 
 ### test
 

@@ -5,9 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fury.Fury;
 import org.apache.fury.memory.MemoryBuffer;
 
-// FIXME AutoClosable?
 @RequiredArgsConstructor
-public class AnnotationIndexReader {
+public class AnnotationIndexReader implements AutoCloseable {
   @NonNull private final AnnotationBlobReader annotationBlobReader;
   @NonNull private final Fury fury;
 
@@ -19,5 +18,10 @@ public class AnnotationIndexReader {
     return memoryBuffer != null
         ? fury.deserializeJavaObject(memoryBuffer, AnnotationIndexImpl.class)
         : EmptyAnnotationIndex.getInstance();
+  }
+
+  @Override
+  public void close() {
+    annotationBlobReader.close();
   }
 }

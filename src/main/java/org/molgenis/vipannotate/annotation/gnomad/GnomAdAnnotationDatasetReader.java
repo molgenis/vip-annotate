@@ -9,7 +9,6 @@ import org.molgenis.vipannotate.annotation.*;
 public class GnomAdAnnotationDatasetReader
     implements AnnotationDatasetReader<GnomAdAnnotationData> {
   @NonNull private final GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory;
-
   @NonNull private final AnnotationBlobReader sourceAnnotationBlobReader;
   @NonNull private final AnnotationBlobReader afAnnotationBlobReader;
   @NonNull private final AnnotationBlobReader faf95AnnotationBlobReader;
@@ -49,5 +48,16 @@ public class GnomAdAnnotationDatasetReader
       annotationDataset = EmptyAnnotationDataset.getInstance();
     }
     return annotationDataset;
+  }
+
+  @Override
+  public void close() {
+    sourceAnnotationBlobReader.close();
+    afAnnotationBlobReader.close();
+    faf95AnnotationBlobReader.close();
+    faf99AnnotationBlobReader.close();
+    hnAnnotationBlobReader.close();
+    filtersAnnotationBlobReader.close();
+    covAnnotationBlobReader.close();
   }
 }

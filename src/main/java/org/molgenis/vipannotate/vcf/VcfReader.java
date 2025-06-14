@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.vcf;
 
-import java.io.*;
 import java.util.Iterator;
 import lombok.Getter;
 import lombok.NonNull;

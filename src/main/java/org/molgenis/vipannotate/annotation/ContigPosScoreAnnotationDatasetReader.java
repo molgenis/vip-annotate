@@ -24,4 +24,9 @@ public class ContigPosScoreAnnotationDatasetReader
     }
     return annotationDataset;
   }
+
+  @Override
+  public void close() {
+    scoresAnnotationBlobReader.close();
+  }
 }
