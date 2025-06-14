@@ -9,7 +9,7 @@ import org.molgenis.vipannotate.util.ReusableBatchIterator;
 import org.molgenis.vipannotate.util.SizedIterator;
 
 // TODO perf: recycle memory buffers
-public class GnomAdAnnotationDataSetEncoder {
+public class GnomAdAnnotationDatasetEncoder {
   public MemoryBuffer encodeSources(SizedIterator<Source> sourceIt) {
     int nrAnnotationsPerByte = 4;
     int nrAnnotationBytes = Math.ceilDivExact(sourceIt.size(), nrAnnotationsPerByte);

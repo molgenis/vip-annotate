@@ -3,9 +3,10 @@ package org.molgenis.vipannotate.annotation.phylop;
 import org.junit.jupiter.api.Test;
 
 // FIXME actually test something
-class PhyloPScoreCodecTest {
+class PhyloPAnnotationDataCodecTest {
   @Test
   public void test() {
-    System.out.println(PhyloPScoreCodec.decode(PhyloPScoreCodec.encode("1.234")));
+    System.out.println(
+        new PhyloPAnnotationDataCodec().decode(PhyloPAnnotationDataCodec.encode("1.234")));
   }
 }

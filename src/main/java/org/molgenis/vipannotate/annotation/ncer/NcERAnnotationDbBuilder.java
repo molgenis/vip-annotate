@@ -10,10 +10,9 @@ import org.molgenis.vipannotate.zip.ZipCompressionContextOther;
 public class NcERAnnotationDbBuilder {
   public NcERAnnotationDbBuilder() {}
 
-  public void create(
-      Path phyloPFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
+  public void create(Path ncERFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     ZipCompressionContextOther zipCompressionContext = new ZipCompressionContextOther();
-    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(phyloPFile)) {
+    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERFile)) {
       new NcERAnnotationDbWriter()
           .create(new NcERIterator(reader), fastaIndex, zipCompressionContext, zipOutputStream);
     } catch (IOException e) {

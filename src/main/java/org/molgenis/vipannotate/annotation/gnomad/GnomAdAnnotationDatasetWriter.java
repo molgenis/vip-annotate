@@ -13,7 +13,7 @@ import org.molgenis.vipannotate.zip.ZipZstdCompressionContext;
 @RequiredArgsConstructor
 public class GnomAdAnnotationDatasetWriter
     implements AnnotationDatasetWriter<GnomAdAnnotationData> {
-  @NonNull private final GnomAdAnnotationDataSetEncoder gnomAdAnnotationDataSetEncoder;
+  @NonNull private final GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder;
 
   @NonNull private final ZipZstdCompressionContext zipZstdCompressionContext;
 

@@ -40,8 +40,8 @@ public class GnomAdAnnotatorFactory {
             annotationBlobReaderFactory.create(mappableZipFile, "filters"),
             annotationBlobReaderFactory.create(mappableZipFile, "cov"));
 
-    AnnotationDbImpl<GnomAdAnnotationData> annotationDb =
-        new AnnotationDbImpl<>(annotationIndexReader, annotationDatasetReader);
+    IndexedAnnotationDb<GnomAdAnnotationData> annotationDb =
+        new IndexedAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
     return new GnomAdAnnotator(annotationDb);
   }
 }

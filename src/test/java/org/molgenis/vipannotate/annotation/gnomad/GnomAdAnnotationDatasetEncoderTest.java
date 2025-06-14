@@ -12,13 +12,13 @@ import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
 import org.molgenis.vipannotate.util.SizedIterator;
 
 // FIXME unit test instead of integration test
-class GnomAdAnnotationDataSetEncoderTest {
-  private GnomAdAnnotationDataSetEncoder gnomAdAnnotationDataSetEncoder;
+class GnomAdAnnotationDatasetEncoderTest {
+  private GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder;
   private GnomAdAnnotationDatasetDecoder gnomAdAnnotationDatasetDecoder;
 
   @BeforeEach
   void setUp() {
-    gnomAdAnnotationDataSetEncoder = new GnomAdAnnotationDataSetEncoder();
+    gnomAdAnnotationDataSetEncoder = new GnomAdAnnotationDatasetEncoder();
     gnomAdAnnotationDatasetDecoder = new GnomAdAnnotationDatasetDecoder();
   }
 

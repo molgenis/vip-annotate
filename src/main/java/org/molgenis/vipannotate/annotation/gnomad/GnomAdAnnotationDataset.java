@@ -20,7 +20,7 @@ public class GnomAdAnnotationDataset implements AnnotationDataset<GnomAdAnnotati
   @NonNull private final MemoryBuffer covMemoryBuffer;
 
   @Override
-  public GnomAdAnnotationData findById(int index) {
+  public GnomAdAnnotationData findByIndex(int index) {
     Source source = annotationDataDecoder.decodeSource(srcMemoryBuffer, index);
     double af = annotationDataDecoder.decodeAf(afMemoryBuffer, index);
     double faf95 = annotationDataDecoder.decodeFaf95(faf95MemoryBuffer, index);

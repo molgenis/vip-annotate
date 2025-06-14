@@ -21,8 +21,8 @@ public class GnomAdAnnotationDbBuilder {
       Path gnomAdFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(gnomAdFile)) {
       Iterator<VariantAnnotation<GnomAdAnnotationData>> gnomAdIterator = create(reader, fastaIndex);
-      GnomAdAnnotationDataSetEncoder gnomAdAnnotationDataSetEncoder =
-          new GnomAdAnnotationDataSetEncoder();
+      GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder =
+          new GnomAdAnnotationDatasetEncoder();
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
       new AnnotationDbWriter<>(

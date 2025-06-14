@@ -4,5 +4,5 @@ public interface AnnotationDataset<T> {
   /**
    * @return annotation dataset or <code>null</code>
    */
-  T findById(int index);
+  T findByIndex(int index);
 }

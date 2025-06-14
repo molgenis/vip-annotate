@@ -11,7 +11,7 @@ public final class EmptyAnnotationDataset<T> implements AnnotationDataset<T> {
   }
 
   @Override
-  public T findById(int index) {
+  public T findByIndex(int index) {
     return null;
   }
 }

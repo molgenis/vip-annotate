@@ -31,9 +31,12 @@ public class VcfAnnotatorFactory implements AutoCloseable {
   private VcfRecordAnnotatorAggregator createVcfRecordAnnotator(Path annotationsDir) {
     VcfRecordAnnotator vcfRecordAnnotatorGnomAd =
         new GnomAdAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
-    VcfRecordAnnotator vcfRecordAnnotatorNcER = NcERAnnotatorFactory.create(annotationsDir);
-    VcfRecordAnnotator vcfRecordAnnotatorPhyloP = PhyloPAnnotatorFactory.create(annotationsDir);
-    VcfRecordAnnotator vcfRecordAnnotatorRemm = RemmAnnotatorFactory.create(annotationsDir);
+    VcfRecordAnnotator vcfRecordAnnotatorNcER =
+        new NcERAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+    VcfRecordAnnotator vcfRecordAnnotatorPhyloP =
+        new PhyloPAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+    VcfRecordAnnotator vcfRecordAnnotatorRemm =
+        new RemmAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
     return new VcfRecordAnnotatorAggregator(
         List.of(
             vcfRecordAnnotatorGnomAd,

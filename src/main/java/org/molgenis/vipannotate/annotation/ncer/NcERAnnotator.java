@@ -10,16 +10,19 @@ import java.util.Objects;
 import lombok.NonNull;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
+import org.molgenis.vipannotate.annotation.ContigPosScoreAnnotationData;
 import org.molgenis.vipannotate.annotation.Variant;
 import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
 import org.molgenis.vipannotate.vcf.VcfHeader;
 import org.molgenis.vipannotate.vcf.VcfRecord;
 
+// TODO refactor: deduplicate ncer,phylop,remm annotator
 public class NcERAnnotator implements VcfRecordAnnotator {
-  @NonNull private final ContigPosAnnotationDb annotationDb;
+  public static final String ANNOTATION_ID = "ncER";
+  @NonNull private final ContigPosAnnotationDb<ContigPosScoreAnnotationData> annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public NcERAnnotator(@NonNull ContigPosAnnotationDb annotationDb) {
+  public NcERAnnotator(@NonNull ContigPosAnnotationDb<ContigPosScoreAnnotationData> annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("##.####");
@@ -30,12 +33,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
     vcfHeader
         .vcfMetaInfo()
         .addOrUpdateInfo(
-            NcERAnnotationDecoder.ANNOTATION_ID,
-            "A",
-            "Float",
-            "ncER score",
-            App.getName(),
-            App.getVersion());
+            ANNOTATION_ID, "A", "Float", "ncER score", App.getName(), App.getVersion());
   }
 
   @Override
@@ -48,7 +46,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
       // insensitive); the ‘*’ symbol (allele missing due to overlapping deletion); the MISSING
       // value ‘.’ (no variant);an angle-bracketed ID String (“<ID>”); the unspecified allele “<*>”
       // as described in Section 5.5; or a breakend replacement string as described in Section 5.4
-      Double altAnnotation =
+      ContigPosScoreAnnotationData altAnnotation =
           annotationDb.findAnnotations(
               new Variant(
                   vcfRecord.chrom(),
@@ -59,7 +57,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
                           - 1), // FIXME annotationDb should accept long?
                   alt.getBytes(StandardCharsets.UTF_8)));
 
-      altAnnotations.add(altAnnotation);
+      altAnnotations.add(altAnnotation != null ? altAnnotation.score() : null);
     }
 
     if (altAnnotations.stream().anyMatch(Objects::nonNull)) {
@@ -71,9 +69,9 @@ public class NcERAnnotator implements VcfRecordAnnotator {
           builder.append('.');
         }
       }
-      vcfRecord.info().put(NcERAnnotationDecoder.ANNOTATION_ID, builder.toString());
+      vcfRecord.info().put(ANNOTATION_ID, builder.toString());
     } else {
-      vcfRecord.info().remove(NcERAnnotationDecoder.ANNOTATION_ID);
+      vcfRecord.info().remove(ANNOTATION_ID);
     }
   }
 

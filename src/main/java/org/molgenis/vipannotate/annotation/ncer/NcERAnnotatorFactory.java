@@ -2,25 +2,32 @@ package org.molgenis.vipannotate.annotation.ncer;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
-import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.zip.MappableZipFile;
 
-// FIXME refactor, see GnomAdAnnotatorFactory
+// TODO refactor: deduplicate ncer,phylop,remm factory
+@RequiredArgsConstructor
 public class NcERAnnotatorFactory {
-  private NcERAnnotatorFactory() {}
+  @NonNull private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
 
-  public static VcfRecordAnnotator create(Path annotationsDir) {
+  public VcfRecordAnnotator create(Path annotationsDir) {
     Path annotationsFile = annotationsDir.resolve("ncer.zip");
     if (Files.notExists(annotationsFile)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(annotationsFile));
     }
 
-    ContigPosAnnotationDb contigPosAnnotationDb =
-        new ContigPosAnnotationDb(
-            MappableZipFile.fromFile(annotationsFile),
-            new NcERAnnotationDecoder(),
-            NcERAnnotationDecoder.NR_ANNOTATION_BYTES);
-    return new NcERAnnotator(contigPosAnnotationDb);
+    MappableZipFile mappableZipFile = MappableZipFile.fromFile(annotationsFile);
+
+    ContigPosScoreAnnotationDatasetFactory annotationDatasetFactory =
+        new ContigPosScoreAnnotationDatasetFactory(
+            new NcERAnnotationDatasetDecoder(new NcERAnnotationDataCodec()));
+    AnnotationDatasetReader<ContigPosScoreAnnotationData> annotationDatasetReader =
+        new ContigPosScoreAnnotationDatasetReader(
+            annotationDatasetFactory,
+            annotationBlobReaderFactory.create(mappableZipFile, "scores"));
+
+    return new NcERAnnotator(new ContigPosAnnotationDb<>(annotationDatasetReader));
   }
 }

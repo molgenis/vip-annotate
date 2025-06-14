@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation.ncer;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.zip.ZipCompressionContextOther;
 
@@ -18,8 +17,7 @@ public class NcERAnnotationDbWriter {
       ZipArchiveOutputStream zipArchiveOutputStream) {
     reset();
 
-    short[] encodedScores =
-        new short[(int) (Math.pow(2, ContigPosAnnotationDb.NR_PARTITION_ID_BITS))];
+    short[] encodedScores = new short[(int) (Math.pow(2, 20))];
 
     while (ncERIterator.hasNext()) {
       NcERBedFeature ncERBedFeature = ncERIterator.next();
@@ -33,7 +31,7 @@ public class NcERAnnotationDbWriter {
       int start = ncERBedFeature.start() + 1; // 0-based --> 1-based
       int end = ncERBedFeature.end() + 1; // 0-based --> 1-based
       double perc = ncERBedFeature.perc();
-      short encodedPerc = NcERCodec.encode(perc);
+      short encodedPerc = NcERAnnotationDataCodec.encodeScore(perc);
 
       for (int pos = start; pos < end; pos++) {
         if (currentContig == null) {
@@ -83,7 +81,7 @@ public class NcERAnnotationDbWriter {
       ZipArchiveOutputStream zipArchiveOutputStream) {
     MemoryBuffer memoryBuffer =
         MemoryBuffer.newHeapBuffer(
-            encodedScores.length * NcERAnnotationDecoder.NR_ANNOTATION_BYTES);
+            encodedScores.length * NcERAnnotationDataCodec.NR_ANNOTATION_BYTES);
     // TODO check if gives same result, but faster?
     // memoryBuffer.writePrimitiveArray(encodedScores, 0, encodedScores.length * 2);
     for (short encodedScore : encodedScores) {

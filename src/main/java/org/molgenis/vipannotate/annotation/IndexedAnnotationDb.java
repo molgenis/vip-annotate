@@ -4,7 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AnnotationDbImpl<T> implements AnnotationDb<T> {
+public class IndexedAnnotationDb<T> implements AnnotationDb<T> {
   @NonNull private final AnnotationIndexReader annotationIndexReader;
   @NonNull private final AnnotationDatasetReader<T> annotationDatasetReader;
 
@@ -34,7 +34,7 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
         activeAnnotationDataset = annotationDatasetReader.read(activeGenomePartitionKey);
       }
 
-      annotationData = activeAnnotationDataset.findById(index);
+      annotationData = activeAnnotationDataset.findByIndex(index);
     } else {
       annotationData = null;
     }
@@ -44,6 +44,6 @@ public class AnnotationDbImpl<T> implements AnnotationDb<T> {
 
   @Override
   public void close() {
-    // FIXME annotationIndexReader and annotationDatasetReader
+    // FIXME close annotationIndexReader and annotationDatasetReader
   }
 }

@@ -6,7 +6,7 @@ import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotationDatasetFactory {
-  @NonNull private final GnomAdAnnotationDatasetDecoder annotationDataDecoder;
+  @NonNull private final GnomAdAnnotationDatasetDecoder annotationDatasetDecoder;
 
   public GnomAdAnnotationDataset create(
       @NonNull MemoryBuffer srcMemoryBuffer,
@@ -17,7 +17,7 @@ public class GnomAdAnnotationDatasetFactory {
       @NonNull MemoryBuffer filtersMemoryBuffer,
       @NonNull MemoryBuffer covMemoryBuffer) {
     return new GnomAdAnnotationDataset(
-        annotationDataDecoder,
+        annotationDatasetDecoder,
         srcMemoryBuffer,
         afMemoryBuffer,
         faf95MemoryBuffer,

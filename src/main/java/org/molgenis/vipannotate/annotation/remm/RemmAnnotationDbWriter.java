@@ -31,7 +31,7 @@ public class RemmAnnotationDbWriter {
 
       int pos = remmTsvRecord.start(); // 1-based
       double score = remmTsvRecord.score();
-      byte encodedScore = RemmCodec.encode(score);
+      byte encodedScore = RemmAnnotationDataCodec.encode(score);
 
       if (currentContig == null) {
         currentContig = contig;

@@ -2,25 +2,32 @@ package org.molgenis.vipannotate.annotation.phylop;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
-import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.zip.MappableZipFile;
 
-// FIXME refactor, see GnomAdAnnotatorFactory
+// TODO refactor: deduplicate ncer,phylop,remm factory
+@RequiredArgsConstructor
 public class PhyloPAnnotatorFactory {
-  private PhyloPAnnotatorFactory() {}
+  @NonNull private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
 
-  public static VcfRecordAnnotator create(Path annotationsDir) {
-    Path annotationsFile = annotationsDir.resolve("phylop.zip");
+  public VcfRecordAnnotator create(Path annotationsDir) {
+    Path annotationsFile = annotationsDir.resolve("ncer.zip");
     if (Files.notExists(annotationsFile)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(annotationsFile));
     }
 
-    ContigPosAnnotationDb phyloPAnnotationDb =
-        new ContigPosAnnotationDb(
-            MappableZipFile.fromFile(annotationsFile),
-            new PhyloPAnnotationDecoder(),
-            PhyloPAnnotationDecoder.NR_ANNOTATION_BYTES);
-    return new PhyloPAnnotator(phyloPAnnotationDb);
+    MappableZipFile mappableZipFile = MappableZipFile.fromFile(annotationsFile);
+
+    ContigPosScoreAnnotationDatasetFactory annotationDatasetFactory =
+        new ContigPosScoreAnnotationDatasetFactory(
+            new PhyloPAnnotationDatasetDecoder(new PhyloPAnnotationDataCodec()));
+    AnnotationDatasetReader<ContigPosScoreAnnotationData> annotationDatasetReader =
+        new ContigPosScoreAnnotationDatasetReader(
+            annotationDatasetFactory,
+            annotationBlobReaderFactory.create(mappableZipFile, "scores"));
+
+    return new PhyloPAnnotator(new ContigPosAnnotationDb<>(annotationDatasetReader));
   }
 }
