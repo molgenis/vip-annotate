@@ -26,7 +26,7 @@ public record GnomAdAnnotationData(
   }
 
   public GnomAdAnnotationData {
-    validateNonNegative(af);
+    validateNonNegativeOrNull(af);
     validateNonNegative(faf95);
     validateNonNegative(faf99);
     validateNonNegative(hn);
