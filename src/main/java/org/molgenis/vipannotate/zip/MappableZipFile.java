@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.zip;
 
-import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -10,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -38,9 +38,7 @@ public class MappableZipFile implements AutoCloseable {
     }
   }
 
-  public static MappableZipFile fromFile(Path path) {
-    requireNonNull(path);
-
+  public static MappableZipFile fromFile(@NonNull Path path) {
     FileChannel fileChannel;
     ZipFile zipFile;
     try {

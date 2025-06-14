@@ -1,13 +1,12 @@
 package org.molgenis.vipannotate.vcf;
 
-import static java.util.Objects.*;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
+import lombok.NonNull;
 import org.molgenis.vipannotate.util.CloseIgnoringOutputStream;
 
 public class VcfWriterFactory {
@@ -54,21 +53,17 @@ public class VcfWriterFactory {
     return vcfWriter;
   }
 
-  public static VcfWriter create(OutputStream outputStream) {
-    requireNonNull(outputStream);
-
+  public static VcfWriter create(@NonNull OutputStream outputStream) {
     Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
     return new VcfWriter(writer);
   }
 
-  public static VcfWriter createBgzip(OutputStream outputStream) {
-    requireNonNull(outputStream);
+  public static VcfWriter createBgzip(@NonNull OutputStream outputStream) {
     return createBgzip(outputStream, 1);
   }
 
   // FIXME create bgzip instead of gzip
-  public static VcfWriter createBgzip(OutputStream outputStream, int level) {
-    requireNonNull(outputStream);
+  public static VcfWriter createBgzip(@NonNull OutputStream outputStream, int level) {
     if (level < 0 || level > 9) throw new IllegalArgumentException("level must be between 0 and 9");
 
     GZIPOutputStream gzipOutputStream;

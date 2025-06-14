@@ -1,12 +1,13 @@
 package org.molgenis.vipannotate.annotation.phylop;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.annotation.ContigPosAnnotation;
+import org.molgenis.vipannotate.annotation.ContigPosEncoder;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.zip.Zip;
 import org.molgenis.vipannotate.zip.ZipCompressionContextOther;
@@ -18,7 +19,7 @@ public class PhyloPAnnotationDbBuilder {
       Path phyloPFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     ZipCompressionContextOther zipCompressionContext = new ZipCompressionContextOther();
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(phyloPFile)) {
-      new PhyloPAnnotationDbWriter()
+      new PhyloPAnnotationDbWriter(new ContigPosEncoder())
           .create(
               new PhyloPVariantIterator(reader),
               fastaIndex,
@@ -30,14 +31,10 @@ public class PhyloPAnnotationDbBuilder {
   }
 
   // TODO use bigwig instead of bed as input
+  @RequiredArgsConstructor
   private static class PhyloPVariantIterator implements Iterator<ContigPosAnnotation> {
-    private final BufferedReader bufferedReader;
-
-    public PhyloPVariantIterator(BufferedReader bufferedReader) {
-      this.bufferedReader = requireNonNull(bufferedReader);
-    }
-
-    String line = null;
+    @NonNull private final BufferedReader bufferedReader;
+    private String line;
 
     @Override
     public boolean hasNext() {

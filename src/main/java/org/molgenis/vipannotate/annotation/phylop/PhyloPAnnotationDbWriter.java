@@ -1,8 +1,9 @@
 package org.molgenis.vipannotate.annotation.phylop;
 
-import static java.util.Objects.requireNonNull;
 
 import java.util.*;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.ContigPosAnnotation;
@@ -11,20 +12,12 @@ import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.zip.ZipCompressionContextOther;
 
 // TODO refactor: use generic AnnotationDbWriter, remove this class
+@RequiredArgsConstructor
 public class PhyloPAnnotationDbWriter {
-  private final ContigPosEncoder contigPosEncoder;
+  @NonNull private final ContigPosEncoder contigPosEncoder;
 
   private String currentContig;
   private Integer currentPartitionId;
-
-  public PhyloPAnnotationDbWriter() {
-    this(new ContigPosEncoder());
-  }
-
-  /** package-private constructor for unit testing */
-  PhyloPAnnotationDbWriter(ContigPosEncoder contigPosEncoder) {
-    this.contigPosEncoder = requireNonNull(contigPosEncoder);
-  }
 
   public void create(
       Iterator<ContigPosAnnotation> chrPosAnnotationIterator,

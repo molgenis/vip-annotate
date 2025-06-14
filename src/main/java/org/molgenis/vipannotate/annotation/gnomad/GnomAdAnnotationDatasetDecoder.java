@@ -37,20 +37,17 @@ public class GnomAdAnnotationDatasetDecoder {
   }
 
   public int decodeHn(MemoryBuffer memoryBuffer, int index) {
-    memoryBuffer.readerIndex(index * 4);
-    return memoryBuffer.readInt32();
+    return memoryBuffer.getInt32(index * 4);
   }
 
   private double decodeQuantized16UnitIntervalDoublePrimitive(
       MemoryBuffer memoryBuffer, int afIndex) {
-    memoryBuffer.readerIndex(afIndex * 2);
-    short encodedDouble = memoryBuffer.readInt16();
+    short encodedDouble = memoryBuffer.getInt16(afIndex * 2);
     return Quantized16UnitIntervalDoublePrimitive.toDouble(encodedDouble);
   }
 
   private Double decodeQuantized16UnitIntervalDouble(MemoryBuffer memoryBuffer, int afIndex) {
-    memoryBuffer.readerIndex(afIndex * 2);
-    short encodedDouble = memoryBuffer.readInt16();
+    short encodedDouble = memoryBuffer.getInt16(afIndex * 2);
     return Quantized16UnitIntervalDouble.toDouble(encodedDouble);
   }
 
@@ -59,9 +56,8 @@ public class GnomAdAnnotationDatasetDecoder {
       MemoryBuffer memoryBuffer, int sourceIndex) {
     int nrAnnotationsPerByte = 2;
     int nrBitsPerAnnotation = 4;
-    memoryBuffer.readerIndex(sourceIndex / nrAnnotationsPerByte);
 
-    int encodedFiltersBatch = memoryBuffer.readByte();
+    int encodedFiltersBatch = memoryBuffer.getByte(sourceIndex / nrAnnotationsPerByte);
     int encodedFilters =
         (encodedFiltersBatch >> (((sourceIndex + 1) % nrAnnotationsPerByte) * nrBitsPerAnnotation))
             & 0b00_00_11_11;

@@ -1,11 +1,11 @@
 package org.molgenis.vipannotate.vcf;
 
-import static java.util.Objects.requireNonNull;
 
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import lombok.NonNull;
 import org.molgenis.vipannotate.util.CharArrayBuffer;
 
 // TODO write bgzip instead of gzip, see
@@ -14,8 +14,8 @@ public class VcfWriter implements AutoCloseable {
   private final Writer writer;
   private final CharArrayBuffer reusableCharArrayBuffer;
 
-  public VcfWriter(Writer writer) {
-    this.writer = requireNonNull(writer);
+  public VcfWriter(@NonNull Writer writer) {
+    this.writer = writer;
     this.reusableCharArrayBuffer = new CharArrayBuffer(32768);
   }
 

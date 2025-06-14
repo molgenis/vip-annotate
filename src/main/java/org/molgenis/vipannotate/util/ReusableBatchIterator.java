@@ -1,12 +1,12 @@
 package org.molgenis.vipannotate.util;
 
-import static java.util.Objects.requireNonNull;
 import static org.molgenis.vipannotate.util.ParameterValidation.requirePositive;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import lombok.NonNull;
 
 /**
  * Batch iterator that reuses the list returned by <code>next()</code> on later calls.
@@ -18,8 +18,8 @@ public class ReusableBatchIterator<T> implements Iterator<List<T>> {
   private final int batchSize;
   private List<T> reusableBatch;
 
-  public ReusableBatchIterator(Iterator<T> source, int batchSize) {
-    this.source = requireNonNull(source);
+  public ReusableBatchIterator(@NonNull Iterator<T> source, int batchSize) {
+    this.source = source;
     this.batchSize = requirePositive(batchSize);
   }
 

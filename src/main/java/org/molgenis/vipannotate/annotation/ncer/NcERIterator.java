@@ -1,20 +1,17 @@
 package org.molgenis.vipannotate.annotation.ncer;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class NcERIterator implements Iterator<NcERBedFeature> {
 
-  private final BufferedReader bufferedReader;
+  @NonNull private final BufferedReader bufferedReader;
   private String line;
-
-  public NcERIterator(BufferedReader bufferedReader) {
-    this.bufferedReader = requireNonNull(bufferedReader);
-  }
 
   @Override
   public boolean hasNext() {

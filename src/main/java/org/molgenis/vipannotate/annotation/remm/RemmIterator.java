@@ -1,19 +1,16 @@
 package org.molgenis.vipannotate.annotation.remm;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class RemmIterator implements Iterator<RemmTsvRecord> {
-  private final BufferedReader bufferedReader;
+  @NonNull private final BufferedReader bufferedReader;
   private String line;
-
-  public RemmIterator(BufferedReader bufferedReader) {
-    this.bufferedReader = requireNonNull(bufferedReader);
-  }
 
   @Override
   public boolean hasNext() {
