@@ -17,7 +17,6 @@ public class ReusableGenomePartitionIterator<T> implements Iterator<GenomePartit
   public ReusableGenomePartitionIterator(@NonNull Iterator<VariantAnnotation<T>> sourceIterator) {
     this.sourceIterator = new PushbackIterator<>(sourceIterator);
     this.reusableNextPartition = new GenomePartition<>();
-    advance();
   }
 
   @Override
