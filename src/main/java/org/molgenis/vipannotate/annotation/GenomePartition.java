@@ -6,27 +6,32 @@ import lombok.*;
 
 @Getter
 @Setter
-public class GenomePartition<T> {
-  private static final int NR_POS_BITS = 20;
+public class GenomePartition<T extends LocusAnnotation<U>, U> {
+  public static final int NR_POS_BITS = 20;
 
   private GenomePartitionKey genomePartitionKey;
-  private List<VariantAnnotation<T>> variantAnnotationList;
+  private List<T> locusAnnotationList;
 
   public void clear() {
     genomePartitionKey = null;
-    if (variantAnnotationList != null) {
-      variantAnnotationList.clear();
+    if (locusAnnotationList != null) {
+      locusAnnotationList.clear();
     }
   }
 
-  public void add(VariantAnnotation<T> nextVariantAnnotation) {
-    if (variantAnnotationList == null) {
-      variantAnnotationList = new ArrayList<>(1 << NR_POS_BITS);
+  public void add(T nextLocusAnnotation) {
+    if (locusAnnotationList == null) {
+      locusAnnotationList = new ArrayList<>(1 << NR_POS_BITS);
     }
-    variantAnnotationList.add(nextVariantAnnotation);
+    locusAnnotationList.add(nextLocusAnnotation);
   }
 
   public static int calcBin(int pos) {
     return pos >> NR_POS_BITS;
+  }
+
+  public static int calcPosInBin(int pos) {
+    int bin = calcBin(pos);
+    return pos - (bin << NR_POS_BITS);
   }
 }

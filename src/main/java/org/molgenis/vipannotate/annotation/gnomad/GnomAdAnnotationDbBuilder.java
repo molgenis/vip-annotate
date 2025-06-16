@@ -26,7 +26,7 @@ public class GnomAdAnnotationDbBuilder {
           new ZipZstdCompressionContext(zipOutputStream);
       GenomePartitionDataWriter genomePartitionDataWriter =
           new ZipZstdGenomePartitionDataWriter(zipZstdCompressionContext);
-      new AnnotationDbWriter<>(
+      new VariantAnnotationDbWriter<>(
               new AnnotationIndexWriter(FuryFactory.createFury(), genomePartitionDataWriter),
               new GnomAdAnnotationDatasetWriter(
                   gnomAdAnnotationDataSetEncoder, genomePartitionDataWriter))

@@ -14,7 +14,7 @@ public class FastaIndex {
     records.put(record.name(), record);
   }
 
-  public boolean notContainsReferenceSequence(String name) {
-    return !records.containsKey(name);
+  public boolean containsReferenceSequence(String name) {
+    return records.containsKey(name);
   }
 }

@@ -13,7 +13,7 @@ public class PhyloPAnnotatorFactory {
   @NonNull private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
-    Path annotationsFile = annotationsDir.resolve("ncer.zip");
+    Path annotationsFile = annotationsDir.resolve("phylop.zip");
     if (Files.notExists(annotationsFile)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(annotationsFile));
     }
@@ -25,8 +25,7 @@ public class PhyloPAnnotatorFactory {
             new PhyloPAnnotationDatasetDecoder(new PhyloPAnnotationDataCodec()));
     AnnotationDatasetReader<ContigPosScoreAnnotationData> annotationDatasetReader =
         new ContigPosScoreAnnotationDatasetReader(
-            annotationDatasetFactory,
-            annotationBlobReaderFactory.create(mappableZipFile, "scores"));
+            annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
     return new PhyloPAnnotator(new ContigPosAnnotationDb<>(annotationDatasetReader));
   }

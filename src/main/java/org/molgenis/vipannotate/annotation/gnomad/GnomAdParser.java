@@ -66,7 +66,7 @@ public class GnomAdParser {
   }
 
   private String parseChrom(String token) {
-    if (fastaIndex.notContainsReferenceSequence(token)) {
+    if (!fastaIndex.containsReferenceSequence(token)) {
       throw new IllegalArgumentException(token + " is not a valid chrom");
     }
     return token;

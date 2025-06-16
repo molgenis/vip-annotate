@@ -1,51 +1,60 @@
 package org.molgenis.vipannotate.util;
 
 public class Quantizer {
-
   /**
-   * Quantizes a Double in the range [0.0, 1.0] into an int in the range [1, 255], reserving 0 to
-   * represent null.
+   * quantize a double value in the interval [x,y] into an integer in the interval [u, v]. the
+   * maximum error of dequantize(quantize(value)) is 1 / (2 * (v - u)).
    *
-   * <ul>
-   *   <li>Step size: 1 / 254 ≈ 0.003937
-   *   <li>Maximum absolute error: 1 / (2 × 254) ≈ 0.0019685
-   * </ul>
-   *
-   * @param value The double value or <code>null</code>.
-   * @return An int in [0, 255]; 0 indicates null, and 1–255 represent values in [0.0, 1.0].
-   * @throws IllegalArgumentException if value is not in [0.0, 1.0]
+   * @param value value in [x, y]
+   * @param x x in [x, y]
+   * @param y y in [x, y]
+   * @param u u in [u, v]
+   * @param v v in [u, v]
+   * @return quantized value in [u, v]
    */
-  public static int quantizeToByte(Double value) {
-    if (value == null) {
-      return 0;
+  public static int quantize(double value, double x, double y, int u, int v) {
+    requireInterval(x, y);
+    requireInterval(u, v);
+    if (value < x || value > y) {
+      throw new IllegalArgumentException();
     }
-    if (value < 0.0 || value > 1.0 || Double.isNaN(value)) {
-      throw new IllegalArgumentException("Value must be in [0.0, 1.0]");
-    }
-    return 1 + (int) Math.round(value * 254);
+
+    double scale = (v - u) / (y - x);
+    return (int) Math.round((value - x) * scale) + u;
   }
 
   /**
-   * Dequantizes an int in [0, 255] back to a Double in [0.0, 1.0], returning null if input is 0.
+   * dequantize an int value in the interval [u,v] into a double in the interval [x,y]. the *
+   * maximum error of dequantize(quantize(value)) is 1 / (2 * (v - u)).
    *
-   * @param value The quantized int in [0, 255].
-   * @return A Double in [0.0, 1.0] if value in the range [1, 255], or null if value == 0.
-   * @throws IllegalArgumentException if value is not in [0, 255]
+   * @param value value in [u, v]
+   * @param u u in [u, v]
+   * @param v v in [u, v]
+   * @param x x in [x, y]
+   * @param y y in [x, y]
+   * @return dequantized value in [x, y]
    */
-  public static Double dequantizeFromByte(int value) {
-    if (value < 0 || value > 255) {
-      throw new IllegalArgumentException("Quantized value must be in [0, 255]");
+  public static double dequantize(int value, int u, int v, double x, double y) {
+    requireInterval(x, y);
+    requireInterval(u, v);
+    if (value < u || value > v) {
+      throw new IllegalArgumentException(
+          "dequantization value %d is not in range [%d, %d]".formatted(value, u, v));
     }
-    if (value == 0) {
-      return null;
-    }
-    return (value - 1) / 254.0;
+
+    double scale = (y - x) / (v - u);
+    return x + ((value - u) * scale);
   }
 
-  public static void main(String[] args) {
-    int i = Quantizer.quantizeToByte(0.105877);
-    Double v = Quantizer.dequantizeFromByte(i);
-    System.out.println(i);
-    System.out.println(v);
+  private static void requireInterval(double x, double y) {
+    if (y < x) {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  private static void requireInterval(int x, int y) {
+    if (y < x) {
+      throw new IllegalArgumentException();
+    }
   }
 }

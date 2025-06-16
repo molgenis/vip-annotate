@@ -24,7 +24,7 @@ public class RemmAnnotationDbWriter {
       RemmTsvRecord remmTsvRecord = remmIterator.next();
 
       String contig = remmTsvRecord.chr();
-      if (!fastaIndex.notContainsReferenceSequence(contig)) {
+      if (!fastaIndex.containsReferenceSequence(contig)) {
         throw new RuntimeException(
             "Fasta index does not contain reference sequence %s".formatted(contig));
       }

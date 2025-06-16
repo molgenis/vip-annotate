@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.util;
 
 import static org.molgenis.vipannotate.util.ParameterValidation.requireNonNegative;
 
-import java.util.Iterator;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -16,7 +15,7 @@ public class SizedIterable<T> implements Iterable<T> {
   }
 
   @Override
-  public Iterator<T> iterator() {
-    return sourceIterable.iterator();
+  public @NonNull SizedIterator<T> iterator() {
+    return new SizedIterator<>(sourceIterable.iterator(), size);
   }
 }

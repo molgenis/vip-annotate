@@ -1,28 +1,17 @@
 package org.molgenis.vipannotate.annotation.phylop;
 
-import org.molgenis.vipannotate.util.Quantized8UnitIntervalDouble;
+import org.molgenis.vipannotate.util.Encoder;
 
-/** hg38.phyloP100way.bed.gz: min=-11.726 max=9.94 */
+/** hg38.phyloP100way.bed.gz: min=-20.0 max=10.003 */
 public class PhyloPAnnotationDataCodec {
-  private static final double scoreMin = -11.726d;
-  private static final double scoreMax = 9.94d;
+  static final double SCORE_MIN = -20.0d;
+  static final double SCORE_MAX = 10.003d;
 
-  // FIXME remove static to enable upstream unit testing
-  public static byte encode(String scoreStr) {
-    Double scoreUnitInterval;
-    if (scoreStr != null) {
-      double score = Double.parseDouble(scoreStr);
-      scoreUnitInterval = (score - scoreMin) / (scoreMax - scoreMin);
-    } else {
-      scoreUnitInterval = null;
-    }
-    return Quantized8UnitIntervalDouble.toByte(scoreUnitInterval);
+  public short encode(Double score) {
+    return Encoder.encodeDoubleAsShort(score, SCORE_MIN, SCORE_MAX);
   }
 
-  public Double decode(byte encodedScore) {
-    Double scoreUnitInterval = Quantized8UnitIntervalDouble.toDouble(encodedScore);
-    return scoreUnitInterval != null
-        ? (scoreUnitInterval * (scoreMax - scoreMin)) + scoreMin
-        : null;
+  public Double decode(short encodedScore) {
+    return Encoder.decodeDoubleFromShort(encodedScore, SCORE_MIN, SCORE_MAX);
   }
 }

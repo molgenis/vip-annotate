@@ -10,11 +10,12 @@ import org.molgenis.vipannotate.util.PushbackIterator;
  *
  * @param <T>
  */
-public class ReusableGenomePartitionIterator<T> implements Iterator<GenomePartition<T>> {
-  private final PushbackIterator<VariantAnnotation<T>> sourceIterator;
-  private GenomePartition<T> reusableNextPartition;
+public class ReusableGenomePartitionIterator<T extends LocusAnnotation<U>, U>
+    implements Iterator<GenomePartition<T, U>> {
+  private final PushbackIterator<T> sourceIterator;
+  private GenomePartition<T, U> reusableNextPartition;
 
-  public ReusableGenomePartitionIterator(@NonNull Iterator<VariantAnnotation<T>> sourceIterator) {
+  public ReusableGenomePartitionIterator(@NonNull Iterator<T> sourceIterator) {
     this.sourceIterator = new PushbackIterator<>(sourceIterator);
     this.reusableNextPartition = new GenomePartition<>();
   }
@@ -25,11 +26,11 @@ public class ReusableGenomePartitionIterator<T> implements Iterator<GenomePartit
   }
 
   @Override
-  public GenomePartition<T> next() {
+  public GenomePartition<T, U> next() {
     if (reusableNextPartition == null) {
       throw new NoSuchElementException();
     }
-    GenomePartition<T> currentReusableNextPartition = reusableNextPartition;
+    GenomePartition<T, U> currentReusableNextPartition = reusableNextPartition;
     advance();
     return currentReusableNextPartition;
   }
@@ -43,10 +44,10 @@ public class ReusableGenomePartitionIterator<T> implements Iterator<GenomePartit
     reusableNextPartition.clear();
 
     do {
-      VariantAnnotation<T> nextVariantAnnotation = sourceIterator.next();
+      T nextLocusAnnotation = sourceIterator.next();
 
-      String contig = nextVariantAnnotation.variant().contig();
-      int bin = GenomePartition.calcBin(nextVariantAnnotation.variant().start());
+      String contig = nextLocusAnnotation.contig();
+      int bin = GenomePartition.calcBin(nextLocusAnnotation.start());
       GenomePartitionKey genomePartitionKey = new GenomePartitionKey(contig, bin);
 
       if (reusableNextPartition.getGenomePartitionKey() == null) {
@@ -54,9 +55,9 @@ public class ReusableGenomePartitionIterator<T> implements Iterator<GenomePartit
       }
 
       if (genomePartitionKey.equals(reusableNextPartition.getGenomePartitionKey())) {
-        reusableNextPartition.add(nextVariantAnnotation);
+        reusableNextPartition.add(nextLocusAnnotation);
       } else {
-        sourceIterator.pushback(nextVariantAnnotation);
+        sourceIterator.pushback(nextLocusAnnotation);
         break;
       }
     } while (sourceIterator.hasNext());

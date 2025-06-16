@@ -4,10 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
-import org.molgenis.vipannotate.util.Quantized16UnitIntervalDouble;
-import org.molgenis.vipannotate.util.Quantized16UnitIntervalDoublePrimitive;
-import org.molgenis.vipannotate.util.ReusableBatchIterator;
-import org.molgenis.vipannotate.util.SizedIterator;
+import org.molgenis.vipannotate.util.*;
 
 // TODO perf: recycle memory buffers
 public class GnomAdAnnotationDatasetEncoder {
@@ -68,7 +65,7 @@ public class GnomAdAnnotationDatasetEncoder {
    * @param hnIt iterator element must not be <code>null</code>
    */
   public MemoryBuffer encodeHn(SizedIterator<Integer> hnIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(hnIt.size() * 8);
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(hnIt.size() * Integer.BYTES);
     hnIt.forEachRemaining(memoryBuffer::writeInt32);
     return memoryBuffer;
   }
@@ -118,17 +115,22 @@ public class GnomAdAnnotationDatasetEncoder {
 
   private MemoryBuffer encodeQuantized16UnitIntervalDoublePrimitive(
       SizedIterator<Double> doubleIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * 8);
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * Short.BYTES);
     doubleIt.forEachRemaining(
-        aDouble ->
-            memoryBuffer.writeInt16(Quantized16UnitIntervalDoublePrimitive.toShort(aDouble)));
+        value -> {
+          short encodedValue = Encoder.encodeUnitIntervalDoublePrimitiveAsShort(value);
+          memoryBuffer.writeInt16(encodedValue);
+        });
     return memoryBuffer;
   }
 
   private MemoryBuffer encodeQuantized16UnitIntervalDouble(SizedIterator<Double> doubleIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * 8);
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * Short.BYTES);
     doubleIt.forEachRemaining(
-        aDouble -> memoryBuffer.writeInt16(Quantized16UnitIntervalDouble.toShort(aDouble)));
+        value -> {
+          short encodedValue = Encoder.encodeUnitIntervalDoubleAsShort(value);
+          memoryBuffer.writeInt16(encodedValue);
+        });
     return memoryBuffer;
   }
 }

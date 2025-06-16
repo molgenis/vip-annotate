@@ -14,7 +14,7 @@ public class NcERAnnotationDatasetDecoder
   public ContigPosScoreAnnotationData decode(MemoryBuffer memoryBuffer, int index) {
     int relativeIndex = index - ((index >> 20) << 20);
     short encodedScore = memoryBuffer.getInt16(relativeIndex * 2); // short is 2 bytes
-    Double decodedScore = ncERAnnotationDataCodec.decodeScore(encodedScore);
+    Double decodedScore = ncERAnnotationDataCodec.decode(encodedScore);
     return new ContigPosScoreAnnotationData(decodedScore);
   }
 }

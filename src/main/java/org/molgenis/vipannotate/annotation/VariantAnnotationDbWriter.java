@@ -10,34 +10,34 @@ import org.molgenis.vipannotate.serialization.SortedIntArrayWrapper;
 import org.molgenis.vipannotate.util.SizedIterable;
 import org.molgenis.vipannotate.util.TransformingIterable;
 
-public class AnnotationDbWriter<T> {
+public class VariantAnnotationDbWriter<T extends VariantAnnotation<U>, U> {
   private final AnnotationIndexWriter annotationIndexWriter;
-  private final AnnotationDatasetWriter<T> annotationDatasetWriter;
-  private final List<EncodedSmallVariantAnnotation<T>> reusableEncodedSmallVariantAnnotations;
-  private final List<EncodedBigVariantAnnotation<T>> reusableEncodedBigVariantAnnotations;
+  private final AnnotationDatasetWriter<U> annotationDatasetWriter;
+  private final List<EncodedSmallVariantAnnotation<U>> reusableEncodedSmallVariantAnnotations;
+  private final List<EncodedBigVariantAnnotation<U>> reusableEncodedBigVariantAnnotations;
 
-  public AnnotationDbWriter(
+  public VariantAnnotationDbWriter(
       @NonNull AnnotationIndexWriter annotationIndexWriter,
-      @NonNull AnnotationDatasetWriter<T> annotationDatasetWriter) {
+      @NonNull AnnotationDatasetWriter<U> annotationDatasetWriter) {
     this.annotationIndexWriter = annotationIndexWriter;
     this.annotationDatasetWriter = annotationDatasetWriter;
     reusableEncodedSmallVariantAnnotations = new ArrayList<>();
     reusableEncodedBigVariantAnnotations = new ArrayList<>();
   }
 
-  public void create(Iterator<VariantAnnotation<T>> variantAnnotationIterator) {
-    for (ReusableGenomePartitionIterator<T> reusableGenomePartitionIterator =
+  public void create(Iterator<T> variantAnnotationIterator) {
+    for (ReusableGenomePartitionIterator<T, U> reusableGenomePartitionIterator =
             new ReusableGenomePartitionIterator<>(variantAnnotationIterator);
         reusableGenomePartitionIterator.hasNext(); ) {
       process(reusableGenomePartitionIterator.next());
     }
   }
 
-  private void process(GenomePartition<T> genomePartition) {
+  private void process(GenomePartition<T, U> genomePartition) {
     reusableEncodedSmallVariantAnnotations.clear();
     reusableEncodedBigVariantAnnotations.clear();
 
-    for (VariantAnnotation<T> variantAnnotation : genomePartition.getVariantAnnotationList()) {
+    for (T variantAnnotation : genomePartition.getLocusAnnotationList()) {
       Variant variant = variantAnnotation.variant();
 
       // encode
@@ -60,8 +60,8 @@ public class AnnotationDbWriter<T> {
 
   private void write(
       GenomePartitionKey genomePartitionKey,
-      List<EncodedSmallVariantAnnotation<T>> encodedSmallVariantAnnotations,
-      List<EncodedBigVariantAnnotation<T>> encodedBigVariantAnnotations) {
+      List<EncodedSmallVariantAnnotation<U>> encodedSmallVariantAnnotations,
+      List<EncodedBigVariantAnnotation<U>> encodedBigVariantAnnotations) {
     // create small item index
     encodedSmallVariantAnnotations.sort(Comparator.comparingInt(o -> o.encodedVariant));
     int[] smallIndex =
@@ -86,7 +86,7 @@ public class AnnotationDbWriter<T> {
     annotationIndexWriter.write(genomePartitionKey, annotationIndex);
 
     // combine item data
-    List<VariantAnnotation<T>> allList =
+    List<VariantAnnotation<U>> allList =
         new ArrayList<>(
             encodedSmallVariantAnnotations.size() + encodedBigVariantAnnotations.size());
     encodedSmallVariantAnnotations.forEach(
@@ -97,7 +97,7 @@ public class AnnotationDbWriter<T> {
     annotationDatasetWriter.write(
         genomePartitionKey,
         new SizedIterable<>(
-            new TransformingIterable<>(allList, VariantAnnotation::annotation), allList.size()));
+            new TransformingIterable<>(allList, LocusAnnotation::annotation), allList.size()));
   }
 
   private record EncodedSmallVariantAnnotation<T>(
