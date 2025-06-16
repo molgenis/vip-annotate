@@ -6,18 +6,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.annotation.GenomePartitionKey;
 
 @RequiredArgsConstructor
 public class ZipZstdDecompressionContext {
   @NonNull private final MappableZipFile zipFile;
   @NonNull private final ZstdDecompressCtx zstdDecompressCtx;
 
-  public MemoryBuffer read(
-      GenomePartitionKey genomePartitionKey, String basename, ByteBuffer directByteBuffer) {
-    ZipArchiveEntry zipArchiveEntry =
-        zipFile.getEntry(
-            genomePartitionKey.contig() + "/" + genomePartitionKey.bin() + "/" + basename + ".zst");
+  public MemoryBuffer read(String zipArchiveEntryName, ByteBuffer directByteBuffer) {
+    ZipArchiveEntry zipArchiveEntry = zipFile.getEntry(zipArchiveEntryName);
     if (zipArchiveEntry == null) {
       return null;
     }

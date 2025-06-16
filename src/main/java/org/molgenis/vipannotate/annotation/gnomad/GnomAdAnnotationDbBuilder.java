@@ -4,9 +4,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.molgenis.vipannotate.annotation.AnnotationDbWriter;
-import org.molgenis.vipannotate.annotation.AnnotationIndexWriter;
-import org.molgenis.vipannotate.annotation.VariantAnnotation;
+import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.serialization.FuryFactory;
 import org.molgenis.vipannotate.util.FastaIndex;
 import org.molgenis.vipannotate.util.TransformingIterator;
@@ -23,12 +21,15 @@ public class GnomAdAnnotationDbBuilder {
       Iterator<VariantAnnotation<GnomAdAnnotationData>> gnomAdIterator = create(reader, fastaIndex);
       GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder =
           new GnomAdAnnotationDatasetEncoder();
+
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
+      GenomePartitionDataWriter genomePartitionDataWriter =
+          new ZipZstdGenomePartitionDataWriter(zipZstdCompressionContext);
       new AnnotationDbWriter<>(
-              new AnnotationIndexWriter(FuryFactory.createFury(), zipZstdCompressionContext),
+              new AnnotationIndexWriter(FuryFactory.createFury(), genomePartitionDataWriter),
               new GnomAdAnnotationDatasetWriter(
-                  gnomAdAnnotationDataSetEncoder, zipZstdCompressionContext))
+                  gnomAdAnnotationDataSetEncoder, genomePartitionDataWriter))
           .create(gnomAdIterator);
     } catch (IOException e) {
       throw new UncheckedIOException(e);

@@ -8,6 +8,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.molgenis.vipannotate.util.Logger;
 
+// FIXME delete, replace usages with ZipZstdCompressionContext
 public class ZipCompressionContextOther {
 
   public void writeData(

@@ -4,18 +4,17 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotationDatasetWriter;
+import org.molgenis.vipannotate.annotation.GenomePartitionDataWriter;
 import org.molgenis.vipannotate.annotation.GenomePartitionKey;
 import org.molgenis.vipannotate.util.SizedIterable;
 import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
-import org.molgenis.vipannotate.zip.ZipZstdCompressionContext;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotationDatasetWriter
     implements AnnotationDatasetWriter<GnomAdAnnotationData> {
   @NonNull private final GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder;
-
-  @NonNull private final ZipZstdCompressionContext zipZstdCompressionContext;
+  @NonNull private final GenomePartitionDataWriter genomePartitionDataWriter;
 
   @Override
   public void write(
@@ -39,7 +38,7 @@ public class GnomAdAnnotationDatasetWriter
                 new TransformingIterator<>(
                     variantAnnotations.iterator(), GnomAdAnnotationData::source),
                 variantAnnotations.getSize()));
-    write(genomePartitionKey, "src", memoryBuffer);
+    genomePartitionDataWriter.write(genomePartitionKey, "src", memoryBuffer);
   }
 
   private void writeAf(
@@ -50,7 +49,7 @@ public class GnomAdAnnotationDatasetWriter
             new SizedIterator<>(
                 new TransformingIterator<>(variantAnnotations.iterator(), GnomAdAnnotationData::af),
                 variantAnnotations.getSize()));
-    write(genomePartitionKey, "af", memoryBuffer);
+    genomePartitionDataWriter.write(genomePartitionKey, "af", memoryBuffer);
   }
 
   private void writeFaf95(
@@ -62,7 +61,7 @@ public class GnomAdAnnotationDatasetWriter
                 new TransformingIterator<>(
                     variantAnnotations.iterator(), GnomAdAnnotationData::faf95),
                 variantAnnotations.getSize()));
-    write(genomePartitionKey, "faf95", memoryBuffer);
+    genomePartitionDataWriter.write(genomePartitionKey, "faf95", memoryBuffer);
   }
 
   private void writeFaf99(
@@ -74,7 +73,7 @@ public class GnomAdAnnotationDatasetWriter
                 new TransformingIterator<>(
                     variantAnnotations.iterator(), GnomAdAnnotationData::faf99),
                 variantAnnotations.getSize()));
-    write(genomePartitionKey, "faf99", memoryBuffer);
+    genomePartitionDataWriter.write(genomePartitionKey, "faf99", memoryBuffer);
   }
 
   private void writeHn(
@@ -85,7 +84,7 @@ public class GnomAdAnnotationDatasetWriter
             new SizedIterator<>(
                 new TransformingIterator<>(variantAnnotations.iterator(), GnomAdAnnotationData::hn),
                 variantAnnotations.getSize()));
-    write(genomePartitionKey, "hn", memoryBuffer);
+    genomePartitionDataWriter.write(genomePartitionKey, "hn", memoryBuffer);
   }
 
   private void writeFilters(
@@ -97,7 +96,7 @@ public class GnomAdAnnotationDatasetWriter
                 new TransformingIterator<>(
                     variantAnnotations.iterator(), GnomAdAnnotationData::filters),
                 variantAnnotations.getSize()));
-    write(genomePartitionKey, "filters", memoryBuffer);
+    genomePartitionDataWriter.write(genomePartitionKey, "filters", memoryBuffer);
   }
 
   private void writeCov(
@@ -109,11 +108,6 @@ public class GnomAdAnnotationDatasetWriter
                 new TransformingIterator<>(
                     variantAnnotations.iterator(), GnomAdAnnotationData::cov),
                 variantAnnotations.getSize()));
-    write(genomePartitionKey, "cov", memoryBuffer);
-  }
-
-  private void write(
-      GenomePartitionKey genomePartitionKey, String basename, MemoryBuffer memoryBuffer) {
-    zipZstdCompressionContext.write(genomePartitionKey, basename, memoryBuffer);
+    genomePartitionDataWriter.write(genomePartitionKey, "cov", memoryBuffer);
   }
 }

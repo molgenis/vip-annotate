@@ -25,9 +25,10 @@
 ### perf
 
 - [x] perf(build): gnomAD index file
-- [ ] perf(build): build annotation database parts separately to allow for parallel building and partial updating.
+- [ ] perf(build): build annotation database parts separately to allow for parallel building and partial updating e.g.,
+  build per contig and zip when done.
 - [x] perf(build): gnomAD annotation file with separate files for each score element to get rid of offset index
-- [ ] perf(build): zstd dictionary for ncer/phylop/remm
+- [x] perf(build): zstd dictionary for ncer/phylop/remm (wont-fix)
 - [ ] perf(build): space-efficient alternative to BigInteger (Java bincode alternative?)
 - [ ] perf(annotate): do not batch over partition borders (?)
 
@@ -37,6 +38,8 @@
 - [ ] refactor(annotate+db): code deduplication
 - [ ] refactor(annotate+db): replace commons-compress 1.28.0-SNAPSHOT dependency with something else
 - [ ] refactor(db): create gnomad db from source files instead of derived files
+- [ ] refactor(annotate+db): add jspecify and nullaway,
+  see https://spring.io/blog/2025/03/10/null-safety-in-spring-apps-with-jspecify-and-null-away and https://jspecify.dev/
 
 ### build
 
