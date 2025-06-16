@@ -10,12 +10,20 @@ import org.molgenis.vipannotate.util.SizedIterator;
 
 @RequiredArgsConstructor
 public class NcERAnnotationDatasetEncoder implements AnnotationDatasetEncoder<ContigPosAnnotation> {
+  private static final int BUFFER_ANNOTATIONS = (1 << GenomePartition.NR_POS_BITS);
+  private static final int BUFFER_SIZE = BUFFER_ANNOTATIONS * Short.BYTES;
+
   @NonNull private final NcERAnnotationDataCodec ncERAnnotationDataCodec;
 
   @Override
   public MemoryBuffer encode(SizedIterator<ContigPosAnnotation> annotationIterator) {
-    MemoryBuffer memoryBuffer =
-        MemoryBuffer.newHeapBuffer(((int) Math.pow(2, GenomePartition.NR_POS_BITS)) * Short.BYTES);
+    short nullScore = ncERAnnotationDataCodec.encode(null);
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(BUFFER_SIZE);
+    if (nullScore != 0) {
+      for (int i = 0; i < BUFFER_SIZE; i++) {
+        memoryBuffer.putInt16(i, nullScore);
+      }
+    }
 
     annotationIterator.forEachRemaining(
         locusAnnotation -> {

@@ -11,13 +11,20 @@ import org.molgenis.vipannotate.util.SizedIterator;
 @RequiredArgsConstructor
 public class PhyloPAnnotationDatasetEncoder
     implements AnnotationDatasetEncoder<ContigPosAnnotation> {
-  private static final int BUFFER_SIZE = (1 << GenomePartition.NR_POS_BITS) * Short.BYTES;
+  private static final int BUFFER_ANNOTATIONS = (1 << GenomePartition.NR_POS_BITS);
+  private static final int BUFFER_SIZE = BUFFER_ANNOTATIONS * Short.BYTES;
 
   @NonNull private final PhyloPAnnotationDataCodec phyloPAnnotationDataCodec;
 
   @Override
   public MemoryBuffer encode(SizedIterator<ContigPosAnnotation> annotationIterator) {
+    short nullScore = phyloPAnnotationDataCodec.encode(null);
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(BUFFER_SIZE);
+    if (nullScore != 0) {
+      for (int i = 0; i < BUFFER_SIZE; i++) {
+        memoryBuffer.putInt16(i, nullScore);
+      }
+    }
 
     annotationIterator.forEachRemaining(
         locusAnnotation -> {
