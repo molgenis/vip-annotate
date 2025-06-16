@@ -21,12 +21,10 @@ public class RemmAnnotatorFactory {
     MappableZipFile mappableZipFile = MappableZipFile.fromFile(annotationsFile);
 
     ContigPosScoreAnnotationDatasetFactory annotationDatasetFactory =
-        new ContigPosScoreAnnotationDatasetFactory(
-            new RemmAnnotationDatasetDecoder(new RemmAnnotationDataCodec()));
+        new ContigPosScoreAnnotationDatasetFactory(new RemmAnnotationDatasetDecoder());
     AnnotationDatasetReader<ContigPosScoreAnnotationData> annotationDatasetReader =
         new ContigPosScoreAnnotationDatasetReader(
-            annotationDatasetFactory,
-            annotationBlobReaderFactory.create(mappableZipFile, "scores"));
+            annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
     return new RemmAnnotator(new ContigPosAnnotationDb<>(annotationDatasetReader));
   }

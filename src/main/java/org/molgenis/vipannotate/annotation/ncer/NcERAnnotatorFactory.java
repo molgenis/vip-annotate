@@ -25,8 +25,7 @@ public class NcERAnnotatorFactory {
             new NcERAnnotationDatasetDecoder(new NcERAnnotationDataCodec()));
     AnnotationDatasetReader<ContigPosScoreAnnotationData> annotationDatasetReader =
         new ContigPosScoreAnnotationDatasetReader(
-            annotationDatasetFactory,
-            annotationBlobReaderFactory.create(mappableZipFile, "scores"));
+            annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
     return new NcERAnnotator(new ContigPosAnnotationDb<>(annotationDatasetReader));
   }

@@ -19,7 +19,8 @@ public class PhyloPAnnotationDatasetEncoder
   @Override
   public MemoryBuffer encode(SizedIterator<ContigPosAnnotation> annotationIterator) {
     short nullScore = phyloPAnnotationDataCodec.encode(null);
-    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(BUFFER_SIZE);
+    MemoryBuffer memoryBuffer =
+        MemoryBuffer.newHeapBuffer(BUFFER_SIZE); // FIXME last bin can be larger than contig
     if (nullScore != 0) {
       for (int i = 0; i < BUFFER_SIZE; i++) {
         memoryBuffer.putInt16(i, nullScore);

@@ -8,49 +8,49 @@ import org.junit.jupiter.api.Test;
 class EncoderTest {
 
   @Test
-  void encodeDecodeUnitIntervalDoubleFromShortPrimitive() {
-    double maxEncoderError = 1d / (2 * ((1 << Short.BYTES) - 1));
+  void encodeDecodeDoubleUnitIntervalFromShortPrimitive() {
+    double maxEncoderError = 1d / (2 * ((1 << Short.SIZE) - 1));
     for (int i = 0; i < 1000; ++i) {
       double value = Math.random(); // [0, 1)
-      short encodedValue = Encoder.encodeUnitIntervalDoublePrimitiveAsShort(value);
-      double decodedValue = Encoder.decodeUnitIntervalDoublePrimitiveFromShort(encodedValue);
+      short encodedValue = Encoder.encodeDoubleUnitIntervalPrimitiveAsShort(value);
+      double decodedValue = Encoder.decodeDoubleUnitIntervalPrimitiveFromShort(encodedValue);
       assertEquals(value, decodedValue, maxEncoderError);
     }
   }
 
   @Test
-  void encodeDecodeUnitIntervalDoubleFromShortPrimitiveOne() {
-    double maxEncoderError = 1d / (2 * ((1 << Short.BYTES) - 1));
+  void encodeDecodeDoubleUnitIntervalFromShortPrimitiveOne() {
+    double maxEncoderError = 1d / (2 * ((1 << Short.SIZE) - 1));
     double value = 1d;
-    short encodedValue = Encoder.encodeUnitIntervalDoublePrimitiveAsShort(value);
-    double decodedValue = Encoder.decodeUnitIntervalDoublePrimitiveFromShort(encodedValue);
+    short encodedValue = Encoder.encodeDoubleUnitIntervalPrimitiveAsShort(value);
+    double decodedValue = Encoder.decodeDoubleUnitIntervalPrimitiveFromShort(encodedValue);
     assertEquals(value, decodedValue, maxEncoderError);
   }
 
   @Test
-  void encodeDecodeUnitIntervalDoubleFromShort() {
-    double maxEncoderError = 1d / (2 * ((1 << Short.BYTES) - 2));
+  void encodeDecodeDoubleUnitIntervalFromShort() {
+    double maxEncoderError = 1d / (2 * ((1 << Short.SIZE) - 2));
     for (int i = 0; i < 1000; ++i) {
       double value = Math.random(); // [0, 1)
-      short encodedValue = Encoder.encodeUnitIntervalDoubleAsShort(value);
-      Double decodedValue = Encoder.decodeUnitIntervalDoubleFromShort(encodedValue);
+      short encodedValue = Encoder.encodeDoubleUnitIntervalAsShort(value);
+      Double decodedValue = Encoder.decodeDoubleUnitIntervalFromShort(encodedValue);
       assertEquals(value, decodedValue, maxEncoderError);
     }
   }
 
   @Test
-  void encodeDecodeUnitIntervalDoubleFromShortOne() {
-    double maxEncoderError = 1d / (2 * ((1 << Short.BYTES) - 2));
+  void encodeDecodeDoubleUnitIntervalFromShortOne() {
+    double maxEncoderError = 1d / (2 * ((1 << Short.SIZE) - 2));
     double value = 1d;
-    short encodedValue = Encoder.encodeUnitIntervalDoubleAsShort(value);
-    Double decodedValue = Encoder.decodeUnitIntervalDoubleFromShort(encodedValue);
+    short encodedValue = Encoder.encodeDoubleUnitIntervalAsShort(value);
+    Double decodedValue = Encoder.decodeDoubleUnitIntervalFromShort(encodedValue);
     assertEquals(value, decodedValue, maxEncoderError);
   }
 
   @Test
-  void encodeDecodeUnitIntervalDoubleFromShortNull() {
-    short encodedValue = Encoder.encodeUnitIntervalDoubleAsShort(null);
-    Double decodedValue = Encoder.decodeUnitIntervalDoubleFromShort(encodedValue);
+  void encodeDecodeDoubleUnitIntervalFromShortNull() {
+    short encodedValue = Encoder.encodeDoubleUnitIntervalAsShort(null);
+    Double decodedValue = Encoder.decodeDoubleUnitIntervalFromShort(encodedValue);
     assertNull(decodedValue);
   }
 }

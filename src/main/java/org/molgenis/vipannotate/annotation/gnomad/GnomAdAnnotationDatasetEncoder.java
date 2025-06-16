@@ -118,7 +118,7 @@ public class GnomAdAnnotationDatasetEncoder {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * Short.BYTES);
     doubleIt.forEachRemaining(
         value -> {
-          short encodedValue = Encoder.encodeUnitIntervalDoublePrimitiveAsShort(value);
+          short encodedValue = Encoder.encodeDoubleUnitIntervalPrimitiveAsShort(value);
           memoryBuffer.writeInt16(encodedValue);
         });
     return memoryBuffer;
@@ -128,7 +128,7 @@ public class GnomAdAnnotationDatasetEncoder {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * Short.BYTES);
     doubleIt.forEachRemaining(
         value -> {
-          short encodedValue = Encoder.encodeUnitIntervalDoubleAsShort(value);
+          short encodedValue = Encoder.encodeDoubleUnitIntervalAsShort(value);
           memoryBuffer.writeInt16(encodedValue);
         });
     return memoryBuffer;

@@ -1,20 +1,18 @@
 package org.molgenis.vipannotate.annotation.remm;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotationDatasetDecoder;
 import org.molgenis.vipannotate.annotation.ContigPosScoreAnnotationData;
+import org.molgenis.vipannotate.annotation.GenomePartition;
+import org.molgenis.vipannotate.util.Encoder;
 
-@RequiredArgsConstructor
 public class RemmAnnotationDatasetDecoder
     implements AnnotationDatasetDecoder<ContigPosScoreAnnotationData> {
-  @NonNull private final RemmAnnotationDataCodec remmAnnotationDataCodec;
 
   public ContigPosScoreAnnotationData decode(MemoryBuffer memoryBuffer, int index) {
-    int relativeIndex = index - ((index >> 20) << 20);
+    int relativeIndex = GenomePartition.calcPosInBin(index);
     byte encodedScore = memoryBuffer.getByte(relativeIndex);
-    Double decodedScore = remmAnnotationDataCodec.decode(encodedScore);
+    Double decodedScore = Encoder.decodeDoubleUnitIntervalFromByte(encodedScore);
     return new ContigPosScoreAnnotationData(decodedScore);
   }
 }

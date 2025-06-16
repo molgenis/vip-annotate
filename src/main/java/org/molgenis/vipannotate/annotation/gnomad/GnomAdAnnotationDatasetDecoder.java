@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import java.util.EnumSet;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
-import org.molgenis.vipannotate.util.Quantizer;
+import org.molgenis.vipannotate.util.Encoder;
 
 public class GnomAdAnnotationDatasetDecoder {
   public Source decodeSource(MemoryBuffer memoryBuffer, int sourceIndex) {
@@ -42,16 +42,12 @@ public class GnomAdAnnotationDatasetDecoder {
   private double decodeQuantized16UnitIntervalDoublePrimitive(
       MemoryBuffer memoryBuffer, int afIndex) {
     short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
-    int quantizedValue = Short.toUnsignedInt(value);
-    return Quantizer.dequantize(quantizedValue, 0, (1 << Short.SIZE) - 1, 0d, 1d);
+    return Encoder.decodeDoubleUnitIntervalPrimitiveFromShort(value);
   }
 
   private Double decodeQuantized16UnitIntervalDouble(MemoryBuffer memoryBuffer, int afIndex) {
     short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
-    int quantizedValue = Short.toUnsignedInt(value);
-    return quantizedValue != 0
-        ? Quantizer.dequantize(quantizedValue, 1, (1 << Short.SIZE) - 1, 0d, 1d)
-        : null;
+    return Encoder.decodeDoubleUnitIntervalFromShort(value);
   }
 
   // TODO perf: predefine all possible enum sets instead of creating new ones

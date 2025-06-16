@@ -9,13 +9,7 @@ import org.apache.fury.memory.MemoryBuffer;
  * for rapid annotation and filtering of SNPs and indels</a>.
  */
 public class VariantEncoder {
-  private static final int NR_ENCODED_PARTITION_ID_BITS = 20;
-
   public VariantEncoder() {}
-
-  public int getPartitionId(Variant variant) {
-    return variant.start() >> NR_ENCODED_PARTITION_ID_BITS;
-  }
 
   public static boolean isSmallVariant(Variant variant) {
     return isSmall(variant.getRefLength()) && isSmall(variant.getAltLength());
@@ -104,8 +98,7 @@ public class VariantEncoder {
    */
   private static int encodePos(int pos) {
     if (pos < 1) throw new IllegalArgumentException("start must be greater than or equal to 1");
-    int binIndex = pos >> NR_ENCODED_PARTITION_ID_BITS;
-    return pos - (binIndex << NR_ENCODED_PARTITION_ID_BITS);
+    return GenomePartition.calcPosInBin(pos);
   }
 
   private static void validateSmall(int nrBases) {
@@ -168,12 +161,5 @@ public class VariantEncoder {
           throw new IllegalArgumentException(
               "alt base '%s' not allowed, must be one of A,C,G,T".formatted((char) altBase));
     };
-  }
-
-  public static void main(String[] args) {
-    int pos = (2 * 1048576) + 1242;
-    int binIndex = pos >> 20;
-    int relPos = pos - (binIndex << 20);
-    System.out.println(relPos);
   }
 }
