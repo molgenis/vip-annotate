@@ -1,8 +1,8 @@
 package org.molgenis.vipannotate.util;
 
+import static java.util.Collections.emptyIterator;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -44,14 +44,14 @@ class FilteringIteratorTest {
   }
 
   @Test
-  void hasNextNextEmptyIterator() {
-    Iterator<String> it = new FilteringIterator<>(Collections.emptyIterator(), s -> !s.isEmpty());
+  void hasNextEmptyIterator() {
+    Iterator<String> it = new FilteringIterator<>(emptyIterator(), s -> !s.isEmpty());
     assertFalse(it.hasNext());
   }
 
   @Test
-  void testFilteringIteratorThrowsException() {
-    Iterator<String> it = new FilteringIterator<>(Collections.emptyIterator(), s -> !s.isEmpty());
+  void nextNotSuchElementException() {
+    Iterator<String> it = new FilteringIterator<>(emptyIterator(), s -> !s.isEmpty());
     assertThrows(NoSuchElementException.class, it::next);
   }
 }

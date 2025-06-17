@@ -71,7 +71,7 @@ class TsvIteratorTest {
   }
 
   @Test
-  void hasNextNextEmpty() throws IOException {
+  void hasNextEmpty() throws IOException {
     String str = "";
     try (BufferedReader bufferedReader = new BufferedReader(new StringReader(str))) {
       TsvIterator tsvIterator = new TsvIterator(bufferedReader);

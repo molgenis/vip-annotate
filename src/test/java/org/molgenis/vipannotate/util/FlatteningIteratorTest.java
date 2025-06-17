@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.util;
 
+import static java.util.Collections.emptyIterator;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
@@ -45,13 +46,13 @@ class FlatteningIteratorTest {
 
   @Test
   void testFlatteningIteratorWithEmptyIterator() {
-    Iterator<Integer> it = new FlatteningIterator<>(Collections.emptyIterator());
+    Iterator<Integer> it = new FlatteningIterator<>(emptyIterator());
     assertFalse(it.hasNext());
   }
 
   @Test
   void testFlatteningIteratorThrowsException() {
-    Iterator<Integer> it = new FlatteningIterator<>(Collections.emptyIterator());
+    Iterator<Integer> it = new FlatteningIterator<>(emptyIterator());
     assertThrows(NoSuchElementException.class, it::next);
   }
 }
