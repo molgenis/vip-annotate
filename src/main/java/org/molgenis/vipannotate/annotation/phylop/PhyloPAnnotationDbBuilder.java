@@ -4,13 +4,15 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.annotation.ContigPosScoreAnnotationDatasetEncoder;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
+import org.molgenis.vipannotate.format.zip.Zip;
+import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 import org.molgenis.vipannotate.util.FilteringIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 import org.molgenis.vipannotate.util.TsvIterator;
-import org.molgenis.vipannotate.format.zip.Zip;
-import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 
 public class PhyloPAnnotationDbBuilder {
   public PhyloPAnnotationDbBuilder() {}
@@ -20,6 +22,8 @@ public class PhyloPAnnotationDbBuilder {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(phyloPFile)) {
       Iterator<ContigPosAnnotation> iterator = create(reader, fastaIndex);
 
+      MemoryBuffer reusableMemoryBuffer = MemoryBuffer.newHeapBuffer((1 << 20) * Short.BYTES);
+
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
       GenomePartitionDataWriter genomePartitionDataWriter =
@@ -28,8 +32,10 @@ public class PhyloPAnnotationDbBuilder {
           new NonIndexedAnnotationDbWriter<>(
               new LocusAnnotationDatasetWriter<>(
                   "score",
-                  new PhyloPAnnotationDatasetEncoder(new PhyloPAnnotationDataCodec()),
-                  genomePartitionDataWriter));
+                  new ContigPosScoreAnnotationDatasetEncoder(
+                      new PhyloPAnnotationEncoder(), reusableMemoryBuffer),
+                  genomePartitionDataWriter,
+                  fastaIndex));
 
       annotationDbWriter.create(iterator);
     } catch (IOException e) {

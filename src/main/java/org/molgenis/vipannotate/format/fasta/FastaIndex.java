@@ -18,4 +18,8 @@ public class FastaIndex {
   public boolean containsReferenceSequence(@NonNull String name) {
     return records.containsKey(name);
   }
+
+  public FastaIndexRecord get(@NonNull String name) {
+    return records.get(name);
+  }
 }

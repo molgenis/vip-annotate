@@ -4,13 +4,14 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
+import org.molgenis.vipannotate.format.zip.Zip;
+import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 import org.molgenis.vipannotate.util.FilteringIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 import org.molgenis.vipannotate.util.TsvIterator;
-import org.molgenis.vipannotate.format.zip.Zip;
-import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 
 public class RemmAnnotationDbBuilder {
   public RemmAnnotationDbBuilder() {}
@@ -19,6 +20,8 @@ public class RemmAnnotationDbBuilder {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERFile)) {
       Iterator<ContigPosAnnotation> iterator = create(reader, fastaIndex);
 
+      MemoryBuffer reusableMemoryBuffer = MemoryBuffer.newHeapBuffer((1 << 20) * Byte.BYTES);
+
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
       GenomePartitionDataWriter genomePartitionDataWriter =
@@ -26,7 +29,11 @@ public class RemmAnnotationDbBuilder {
       NonIndexedAnnotationDbWriter<ContigPosAnnotation, Double> annotationDbWriter =
           new NonIndexedAnnotationDbWriter<>(
               new LocusAnnotationDatasetWriter<>(
-                  "score", new RemmAnnotationDatasetEncoder(), genomePartitionDataWriter));
+                  "score",
+                  new ContigPosScoreAnnotationDatasetEncoder(
+                      new RemmAnnotationEncoder(), reusableMemoryBuffer),
+                  genomePartitionDataWriter,
+                  fastaIndex));
 
       annotationDbWriter.create(iterator);
     } catch (IOException e) {
