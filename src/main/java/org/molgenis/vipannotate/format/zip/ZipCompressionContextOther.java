@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.zip;
+package org.molgenis.vipannotate.format.zip;
 
 import com.github.luben.zstd.Zstd;
 import java.io.IOException;

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.molgenis.vipannotate.format.fasta.FastaIndex;
+import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 
 class FastaIndexParserTest {
 

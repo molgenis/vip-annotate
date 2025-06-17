@@ -1,11 +1,10 @@
-package org.molgenis.vipannotate.vcf;
+package org.molgenis.vipannotate.format.vcf;
 
 import java.io.Serial;
 import lombok.NonNull;
 
 public class VcfParserException extends RuntimeException {
-  @Serial
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   public VcfParserException(@NonNull String message) {
     super(message);

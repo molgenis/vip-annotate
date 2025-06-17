@@ -12,8 +12,8 @@ import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.AnnotationDb;
 import org.molgenis.vipannotate.annotation.Variant;
 import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
-import org.molgenis.vipannotate.vcf.VcfHeader;
-import org.molgenis.vipannotate.vcf.VcfRecord;
+import org.molgenis.vipannotate.format.vcf.VcfHeader;
+import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 public class GnomAdAnnotator implements VcfRecordAnnotator {
   private final AnnotationDb<GnomAdAnnotationData> annotationDb;

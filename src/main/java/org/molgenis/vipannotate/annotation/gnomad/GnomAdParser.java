@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import java.util.EnumSet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.util.FastaIndex;
+import org.molgenis.vipannotate.format.fasta.FastaIndex;
 
 @RequiredArgsConstructor
 public class GnomAdParser {

@@ -3,8 +3,8 @@ package org.molgenis.vipannotate.annotation;
 import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.vcf.VcfHeader;
-import org.molgenis.vipannotate.vcf.VcfRecord;
+import org.molgenis.vipannotate.format.vcf.VcfHeader;
+import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 @RequiredArgsConstructor
 public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotator {

@@ -1,4 +1,6 @@
-package org.molgenis.vipannotate.util;
+package org.molgenis.vipannotate.format.fasta;
+
+import org.molgenis.vipannotate.util.TsvIterator;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

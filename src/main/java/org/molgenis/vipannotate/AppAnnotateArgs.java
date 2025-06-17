@@ -2,7 +2,7 @@ package org.molgenis.vipannotate;
 
 import java.nio.file.Path;
 import lombok.NonNull;
-import org.molgenis.vipannotate.vcf.VcfType;
+import org.molgenis.vipannotate.format.vcf.VcfType;
 
 /**
  * @param inputVcf input vcf or {@code null} to read from stdin.

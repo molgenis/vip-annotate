@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fury.Fury;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.serialization.FuryFactory;
-import org.molgenis.vipannotate.zip.MappableZipFile;
+import org.molgenis.vipannotate.format.zip.MappableZipFile;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotatorFactory {

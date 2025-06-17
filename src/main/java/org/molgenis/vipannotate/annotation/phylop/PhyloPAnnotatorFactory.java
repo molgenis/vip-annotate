@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.zip.MappableZipFile;
+import org.molgenis.vipannotate.format.zip.MappableZipFile;
 
 // TODO refactor: deduplicate ncer,phylop,remm factory
 @RequiredArgsConstructor

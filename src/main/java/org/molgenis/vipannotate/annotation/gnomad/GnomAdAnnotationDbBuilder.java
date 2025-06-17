@@ -6,11 +6,11 @@ import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.serialization.FuryFactory;
-import org.molgenis.vipannotate.util.FastaIndex;
+import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.util.TransformingIterator;
 import org.molgenis.vipannotate.util.TsvIterator;
-import org.molgenis.vipannotate.zip.Zip;
-import org.molgenis.vipannotate.zip.ZipZstdCompressionContext;
+import org.molgenis.vipannotate.format.zip.Zip;
+import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 
 public class GnomAdAnnotationDbBuilder {
   public GnomAdAnnotationDbBuilder() {}

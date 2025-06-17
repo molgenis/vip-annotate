@@ -1,5 +1,4 @@
-package org.molgenis.vipannotate.zip;
-
+package org.molgenis.vipannotate.format.zip;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.zip.ZipZstdDecompressionContext;
+import org.molgenis.vipannotate.format.zip.ZipZstdDecompressionContext;
 
 @RequiredArgsConstructor
 public class ZipZstdGenomePartitionDataReader implements GenomePartitionDataReader {

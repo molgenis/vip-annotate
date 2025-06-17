@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.util;
+package org.molgenis.vipannotate.format.fasta;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -5,10 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.Command;
-import org.molgenis.vipannotate.util.FastaIndex;
-import org.molgenis.vipannotate.util.FastaIndexParser;
+import org.molgenis.vipannotate.format.fasta.FastaIndex;
+import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 import org.molgenis.vipannotate.util.Logger;
-import org.molgenis.vipannotate.zip.Zip;
+import org.molgenis.vipannotate.format.zip.Zip;
 
 // FIXME proper CLI with arg validation etc.
 public class PhyloPAnnotationDbBuilderCommand implements Command {

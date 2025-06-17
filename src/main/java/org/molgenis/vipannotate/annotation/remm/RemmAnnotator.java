@@ -13,8 +13,8 @@ import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
 import org.molgenis.vipannotate.annotation.ContigPosScoreAnnotationData;
 import org.molgenis.vipannotate.annotation.Variant;
 import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
-import org.molgenis.vipannotate.vcf.VcfHeader;
-import org.molgenis.vipannotate.vcf.VcfRecord;
+import org.molgenis.vipannotate.format.vcf.VcfHeader;
+import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 // TODO refactor: deduplicate ncer,phylop,remm annotator
 public class RemmAnnotator implements VcfRecordAnnotator {

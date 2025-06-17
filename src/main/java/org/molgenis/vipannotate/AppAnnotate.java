@@ -5,7 +5,7 @@ import org.apache.fury.logging.LoggerFactory;
 import org.molgenis.vipannotate.annotation.VcfAnnotator;
 import org.molgenis.vipannotate.annotation.VcfAnnotatorFactory;
 import org.molgenis.vipannotate.util.Logger;
-import org.molgenis.vipannotate.vcf.VcfType;
+import org.molgenis.vipannotate.format.vcf.VcfType;
 
 public class AppAnnotate {
 

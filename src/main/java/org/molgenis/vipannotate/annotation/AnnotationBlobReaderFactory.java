@@ -3,9 +3,9 @@ package org.molgenis.vipannotate.annotation;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.molgenis.vipannotate.zip.MappableZipFile;
-import org.molgenis.vipannotate.zip.ZipZstdDecompressionContext;
-import org.molgenis.vipannotate.zip.ZipZstdDecompressionContextFactory;
+import org.molgenis.vipannotate.format.zip.MappableZipFile;
+import org.molgenis.vipannotate.format.zip.ZipZstdDecompressionContext;
+import org.molgenis.vipannotate.format.zip.ZipZstdDecompressionContextFactory;
 
 public class AnnotationBlobReaderFactory implements AutoCloseable {
   private final ZipZstdDecompressionContextFactory zipZstdDecompressionContextFactory;

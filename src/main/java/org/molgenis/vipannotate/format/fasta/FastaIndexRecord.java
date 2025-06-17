@@ -1,6 +1,7 @@
-package org.molgenis.vipannotate.util;
+package org.molgenis.vipannotate.format.fasta;
 
 import lombok.NonNull;
+import org.molgenis.vipannotate.util.Numbers;
 
 /**
  * @param name Name of this reference sequence.

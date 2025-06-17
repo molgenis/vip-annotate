@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.zip.ZipZstdCompressionContext;
+import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 
 @RequiredArgsConstructor
 public class ZipZstdGenomePartitionDataWriter implements GenomePartitionDataWriter {

@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.vcf;
+package org.molgenis.vipannotate.format.vcf;
 
 import java.io.BufferedReader;
 import java.io.IOException;

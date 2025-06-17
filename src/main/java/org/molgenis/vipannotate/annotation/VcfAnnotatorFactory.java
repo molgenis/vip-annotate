@@ -7,7 +7,7 @@ import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.remm.RemmAnnotatorFactory;
-import org.molgenis.vipannotate.vcf.*;
+import org.molgenis.vipannotate.format.vcf.*;
 
 public class VcfAnnotatorFactory implements AutoCloseable {
   public final AnnotationBlobReaderFactory annotationBlobReaderFactory;
