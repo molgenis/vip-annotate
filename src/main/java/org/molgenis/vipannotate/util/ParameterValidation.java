@@ -56,6 +56,13 @@ public class ParameterValidation {
     return num;
   }
 
+  public static long requireNonNegative(long num) {
+    if (num < 0) {
+      throw new IllegalArgumentException("number must be greater than or equal to zero");
+    }
+    return num;
+  }
+
   public static void validateNonNegativeOrNull(Integer num) {
     //noinspection ResultOfMethodCallIgnored
     requireNonNegativeOrNull(num);

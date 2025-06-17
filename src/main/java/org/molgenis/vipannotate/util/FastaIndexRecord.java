@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.util;
 
+import lombok.NonNull;
+
 /**
  * @param name Name of this reference sequence.
  * @param length Total length of this reference sequence, in bases.
@@ -8,4 +10,11 @@ package org.molgenis.vipannotate.util;
  * @param lineWidth The number of bytes in each line, including the newline.
  */
 public record FastaIndexRecord(
-    String name, long length, long offset, int lineBases, int lineWidth) {}
+    @NonNull String name, long length, long offset, int lineBases, int lineWidth) {
+  public FastaIndexRecord {
+    ParameterValidation.requireNonNegative(length);
+    ParameterValidation.requireNonNegative(offset);
+    ParameterValidation.requireNonNegative(lineBases);
+    ParameterValidation.requireNonNegative(lineWidth);
+  }
+}

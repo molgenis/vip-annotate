@@ -10,7 +10,7 @@ import org.molgenis.vipannotate.util.*;
 public class GnomAdAnnotationDatasetEncoder {
   public MemoryBuffer encodeSources(SizedIterator<Source> sourceIt) {
     int nrAnnotationsPerByte = 4;
-    int nrAnnotationBytes = Math.ceilDivExact(sourceIt.size(), nrAnnotationsPerByte);
+    int nrAnnotationBytes = Math.ceilDivExact(sourceIt.getSize(), nrAnnotationsPerByte);
 
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(nrAnnotationBytes);
     for (ReusableBatchIterator<Source> sourceBatchIt =
@@ -65,14 +65,14 @@ public class GnomAdAnnotationDatasetEncoder {
    * @param hnIt iterator element must not be <code>null</code>
    */
   public MemoryBuffer encodeHn(SizedIterator<Integer> hnIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(hnIt.size() * Integer.BYTES);
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(hnIt.getSize() * Integer.BYTES);
     hnIt.forEachRemaining(memoryBuffer::writeInt32);
     return memoryBuffer;
   }
 
   public MemoryBuffer encodeFilters(SizedIterator<EnumSet<GnomAdAnnotationData.Filter>> filtersIt) {
     int nrAnnotationsPerByte = 2;
-    int nrAnnotationBytes = Math.ceilDivExact(filtersIt.size(), nrAnnotationsPerByte);
+    int nrAnnotationBytes = Math.ceilDivExact(filtersIt.getSize(), nrAnnotationsPerByte);
 
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(nrAnnotationBytes);
     for (ReusableBatchIterator<EnumSet<GnomAdAnnotationData.Filter>> filtersBatchIt =
@@ -115,7 +115,7 @@ public class GnomAdAnnotationDatasetEncoder {
 
   private MemoryBuffer encodeQuantized16UnitIntervalDoublePrimitive(
       SizedIterator<Double> doubleIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * Short.BYTES);
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.getSize() * Short.BYTES);
     doubleIt.forEachRemaining(
         value -> {
           short encodedValue = Encoder.encodeDoubleUnitIntervalPrimitiveAsShort(value);
@@ -125,7 +125,7 @@ public class GnomAdAnnotationDatasetEncoder {
   }
 
   private MemoryBuffer encodeQuantized16UnitIntervalDouble(SizedIterator<Double> doubleIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.size() * Short.BYTES);
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.getSize() * Short.BYTES);
     doubleIt.forEachRemaining(
         value -> {
           short encodedValue = Encoder.encodeDoubleUnitIntervalAsShort(value);
