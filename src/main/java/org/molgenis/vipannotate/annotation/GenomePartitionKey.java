@@ -6,6 +6,6 @@ import lombok.NonNull;
 
 public record GenomePartitionKey(@NonNull String contig, int bin) {
   public GenomePartitionKey {
-    requireNonNegative(bin);
+    validateNonNegative(bin);
   }
 }

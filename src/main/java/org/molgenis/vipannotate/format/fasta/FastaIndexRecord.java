@@ -1,7 +1,8 @@
 package org.molgenis.vipannotate.format.fasta;
 
+import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
+
 import lombok.NonNull;
-import org.molgenis.vipannotate.util.Numbers;
 
 /**
  * @param name Name of this reference sequence.
@@ -13,9 +14,9 @@ import org.molgenis.vipannotate.util.Numbers;
 public record FastaIndexRecord(
     @NonNull String name, long length, long offset, int lineBases, int lineWidth) {
   public FastaIndexRecord {
-    Numbers.requireNonNegative(length);
-    Numbers.requireNonNegative(offset);
-    Numbers.requireNonNegative(lineBases);
-    Numbers.requireNonNegative(lineWidth);
+    validateNonNegative(length);
+    validateNonNegative(offset);
+    validateNonNegative(lineBases);
+    validateNonNegative(lineWidth);
   }
 }

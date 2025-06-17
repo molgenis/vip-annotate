@@ -27,8 +27,8 @@ public class ContigPosAnnotationDb<T> implements AnnotationDb<T> {
       activeGenomePartitionKey = genomePartitionKey;
     }
 
-    int index = GenomePartition.calcPosInBin(variant.start());
-    return activeAnnotationDataset.findByIndex(index);
+    int partitionStart = GenomePartition.getPartitionStart(genomePartitionKey, variant.start());
+    return activeAnnotationDataset.findByIndex(partitionStart);
   }
 
   @Override

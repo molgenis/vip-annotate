@@ -34,4 +34,8 @@ public class GenomePartition<T extends LocusAnnotation<U>, U> {
     int bin = calcBin(pos);
     return pos - (bin << NR_POS_BITS);
   }
+
+  public static int getPartitionStart(GenomePartitionKey genomePartitionKey, int pos) {
+    return pos - (genomePartitionKey.bin() << NR_POS_BITS);
+  }
 }
