@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.NonNull;
 
 public class FastaIndex {
   private final Map<String, FastaIndexRecord> records;
@@ -10,11 +11,11 @@ public class FastaIndex {
     records = new LinkedHashMap<>();
   }
 
-  public void addRecord(FastaIndexRecord record) {
+  public void addRecord(@NonNull FastaIndexRecord record) {
     records.put(record.name(), record);
   }
 
-  public boolean containsReferenceSequence(String name) {
+  public boolean containsReferenceSequence(@NonNull String name) {
     return records.containsKey(name);
   }
 }

@@ -11,13 +11,10 @@ public class FastaIndexParser {
     FastaIndex fastaIndex = new FastaIndex();
 
     try (BufferedReader bufferedReader = createReader(faiPath)) {
-      bufferedReader
-          .lines()
-          .forEach(
-              line -> {
-                FastaIndexRecord fastaIndexRecord = createRecord(line);
-                fastaIndex.addRecord(fastaIndexRecord);
-              });
+      for (TsvIterator tsvIterator = new TsvIterator(bufferedReader); tsvIterator.hasNext(); ) {
+        FastaIndexRecord fastaIndexRecord = createRecord(tsvIterator.next());
+        fastaIndex.addRecord(fastaIndexRecord);
+      }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
@@ -25,9 +22,7 @@ public class FastaIndexParser {
     return fastaIndex;
   }
 
-  private static FastaIndexRecord createRecord(String line) {
-    String[] tokens = line.split("\t", -1);
-
+  private static FastaIndexRecord createRecord(String[] tokens) {
     String name = tokens[0];
     long length = Long.parseLong(tokens[1]);
     long offset = Long.parseLong(tokens[2]);
@@ -39,7 +34,7 @@ public class FastaIndexParser {
 
   private static BufferedReader createReader(Path faiPath) {
     if (Files.notExists(faiPath)) {
-      throw new IllegalArgumentException("'%s' does not exist".formatted(faiPath));
+      throw new UncheckedIOException(new FileNotFoundException(faiPath.toString()));
     }
 
     final int bufferedReaderBufferSize = 32768;
