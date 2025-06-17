@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation;
+package org.molgenis.vipannotate.util;
 
 import java.util.Iterator;
 import java.util.List;
