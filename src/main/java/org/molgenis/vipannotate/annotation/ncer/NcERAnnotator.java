@@ -33,7 +33,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
     vcfHeader
         .vcfMetaInfo()
         .addOrUpdateInfo(
-            ANNOTATION_ID, "A", "Float", "ncER score", App.getName(), App.getVersion());
+            ANNOTATION_ID, "1", "Float", "ncER score", App.getName(), App.getVersion());
   }
 
   @Override

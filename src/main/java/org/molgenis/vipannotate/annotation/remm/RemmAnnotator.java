@@ -33,7 +33,7 @@ public class RemmAnnotator implements VcfRecordAnnotator {
     vcfHeader
         .vcfMetaInfo()
         .addOrUpdateInfo(
-            ANNOTATION_ID, "A", "Float", "REMM score", App.getName(), App.getVersion());
+            ANNOTATION_ID, "1", "Float", "REMM score", App.getName(), App.getVersion());
   }
 
   @Override
