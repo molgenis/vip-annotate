@@ -41,10 +41,12 @@ public class NcERAnnotationDbBuilder {
     NcERParser ncERParser = new NcERParser();
     NcERBedFeatureToContigPosAnnotationMapper mapper =
         new NcERBedFeatureToContigPosAnnotationMapper();
-    return new TransformingIterator<>(
-        new FilteringIterator<>(
-            new TransformingIterator<>(new TsvIterator(bufferedReader), ncERParser::parse),
-            e -> fastaIndex.containsReferenceSequence(e.chr())),
-        mapper::map);
+
+    return new FlatteningIterator<>(
+        new TransformingIterator<>(
+            new FilteringIterator<>(
+                new TransformingIterator<>(new TsvIterator(bufferedReader), ncERParser::parse),
+                e -> fastaIndex.containsReferenceSequence(e.chr())),
+            mapper::map));
   }
 }

@@ -14,6 +14,7 @@
 
 - [ ] fix(annotate+db): native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
 - [ ] fix(annotations): investigate af-is-null-for-source issue in gnomAD, e.g., 21-5029882-CAA-A and 21-5087539-G-A
+- [ ] fix(db): ncER with stop-start > 1 implies same score for each position in range
 
 ### test
 
