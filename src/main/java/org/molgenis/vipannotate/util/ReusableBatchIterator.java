@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.util;
 
-import static org.molgenis.vipannotate.util.ParameterValidation.requirePositive;
+import static org.molgenis.vipannotate.util.Numbers.requirePositive;
 
 import java.util.ArrayList;
 import java.util.Iterator;

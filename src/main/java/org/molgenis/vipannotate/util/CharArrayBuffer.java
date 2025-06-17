@@ -1,14 +1,17 @@
 package org.molgenis.vipannotate.util;
 
+import static org.molgenis.vipannotate.util.Numbers.requirePositive;
+
 import java.util.Arrays;
 import lombok.Getter;
+import lombok.NonNull;
 
 public class CharArrayBuffer {
   @Getter private char[] buffer;
   @Getter private int length;
 
   public CharArrayBuffer(int initialCapacity) {
-    if (initialCapacity <= 0) throw new IllegalArgumentException("Capacity must be positive");
+    requirePositive(initialCapacity);
     this.buffer = new char[initialCapacity];
     this.length = 0;
   }
@@ -18,8 +21,7 @@ public class CharArrayBuffer {
     buffer[length++] = c;
   }
 
-  public void append(String s) {
-    if (s == null) throw new IllegalArgumentException("String cannot be null");
+  public void append(@NonNull String s) {
     int strLen = s.length();
     ensureCapacity(length + strLen);
     s.getChars(0, strLen, buffer, length);

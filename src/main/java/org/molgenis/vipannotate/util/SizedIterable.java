@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.util;
 
-import static org.molgenis.vipannotate.util.ParameterValidation.requireNonNegative;
+import static org.molgenis.vipannotate.util.Numbers.requireNonNegative;
 
 import lombok.Getter;
 import lombok.NonNull;

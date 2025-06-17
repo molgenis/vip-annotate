@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.util;
 
-public class ParameterValidation {
+public class Numbers {
   public static void validatePositive(int num) {
     requirePositive(num);
   }

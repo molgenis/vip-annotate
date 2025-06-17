@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
-import static org.molgenis.vipannotate.util.ParameterValidation.*;
+import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.EnumSet;
 import lombok.NonNull;

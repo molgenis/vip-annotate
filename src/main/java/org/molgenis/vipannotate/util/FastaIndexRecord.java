@@ -12,9 +12,9 @@ import lombok.NonNull;
 public record FastaIndexRecord(
     @NonNull String name, long length, long offset, int lineBases, int lineWidth) {
   public FastaIndexRecord {
-    ParameterValidation.requireNonNegative(length);
-    ParameterValidation.requireNonNegative(offset);
-    ParameterValidation.requireNonNegative(lineBases);
-    ParameterValidation.requireNonNegative(lineWidth);
+    Numbers.requireNonNegative(length);
+    Numbers.requireNonNegative(offset);
+    Numbers.requireNonNegative(lineBases);
+    Numbers.requireNonNegative(lineWidth);
   }
 }

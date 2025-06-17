@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.util;
 
-import static org.molgenis.vipannotate.util.ParameterValidation.*;
+import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.Iterator;
 import lombok.Getter;
