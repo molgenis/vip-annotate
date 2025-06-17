@@ -26,6 +26,7 @@
         <version.maven.failsafe.plugin>3.5.3</version.maven.failsafe.plugin>
         <version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
         <version.maven.surefire.plugin>3.5.3</version.maven.surefire.plugin>
+        <version.mockito>5.18.0</version.mockito>
         <version.openjdk.jmh>1.37</version.openjdk.jmh>
     </properties>
 
@@ -273,6 +274,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${version.mockito}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${version.lombok}</version>
@@ -345,6 +351,11 @@
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-generator-annprocess</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
