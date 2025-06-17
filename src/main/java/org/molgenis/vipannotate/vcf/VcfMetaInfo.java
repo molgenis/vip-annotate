@@ -36,6 +36,7 @@ public record VcfMetaInfo(@NonNull List<Line> lines) {
       StringBuilder builder = new StringBuilder();
       builder.append("##");
       builder.append(key);
+      builder.append('=');
       builder.append('<');
 
       keyValues.forEach((key, value) -> builder.append(key).append("=").append(value).append(','));
