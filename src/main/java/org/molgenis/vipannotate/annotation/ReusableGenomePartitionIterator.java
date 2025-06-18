@@ -10,7 +10,7 @@ import org.molgenis.vipannotate.util.PushbackIterator;
  *
  * @param <T>
  */
-public class ReusableGenomePartitionIterator<T extends LocusAnnotation<U>, U>
+public class ReusableGenomePartitionIterator<T extends IntervalAnnotation<U>, U>
     implements Iterator<GenomePartition<T, U>> {
   private final PushbackIterator<T> sourceIterator;
   private GenomePartition<T, U> reusableNextPartition;
@@ -44,10 +44,10 @@ public class ReusableGenomePartitionIterator<T extends LocusAnnotation<U>, U>
     reusableNextPartition.clear();
 
     do {
-      T nextLocusAnnotation = sourceIterator.next();
+      T nextIntervalAnnotation = sourceIterator.next();
 
-      String contig = nextLocusAnnotation.contig();
-      int bin = GenomePartition.calcBin(nextLocusAnnotation.start());
+      String contig = nextIntervalAnnotation.contig();
+      int bin = GenomePartition.calcBin(nextIntervalAnnotation.start());
       GenomePartitionKey genomePartitionKey = new GenomePartitionKey(contig, bin);
 
       if (reusableNextPartition.getGenomePartitionKey() == null) {
@@ -55,9 +55,9 @@ public class ReusableGenomePartitionIterator<T extends LocusAnnotation<U>, U>
       }
 
       if (genomePartitionKey.equals(reusableNextPartition.getGenomePartitionKey())) {
-        reusableNextPartition.add(nextLocusAnnotation);
+        reusableNextPartition.add(nextIntervalAnnotation);
       } else {
-        sourceIterator.pushback(nextLocusAnnotation);
+        sourceIterator.pushback(nextIntervalAnnotation);
         break;
       }
     } while (sourceIterator.hasNext());

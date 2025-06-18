@@ -17,7 +17,10 @@ public class ZipZstdCompressionContext {
 
   public void write(String zipArchiveEntryName, MemoryBuffer memoryBuffer) {
 
-    byte[] compressesBytes = Zstd.compress(memoryBuffer.getArray(), 19);
+    // use getBytes() instead of getArray() since the backing array might have a size other than
+    // size().
+    byte[] uncompressedBytes = memoryBuffer.getBytes(0, memoryBuffer.size());
+    byte[] compressedBytes = Zstd.compress(uncompressedBytes, 19);
 
     ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(zipArchiveEntryName);
     //noinspection MagicConstant
@@ -27,7 +30,7 @@ public class ZipZstdCompressionContext {
     Logger.info("creating zip archive entry %s", zipArchiveEntry.getName());
     try {
       zipOutputStream.putArchiveEntry(zipArchiveEntry);
-      zipOutputStream.write(compressesBytes);
+      zipOutputStream.write(compressedBytes);
       zipOutputStream.closeArchiveEntry();
     } catch (IOException e) {
       throw new UncheckedIOException(e);

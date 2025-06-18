@@ -10,9 +10,6 @@ import org.molgenis.vipannotate.util.Encoder;
 @RequiredArgsConstructor
 public class ContigPosDoubleAsShortAnnotationEncoder
     implements AnnotationEncoder<ContigPosAnnotation> {
-  //    private static final double SCORE_MIN = -20.0d;
-  //    private static final double SCORE_MAX = 10.003d;
-
   private final double minValue;
   private final double maxValue;
 

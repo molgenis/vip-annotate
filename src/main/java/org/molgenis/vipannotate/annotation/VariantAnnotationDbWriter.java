@@ -37,7 +37,7 @@ public class VariantAnnotationDbWriter<T extends VariantAnnotation<U>, U> {
     reusableEncodedSmallVariantAnnotations.clear();
     reusableEncodedBigVariantAnnotations.clear();
 
-    for (T variantAnnotation : genomePartition.getLocusAnnotationList()) {
+    for (T variantAnnotation : genomePartition.getIntervalAnnotationList()) {
       Variant variant = variantAnnotation.variant();
 
       // encode
@@ -97,7 +97,7 @@ public class VariantAnnotationDbWriter<T extends VariantAnnotation<U>, U> {
     annotationDatasetWriter.write(
         genomePartitionKey,
         new SizedIterable<>(
-            new TransformingIterable<>(allList, LocusAnnotation::annotation), allList.size()));
+            new TransformingIterable<>(allList, IntervalAnnotation::annotation), allList.size()));
   }
 
   private record EncodedSmallVariantAnnotation<T>(

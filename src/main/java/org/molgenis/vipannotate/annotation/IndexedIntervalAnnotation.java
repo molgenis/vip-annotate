@@ -4,9 +4,9 @@ import static org.molgenis.vipannotate.util.Numbers.*;
 
 import lombok.NonNull;
 
-public record IndexedLocusAnnotation<T extends LocusAnnotation<U>, U>(
+public record IndexedIntervalAnnotation<T extends IntervalAnnotation<U>, U>(
     int index, @NonNull T annotation) {
-  public IndexedLocusAnnotation {
+  public IndexedIntervalAnnotation {
     validateNonNegative(index);
   }
 }

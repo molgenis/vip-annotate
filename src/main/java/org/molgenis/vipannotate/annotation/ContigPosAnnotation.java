@@ -8,7 +8,7 @@ import lombok.NonNull;
  * @param score
  */
 public record ContigPosAnnotation(String contig, int pos, @NonNull Double score)
-    implements LocusAnnotation<Double> {
+    implements IntervalAnnotation<Double> {
   @Override
   public int start() {
     return pos;

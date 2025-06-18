@@ -6,7 +6,7 @@ package org.molgenis.vipannotate.annotation;
  * @param variant alternate non-reference allele
  * @param annotation annotation
  */
-public record VariantAnnotation<T>(Variant variant, T annotation) implements LocusAnnotation<T> {
+public record VariantAnnotation<T>(Variant variant, T annotation) implements IntervalAnnotation<T> {
   @Override
   public String contig() {
     return variant.contig();

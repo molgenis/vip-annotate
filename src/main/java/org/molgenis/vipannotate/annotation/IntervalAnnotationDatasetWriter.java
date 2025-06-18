@@ -9,14 +9,12 @@ import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 
 @RequiredArgsConstructor
-public class LocusAnnotationDatasetWriter<T extends LocusAnnotation<U>, U>
+public class IntervalAnnotationDatasetWriter<T extends IntervalAnnotation<U>, U>
     implements AnnotationDatasetWriter<T> {
-  private static final int MAX_ANNOTATIONS = (1 << GenomePartition.NR_POS_BITS);
-
   @NonNull private final String annotationDataId;
 
   @NonNull
-  private final AnnotationDatasetEncoder<IndexedLocusAnnotation<T, U>> annotationDatasetEncoder;
+  private final AnnotationDatasetEncoder<IndexedIntervalAnnotation<T, U>> annotationDatasetEncoder;
 
   @NonNull private final GenomePartitionDataWriter genomePartitionDataWriter;
   @NonNull private final FastaIndex fastaIndex;
@@ -35,9 +33,9 @@ public class LocusAnnotationDatasetWriter<T extends LocusAnnotation<U>, U>
     genomePartitionDataWriter.write(genomePartitionKey, annotationDataId, memoryBuffer);
   }
 
-  private IndexedLocusAnnotation<T, U> map(GenomePartitionKey genomePartitionKey, T annotation) {
+  private IndexedIntervalAnnotation<T, U> map(GenomePartitionKey genomePartitionKey, T annotation) {
     int partitionStart = GenomePartition.getPartitionStart(genomePartitionKey, annotation.start());
-    return new IndexedLocusAnnotation<>(partitionStart, annotation);
+    return new IndexedIntervalAnnotation<>(partitionStart, annotation);
   }
 
   private int calcMaxAnnotations(GenomePartitionKey genomePartitionKey) {

@@ -27,7 +27,7 @@ public class NcERAnnotationDbBuilder {
           new ZipZstdGenomePartitionDataWriter(zipZstdCompressionContext);
       NonIndexedAnnotationDbWriter<ContigPosAnnotation, Double> annotationDbWriter =
           new NonIndexedAnnotationDbWriter<>(
-              new LocusAnnotationDatasetWriter<>(
+              new IntervalAnnotationDatasetWriter<>(
                   "score",
                   new ContigPosScoreAnnotationDatasetEncoder(
                       new NcERAnnotationEncoder(), reusableMemoryBuffer),

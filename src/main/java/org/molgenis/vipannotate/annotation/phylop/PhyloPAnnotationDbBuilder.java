@@ -30,7 +30,7 @@ public class PhyloPAnnotationDbBuilder {
           new ZipZstdGenomePartitionDataWriter(zipZstdCompressionContext);
       NonIndexedAnnotationDbWriter<ContigPosAnnotation, Double> annotationDbWriter =
           new NonIndexedAnnotationDbWriter<>(
-              new LocusAnnotationDatasetWriter<>(
+              new IntervalAnnotationDatasetWriter<>(
                   "score",
                   new ContigPosScoreAnnotationDatasetEncoder(
                       new PhyloPAnnotationEncoder(), reusableMemoryBuffer),

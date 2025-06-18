@@ -1,6 +1,11 @@
 package org.molgenis.vipannotate.annotation;
 
-public interface LocusAnnotation<T> {
+/**
+ * Genomic interval annotation [start, stop]
+ *
+ * @param <T> annotation data
+ */
+public interface IntervalAnnotation<T> {
   /**
    * @return reference genome contig identifier
    */

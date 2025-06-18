@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.util.SizedIterable;
 
 @RequiredArgsConstructor
-public class NonIndexedAnnotationDbWriter<T extends LocusAnnotation<U>, U> {
+public class NonIndexedAnnotationDbWriter<T extends IntervalAnnotation<U>, U> {
   @NonNull private final AnnotationDatasetWriter<T> annotationDatasetWriter;
 
   public void create(Iterator<T> annotationIterator) {
@@ -19,10 +19,9 @@ public class NonIndexedAnnotationDbWriter<T extends LocusAnnotation<U>, U> {
   }
 
   private void process(GenomePartition<T, U> genomePartition) {
-    List<T> annotationList = genomePartition.getLocusAnnotationList();
+    List<T> annotationList = genomePartition.getIntervalAnnotationList();
     annotationDatasetWriter.write(
         genomePartition.getGenomePartitionKey(),
-        new SizedIterable<>(annotationList,
-            annotationList.size()));
+        new SizedIterable<>(annotationList, annotationList.size()));
   }
 }
