@@ -5,11 +5,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotationDataset;
-import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Filter;
-import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 
 @RequiredArgsConstructor
-public class GnomAdAnnotationDataset implements AnnotationDataset<GnomAdAnnotationData> {
+public class GnomAdAnnotationDataset implements AnnotationDataset<GnomAdAnnotation> {
   @NonNull private final GnomAdAnnotationDatasetDecoder annotationDataDecoder;
   @NonNull private final MemoryBuffer srcMemoryBuffer;
   @NonNull private final MemoryBuffer afMemoryBuffer;
@@ -20,7 +20,7 @@ public class GnomAdAnnotationDataset implements AnnotationDataset<GnomAdAnnotati
   @NonNull private final MemoryBuffer covMemoryBuffer;
 
   @Override
-  public GnomAdAnnotationData findByIndex(int index) {
+  public GnomAdAnnotation findByIndex(int index) {
     Source source = annotationDataDecoder.decodeSource(srcMemoryBuffer, index);
     Double af = annotationDataDecoder.decodeAf(afMemoryBuffer, index);
     double faf95 = annotationDataDecoder.decodeFaf95(faf95MemoryBuffer, index);
@@ -29,6 +29,6 @@ public class GnomAdAnnotationDataset implements AnnotationDataset<GnomAdAnnotati
     EnumSet<Filter> filters = annotationDataDecoder.decodeFilters(filtersMemoryBuffer, index);
     double cov = annotationDataDecoder.decodeCov(covMemoryBuffer, index);
 
-    return new GnomAdAnnotationData(source, af, faf95, faf99, hn, filters, cov);
+    return new GnomAdAnnotation(source, af, faf95, faf99, hn, filters, cov);
   }
 }

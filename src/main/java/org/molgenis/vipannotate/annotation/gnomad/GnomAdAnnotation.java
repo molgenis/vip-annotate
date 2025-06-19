@@ -4,15 +4,17 @@ import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.EnumSet;
 import lombok.NonNull;
+import org.molgenis.vipannotate.annotation.Annotation;
 
-public record GnomAdAnnotationData(
+public record GnomAdAnnotation(
     @NonNull Source source,
     Double af,
     double faf95,
     double faf99,
     int hn,
     @NonNull EnumSet<Filter> filters,
-    double cov) {
+    double cov)
+    implements Annotation {
   public enum Source {
     GENOMES,
     EXOMES,
@@ -25,7 +27,7 @@ public record GnomAdAnnotationData(
     INBREEDING_COEFF
   }
 
-  public GnomAdAnnotationData {
+  public GnomAdAnnotation {
     validateNonNegativeOrNull(af);
     validateNonNegative(faf95);
     validateNonNegative(faf99);

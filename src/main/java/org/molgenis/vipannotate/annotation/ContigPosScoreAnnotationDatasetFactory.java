@@ -6,8 +6,7 @@ import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class ContigPosScoreAnnotationDatasetFactory {
-  @NonNull
-  private final AnnotationDatasetDecoder<ContigPosScoreAnnotationData> annotationDatasetDecoder;
+  @NonNull private final AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDatasetDecoder;
 
   public ContigPosScoreAnnotationDataset create(@NonNull MemoryBuffer scoreMemoryBuffer) {
     return new ContigPosScoreAnnotationDataset(annotationDatasetDecoder, scoreMemoryBuffer);

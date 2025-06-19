@@ -2,27 +2,28 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import org.molgenis.vipannotate.annotation.Variant;
-import org.molgenis.vipannotate.annotation.VariantAnnotation;
-import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Filter;
-import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
+import org.molgenis.vipannotate.annotation.Contig;
+import org.molgenis.vipannotate.annotation.SequenceVariant;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 
 public class GnomAdAnnotationCreator {
-  public VariantAnnotation<GnomAdAnnotationData> annotate(GnomAdTsvRecord gnomAdTsvRecord) {
-    Variant variant = createVariant(gnomAdTsvRecord);
-    GnomAdAnnotationData annotation = createAnnotation(gnomAdTsvRecord);
-    return new VariantAnnotation<>(variant, annotation);
+  public AnnotatedSequenceVariant<GnomAdAnnotation> annotate(GnomAdTsvRecord gnomAdTsvRecord) {
+    SequenceVariant variant = createVariant(gnomAdTsvRecord);
+    GnomAdAnnotation annotation = createAnnotation(gnomAdTsvRecord);
+    return new AnnotatedSequenceVariant<>(variant, annotation);
   }
 
-  private static Variant createVariant(GnomAdTsvRecord gnomAdTsvRecord) {
-    String chrom = gnomAdTsvRecord.chrom();
+  private static SequenceVariant createVariant(GnomAdTsvRecord gnomAdTsvRecord) {
+    Contig chrom = new Contig(gnomAdTsvRecord.chrom(), 1); // FIXME length
     int start = gnomAdTsvRecord.pos();
     int end = start + gnomAdTsvRecord.ref().length() - 1;
     byte[] alt = gnomAdTsvRecord.alt().getBytes(StandardCharsets.UTF_8);
-    return new Variant(chrom, start, end, alt);
+    return new SequenceVariant(chrom, start, end, alt);
   }
 
-  private static GnomAdAnnotationData createAnnotation(GnomAdTsvRecord gnomAdTsvRecord) {
+  private static GnomAdAnnotation createAnnotation(GnomAdTsvRecord gnomAdTsvRecord) {
     Source source = createAnnotationSource(gnomAdTsvRecord);
     Double af = createAnnotationAf(gnomAdTsvRecord, source);
     double faf95 = createAnnotationFaf95(gnomAdTsvRecord, source);
@@ -30,7 +31,7 @@ public class GnomAdAnnotationCreator {
     int hn = createAnnotationHn(gnomAdTsvRecord, source);
     EnumSet<Filter> filters = createAnnotationFilters(gnomAdTsvRecord, source);
     double cov = createAnnotationCov(gnomAdTsvRecord, source);
-    return new GnomAdAnnotationData(source, af, faf95, faf99, hn, filters, cov);
+    return new GnomAdAnnotation(source, af, faf95, faf99, hn, filters, cov);
   }
 
   private static Source createAnnotationSource(GnomAdTsvRecord gnomAdTsvRecord) {

@@ -13,8 +13,8 @@ public class AnnotationIndexReader implements AutoCloseable {
   /**
    * @return annotation index
    */
-  public AnnotationIndex read(GenomePartitionKey genomePartitionKey) {
-    MemoryBuffer memoryBuffer = annotationBlobReader.read(genomePartitionKey);
+  public AnnotationIndex read(Partition.Key partitionKey) {
+    MemoryBuffer memoryBuffer = annotationBlobReader.read(partitionKey);
     return memoryBuffer != null
         ? fury.deserializeJavaObject(memoryBuffer, AnnotationIndexImpl.class)
         : EmptyAnnotationIndex.getInstance();

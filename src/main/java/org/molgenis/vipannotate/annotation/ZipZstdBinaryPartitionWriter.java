@@ -6,14 +6,13 @@ import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 
 @RequiredArgsConstructor
-public class ZipZstdGenomePartitionDataWriter implements GenomePartitionDataWriter {
+public class ZipZstdBinaryPartitionWriter implements BinaryPartitionWriter {
   @NonNull private final ZipZstdCompressionContext zipZstdCompressionContext;
 
   @Override
-  public void write(
-      GenomePartitionKey genomePartitionKey, String dataId, MemoryBuffer memoryBuffer) {
+  public void write(Partition.Key partitionKey, String dataId, MemoryBuffer memoryBuffer) {
     String zipArchiveEntryName =
-        genomePartitionKey.contig() + "/" + genomePartitionKey.bin() + "/" + dataId + ".zst";
+        partitionKey.contig().getName() + "/" + partitionKey.bin() + "/" + dataId + ".zst";
     zipZstdCompressionContext.write(zipArchiveEntryName, memoryBuffer);
   }
 }

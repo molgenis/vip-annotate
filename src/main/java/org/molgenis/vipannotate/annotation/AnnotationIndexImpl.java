@@ -8,10 +8,10 @@ public class AnnotationIndexImpl implements AnnotationIndex {
   @NonNull private VariantAnnotationIndexSmall variantAnnotationIndexSmall;
   @NonNull private VariantAnnotationIndexBig variantAnnotationIndexBig;
 
-  public int findIndex(Variant variant) {
+  public int findIndex(SequenceVariant variant) {
     // FIXME solve elsewhere
     boolean canDetermineIndex = true;
-    for (byte altBase : variant.alt()) {
+    for (byte altBase : variant.getAlt()) {
 
       boolean isActg =
           switch (altBase) {

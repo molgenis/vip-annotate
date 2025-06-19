@@ -49,7 +49,7 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
     String[] tokens = line.split("\t", -1);
 
     String chrom = tokens[0];
-    long pos = Long.parseLong(tokens[1]);
+    int pos = Integer.parseInt(tokens[1]);
     String[] id = parseId(tokens[2]);
     String ref = tokens[3];
     String[] alt = parseAlt(tokens[4]);

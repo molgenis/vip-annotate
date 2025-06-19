@@ -14,8 +14,8 @@ public class AnnotationBlobReader implements AutoCloseable {
   /**
    * @return memory buffer or <code>null</code> if blob does not exist
    */
-  public MemoryBuffer read(GenomePartitionKey genomePartitionKey) {
-    return genomePartitionDataReader.read(genomePartitionKey, blobId, reusableDirectByteBuffer);
+  public MemoryBuffer read(Partition.Key partitionKey) {
+    return genomePartitionDataReader.read(partitionKey, blobId, reusableDirectByteBuffer);
   }
 
   @Override

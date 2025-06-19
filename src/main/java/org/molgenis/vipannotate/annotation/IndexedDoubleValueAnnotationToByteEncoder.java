@@ -4,14 +4,15 @@ import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 
 import lombok.NonNull;
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vipannotate.IndexedAnnotationEncoder;
 import org.molgenis.vipannotate.util.Encoder;
 
-public class ContigPosDoubleAsByteAnnotationEncoder
-    implements AnnotationEncoder<ContigPosAnnotation> {
+public class IndexedDoubleValueAnnotationToByteEncoder
+    implements IndexedAnnotationEncoder<DoubleValueAnnotation> {
   private final double minValue;
   private final double maxValue;
 
-  public ContigPosDoubleAsByteAnnotationEncoder(double minValue, double maxValue) {
+  public IndexedDoubleValueAnnotationToByteEncoder(double minValue, double maxValue) {
     if (maxValue < minValue) {
       throw new IllegalArgumentException();
     }
@@ -26,12 +27,11 @@ public class ContigPosDoubleAsByteAnnotationEncoder
 
   @Override
   public void encode(
-      int index, @NonNull ContigPosAnnotation annotation, @NonNull MemoryBuffer memoryBuffer) {
-    validateNonNegative(index);
-
-    Double score = annotation.score();
+      @NonNull IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation,
+      @NonNull MemoryBuffer memoryBuffer) {
+    Double score = indexedAnnotation.getFeatureAnnotation().score();
     byte encodedScore = Encoder.encodeDoubleAsByte(score, minValue, maxValue);
-    memoryBuffer.putByte(index, encodedScore);
+    memoryBuffer.putByte(indexedAnnotation.getIndex(), encodedScore);
   }
 
   @Override

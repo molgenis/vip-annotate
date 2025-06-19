@@ -10,7 +10,7 @@ final class EmptyAnnotationIndex implements AnnotationIndex {
   }
 
   @Override
-  public int findIndex(Variant variant) {
+  public int findIndex(SequenceVariant variant) {
     return -1;
   }
 }

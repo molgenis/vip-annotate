@@ -6,17 +6,17 @@ import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class ContigPosScoreAnnotationDatasetReader
-    implements AnnotationDatasetReader<ContigPosScoreAnnotationData> {
+    implements AnnotationDatasetReader<DoubleValueAnnotation> {
   @NonNull
   private final ContigPosScoreAnnotationDatasetFactory contigPosScoreAnnotationDatasetFactory;
 
   @NonNull private final AnnotationBlobReader scoresAnnotationBlobReader;
 
   @Override
-  public AnnotationDataset<ContigPosScoreAnnotationData> read(GenomePartitionKey key) {
-    MemoryBuffer scoresMemoryBuffer = scoresAnnotationBlobReader.read(key);
+  public AnnotationDataset<DoubleValueAnnotation> read(Partition.Key partitionKey) {
+    MemoryBuffer scoresMemoryBuffer = scoresAnnotationBlobReader.read(partitionKey);
 
-    AnnotationDataset<ContigPosScoreAnnotationData> annotationDataset;
+    AnnotationDataset<DoubleValueAnnotation> annotationDataset;
     if (scoresMemoryBuffer != null) {
       annotationDataset = contigPosScoreAnnotationDatasetFactory.create(scoresMemoryBuffer);
     } else {

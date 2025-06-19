@@ -6,7 +6,7 @@ import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.annotation.ContigPosScoreAnnotationDatasetEncoder;
+import org.molgenis.vipannotate.annotation.Position;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
@@ -17,30 +17,38 @@ public class NcERAnnotationDbBuilder {
 
   public void create(Path ncERFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERFile)) {
-      Iterator<ContigPosAnnotation> iterator = create(reader, fastaIndex);
+      Iterator<NcERAnnotatedPosition> iterator = create(reader, fastaIndex);
 
       MemoryBuffer reusableMemoryBuffer = MemoryBuffer.newHeapBuffer((1 << 20) * Short.BYTES);
 
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
-      GenomePartitionDataWriter genomePartitionDataWriter =
-          new ZipZstdGenomePartitionDataWriter(zipZstdCompressionContext);
-      NonIndexedAnnotationDbWriter<ContigPosAnnotation, Double> annotationDbWriter =
-          new NonIndexedAnnotationDbWriter<>(
-              new IntervalAnnotationDatasetWriter<>(
-                  "score",
-                  new ContigPosScoreAnnotationDatasetEncoder(
-                      new NcERAnnotationEncoder(), reusableMemoryBuffer),
-                  genomePartitionDataWriter,
-                  fastaIndex));
+      BinaryPartitionWriter binaryPartitionWriter =
+          new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
 
-      annotationDbWriter.create(iterator);
+      // annotation encoder
+      NcERAnnotationEncoder annotationEncoder = new NcERAnnotationEncoder();
+
+      // annotation dataset encoder
+      IndexedAnnotatedFeatureDatasetEncoder<DoubleValueAnnotation> annotationDatasetEncoder =
+          new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder, reusableMemoryBuffer);
+
+      // annotation dataset writer
+      AnnotatedPositionPartitionWriter<Position, DoubleValueAnnotation, NcERAnnotatedPosition>
+          annotationDatasetWriter =
+              new AnnotatedPositionPartitionWriter<>(
+                  "score", annotationDatasetEncoder, binaryPartitionWriter, fastaIndex);
+
+      AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, NcERAnnotatedPosition>
+          annotationDbWriter = new AnnotatedIntervalDbWriter<>(annotationDatasetWriter);
+
+      annotationDbWriter.write(iterator);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
   }
 
-  private Iterator<ContigPosAnnotation> create(
+  private Iterator<NcERAnnotatedPosition> create(
       BufferedReader bufferedReader, FastaIndex fastaIndex) {
     NcERParser ncERParser = new NcERParser();
     NcERBedFeatureToContigPosAnnotationMapper mapper =

@@ -11,10 +11,9 @@ public class ZipZstdGenomePartitionDataReader implements GenomePartitionDataRead
   @NonNull private final ZipZstdDecompressionContext zipZstdDecompressionContext;
 
   @Override
-  public MemoryBuffer read(
-      GenomePartitionKey genomePartitionKey, String dataId, ByteBuffer directByteBuffer) {
+  public MemoryBuffer read(Partition.Key partitionKey, String dataId, ByteBuffer directByteBuffer) {
     String zipArchiveEntryName =
-        genomePartitionKey.contig() + "/" + genomePartitionKey.bin() + "/" + dataId + ".zst";
+        partitionKey.contig() + "/" + partitionKey.bin() + "/" + dataId + ".zst";
     return zipZstdDecompressionContext.read(zipArchiveEntryName, directByteBuffer);
   }
 }

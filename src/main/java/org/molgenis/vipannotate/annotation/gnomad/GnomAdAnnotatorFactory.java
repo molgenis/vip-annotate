@@ -6,8 +6,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.Fury;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.serialization.FuryFactory;
 import org.molgenis.vipannotate.format.zip.MappableZipFile;
+import org.molgenis.vipannotate.serialization.FuryFactory;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotatorFactory {
@@ -29,7 +29,7 @@ public class GnomAdAnnotatorFactory {
 
     GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory =
         new GnomAdAnnotationDatasetFactory(new GnomAdAnnotationDatasetDecoder());
-    AnnotationDatasetReader<GnomAdAnnotationData> annotationDatasetReader =
+    AnnotationDatasetReader<GnomAdAnnotation> annotationDatasetReader =
         new GnomAdAnnotationDatasetReader(
             gnomAdAnnotationDatasetFactory,
             annotationBlobReaderFactory.create(mappableZipFile, "src"),
@@ -40,8 +40,8 @@ public class GnomAdAnnotatorFactory {
             annotationBlobReaderFactory.create(mappableZipFile, "filters"),
             annotationBlobReaderFactory.create(mappableZipFile, "cov"));
 
-    IndexedAnnotationDb<GnomAdAnnotationData> annotationDb =
-        new IndexedAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
+    GenomeSequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb =
+        new GenomeSequenceVariantAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
     return new GnomAdAnnotator(annotationDb);
   }
 }

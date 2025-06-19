@@ -9,17 +9,19 @@ import java.util.Locale;
 import java.util.Objects;
 import lombok.NonNull;
 import org.molgenis.vipannotate.App;
-import org.molgenis.vipannotate.annotation.AnnotationDb;
-import org.molgenis.vipannotate.annotation.Variant;
+import org.molgenis.vipannotate.annotation.Contig;
+import org.molgenis.vipannotate.annotation.GenomeSequenceVariantAnnotationDb;
+import org.molgenis.vipannotate.annotation.SequenceVariant;
 import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 public class GnomAdAnnotator implements VcfRecordAnnotator {
-  private final AnnotationDb<GnomAdAnnotationData> annotationDb;
+  private final GenomeSequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public GnomAdAnnotator(@NonNull AnnotationDb<GnomAdAnnotationData> annotationDb) {
+  public GnomAdAnnotator(
+      @NonNull GenomeSequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("#.####");
@@ -38,15 +40,12 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
     String[] alts = vcfRecord.alt();
     List<Double> altAfAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
-      GnomAdAnnotationData gnomAdAnnotation =
+      GnomAdAnnotation gnomAdAnnotation =
           annotationDb.findAnnotations(
-              new Variant(
-                  chromosome,
-                  Math.toIntExact(vcfRecord.pos()), // FIXME annotationDb should accept long?
-                  Math.toIntExact(
-                      vcfRecord.pos()
-                          + vcfRecord.ref().length()
-                          - 1), // FIXME annotationDb should accept long?
+              new SequenceVariant(
+                  new Contig(chromosome, 1), // FIXME length
+                  vcfRecord.pos(),
+                  vcfRecord.pos() + vcfRecord.ref().length() - 1,
                   alt.getBytes(StandardCharsets.UTF_8)));
 
       Double altAnnotation;

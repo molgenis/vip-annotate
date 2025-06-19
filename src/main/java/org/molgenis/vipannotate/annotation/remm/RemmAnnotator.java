@@ -9,9 +9,10 @@ import java.util.Locale;
 import java.util.Objects;
 import lombok.NonNull;
 import org.molgenis.vipannotate.App;
-import org.molgenis.vipannotate.annotation.ContigPosAnnotationDb;
-import org.molgenis.vipannotate.annotation.ContigPosScoreAnnotationData;
-import org.molgenis.vipannotate.annotation.Variant;
+import org.molgenis.vipannotate.annotation.Contig;
+import org.molgenis.vipannotate.annotation.DoubleValueAnnotation;
+import org.molgenis.vipannotate.annotation.GenomePositionAnnotationDb;
+import org.molgenis.vipannotate.annotation.SequenceVariant;
 import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
@@ -19,10 +20,10 @@ import org.molgenis.vipannotate.format.vcf.VcfRecord;
 // TODO refactor: deduplicate ncer,phylop,remm annotator
 public class RemmAnnotator implements VcfRecordAnnotator {
   public static final String ANNOTATION_ID = "REMM";
-  private final ContigPosAnnotationDb<ContigPosScoreAnnotationData> annotationDb;
+  private final GenomePositionAnnotationDb<DoubleValueAnnotation> annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public RemmAnnotator(@NonNull ContigPosAnnotationDb<ContigPosScoreAnnotationData> annotationDb) {
+  public RemmAnnotator(@NonNull GenomePositionAnnotationDb<DoubleValueAnnotation> annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("#.###");
@@ -46,15 +47,12 @@ public class RemmAnnotator implements VcfRecordAnnotator {
       // insensitive); the ‘*’ symbol (allele missing due to overlapping deletion); the MISSING
       // value ‘.’ (no variant);an angle-bracketed ID String (“<ID>”); the unspecified allele “<*>”
       // as described in Section 5.5; or a breakend replacement string as described in Section 5.4
-      ContigPosScoreAnnotationData altAnnotation =
+      DoubleValueAnnotation altAnnotation =
           annotationDb.findAnnotations(
-              new Variant(
-                  vcfRecord.chrom(),
-                  Math.toIntExact(vcfRecord.pos()), // FIXME annotationDb should accept long?
-                  Math.toIntExact(
-                      vcfRecord.pos()
-                          + vcfRecord.ref().length()
-                          - 1), // FIXME annotationDb should accept long?
+              new SequenceVariant(
+                  new Contig(vcfRecord.chrom(), 1),
+                  vcfRecord.pos(),
+                  vcfRecord.pos() + vcfRecord.ref().length() - 1,
                   alt.getBytes(StandardCharsets.UTF_8)));
 
       altAnnotations.add(altAnnotation != null ? altAnnotation.score() : null);

@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import java.util.EnumSet;
 import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.util.*;
 
 // TODO perf: recycle memory buffers
@@ -70,12 +70,12 @@ public class GnomAdAnnotationDatasetEncoder {
     return memoryBuffer;
   }
 
-  public MemoryBuffer encodeFilters(SizedIterator<EnumSet<GnomAdAnnotationData.Filter>> filtersIt) {
+  public MemoryBuffer encodeFilters(SizedIterator<EnumSet<GnomAdAnnotation.Filter>> filtersIt) {
     int nrAnnotationsPerByte = 2;
     int nrAnnotationBytes = Math.ceilDivExact(filtersIt.getSize(), nrAnnotationsPerByte);
 
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(nrAnnotationBytes);
-    for (ReusableBatchIterator<EnumSet<GnomAdAnnotationData.Filter>> filtersBatchIt =
+    for (ReusableBatchIterator<EnumSet<GnomAdAnnotation.Filter>> filtersBatchIt =
             new ReusableBatchIterator<>(filtersIt, nrAnnotationsPerByte);
         filtersBatchIt.hasNext(); ) {
       int encodedFiltersBatch = encodeFiltersBatch(filtersBatchIt.next());
@@ -85,20 +85,20 @@ public class GnomAdAnnotationDatasetEncoder {
     return memoryBuffer;
   }
 
-  private int encodeFiltersBatch(List<EnumSet<GnomAdAnnotationData.Filter>> annotationList) {
+  private int encodeFiltersBatch(List<EnumSet<GnomAdAnnotation.Filter>> annotationList) {
     int nrBitsPerAnnotation = 4;
 
     int encodedFiltersBatch = 0;
     for (int i = 0, annotationListSize = annotationList.size(); i < annotationListSize; i++) {
-      EnumSet<GnomAdAnnotationData.Filter> filters = annotationList.get(i);
+      EnumSet<GnomAdAnnotation.Filter> filters = annotationList.get(i);
       if (!filters.isEmpty()) {
-        if (filters.contains(GnomAdAnnotationData.Filter.AC0)) {
+        if (filters.contains(GnomAdAnnotation.Filter.AC0)) {
           encodedFiltersBatch |= 1 << (((annotationListSize - 1 - i) * nrBitsPerAnnotation));
         }
-        if (filters.contains(GnomAdAnnotationData.Filter.AS_VQSR)) {
+        if (filters.contains(GnomAdAnnotation.Filter.AS_VQSR)) {
           encodedFiltersBatch |= 1 << (((annotationListSize - 1 - i) * nrBitsPerAnnotation) + 1);
         }
-        if (filters.contains(GnomAdAnnotationData.Filter.INBREEDING_COEFF)) {
+        if (filters.contains(GnomAdAnnotation.Filter.INBREEDING_COEFF)) {
           encodedFiltersBatch |= 1 << (((annotationListSize - 1 - i) * nrBitsPerAnnotation) + 2);
         }
       }

@@ -4,34 +4,35 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class IndexedAnnotationDb<T> implements AnnotationDb<T> {
+public class GenomeSequenceVariantAnnotationDb<T extends Annotation>
+    implements AnnotationDb<SequenceVariant, T> {
   @NonNull private final AnnotationIndexReader annotationIndexReader;
   @NonNull private final AnnotationDatasetReader<T> annotationDatasetReader;
 
-  private GenomePartitionKey activeGenomePartitionKey;
+  private Partition.Key activeKey;
   private AnnotationIndex activeAnnotationIndex;
   private AnnotationDataset<T> activeAnnotationDataset;
 
   @Override
-  public T findAnnotations(Variant variant) {
+  public T findAnnotations(SequenceVariant feature) {
     // determine partition
-    GenomePartitionKey genomePartitionKey =
-        new GenomePartitionKey(variant.contig(), GenomePartition.calcBin(variant.start()));
+    Partition.Key partitionKey =
+        new Partition.Key(feature.getContig(), Partition.calcBin(feature.getStart()));
 
     // handle partition changes
-    if (!genomePartitionKey.equals(activeGenomePartitionKey)) {
-      activeAnnotationIndex = annotationIndexReader.read(genomePartitionKey);
+    if (!partitionKey.equals(activeKey)) {
+      activeAnnotationIndex = annotationIndexReader.read(partitionKey);
       activeAnnotationDataset = null; // invalidate but defer loading until the first index hit
-      activeGenomePartitionKey = genomePartitionKey;
+      activeKey = partitionKey;
     }
 
-    int index = activeAnnotationIndex.findIndex(variant);
+    int index = activeAnnotationIndex.findIndex(feature);
 
     T annotationData;
     if (index != -1) {
       if (activeAnnotationDataset == null) {
         // load annotation data on the first index hit
-        activeAnnotationDataset = annotationDatasetReader.read(activeGenomePartitionKey);
+        activeAnnotationDataset = annotationDatasetReader.read(activeKey);
       }
 
       annotationData = activeAnnotationDataset.findByIndex(index);

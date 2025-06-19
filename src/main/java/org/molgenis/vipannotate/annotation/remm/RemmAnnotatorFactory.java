@@ -22,10 +22,10 @@ public class RemmAnnotatorFactory {
 
     ContigPosScoreAnnotationDatasetFactory annotationDatasetFactory =
         new ContigPosScoreAnnotationDatasetFactory(new RemmAnnotationDatasetDecoder());
-    AnnotationDatasetReader<ContigPosScoreAnnotationData> annotationDatasetReader =
+    AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
         new ContigPosScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    return new RemmAnnotator(new ContigPosAnnotationDb<>(annotationDatasetReader));
+    return new RemmAnnotator(new GenomePositionAnnotationDb<>(annotationDatasetReader));
   }
 }

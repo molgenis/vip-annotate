@@ -5,7 +5,7 @@ import lombok.NonNull;
 
 public record VcfRecord(
     @NonNull String chrom,
-    long pos,
+    int pos, // TODO validate constraint: disallowed values: −2^31 to −2^31 + 7
     @NonNull String[] id,
     @NonNull String ref,
     @NonNull String[] alt,

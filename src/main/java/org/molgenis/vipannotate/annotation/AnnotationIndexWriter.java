@@ -13,15 +13,15 @@ public class AnnotationIndexWriter {
   private static final int BUFFER_CAPACITY = 8388608; // 8 MB
 
   @NonNull private final Fury fury;
-  @NonNull private final GenomePartitionDataWriter genomePartitionDataWriter;
+  @NonNull private final BinaryPartitionWriter binaryPartitionWriter;
 
-  public void write(GenomePartitionKey genomePartitionKey, AnnotationIndex annotationIndex) {
+  public void write(Partition.Key partitionKey, AnnotationIndex annotationIndex) {
     try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(BUFFER_CAPACITY)) {
       fury.serializeJavaObject(byteArrayOutputStream, annotationIndex);
       byte[] uncompressedByteArray = byteArrayOutputStream.toByteArray();
       MemoryBuffer memoryBuffer =
           MemoryBuffer.fromByteArray(uncompressedByteArray, 0, uncompressedByteArray.length);
-      genomePartitionDataWriter.write(genomePartitionKey, "idx", memoryBuffer);
+      binaryPartitionWriter.write(partitionKey, "idx", memoryBuffer);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

@@ -6,8 +6,7 @@ import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
 
 @RequiredArgsConstructor
-public class GnomAdAnnotationDatasetReader
-    implements AnnotationDatasetReader<GnomAdAnnotationData> {
+public class GnomAdAnnotationDatasetReader implements AnnotationDatasetReader<GnomAdAnnotation> {
   @NonNull private final GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory;
   @NonNull private final AnnotationBlobReader sourceAnnotationBlobReader;
   @NonNull private final AnnotationBlobReader afAnnotationBlobReader;
@@ -18,16 +17,16 @@ public class GnomAdAnnotationDatasetReader
   @NonNull private final AnnotationBlobReader covAnnotationBlobReader;
 
   @Override
-  public AnnotationDataset<GnomAdAnnotationData> read(GenomePartitionKey key) {
-    MemoryBuffer srcMemoryBuffer = sourceAnnotationBlobReader.read(key);
-    MemoryBuffer afMemoryBuffer = afAnnotationBlobReader.read(key);
-    MemoryBuffer faf95MemoryBuffer = faf95AnnotationBlobReader.read(key);
-    MemoryBuffer faf99MemoryBuffer = faf99AnnotationBlobReader.read(key);
-    MemoryBuffer hnMemoryBuffer = hnAnnotationBlobReader.read(key);
-    MemoryBuffer filtersMemoryBuffer = filtersAnnotationBlobReader.read(key);
-    MemoryBuffer covMemoryBuffer = covAnnotationBlobReader.read(key);
+  public AnnotationDataset<GnomAdAnnotation> read(Partition.Key partitionKey) {
+    MemoryBuffer srcMemoryBuffer = sourceAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer afMemoryBuffer = afAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer faf95MemoryBuffer = faf95AnnotationBlobReader.read(partitionKey);
+    MemoryBuffer faf99MemoryBuffer = faf99AnnotationBlobReader.read(partitionKey);
+    MemoryBuffer hnMemoryBuffer = hnAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer filtersMemoryBuffer = filtersAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer covMemoryBuffer = covAnnotationBlobReader.read(partitionKey);
 
-    AnnotationDataset<GnomAdAnnotationData> annotationDataset;
+    AnnotationDataset<GnomAdAnnotation> annotationDataset;
     if (srcMemoryBuffer != null
         && afMemoryBuffer != null
         && faf95MemoryBuffer != null

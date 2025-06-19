@@ -4,16 +4,16 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotationDatasetDecoder;
-import org.molgenis.vipannotate.annotation.ContigPosScoreAnnotationData;
+import org.molgenis.vipannotate.annotation.DoubleValueAnnotation;
 
 @RequiredArgsConstructor
 public class PhyloPAnnotationDatasetDecoder
-    implements AnnotationDatasetDecoder<ContigPosScoreAnnotationData> {
+    implements AnnotationDatasetDecoder<DoubleValueAnnotation> {
   @NonNull private final PhyloPAnnotationDataCodec phyloPAnnotationDataCodec;
 
-  public ContigPosScoreAnnotationData decode(MemoryBuffer memoryBuffer, int index) {
+  public DoubleValueAnnotation decode(MemoryBuffer memoryBuffer, int index) {
     byte encodedScore = memoryBuffer.getByte(index);
     Double decodedScore = phyloPAnnotationDataCodec.decode(encodedScore);
-    return new ContigPosScoreAnnotationData(decodedScore);
+    return new DoubleValueAnnotation(decodedScore);
   }
 }

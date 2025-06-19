@@ -5,11 +5,12 @@ import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vipannotate.IndexedAnnotationEncoder;
 import org.molgenis.vipannotate.util.Encoder;
 
 @RequiredArgsConstructor
-public class ContigPosDoubleAsShortAnnotationEncoder
-    implements AnnotationEncoder<ContigPosAnnotation> {
+public class IndexedDoubleValueAnnotationToShortEncoder
+    implements IndexedAnnotationEncoder<DoubleValueAnnotation> {
   private final double minValue;
   private final double maxValue;
 
@@ -20,12 +21,11 @@ public class ContigPosDoubleAsShortAnnotationEncoder
 
   @Override
   public void encode(
-      int index, @NonNull ContigPosAnnotation annotation, @NonNull MemoryBuffer memoryBuffer) {
-    validateNonNegative(index);
-
-    Double score = annotation.score();
+      @NonNull IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation,
+      @NonNull MemoryBuffer memoryBuffer) {
+    Double score = indexedAnnotation.getFeatureAnnotation().score();
     short encodedScore = Encoder.encodeDoubleAsShort(score, minValue, maxValue);
-    memoryBuffer.putInt16(index, encodedScore);
+    memoryBuffer.putInt16(indexedAnnotation.getIndex(), encodedScore);
   }
 
   @Override

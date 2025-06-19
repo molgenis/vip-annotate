@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.util.Encoder;
 
 public class GnomAdAnnotationDatasetDecoder {
@@ -51,7 +51,7 @@ public class GnomAdAnnotationDatasetDecoder {
   }
 
   // TODO perf: predefine all possible enum sets instead of creating new ones
-  public EnumSet<GnomAdAnnotationData.Filter> decodeFilters(
+  public EnumSet<GnomAdAnnotation.Filter> decodeFilters(
       MemoryBuffer memoryBuffer, int sourceIndex) {
     int nrAnnotationsPerByte = 2;
     int nrBitsPerAnnotation = 4;
@@ -60,17 +60,16 @@ public class GnomAdAnnotationDatasetDecoder {
     int encodedFilters =
         (encodedFiltersBatch >> (((sourceIndex + 1) % nrAnnotationsPerByte) * nrBitsPerAnnotation))
             & 0b00_00_11_11;
-    EnumSet<GnomAdAnnotationData.Filter> filters =
-        EnumSet.noneOf(GnomAdAnnotationData.Filter.class);
+    EnumSet<GnomAdAnnotation.Filter> filters = EnumSet.noneOf(GnomAdAnnotation.Filter.class);
     if (encodedFilters != 0) {
       if ((encodedFilters & 1) != 0) {
-        filters.add(GnomAdAnnotationData.Filter.AC0);
+        filters.add(GnomAdAnnotation.Filter.AC0);
       }
       if ((encodedFilters & (1 << 1)) != 0) {
-        filters.add(GnomAdAnnotationData.Filter.AS_VQSR);
+        filters.add(GnomAdAnnotation.Filter.AS_VQSR);
       }
       if ((encodedFilters & (1 << 2)) != 0) {
-        filters.add(GnomAdAnnotationData.Filter.INBREEDING_COEFF);
+        filters.add(GnomAdAnnotation.Filter.INBREEDING_COEFF);
       }
     }
     return filters;

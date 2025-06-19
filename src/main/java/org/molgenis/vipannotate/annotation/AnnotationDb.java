@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
-public interface AnnotationDb<T> extends AutoCloseable {
-  T findAnnotations(Variant variant);
+public interface AnnotationDb<T extends Feature, U extends Annotation> extends AutoCloseable {
+  U findAnnotations(T feature);
 
   void close();
 }

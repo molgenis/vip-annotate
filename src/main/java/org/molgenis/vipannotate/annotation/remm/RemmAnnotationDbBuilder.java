@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.annotation.Position;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
@@ -18,34 +19,41 @@ public class RemmAnnotationDbBuilder {
 
   public void create(Path ncERFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERFile)) {
-      Iterator<ContigPosAnnotation> iterator = create(reader, fastaIndex);
+      Iterator<RemmAnnotatedPosition> iterator = create(reader, fastaIndex);
 
       MemoryBuffer reusableMemoryBuffer = MemoryBuffer.newHeapBuffer((1 << 20) * Byte.BYTES);
 
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
-      GenomePartitionDataWriter genomePartitionDataWriter =
-          new ZipZstdGenomePartitionDataWriter(zipZstdCompressionContext);
-      NonIndexedAnnotationDbWriter<ContigPosAnnotation, Double> annotationDbWriter =
-          new NonIndexedAnnotationDbWriter<>(
-              new IntervalAnnotationDatasetWriter<>(
-                  "score",
-                  new ContigPosScoreAnnotationDatasetEncoder(
-                      new RemmAnnotationEncoder(), reusableMemoryBuffer),
-                  genomePartitionDataWriter,
-                  fastaIndex));
+      BinaryPartitionWriter binaryPartitionWriter =
+          new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
 
-      annotationDbWriter.create(iterator);
+      // annotation encoder
+      RemmAnnotationEncoder annotationEncoder = new RemmAnnotationEncoder();
+
+      // annotation dataset encoder
+      IndexedAnnotatedFeatureDatasetEncoder<DoubleValueAnnotation> annotationDatasetEncoder =
+          new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder, reusableMemoryBuffer);
+
+      // annotation dataset writer
+      AnnotatedPositionPartitionWriter<Position, DoubleValueAnnotation, RemmAnnotatedPosition>
+          annotationDatasetWriter =
+              new AnnotatedPositionPartitionWriter<>(
+                  "score", annotationDatasetEncoder, binaryPartitionWriter, fastaIndex);
+
+      AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, RemmAnnotatedPosition>
+          annotationDbWriter = new AnnotatedIntervalDbWriter<>(annotationDatasetWriter);
+
+      annotationDbWriter.write(iterator);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
   }
 
-  private Iterator<ContigPosAnnotation> create(BufferedReader bufferedReader, FastaIndex fastaIndex)
-      throws IOException {
+  private Iterator<RemmAnnotatedPosition> create(
+      BufferedReader bufferedReader, FastaIndex fastaIndex) throws IOException {
     RemmParser remmParser = new RemmParser();
-    RemmTsvRecordToContigPosAnnotationMapper mapper =
-        new RemmTsvRecordToContigPosAnnotationMapper();
+    RemmTsvRecordToRemmAnnotationMapper mapper = new RemmTsvRecordToRemmAnnotationMapper();
     return new TransformingIterator<>(
         new FilteringIterator<>(
             new TransformingIterator<>(new TsvIterator(bufferedReader), remmParser::parse),

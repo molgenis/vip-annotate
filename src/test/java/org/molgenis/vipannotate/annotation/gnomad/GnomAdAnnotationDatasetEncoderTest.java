@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationData.Source;
+import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.util.SizedIterator;
 
 // FIXME unit test instead of integration test
@@ -58,21 +58,19 @@ class GnomAdAnnotationDatasetEncoderTest {
 
   @Test
   void encodeFilters() {
-    List<EnumSet<GnomAdAnnotationData.Filter>> filters =
+    List<EnumSet<GnomAdAnnotation.Filter>> filters =
         List.of(
-            EnumSet.noneOf(GnomAdAnnotationData.Filter.class),
-            EnumSet.of(GnomAdAnnotationData.Filter.AC0),
-            EnumSet.of(GnomAdAnnotationData.Filter.AS_VQSR),
-            EnumSet.of(GnomAdAnnotationData.Filter.INBREEDING_COEFF),
-            EnumSet.of(GnomAdAnnotationData.Filter.AC0, GnomAdAnnotationData.Filter.AS_VQSR),
+            EnumSet.noneOf(GnomAdAnnotation.Filter.class),
+            EnumSet.of(GnomAdAnnotation.Filter.AC0),
+            EnumSet.of(GnomAdAnnotation.Filter.AS_VQSR),
+            EnumSet.of(GnomAdAnnotation.Filter.INBREEDING_COEFF),
+            EnumSet.of(GnomAdAnnotation.Filter.AC0, GnomAdAnnotation.Filter.AS_VQSR),
+            EnumSet.of(GnomAdAnnotation.Filter.AC0, GnomAdAnnotation.Filter.INBREEDING_COEFF),
+            EnumSet.of(GnomAdAnnotation.Filter.AS_VQSR, GnomAdAnnotation.Filter.INBREEDING_COEFF),
             EnumSet.of(
-                GnomAdAnnotationData.Filter.AC0, GnomAdAnnotationData.Filter.INBREEDING_COEFF),
-            EnumSet.of(
-                GnomAdAnnotationData.Filter.AS_VQSR, GnomAdAnnotationData.Filter.INBREEDING_COEFF),
-            EnumSet.of(
-                GnomAdAnnotationData.Filter.AC0,
-                GnomAdAnnotationData.Filter.AS_VQSR,
-                GnomAdAnnotationData.Filter.INBREEDING_COEFF));
+                GnomAdAnnotation.Filter.AC0,
+                GnomAdAnnotation.Filter.AS_VQSR,
+                GnomAdAnnotation.Filter.INBREEDING_COEFF));
 
     MemoryBuffer blob =
         gnomAdAnnotationDataSetEncoder.encodeFilters(

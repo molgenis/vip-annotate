@@ -11,7 +11,7 @@ import org.apache.fury.memory.MemoryBuffer;
 public class VariantEncoder {
   public VariantEncoder() {}
 
-  public static boolean isSmallVariant(Variant variant) {
+  public static boolean isSmallVariant(SequenceVariant variant) {
     return isSmall(variant.getRefLength()) && isSmall(variant.getAltLength());
   }
 
@@ -34,9 +34,9 @@ public class VariantEncoder {
    *
    * @return encoded variant
    */
-  public static int encodeSmall(Variant variant) {
-    int pos = variant.start();
-    byte[] altBases = variant.alt();
+  public static int encodeSmall(SequenceVariant variant) {
+    int pos = variant.getStart();
+    byte[] altBases = variant.getAlt();
 
     int encodedPos = encodePos(pos);
     int encodedRefLength = encodeSmallNrBases(variant.getRefLength());
@@ -57,10 +57,10 @@ public class VariantEncoder {
    *
    * @return encoded variant
    */
-  public static BigInteger encodeBig(Variant variant) {
-    int pos = variant.start();
-    int nrRefBases = variant.stop() - variant.start() + 1;
-    byte[] altBases = variant.alt();
+  public static BigInteger encodeBig(SequenceVariant variant) {
+    int pos = variant.getStart();
+    int nrRefBases = variant.getStop() - variant.getStart() + 1;
+    byte[] altBases = variant.getAlt();
 
     int encodedPos = encodePos(pos);
     byte[] encodedAlt = encodeBigAlt(altBases);
@@ -98,7 +98,7 @@ public class VariantEncoder {
    */
   private static int encodePos(int pos) {
     if (pos < 1) throw new IllegalArgumentException("start must be greater than or equal to 1");
-    return GenomePartition.calcPosInBin(pos);
+    return Partition.calcPosInBin(pos);
   }
 
   private static void validateSmall(int nrBases) {

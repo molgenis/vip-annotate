@@ -5,12 +5,13 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
-import org.molgenis.vipannotate.util.TransformingIterator;
-import org.molgenis.vipannotate.util.TsvIterator;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
+import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.util.TransformingIterator;
+import org.molgenis.vipannotate.util.TsvIterator;
 
 public class GnomAdAnnotationDbBuilder {
   public GnomAdAnnotationDbBuilder() {}
@@ -18,25 +19,26 @@ public class GnomAdAnnotationDbBuilder {
   public void create(
       Path gnomAdFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(gnomAdFile)) {
-      Iterator<VariantAnnotation<GnomAdAnnotationData>> gnomAdIterator = create(reader, fastaIndex);
+      Iterator<AnnotatedSequenceVariant<GnomAdAnnotation>> gnomAdIterator =
+          create(reader, fastaIndex);
       GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder =
           new GnomAdAnnotationDatasetEncoder();
 
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);
-      GenomePartitionDataWriter genomePartitionDataWriter =
-          new ZipZstdGenomePartitionDataWriter(zipZstdCompressionContext);
-      new VariantAnnotationDbWriter<>(
-              new AnnotationIndexWriter(FuryFactory.createFury(), genomePartitionDataWriter),
-              new GnomAdAnnotationDatasetWriter(
-                  gnomAdAnnotationDataSetEncoder, genomePartitionDataWriter))
-          .create(gnomAdIterator);
+      BinaryPartitionWriter binaryPartitionWriter =
+          new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
+      new AnnotatedSequenceVariantDbWriter<>(
+              new GnomAdAnnotatedSequenceVariantPartitionWriter(
+                  gnomAdAnnotationDataSetEncoder, binaryPartitionWriter),
+              new AnnotationIndexWriter(FuryFactory.createFury(), binaryPartitionWriter))
+          .write(gnomAdIterator);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
   }
 
-  private Iterator<VariantAnnotation<GnomAdAnnotationData>> create(
+  private Iterator<AnnotatedSequenceVariant<GnomAdAnnotation>> create(
       BufferedReader bufferedReader, FastaIndex fastaIndex) {
     GnomAdParser gnomAdParser = new GnomAdParser(fastaIndex);
     GnomAdAnnotationCreator gnomadAnnotationCreator = new GnomAdAnnotationCreator();
