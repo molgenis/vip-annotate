@@ -36,14 +36,14 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    String chromosome = vcfRecord.chrom();
+    Contig chromosome = new Contig(vcfRecord.chrom());
     String[] alts = vcfRecord.alt();
     List<Double> altAfAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
       GnomAdAnnotation gnomAdAnnotation =
           annotationDb.findAnnotations(
               new SequenceVariant(
-                  new Contig(chromosome, 1), // FIXME length
+                  chromosome,
                   vcfRecord.pos(),
                   vcfRecord.pos() + vcfRecord.ref().length() - 1,
                   alt.getBytes(StandardCharsets.UTF_8)));

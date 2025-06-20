@@ -41,7 +41,8 @@ public class GnomAdAnnotationDbBuilder {
   private Iterator<AnnotatedSequenceVariant<GnomAdAnnotation>> create(
       BufferedReader bufferedReader, FastaIndex fastaIndex) {
     GnomAdParser gnomAdParser = new GnomAdParser(fastaIndex);
-    GnomAdAnnotationCreator gnomadAnnotationCreator = new GnomAdAnnotationCreator();
+    GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper gnomadAnnotationCreator =
+        new GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper(fastaIndex);
     return new TransformingIterator<>(
         new TransformingIterator<>(new TsvIterator(bufferedReader), gnomAdParser::parse),
         gnomadAnnotationCreator::annotate);

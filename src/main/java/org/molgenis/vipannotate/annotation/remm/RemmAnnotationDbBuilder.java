@@ -39,7 +39,7 @@ public class RemmAnnotationDbBuilder {
       AnnotatedPositionPartitionWriter<Position, DoubleValueAnnotation, RemmAnnotatedPosition>
           annotationDatasetWriter =
               new AnnotatedPositionPartitionWriter<>(
-                  "score", annotationDatasetEncoder, binaryPartitionWriter, fastaIndex);
+                  "score", annotationDatasetEncoder, binaryPartitionWriter);
 
       AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, RemmAnnotatedPosition>
           annotationDbWriter = new AnnotatedIntervalDbWriter<>(annotationDatasetWriter);
@@ -53,7 +53,8 @@ public class RemmAnnotationDbBuilder {
   private Iterator<RemmAnnotatedPosition> create(
       BufferedReader bufferedReader, FastaIndex fastaIndex) throws IOException {
     RemmParser remmParser = new RemmParser();
-    RemmTsvRecordToRemmAnnotationMapper mapper = new RemmTsvRecordToRemmAnnotationMapper();
+    RemmTsvRecordToRemmAnnotatedPositionMapper mapper =
+        new RemmTsvRecordToRemmAnnotatedPositionMapper(fastaIndex);
     return new TransformingIterator<>(
         new FilteringIterator<>(
             new TransformingIterator<>(new TsvIterator(bufferedReader), remmParser::parse),

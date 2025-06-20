@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 public record GnomAdTsvRecord(
     @NonNull String chrom,
-    int pos,
+    int pos, // 1-based
     @NonNull String ref,
     @NonNull String alt,
     Double afExomes,

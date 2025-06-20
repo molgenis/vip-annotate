@@ -2,21 +2,32 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.Contig;
 import org.molgenis.vipannotate.annotation.SequenceVariant;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
+import org.molgenis.vipannotate.format.fasta.FastaIndex;
+import org.molgenis.vipannotate.format.fasta.FastaIndexRecord;
 
-public class GnomAdAnnotationCreator {
-  public AnnotatedSequenceVariant<GnomAdAnnotation> annotate(GnomAdTsvRecord gnomAdTsvRecord) {
+@RequiredArgsConstructor
+public class GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper {
+  @NonNull private final FastaIndex fastaIndex;
+
+  public GnomAdAnnotatedSequenceVariant annotate(GnomAdTsvRecord gnomAdTsvRecord) {
     SequenceVariant variant = createVariant(gnomAdTsvRecord);
     GnomAdAnnotation annotation = createAnnotation(gnomAdTsvRecord);
-    return new AnnotatedSequenceVariant<>(variant, annotation);
+    return new GnomAdAnnotatedSequenceVariant(variant, annotation);
   }
 
-  private static SequenceVariant createVariant(GnomAdTsvRecord gnomAdTsvRecord) {
-    Contig chrom = new Contig(gnomAdTsvRecord.chrom(), 1); // FIXME length
+  private SequenceVariant createVariant(GnomAdTsvRecord gnomAdTsvRecord) {
+    FastaIndexRecord fastaIndexRecord = fastaIndex.get(gnomAdTsvRecord.chrom());
+    if (fastaIndexRecord == null) {
+      throw new IllegalArgumentException("unknown contig '%s'".formatted(gnomAdTsvRecord.chrom()));
+    }
+    Contig chrom = new Contig(fastaIndexRecord.name(), fastaIndexRecord.length());
+
     int start = gnomAdTsvRecord.pos();
     int end = start + gnomAdTsvRecord.ref().length() - 1;
     byte[] alt = gnomAdTsvRecord.alt().getBytes(StandardCharsets.UTF_8);

@@ -12,7 +12,7 @@ import lombok.NonNull;
  * @param lineWidth The number of bytes in each line, including the newline.
  */
 public record FastaIndexRecord(
-    @NonNull String name, long length, long offset, int lineBases, int lineWidth) {
+    @NonNull String name, int length, long offset, int lineBases, int lineWidth) {
   public FastaIndexRecord {
     validateNonNegative(length);
     validateNonNegative(offset);

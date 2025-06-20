@@ -43,7 +43,7 @@ public class PhyloPAnnotationDbBuilder {
       AnnotatedPositionPartitionWriter<Position, DoubleValueAnnotation, PhyloPAnnotatedPosition>
           annotationDatasetWriter =
               new AnnotatedPositionPartitionWriter<>(
-                  "score", annotationDatasetEncoder, binaryPartitionWriter, fastaIndex);
+                  "score", annotationDatasetEncoder, binaryPartitionWriter);
 
       AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, PhyloPAnnotatedPosition>
           annotationDbWriter = new AnnotatedIntervalDbWriter<>(annotationDatasetWriter);
@@ -57,8 +57,8 @@ public class PhyloPAnnotationDbBuilder {
   private Iterator<PhyloPAnnotatedPosition> create(
       BufferedReader bufferedReader, FastaIndex fastaIndex) {
     PhyloPParser phyloPParser = new PhyloPParser();
-    PhyloPBedFeatureToContigPosAnnotationMapper mapper =
-        new PhyloPBedFeatureToContigPosAnnotationMapper();
+    PhyloPBedFeatureToPhyloPAnnotatedPositionMapper mapper =
+        new PhyloPBedFeatureToPhyloPAnnotatedPositionMapper(fastaIndex);
     return new TransformingIterator<>(
         new FilteringIterator<>(
             new TransformingIterator<>(new TsvIterator(bufferedReader), phyloPParser::parse),

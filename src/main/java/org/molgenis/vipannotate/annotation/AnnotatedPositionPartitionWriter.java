@@ -4,16 +4,15 @@ import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 
 /**
- * Writes partitions of annotated positions
+ * Writes partitions of annotated genomic positions
  *
- * @param <T> type of genomic interval
- * @param <U> type of genomic feature annotation
- * @param <V> annotated genomic feature typed by T and U
+ * @param <T> type of genomic position
+ * @param <U> type of genomic position annotation
+ * @param <V> annotated genomic position typed by T and U
  */
 @RequiredArgsConstructor
 public class AnnotatedPositionPartitionWriter<
@@ -22,7 +21,6 @@ public class AnnotatedPositionPartitionWriter<
   @NonNull private final String annotationDataId; // TODO refactor: move to partition writer
   @NonNull private final IndexedAnnotatedFeatureDatasetEncoder<U> annotationDatasetEncoder;
   @NonNull private final BinaryPartitionWriter binaryPartitionWriter;
-  @NonNull private final FastaIndex fastaIndex;
 
   @Override
   public void write(Partition<T, U, V> partition) {
@@ -48,11 +46,7 @@ public class AnnotatedPositionPartitionWriter<
   }
 
   private int calcMaxAnnotations(Partition.Key partitionKey) {
-    int maxPosInContig =
-        Math.toIntExact(
-            fastaIndex
-                .get(partitionKey.contig().getName())
-                .length()); // FIXME use contig().getLength()
+    int maxPosInContig = partitionKey.contig().getLength();
     boolean isLastBin = Partition.calcBin(maxPosInContig) == partitionKey.bin();
 
     int maxAnnotations;

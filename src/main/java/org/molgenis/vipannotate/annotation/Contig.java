@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
-import static org.molgenis.vipannotate.util.Numbers.requireNonNegative;
+import static org.molgenis.vipannotate.util.Numbers.requireNonNegativeOrNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,10 +12,14 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Contig {
   private final String name;
-  private final int length;
+  private final Integer length;
 
-  public Contig(@NonNull String name, int length) {
+  public Contig(@NonNull String name) {
+    this(name, null);
+  }
+
+  public Contig(@NonNull String name, Integer length) {
     this.name = name;
-    this.length = requireNonNegative(length);
+    this.length = requireNonNegativeOrNull(length);
   }
 }

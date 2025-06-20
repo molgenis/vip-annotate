@@ -37,7 +37,7 @@ public class NcERAnnotationDbBuilder {
       AnnotatedPositionPartitionWriter<Position, DoubleValueAnnotation, NcERAnnotatedPosition>
           annotationDatasetWriter =
               new AnnotatedPositionPartitionWriter<>(
-                  "score", annotationDatasetEncoder, binaryPartitionWriter, fastaIndex);
+                  "score", annotationDatasetEncoder, binaryPartitionWriter);
 
       AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, NcERAnnotatedPosition>
           annotationDbWriter = new AnnotatedIntervalDbWriter<>(annotationDatasetWriter);
@@ -51,8 +51,8 @@ public class NcERAnnotationDbBuilder {
   private Iterator<NcERAnnotatedPosition> create(
       BufferedReader bufferedReader, FastaIndex fastaIndex) {
     NcERParser ncERParser = new NcERParser();
-    NcERBedFeatureToContigPosAnnotationMapper mapper =
-        new NcERBedFeatureToContigPosAnnotationMapper();
+    NcERBedFeatureToNcERAnnotatedPositionMapper mapper =
+        new NcERBedFeatureToNcERAnnotatedPositionMapper(fastaIndex);
 
     return new FlatteningIterator<>(
         new TransformingIterator<>(

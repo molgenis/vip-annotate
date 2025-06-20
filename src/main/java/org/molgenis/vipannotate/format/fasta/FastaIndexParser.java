@@ -1,11 +1,10 @@
 package org.molgenis.vipannotate.format.fasta;
 
-import org.molgenis.vipannotate.util.TsvIterator;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.molgenis.vipannotate.util.TsvIterator;
 
 public class FastaIndexParser {
 
@@ -26,7 +25,7 @@ public class FastaIndexParser {
 
   private static FastaIndexRecord createRecord(String[] tokens) {
     String name = tokens[0];
-    long length = Long.parseLong(tokens[1]);
+    int length = Integer.parseInt(tokens[1]);
     long offset = Long.parseLong(tokens[2]);
     int lineBases = Integer.parseInt(tokens[3]);
     int lineWidth = Integer.parseInt(tokens[4]);

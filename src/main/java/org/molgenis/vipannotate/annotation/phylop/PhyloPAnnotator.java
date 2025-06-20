@@ -39,6 +39,7 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
+    Contig chromosome = new Contig(vcfRecord.chrom());
     String[] alts = vcfRecord.alt();
     List<Double> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
@@ -50,7 +51,7 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
       DoubleValueAnnotation altAnnotation =
           annotationDb.findAnnotations(
               new SequenceVariant(
-                  new Contig(vcfRecord.chrom(), 1),
+                  chromosome,
                   vcfRecord.pos(),
                   vcfRecord.pos() + vcfRecord.ref().length() - 1,
                   alt.getBytes(StandardCharsets.UTF_8)));
