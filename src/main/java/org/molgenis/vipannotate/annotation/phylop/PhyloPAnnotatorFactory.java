@@ -27,6 +27,8 @@ public class PhyloPAnnotatorFactory {
         new ContigPosScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    return new PhyloPAnnotator(new PositionAnnotationDb<>(annotationDatasetReader));
+    // FIXME only one VcfRecordAnnotationWriter globally
+    return new PhyloPAnnotator(
+        new PositionAnnotationDb<>(annotationDatasetReader), new VcfRecordAnnotationWriter());
   }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
-public class VcfRecordAnnotationWriter<T extends Annotation> {
+public class VcfRecordAnnotationWriter {
   private final StringBuilder reusableStringBuilder;
   private Map<String, DecimalFormat> decimalFormats;
 
@@ -17,7 +17,7 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
     reusableStringBuilder = new StringBuilder();
   }
 
-  public void writeInfoString(
+  public <T extends Annotation> void writeInfoString(
       VcfRecord vcfRecord,
       List<T> annotations,
       String infoId,
@@ -51,7 +51,7 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
     }
   }
 
-  public void writeInfoInteger(
+  public <T extends Annotation> void writeInfoInteger(
       VcfRecord vcfRecord,
       List<T> annotations,
       String infoId,
@@ -85,7 +85,7 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
     }
   }
 
-  public void writeInfoDouble(
+  public <T extends Annotation> void writeInfoDouble(
       VcfRecord vcfRecord,
       List<T> annotations,
       String infoId,

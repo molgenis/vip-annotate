@@ -27,6 +27,8 @@ public class NcERAnnotatorFactory {
         new ContigPosScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    return new NcERAnnotator(new PositionAnnotationDb<>(annotationDatasetReader));
+    // FIXME only one VcfRecordAnnotationWriter globally
+    return new NcERAnnotator(
+        new PositionAnnotationDb<>(annotationDatasetReader), new VcfRecordAnnotationWriter());
   }
 }

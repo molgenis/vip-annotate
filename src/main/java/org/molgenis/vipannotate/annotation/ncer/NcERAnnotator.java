@@ -1,47 +1,39 @@
 package org.molgenis.vipannotate.annotation.ncer;
 
 import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.App;
-import org.molgenis.vipannotate.annotation.Contig;
-import org.molgenis.vipannotate.annotation.DoubleValueAnnotation;
-import org.molgenis.vipannotate.annotation.PositionAnnotationDb;
-import org.molgenis.vipannotate.annotation.SequenceVariant;
-import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
+import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 // TODO refactor: deduplicate ncer,phylop,remm annotator
+@RequiredArgsConstructor
 public class NcERAnnotator implements VcfRecordAnnotator {
-  public static final String ANNOTATION_ID = "ncER";
-  @NonNull private final PositionAnnotationDb<DoubleValueAnnotation> annotationDb;
-  private final DecimalFormat decimalFormat;
+  public static final String INFO_ID_NCER = "ncER";
 
-  public NcERAnnotator(@NonNull PositionAnnotationDb<DoubleValueAnnotation> annotationDb) {
-    this.annotationDb = annotationDb;
-    this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
-    this.decimalFormat.applyPattern("##.####");
-  }
+  @NonNull private final PositionAnnotationDb<DoubleValueAnnotation> annotationDb;
+  @NonNull private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
+
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
     vcfHeader
         .vcfMetaInfo()
-        .addOrUpdateInfo(
-            ANNOTATION_ID, "1", "Float", "ncER score", App.getName(), App.getVersion());
+        .addOrUpdateInfo(INFO_ID_NCER, "1", "Float", "ncER score", App.getName(), App.getVersion());
   }
-
+  
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    Contig chromosome = new Contig(vcfRecord.chrom());
+    Contig contig = new Contig(vcfRecord.chrom());
+    int start = vcfRecord.pos();
+    int stop = vcfRecord.pos() + vcfRecord.ref().length() - 1;
     String[] alts = vcfRecord.alt();
-    List<Double> altAnnotations = new ArrayList<>(alts.length);
+
+    List<DoubleValueAnnotation> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
       // FIXME handle all alt cases
       // Each allele in this list must be one of: a non-empty String of bases (A,C,G,T,N;case
@@ -49,29 +41,13 @@ public class NcERAnnotator implements VcfRecordAnnotator {
       // value ‘.’ (no variant);an angle-bracketed ID String (“<ID>”); the unspecified allele “<*>”
       // as described in Section 5.5; or a breakend replacement string as described in Section 5.4
       DoubleValueAnnotation altAnnotation =
-          annotationDb.findAnnotations(
-              new SequenceVariant(
-                  chromosome,
-                  vcfRecord.pos(),
-                  vcfRecord.pos() + vcfRecord.ref().length() - 1,
-                  alt.getBytes(StandardCharsets.UTF_8)));
-
-      altAnnotations.add(altAnnotation != null ? altAnnotation.score() : null);
+              annotationDb.findAnnotations(
+                      new SequenceVariant(contig, start, stop, alt.getBytes(StandardCharsets.UTF_8)));
+      altAnnotations.add(altAnnotation);
     }
 
-    if (altAnnotations.stream().anyMatch(Objects::nonNull)) {
-      StringBuilder builder = new StringBuilder();
-      for (Double altAnnotation : altAnnotations) {
-        if (altAnnotation != null) {
-          builder.append(decimalFormat.format(altAnnotation));
-        } else {
-          builder.append('.');
-        }
-      }
-      vcfRecord.info().put(ANNOTATION_ID, builder.toString());
-    } else {
-      vcfRecord.info().remove(ANNOTATION_ID);
-    }
+    vcfRecordAnnotationWriter.writeInfoDouble(
+            vcfRecord, altAnnotations, INFO_ID_NCER, DoubleValueAnnotation::score, "##.####");
   }
 
   @Override
