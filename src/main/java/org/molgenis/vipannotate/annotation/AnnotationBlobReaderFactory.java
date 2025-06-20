@@ -22,9 +22,7 @@ public class AnnotationBlobReaderFactory implements AutoCloseable {
     ByteBuffer directByteBuffer = ByteBuffer.allocateDirect(capacity);
 
     return new AnnotationBlobReader(
-        blobId,
-        new ZipZstdGenomePartitionDataReader(zipZstdDecompressionContext),
-        directByteBuffer);
+        blobId, new ZipZstdPartitionDatasetReader(zipZstdDecompressionContext), directByteBuffer);
   }
 
   private static long calcByteBufferCapacity(MappableZipFile zipFile, String blobId) {

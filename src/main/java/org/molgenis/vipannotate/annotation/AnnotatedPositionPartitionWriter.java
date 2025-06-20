@@ -24,37 +24,31 @@ public class AnnotatedPositionPartitionWriter<
 
   @Override
   public void write(Partition<T, U, V> partition) {
-    Partition.Key partitionKey = partition.getKey();
-    List<V> annotatedIntervals = partition.getAnnotatedIntervals();
 
-    int maxAnnotations = calcMaxAnnotations(partitionKey);
+    int maxAnnotations = partition.calcMaxAnnotations();
 
     MemoryBuffer memoryBuffer =
         annotationDatasetEncoder.encode(
-            new SizedIterator<>(
-                new TransformingIterator<>(
-                    annotatedIntervals.iterator(), annotation -> map(partitionKey, annotation)),
-                annotatedIntervals.size()),
-            maxAnnotations);
-    binaryPartitionWriter.write(partitionKey, annotationDataId, memoryBuffer);
+            createIndexedAnnotatedIntervalIterator(partition), maxAnnotations);
+    binaryPartitionWriter.write(partition.getKey(), annotationDataId, memoryBuffer);
   }
 
-  private IndexedAnnotation<U> map(Partition.Key partitionKey, V annotatedFeature) {
+  private SizedIterator<IndexedAnnotation<U>> createIndexedAnnotatedIntervalIterator(
+      Partition<T, U, V> partition) {
+    Partition.Key partitionKey = partition.getKey();
+    List<V> annotatedIntervals = partition.getAnnotatedIntervals();
+
+    return new SizedIterator<>(
+        new TransformingIterator<>(
+            annotatedIntervals.iterator(),
+            annotation -> createIndexedAnnotatedInterval(partitionKey, annotation)),
+        annotatedIntervals.size());
+  }
+
+  private IndexedAnnotation<U> createIndexedAnnotatedInterval(
+      Partition.Key partitionKey, V annotatedFeature) {
     int partitionStart =
         Partition.getPartitionStart(partitionKey, annotatedFeature.getFeature().getStart());
     return new IndexedAnnotation<>(partitionStart, annotatedFeature.getAnnotation());
-  }
-
-  private int calcMaxAnnotations(Partition.Key partitionKey) {
-    int maxPosInContig = partitionKey.contig().getLength();
-    boolean isLastBin = Partition.calcBin(maxPosInContig) == partitionKey.bin();
-
-    int maxAnnotations;
-    if (isLastBin) {
-      maxAnnotations = Partition.calcPosInBin(maxPosInContig);
-    } else {
-      maxAnnotations = 1 << Partition.NR_POS_BITS;
-    }
-    return maxAnnotations;
   }
 }

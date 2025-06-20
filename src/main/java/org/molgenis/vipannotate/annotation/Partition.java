@@ -36,6 +36,19 @@ public class Partition<
     annotatedIntervals.add(annotatedInterval);
   }
 
+  public int calcMaxAnnotations() {
+    int maxPosInContig = key.contig().getLength();
+    boolean isLastBin = Partition.calcBin(maxPosInContig) == key.bin();
+
+    int maxAnnotations;
+    if (isLastBin) {
+      maxAnnotations = Partition.calcPosInBin(maxPosInContig);
+    } else {
+      maxAnnotations = 1 << Partition.NR_POS_BITS;
+    }
+    return maxAnnotations;
+  }
+
   public static int calcBin(int pos) {
     return pos >> NR_POS_BITS;
   }

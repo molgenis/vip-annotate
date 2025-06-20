@@ -8,14 +8,14 @@ import org.apache.fury.memory.MemoryBuffer;
 @RequiredArgsConstructor
 public class AnnotationBlobReader implements AutoCloseable {
   @NonNull private final String blobId;
-  @NonNull private final GenomePartitionDataReader genomePartitionDataReader;
+  @NonNull private final PartitionDatasetReader partitionDatasetReader;
   @NonNull private ByteBuffer reusableDirectByteBuffer;
 
   /**
    * @return memory buffer or <code>null</code> if blob does not exist
    */
   public MemoryBuffer read(Partition.Key partitionKey) {
-    return genomePartitionDataReader.read(partitionKey, blobId, reusableDirectByteBuffer);
+    return partitionDatasetReader.read(partitionKey, blobId, reusableDirectByteBuffer);
   }
 
   @Override
