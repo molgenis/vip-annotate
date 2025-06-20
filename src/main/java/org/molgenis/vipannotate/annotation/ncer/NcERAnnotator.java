@@ -11,7 +11,7 @@ import lombok.NonNull;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.Contig;
 import org.molgenis.vipannotate.annotation.DoubleValueAnnotation;
-import org.molgenis.vipannotate.annotation.GenomePositionAnnotationDb;
+import org.molgenis.vipannotate.annotation.PositionAnnotationDb;
 import org.molgenis.vipannotate.annotation.SequenceVariant;
 import org.molgenis.vipannotate.annotation.VcfRecordAnnotator;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
@@ -20,10 +20,10 @@ import org.molgenis.vipannotate.format.vcf.VcfRecord;
 // TODO refactor: deduplicate ncer,phylop,remm annotator
 public class NcERAnnotator implements VcfRecordAnnotator {
   public static final String ANNOTATION_ID = "ncER";
-  @NonNull private final GenomePositionAnnotationDb<DoubleValueAnnotation> annotationDb;
+  @NonNull private final PositionAnnotationDb<DoubleValueAnnotation> annotationDb;
   private final DecimalFormat decimalFormat;
 
-  public NcERAnnotator(@NonNull GenomePositionAnnotationDb<DoubleValueAnnotation> annotationDb) {
+  public NcERAnnotator(@NonNull PositionAnnotationDb<DoubleValueAnnotation> annotationDb) {
     this.annotationDb = annotationDb;
     this.decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     this.decimalFormat.applyPattern("##.####");

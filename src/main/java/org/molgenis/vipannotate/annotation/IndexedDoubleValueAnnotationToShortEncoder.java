@@ -5,7 +5,6 @@ import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.IndexedAnnotationEncoder;
 import org.molgenis.vipannotate.util.Encoder;
 
 @RequiredArgsConstructor

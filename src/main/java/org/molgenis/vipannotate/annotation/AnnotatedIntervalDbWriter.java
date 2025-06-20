@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.annotation;
 import java.util.Iterator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.AnnotatedFeatureDbWriter;
 
 /**
  * Writes annotated genomic intervals to a partitioned database

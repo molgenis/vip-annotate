@@ -1,10 +1,7 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.annotation;
 
 import lombok.NonNull;
 import org.apache.fury.memory.MemoryBuffer;
-import org.molgenis.vipannotate.annotation.Annotation;
-import org.molgenis.vipannotate.annotation.AnnotationEncoder;
-import org.molgenis.vipannotate.annotation.IndexedAnnotation;
 
 public interface IndexedAnnotationEncoder<T extends Annotation>
     extends AnnotationEncoder<IndexedAnnotation<T>> {

@@ -27,6 +27,6 @@ public class NcERAnnotatorFactory {
         new ContigPosScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    return new NcERAnnotator(new GenomePositionAnnotationDb<>(annotationDatasetReader));
+    return new NcERAnnotator(new PositionAnnotationDb<>(annotationDatasetReader));
   }
 }

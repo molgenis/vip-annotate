@@ -1,10 +1,7 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.annotation;
 
 import java.util.Iterator;
 import lombok.NonNull;
-import org.molgenis.vipannotate.annotation.AnnotatedFeature;
-import org.molgenis.vipannotate.annotation.Annotation;
-import org.molgenis.vipannotate.annotation.Feature;
 
 /**
  * Writes annotated features to a database

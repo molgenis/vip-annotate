@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
  * @param <T> annotation type
  */
 @RequiredArgsConstructor
-public class GenomePositionAnnotationDb<T extends Annotation>
+public class PositionAnnotationDb<T extends Annotation>
     implements AnnotationDb<SequenceVariant, T> {
   @NonNull private final AnnotationDatasetReader<T> annotationDatasetReader;
 

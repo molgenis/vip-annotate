@@ -4,7 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class GenomeSequenceVariantAnnotationDb<T extends Annotation>
+public class SequenceVariantAnnotationDb<T extends Annotation>
     implements AnnotationDb<SequenceVariant, T> {
   @NonNull private final AnnotationIndexReader annotationIndexReader;
   @NonNull private final AnnotationDatasetReader<T> annotationDatasetReader;

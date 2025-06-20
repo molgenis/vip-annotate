@@ -27,6 +27,6 @@ public class PhyloPAnnotatorFactory {
         new ContigPosScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    return new PhyloPAnnotator(new GenomePositionAnnotationDb<>(annotationDatasetReader));
+    return new PhyloPAnnotator(new PositionAnnotationDb<>(annotationDatasetReader));
   }
 }

@@ -40,8 +40,8 @@ public class GnomAdAnnotatorFactory {
             annotationBlobReaderFactory.create(mappableZipFile, "filters"),
             annotationBlobReaderFactory.create(mappableZipFile, "cov"));
 
-    GenomeSequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb =
-        new GenomeSequenceVariantAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
-    return new GnomAdAnnotator(annotationDb);
+    SequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb =
+        new SequenceVariantAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
+    return new GnomAdAnnotator(annotationDb, new VcfRecordAnnotationWriter<>());
   }
 }

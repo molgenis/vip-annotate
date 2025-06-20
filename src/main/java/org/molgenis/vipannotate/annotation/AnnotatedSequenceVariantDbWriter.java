@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import lombok.NonNull;
-import org.molgenis.vipannotate.AnnotatedFeatureDbWriter;
 import org.molgenis.vipannotate.serialization.SortedIntArrayWrapper;
 
 /**
