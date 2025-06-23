@@ -1,11 +1,11 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
-import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.Contig;
 import org.molgenis.vipannotate.annotation.SequenceVariant;
+import org.molgenis.vipannotate.annotation.SequenceVariantType;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
@@ -28,10 +28,12 @@ public class GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper {
     }
     Contig chrom = new Contig(fastaIndexRecord.name(), fastaIndexRecord.length());
 
+    String ref = gnomAdTsvRecord.ref();
+    String alt = gnomAdTsvRecord.alt();
     int start = gnomAdTsvRecord.pos();
-    int end = start + gnomAdTsvRecord.ref().length() - 1;
-    byte[] alt = gnomAdTsvRecord.alt().getBytes(StandardCharsets.UTF_8);
-    return new SequenceVariant(chrom, start, end, alt);
+    int end = start + ref.length() - 1;
+    SequenceVariantType type = SequenceVariant.fromVcfString(ref.length(), alt);
+    return new SequenceVariant(chrom, start, end, alt, type);
   }
 
   private static GnomAdAnnotation createAnnotation(GnomAdTsvRecord gnomAdTsvRecord) {

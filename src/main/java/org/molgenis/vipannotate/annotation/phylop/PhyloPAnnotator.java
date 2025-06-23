@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation.phylop;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;
@@ -35,19 +34,19 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
 
     List<DoubleValueAnnotation> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
-      // FIXME handle all alt cases
-      // Each allele in this list must be one of: a non-empty String of bases (A,C,G,T,N;case
-      // insensitive); the ‘*’ symbol (allele missing due to overlapping deletion); the MISSING
-      // value ‘.’ (no variant);an angle-bracketed ID String (“<ID>”); the unspecified allele “<*>”
-      // as described in Section 5.5; or a breakend replacement string as described in Section 5.4
       DoubleValueAnnotation altAnnotation =
-              annotationDb.findAnnotations(
-                      new SequenceVariant(contig, start, stop, alt.getBytes(StandardCharsets.UTF_8)));
+          annotationDb.findAnnotations(
+              new SequenceVariant(
+                  contig,
+                  start,
+                  stop,
+                  alt,
+                  SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt)));
       altAnnotations.add(altAnnotation);
     }
 
     vcfRecordAnnotationWriter.writeInfoDouble(
-            vcfRecord, altAnnotations, INFO_ID_PHYLOP, DoubleValueAnnotation::score, "#.###");
+        vcfRecord, altAnnotations, INFO_ID_PHYLOP, DoubleValueAnnotation::score, "#.###");
   }
 
   @Override

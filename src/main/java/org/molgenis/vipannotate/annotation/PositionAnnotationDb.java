@@ -23,9 +23,8 @@ public class PositionAnnotationDb<T extends Annotation>
 
   @Override
   public T findAnnotations(SequenceVariant feature) {
-    // TODO annotate non-SNPs
-    if (feature.getRefLength() != 1 || feature.getAltLength() != 1) {
-      return null;
+    if (feature.getType() != SequenceVariantType.SNV) {
+      return null; // TODO annotate non-SNPs
     }
 
     // determine partition

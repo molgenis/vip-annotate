@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 import org.apache.fury.memory.MemoryBuffer;
 
@@ -12,7 +13,7 @@ public class VariantEncoder {
   public VariantEncoder() {}
 
   public static boolean isSmallVariant(SequenceVariant variant) {
-    return isSmall(variant.getRefLength()) && isSmall(variant.getAltLength());
+    return isSmall(variant.getRefLength()) && isSmall(variant.getAlt().length());
   }
 
   private static boolean isSmall(int nrBases) {
@@ -36,11 +37,11 @@ public class VariantEncoder {
    */
   public static int encodeSmall(SequenceVariant variant) {
     int pos = variant.getStart();
-    byte[] altBases = variant.getAlt();
+    byte[] altBases = variant.getAlt().getBytes(StandardCharsets.UTF_8);
 
     int encodedPos = encodePos(pos);
     int encodedRefLength = encodeSmallNrBases(variant.getRefLength());
-    int encodedAltLength = encodeSmallNrBases(variant.getAltLength());
+    int encodedAltLength = encodeSmallNrBases(altBases.length);
     int encodedAlt;
     try {
       encodedAlt = encodeSmallAlt(altBases);
@@ -60,7 +61,7 @@ public class VariantEncoder {
   public static BigInteger encodeBig(SequenceVariant variant) {
     int pos = variant.getStart();
     int nrRefBases = variant.getStop() - variant.getStart() + 1;
-    byte[] altBases = variant.getAlt();
+    byte[] altBases = variant.getAlt().getBytes(StandardCharsets.UTF_8);
 
     int encodedPos = encodePos(pos);
     byte[] encodedAlt = encodeBigAlt(altBases);

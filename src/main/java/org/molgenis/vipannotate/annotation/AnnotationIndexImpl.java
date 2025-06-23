@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.nio.charset.StandardCharsets;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -9,18 +10,24 @@ public class AnnotationIndexImpl implements AnnotationIndex {
   @NonNull private VariantAnnotationIndexBig variantAnnotationIndexBig;
 
   public int findIndex(SequenceVariant variant) {
-    // FIXME solve elsewhere
+    // TODO refactor solve elsewhere
     boolean canDetermineIndex = true;
-    for (byte altBase : variant.getAlt()) {
+    if (variant.getType() == SequenceVariantType.STRUCTURAL
+        || variant.getType() == SequenceVariantType.OTHER) {
+      return -1;
+    } else {
 
-      boolean isActg =
-          switch (altBase) {
-            case 'A', 'C', 'T', 'G' -> true;
-            default -> false;
-          };
-      if (!isActg) {
-        canDetermineIndex = false;
-        break;
+      for (byte altBase : variant.getAlt().getBytes(StandardCharsets.UTF_8)) {
+
+        boolean isActg =
+            switch (altBase) {
+              case 'A', 'C', 'T', 'G' -> true;
+              default -> false;
+            };
+        if (!isActg) {
+          canDetermineIndex = false;
+          break;
+        }
       }
     }
     if (!canDetermineIndex) {
