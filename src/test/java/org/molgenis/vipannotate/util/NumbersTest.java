@@ -39,7 +39,6 @@ class NumbersTest {
 
   @Test
   void requireNonNegativeOrNullIntNull() {
-    //noinspection ConstantValue
     assertNull(Numbers.requireNonNegativeOrNull((Integer) null));
   }
 
@@ -150,7 +149,6 @@ class NumbersTest {
 
   @Test
   void requireNonNegativeOrNullDoubleNull() {
-    //noinspection ConstantValue
     assertNull(Numbers.requireNonNegativeOrNull((Double) null));
   }
 

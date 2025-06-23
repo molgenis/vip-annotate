@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.Iterator;
-import lombok.NonNull;
 
 /**
  * Writes annotated features to a database
@@ -12,5 +11,5 @@ import lombok.NonNull;
  */
 public interface AnnotatedFeatureDbWriter<
     T extends Feature, U extends Annotation, V extends AnnotatedFeature<T, U>> {
-  void write(@NonNull Iterator<V> annotatedFeatureIt);
+  void write(Iterator<V> annotatedFeatureIt);
 }

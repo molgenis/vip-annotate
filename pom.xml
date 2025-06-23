@@ -14,6 +14,7 @@
         <version.apache.fury>0.10.3</version.apache.fury>
         <version.graalvm.native.maven.plugin>0.10.6</version.graalvm.native.maven.plugin>
         <version.jacoco.maven.plugin>0.8.13</version.jacoco.maven.plugin>
+        <version.jspecify>1.0.0</version.jspecify>
         <version.junit.bom>5.12.2</version.junit.bom>
         <version.lemire.integercompression>0.2.1</version.lemire.integercompression>
         <version.lombok>1.18.38</version.lombok>
@@ -289,6 +290,11 @@
                 <version>${version.apache.fury}</version>
             </dependency>
             <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>${version.jspecify}</version>
+            </dependency>
+            <dependency>
                 <groupId>me.lemire.integercompression</groupId>
                 <artifactId>JavaFastPFOR</artifactId>
                 <version>${version.lemire.integercompression}</version>
@@ -332,6 +338,11 @@
         <dependency>
             <groupId>org.apache.fury</groupId>
             <artifactId>fury-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

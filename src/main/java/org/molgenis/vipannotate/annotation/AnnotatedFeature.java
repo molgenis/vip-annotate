@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Annotated genomic feature
  *
@@ -11,5 +13,5 @@ public interface AnnotatedFeature<T extends Feature, U extends Annotation> {
   T getFeature();
 
   /** returns annotation for genomic feature */
-  U getAnnotation();
+  @Nullable U getAnnotation();
 }

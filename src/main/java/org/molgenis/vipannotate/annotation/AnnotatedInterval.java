@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Annotated genomic interval
@@ -15,8 +16,8 @@ import lombok.*;
 public class AnnotatedInterval<T extends Interval, U extends Annotation>
     implements AnnotatedFeature<T, U> {
   /** genome interval */
-  @NonNull private final T feature;
+  private final T feature;
 
   /** annotation data */
-  private final U annotation;
+  @Nullable private final U annotation;
 }

@@ -18,7 +18,7 @@ public class AnnotatedIntervalDbWriter<
   @NonNull private final AnnotatedIntervalPartitionWriter<T, U, V> annotatedIntervalPartitionWriter;
 
   @Override
-  public void write(@NonNull Iterator<V> annotatedFeatureIt) {
+  public void write(Iterator<V> annotatedFeatureIt) {
     for (PartitionIterator<T, U, V> partitionIt = new PartitionIterator<>(annotatedFeatureIt);
         partitionIt.hasNext(); ) {
       annotatedIntervalPartitionWriter.write(partitionIt.next());

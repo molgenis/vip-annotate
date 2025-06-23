@@ -51,7 +51,7 @@ public class RemmAnnotationDbBuilder {
   }
 
   private Iterator<RemmAnnotatedPosition> create(
-      BufferedReader bufferedReader, FastaIndex fastaIndex) throws IOException {
+      BufferedReader bufferedReader, FastaIndex fastaIndex) {
     RemmParser remmParser = new RemmParser();
     RemmTsvRecordToRemmAnnotatedPositionMapper mapper =
         new RemmTsvRecordToRemmAnnotatedPositionMapper(fastaIndex);
