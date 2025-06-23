@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 
 /**
  * Encoded sequence variant
@@ -11,5 +10,5 @@ import lombok.NonNull;
  * @param <U> type of sequence variant annotation
  */
 public record EncodedAnnotatedSequenceVariant<T, U extends Annotation>(
-    @NonNull T encodedSequentVariant,
-    @NonNull AnnotatedSequenceVariant<U> annotatedSequenceVariant) {}
+    T encodedSequentVariant,
+    AnnotatedSequenceVariant<U> annotatedSequenceVariant) {}

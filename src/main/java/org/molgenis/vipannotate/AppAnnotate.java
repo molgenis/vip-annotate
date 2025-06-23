@@ -2,10 +2,11 @@ package org.molgenis.vipannotate;
 
 import java.nio.file.Path;
 import org.apache.fury.logging.LoggerFactory;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.VcfAnnotator;
 import org.molgenis.vipannotate.annotation.VcfAnnotatorFactory;
-import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.format.vcf.VcfType;
+import org.molgenis.vipannotate.util.Logger;
 
 public class AppAnnotate {
 
@@ -42,9 +43,12 @@ public class AppAnnotate {
     }
   }
 
-  private static void handleException(Exception e, Boolean debugMode) {
+  private static void handleException(Exception e, @Nullable Boolean debugMode) {
     if (debugMode != null && debugMode) {
-      Logger.error("%s", e.getMessage());
+      String message = e.getMessage();
+      if (message != null) {
+        Logger.error("%s", message);
+      }
       e.printStackTrace(System.err);
     } else {
       Logger.error("something went wrong");

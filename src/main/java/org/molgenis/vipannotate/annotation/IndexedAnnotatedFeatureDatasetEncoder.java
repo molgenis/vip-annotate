@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.SizedIterator;
@@ -13,8 +12,8 @@ import org.molgenis.vipannotate.util.SizedIterator;
 @RequiredArgsConstructor
 public class IndexedAnnotatedFeatureDatasetEncoder<T extends Annotation>
     implements AnnotationDatasetEncoder<IndexedAnnotation<T>> {
-  @NonNull private final IndexedAnnotationEncoder<T> annotationEncoder;
-  @NonNull private final MemoryBuffer reusableMemoryBuffer;
+  private final IndexedAnnotationEncoder<T> annotationEncoder;
+  private final MemoryBuffer reusableMemoryBuffer;
 
   @Override
   public MemoryBuffer encode(SizedIterator<IndexedAnnotation<T>> annotationIt, int maxAnnotations) {

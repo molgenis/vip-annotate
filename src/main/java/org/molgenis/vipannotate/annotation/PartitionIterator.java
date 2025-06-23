@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.PushbackIterator;
 
 /**
@@ -14,9 +14,10 @@ public class PartitionIterator<
         T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
     implements Iterator<Partition<T, U, V>> {
   private final PushbackIterator<V> sourceIterator;
+  @Nullable
   private Partition<T, U, V> reusableNextPartition;
 
-  public PartitionIterator(@NonNull Iterator<V> sourceIterator) {
+  public PartitionIterator(Iterator<V> sourceIterator) {
     this.sourceIterator = new PushbackIterator<>(sourceIterator);
     this.reusableNextPartition = new Partition<>();
   }

@@ -1,11 +1,10 @@
 package org.molgenis.vipannotate.format.vcf;
 
 import java.util.LinkedHashMap;
-import lombok.NonNull;
 
 public class VcfMetaInfoLineParser {
 
-  public VcfMetaInfo.Line parseLine(@NonNull String line) {
+  public VcfMetaInfo.Line parseLine(String line) {
     if (!line.startsWith("##")) {
       throw new VcfMetaInfoParserException(line, "line must start with '##'");
     }

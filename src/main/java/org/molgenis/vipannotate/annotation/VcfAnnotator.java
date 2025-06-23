@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfReader;
@@ -13,9 +12,9 @@ import org.molgenis.vipannotate.util.ReusableBatchIterator;
 public class VcfAnnotator implements AutoCloseable {
   private static final int ANNOTATE_BATCH_SIZE = 100; // TODO make configurable
 
-  @NonNull private final VcfReader vcfReader;
-  @NonNull private final VcfRecordAnnotator vcfRecordAnnotator;
-  @NonNull private final VcfWriter vcfWriter;
+  private final VcfReader vcfReader;
+  private final VcfRecordAnnotator vcfRecordAnnotator;
+  private final VcfWriter vcfWriter;
 
   public void annotate() {
 

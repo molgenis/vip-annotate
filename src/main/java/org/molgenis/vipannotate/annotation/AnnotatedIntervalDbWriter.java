@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.Iterator;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -15,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class AnnotatedIntervalDbWriter<
         T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
     implements AnnotatedFeatureDbWriter<T, U, V> {
-  @NonNull private final AnnotatedIntervalPartitionWriter<T, U, V> annotatedIntervalPartitionWriter;
+  private final AnnotatedIntervalPartitionWriter<T, U, V> annotatedIntervalPartitionWriter;
 
   @Override
   public void write(Iterator<V> annotatedFeatureIt) {

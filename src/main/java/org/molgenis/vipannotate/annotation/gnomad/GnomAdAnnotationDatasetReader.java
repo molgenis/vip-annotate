@@ -1,20 +1,19 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotationDatasetReader implements AnnotationDatasetReader<GnomAdAnnotation> {
-  @NonNull private final GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory;
-  @NonNull private final AnnotationBlobReader sourceAnnotationBlobReader;
-  @NonNull private final AnnotationBlobReader afAnnotationBlobReader;
-  @NonNull private final AnnotationBlobReader faf95AnnotationBlobReader;
-  @NonNull private final AnnotationBlobReader faf99AnnotationBlobReader;
-  @NonNull private final AnnotationBlobReader hnAnnotationBlobReader;
-  @NonNull private final AnnotationBlobReader filtersAnnotationBlobReader;
-  @NonNull private final AnnotationBlobReader covAnnotationBlobReader;
+  private final GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory;
+  private final AnnotationBlobReader sourceAnnotationBlobReader;
+  private final AnnotationBlobReader afAnnotationBlobReader;
+  private final AnnotationBlobReader faf95AnnotationBlobReader;
+  private final AnnotationBlobReader faf99AnnotationBlobReader;
+  private final AnnotationBlobReader hnAnnotationBlobReader;
+  private final AnnotationBlobReader filtersAnnotationBlobReader;
+  private final AnnotationBlobReader covAnnotationBlobReader;
 
   @Override
   public AnnotationDataset<GnomAdAnnotation> read(Partition.Key partitionKey) {

@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.CloseIgnoringOutputStream;
 
 public class VcfWriterFactory {
@@ -14,7 +14,7 @@ public class VcfWriterFactory {
 
   private VcfWriterFactory() {}
 
-  public static VcfWriter create(Path outputVcfPath, VcfType outputVcfType) {
+  public static VcfWriter create(@Nullable Path outputVcfPath, @Nullable VcfType outputVcfType) {
     OutputStream outputStream;
     if (outputVcfPath != null) {
       try {
@@ -53,16 +53,16 @@ public class VcfWriterFactory {
     return vcfWriter;
   }
 
-  public static VcfWriter create(@NonNull OutputStream outputStream) {
+  public static VcfWriter create(OutputStream outputStream) {
     Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
     return new VcfWriter(writer);
   }
 
-  public static VcfWriter createGzip(@NonNull OutputStream outputStream) {
+  public static VcfWriter createGzip(OutputStream outputStream) {
     return createGzip(outputStream, 1);
   }
 
-  public static VcfWriter createGzip(@NonNull OutputStream outputStream, int level) {
+  public static VcfWriter createGzip(OutputStream outputStream, int level) {
     if (level < 0 || level > 9) throw new IllegalArgumentException("level must be between 0 and 9");
 
     GZIPOutputStream gzipOutputStream;

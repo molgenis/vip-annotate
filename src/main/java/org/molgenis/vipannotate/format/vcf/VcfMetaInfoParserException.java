@@ -1,13 +1,12 @@
 package org.molgenis.vipannotate.format.vcf;
 
 import java.io.Serial;
-import lombok.NonNull;
 
 public class VcfMetaInfoParserException extends VcfParserException {
   @Serial private static final long serialVersionUID = 1L;
   private final String line;
 
-  public VcfMetaInfoParserException(@NonNull String line, @NonNull String message) {
+  public VcfMetaInfoParserException(String line, String message) {
     super(message);
     this.line = line;
   }

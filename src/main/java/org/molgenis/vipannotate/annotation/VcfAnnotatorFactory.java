@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import java.nio.file.Path;
 import java.util.List;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotatorFactory;
@@ -16,12 +16,12 @@ public class VcfAnnotatorFactory implements AutoCloseable {
     this(new AnnotationBlobReaderFactory());
   }
 
-  VcfAnnotatorFactory(@NonNull AnnotationBlobReaderFactory annotationBlobReaderFactory) {
+  VcfAnnotatorFactory(AnnotationBlobReaderFactory annotationBlobReaderFactory) {
     this.annotationBlobReaderFactory = annotationBlobReaderFactory;
   }
 
   public VcfAnnotator create(
-      Path inputVcf, Path annotationsZip, Path outputVcf, VcfType outputVcfType) {
+          @Nullable Path inputVcf, Path annotationsZip, @Nullable Path outputVcf, @Nullable VcfType outputVcfType) {
     VcfReader vcfReader = VcfReaderFactory.create(inputVcf);
     VcfRecordAnnotator vcfRecordAnnotator = createVcfRecordAnnotator(annotationsZip);
     VcfWriter vcfWriter = VcfWriterFactory.create(outputVcf, outputVcfType);

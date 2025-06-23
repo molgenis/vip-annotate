@@ -3,14 +3,14 @@ package org.molgenis.vipannotate.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class FilteringIterator<T> implements Iterator<T> {
-  @NonNull private final Iterator<T> iterator;
-  @NonNull private final Predicate<T> predicate;
-  private T nextElement;
+  private final Iterator<T> iterator;
+  private final Predicate<T> predicate;
+  @Nullable private T nextElement;
   private boolean nextElementSet;
 
   @Override

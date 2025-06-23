@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.util;
 
+import org.jspecify.annotations.Nullable;
+
 public class Encoder {
   private static final int INTERVAL_BYTE_MAX = (1 << Byte.SIZE) - 1;
   private static final int INTERVAL_SHORT_MAX = (1 << Short.SIZE) - 1;
@@ -11,7 +13,7 @@ public class Encoder {
    * @param value double in [x,y] or <code>null</code>
    * @return encoded byte
    */
-  public static byte encodeDoubleAsByte(Double value, double x, double y) {
+  public static byte encodeDoubleAsByte(@Nullable Double value, double x, double y) {
     byte encodedValue;
     if (value != null) {
       int unsignedValue = Quantizer.quantize(value, x, y, 1, INTERVAL_BYTE_MAX);
@@ -29,7 +31,7 @@ public class Encoder {
    * @param value encoded value
    * @return double in [x,y] or <code>null</code>
    */
-  public static Double decodeDoubleFromByte(byte value, double x, double y) {
+  public static @Nullable Double decodeDoubleFromByte(byte value, double x, double y) {
     Double decodedValue;
     if (value != 0) {
       int unsignedValue = Byte.toUnsignedInt(value);
@@ -47,7 +49,7 @@ public class Encoder {
    * @param value double in [x,y] or <code>null</code>
    * @return encoded byte
    */
-  public static byte encodeDoubleUnitIntervalAsByte(Double value) {
+  public static byte encodeDoubleUnitIntervalAsByte(@Nullable Double value) {
     return encodeDoubleAsByte(value, 0d, 1d);
   }
 
@@ -58,7 +60,7 @@ public class Encoder {
    * @param value encoded value
    * @return double in [0,1] or <code>null</code>
    */
-  public static Double decodeDoubleUnitIntervalFromByte(byte value) {
+  public static @Nullable Double decodeDoubleUnitIntervalFromByte(byte value) {
     return decodeDoubleFromByte(value, 0d, 1d);
   }
 
@@ -93,7 +95,7 @@ public class Encoder {
    * @param value double in [x,y] or <code>null</code>
    * @return encoded short
    */
-  public static short encodeDoubleAsShort(Double value, double x, double y) {
+  public static short encodeDoubleAsShort(@Nullable Double value, double x, double y) {
     short encodedValue;
     if (value != null) {
       int unsignedValue = Quantizer.quantize(value, x, y, 1, INTERVAL_SHORT_MAX);
@@ -111,7 +113,7 @@ public class Encoder {
    * @param value encoded value
    * @return double in [x,y] or <code>null</code>
    */
-  public static Double decodeDoubleFromShort(short value, double x, double y) {
+  public static @Nullable Double decodeDoubleFromShort(short value, double x, double y) {
     Double decodedValue;
     if (value != 0) {
       int unsignedValue = Short.toUnsignedInt(value);
@@ -153,7 +155,7 @@ public class Encoder {
    * @param value double in [x,y] or <code>null</code>
    * @return encoded short
    */
-  public static short encodeDoubleUnitIntervalAsShort(Double value) {
+  public static short encodeDoubleUnitIntervalAsShort(@Nullable Double value) {
     return encodeDoubleAsShort(value, 0d, 1d);
   }
 
@@ -164,7 +166,7 @@ public class Encoder {
    * @param value encoded value
    * @return double in [0,1]or <code>null</code>
    */
-  public static Double decodeDoubleUnitIntervalFromShort(short value) {
+  public static @Nullable Double decodeDoubleUnitIntervalFromShort(short value) {
     return decodeDoubleFromShort(value, 0d, 1d);
   }
 

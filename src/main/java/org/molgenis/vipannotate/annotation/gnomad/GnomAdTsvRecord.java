@@ -3,32 +3,32 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.EnumSet;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public record GnomAdTsvRecord(
-    @NonNull String chrom,
+    String chrom,
     int pos, // 1-based
-    @NonNull String ref,
-    @NonNull String alt,
-    Double afExomes,
-    Double afGenomes,
-    Double afJoint,
-    Double faf95Exomes,
-    Double faf95Genomes,
-    Double faf95Joint,
-    Double faf99Exomes,
-    Double faf99Genomes,
-    Double faf99Joint,
-    Integer nhomaltExomes,
-    Integer nhomaltGenomes,
-    Integer nhomaltJoint,
-    @NonNull EnumSet<Filter> exomesFilters,
-    @NonNull EnumSet<Filter> genomesFilters,
+    String ref,
+    String alt,
+    @Nullable Double afExomes,
+    @Nullable Double afGenomes,
+    @Nullable Double afJoint,
+    @Nullable Double faf95Exomes,
+    @Nullable Double faf95Genomes,
+    @Nullable Double faf95Joint,
+    @Nullable Double faf99Exomes,
+    @Nullable Double faf99Genomes,
+    @Nullable Double faf99Joint,
+    @Nullable Integer nhomaltExomes,
+    @Nullable Integer nhomaltGenomes,
+    @Nullable Integer nhomaltJoint,
+    EnumSet<Filter> exomesFilters,
+    EnumSet<Filter> genomesFilters,
     boolean notCalledInExomes,
     boolean notCalledInGenomes,
-    Double covExomes,
-    Double covGenomes,
-    Double covJoint) {
+    @Nullable Double covExomes,
+    @Nullable Double covGenomes,
+    @Nullable Double covJoint) {
 
   public enum Filter {
     AC0,

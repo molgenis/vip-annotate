@@ -1,16 +1,13 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class ContigPosScoreAnnotationDatasetReader
     implements AnnotationDatasetReader<DoubleValueAnnotation> {
-  @NonNull
   private final ContigPosScoreAnnotationDatasetFactory contigPosScoreAnnotationDatasetFactory;
-
-  @NonNull private final AnnotationBlobReader scoresAnnotationBlobReader;
+  private final AnnotationBlobReader scoresAnnotationBlobReader;
 
   @Override
   public AnnotationDataset<DoubleValueAnnotation> read(Partition.Key partitionKey) {

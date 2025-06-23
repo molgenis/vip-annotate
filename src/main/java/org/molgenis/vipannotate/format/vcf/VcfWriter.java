@@ -4,14 +4,13 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import lombok.NonNull;
 import org.molgenis.vipannotate.util.CharArrayBuffer;
 
 public class VcfWriter implements AutoCloseable {
   private final Writer writer;
   private final CharArrayBuffer reusableCharArrayBuffer;
 
-  public VcfWriter(@NonNull Writer writer) {
+  public VcfWriter(Writer writer) {
     this.writer = writer;
     this.reusableCharArrayBuffer = new CharArrayBuffer(32768);
   }

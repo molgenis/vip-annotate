@@ -3,13 +3,12 @@ package org.molgenis.vipannotate.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class TransformingIterator<S, T> implements Iterator<T> {
-  @NonNull private final Iterator<S> sourceIterator;
-  @NonNull private final Function<S, T> transformFunction;
+  private final Iterator<S> sourceIterator;
+  private final Function<S, T> transformFunction;
 
   @Override
   public boolean hasNext() {

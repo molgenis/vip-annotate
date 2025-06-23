@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Batch iterator that reuses the list returned by <code>next()</code> on later calls.
@@ -16,9 +16,9 @@ import lombok.NonNull;
 public class ReusableBatchIterator<T> implements Iterator<List<T>> {
   private final Iterator<T> source;
   private final int batchSize;
-  private List<T> reusableBatch;
+  @Nullable private List<T> reusableBatch;
 
-  public ReusableBatchIterator(@NonNull Iterator<T> source, int batchSize) {
+  public ReusableBatchIterator(Iterator<T> source, int batchSize) {
     this.source = source;
     this.batchSize = requirePositive(batchSize);
   }

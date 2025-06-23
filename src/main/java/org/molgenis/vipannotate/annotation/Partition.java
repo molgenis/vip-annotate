@@ -5,6 +5,7 @@ import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Partition of annotated genomic intervals
@@ -19,8 +20,8 @@ public class Partition<
     T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>> {
   public static final int NR_POS_BITS = 20;
 
-  private Key key;
-  private List<V> annotatedIntervals;
+  @Nullable private Key key;
+  @Nullable private List<V> annotatedIntervals;
 
   public void clear() {
     key = null;
@@ -68,20 +69,20 @@ public class Partition<
    * @param contig contig
    * @param bin bin index
    */
-  public record Key(@NonNull Contig contig, int bin) {
+  public record Key(Contig contig, int bin) {
     public Key {
       validateNonNegative(bin);
     }
 
-    public <T extends Interval> int getPartitionStart(@NonNull T interval) {
+    public <T extends Interval> int getPartitionStart(T interval) {
       return Partition.getPartitionStart(this, interval.getStart());
     }
 
-    public static <T extends Interval> Key create(@NonNull T interval) {
+    public static <T extends Interval> Key create(T interval) {
       return Key.create(interval.getContig(), interval.getStart());
     }
 
-    public static Key create(@NonNull Contig contig, int pos) {
+    public static Key create(Contig contig, int pos) {
       return new Key(contig, calcBin(pos));
     }
   }

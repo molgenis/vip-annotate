@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 import org.apache.fury.memory.MemoryBuffer;
 
 public interface AnnotationEncoder<T extends Annotation> {
@@ -9,5 +8,5 @@ public interface AnnotationEncoder<T extends Annotation> {
    */
   int getAnnotationSizeInBytes();
 
-  void encode(T annotation, @NonNull MemoryBuffer memoryBuffer);
+  void encode(T annotation, MemoryBuffer memoryBuffer);
 }

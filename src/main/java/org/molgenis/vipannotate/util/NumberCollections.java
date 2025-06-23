@@ -2,11 +2,11 @@ package org.molgenis.vipannotate.util;
 
 import java.util.Collection;
 import java.util.function.Function;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class NumberCollections {
-  public static <T> T findMax(
-      @NonNull Collection<T> collection, @NonNull Function<T, Double> transformFunction) {
+  public static @Nullable <T> T findMax(
+      Collection<@Nullable T> collection, Function<@Nullable T, Double> transformFunction) {
     if (collection.isEmpty()) {
       return null;
     }

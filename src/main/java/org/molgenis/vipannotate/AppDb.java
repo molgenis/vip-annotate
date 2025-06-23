@@ -26,7 +26,10 @@ public class AppDb {
   }
 
   private static void handleException(Exception e) {
-    Logger.error("%s", e.getMessage());
+    String message = e.getMessage();
+    if (message != null) {
+      Logger.error("%s", message);
+    }
     e.printStackTrace(System.err);
     System.exit(1);
   }

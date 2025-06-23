@@ -1,13 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 
 @RequiredArgsConstructor
 public class ZipZstdBinaryPartitionWriter implements BinaryPartitionWriter {
-  @NonNull private final ZipZstdCompressionContext zipZstdCompressionContext;
+  private final ZipZstdCompressionContext zipZstdCompressionContext;
 
   @Override
   public void write(Partition.Key partitionKey, String dataId, MemoryBuffer memoryBuffer) {

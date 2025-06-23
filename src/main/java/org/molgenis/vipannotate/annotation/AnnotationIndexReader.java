@@ -1,14 +1,13 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.Fury;
 import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class AnnotationIndexReader implements AutoCloseable {
-  @NonNull private final AnnotationBlobReader annotationBlobReader;
-  @NonNull private final Fury fury;
+  private final AnnotationBlobReader annotationBlobReader;
+  private final Fury fury;
 
   /**
    * @return annotation index

@@ -2,17 +2,17 @@ package org.molgenis.vipannotate.format.zip;
 
 import com.github.luben.zstd.ZstdDecompressCtx;
 import java.nio.ByteBuffer;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.fury.memory.MemoryBuffer;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class ZipZstdDecompressionContext {
-  @NonNull private final MappableZipFile zipFile;
-  @NonNull private final ZstdDecompressCtx zstdDecompressCtx;
+  private final MappableZipFile zipFile;
+  private final ZstdDecompressCtx zstdDecompressCtx;
 
-  public MemoryBuffer read(String zipArchiveEntryName, ByteBuffer directByteBuffer) {
+  public @Nullable MemoryBuffer read(String zipArchiveEntryName, ByteBuffer directByteBuffer) {
     ZipArchiveEntry zipArchiveEntry = zipFile.getEntry(zipArchiveEntryName);
     if (zipArchiveEntry == null) {
       return null;

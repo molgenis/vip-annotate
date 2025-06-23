@@ -1,13 +1,12 @@
 package org.molgenis.vipannotate.util;
 
 import java.util.*;
-import lombok.NonNull;
 
 public class PushbackIterator<E> implements Iterator<E> {
   private final Iterator<E> iterator;
   private final Deque<E> buffer;
 
-  public PushbackIterator(@NonNull Iterator<E> iterator) {
+  public PushbackIterator(Iterator<E> iterator) {
     this.iterator = iterator;
     this.buffer = new ArrayDeque<>(1);
   }

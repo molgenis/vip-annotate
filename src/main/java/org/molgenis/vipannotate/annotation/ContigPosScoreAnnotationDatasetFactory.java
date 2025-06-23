@@ -1,14 +1,13 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class ContigPosScoreAnnotationDatasetFactory {
-  @NonNull private final AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDatasetDecoder;
+  private final AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDatasetDecoder;
 
-  public ContigPosScoreAnnotationDataset create(@NonNull MemoryBuffer scoreMemoryBuffer) {
+  public ContigPosScoreAnnotationDataset create(MemoryBuffer scoreMemoryBuffer) {
     return new ContigPosScoreAnnotationDataset(annotationDatasetDecoder, scoreMemoryBuffer);
   }
 }

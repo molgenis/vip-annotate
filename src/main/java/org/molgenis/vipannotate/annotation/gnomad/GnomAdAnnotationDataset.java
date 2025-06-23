@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotationDataset;
@@ -10,14 +9,14 @@ import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotationDataset implements AnnotationDataset<GnomAdAnnotation> {
-  @NonNull private final GnomAdAnnotationDatasetDecoder annotationDataDecoder;
-  @NonNull private final MemoryBuffer srcMemoryBuffer;
-  @NonNull private final MemoryBuffer afMemoryBuffer;
-  @NonNull private final MemoryBuffer faf95MemoryBuffer;
-  @NonNull private final MemoryBuffer faf99MemoryBuffer;
-  @NonNull private final MemoryBuffer hnMemoryBuffer;
-  @NonNull private final MemoryBuffer filtersMemoryBuffer;
-  @NonNull private final MemoryBuffer covMemoryBuffer;
+  private final GnomAdAnnotationDatasetDecoder annotationDataDecoder;
+  private final MemoryBuffer srcMemoryBuffer;
+  private final MemoryBuffer afMemoryBuffer;
+  private final MemoryBuffer faf95MemoryBuffer;
+  private final MemoryBuffer faf99MemoryBuffer;
+  private final MemoryBuffer hnMemoryBuffer;
+  private final MemoryBuffer filtersMemoryBuffer;
+  private final MemoryBuffer covMemoryBuffer;
 
   @Override
   public GnomAdAnnotation findByIndex(int index) {

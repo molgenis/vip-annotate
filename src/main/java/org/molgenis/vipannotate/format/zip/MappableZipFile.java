@@ -8,10 +8,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import lombok.AccessLevel;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.jspecify.annotations.Nullable;
 
 /** {@link ZipFile} that can map a {@link ZipArchiveEntry} directly into memory. */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,7 +19,7 @@ public class MappableZipFile implements AutoCloseable {
   private final FileChannel fileChannel;
   private final ZipFile zipFile;
 
-  public ZipArchiveEntry getEntry(String entryName) {
+  public @Nullable ZipArchiveEntry getEntry(String entryName) {
     return this.zipFile.getEntry(entryName);
   }
 
@@ -37,7 +37,7 @@ public class MappableZipFile implements AutoCloseable {
     }
   }
 
-  public static MappableZipFile fromFile(@NonNull Path path) {
+  public static MappableZipFile fromFile(Path path) {
     FileChannel fileChannel;
     ZipFile zipFile;
     try {

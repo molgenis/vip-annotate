@@ -1,12 +1,12 @@
 package org.molgenis.vipannotate.format.zip;
 
 import com.github.luben.zstd.ZstdDecompressCtx;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class ZipZstdDecompressionContextFactory implements AutoCloseable {
-  private ZstdDecompressCtx zstdDecompressCtx; // one decompression context per thread
+  @Nullable private ZstdDecompressCtx zstdDecompressCtx; // one decompression context per thread
 
-  public ZipZstdDecompressionContext create(@NonNull MappableZipFile zipFile) {
+  public ZipZstdDecompressionContext create(MappableZipFile zipFile) {
     if (zstdDecompressCtx == null) {
       zstdDecompressCtx = new ZstdDecompressCtx();
     }

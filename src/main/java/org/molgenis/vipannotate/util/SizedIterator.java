@@ -4,13 +4,12 @@ import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.Iterator;
 import lombok.Getter;
-import lombok.NonNull;
 
 public class SizedIterator<T> implements Iterator<T> {
-  @NonNull private final Iterator<T> iterator;
+  private final Iterator<T> iterator;
   @Getter private final int size;
 
-  public SizedIterator(@NonNull Iterator<T> iterator, int size) {
+  public SizedIterator(Iterator<T> iterator, int size) {
     this.iterator = iterator;
     this.size = requireNonNegative(size);
   }

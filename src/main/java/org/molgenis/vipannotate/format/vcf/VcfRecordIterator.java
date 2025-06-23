@@ -4,13 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.*;
-import lombok.NonNull;
 
 public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
   private final BufferedReader reader;
   private String nextLine;
 
-  public VcfRecordIterator(@NonNull BufferedReader reader) {
+  public VcfRecordIterator(BufferedReader reader) {
     this.reader = reader;
     advance();
   }

@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.CloseIgnoringInputStream;
 
 public class VcfReaderFactory {
@@ -14,7 +15,7 @@ public class VcfReaderFactory {
 
   private VcfReaderFactory() {}
 
-  public static VcfReader create(Path inputVcfPath) {
+  public static VcfReader create(@Nullable Path inputVcfPath) {
     InputType inputType;
     InputStream inputStream;
     if (inputVcfPath != null) {

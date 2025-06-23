@@ -4,7 +4,6 @@ import static org.molgenis.vipannotate.util.Numbers.requirePositive;
 
 import java.util.Arrays;
 import lombok.Getter;
-import lombok.NonNull;
 
 public class CharArrayBuffer {
   @Getter private char[] buffer;
@@ -21,7 +20,7 @@ public class CharArrayBuffer {
     buffer[length++] = c;
   }
 
-  public void append(@NonNull String s) {
+  public void append(String s) {
     int strLen = s.length();
     ensureCapacity(length + strLen);
     s.getChars(0, strLen, buffer, length);

@@ -5,7 +5,9 @@ public class App {
   private static final String VERSION;
 
   static {
-    String implementationVersion = AppAnnotate.class.getPackage().getImplementationVersion();
+    Package appAnnotatePackage = AppAnnotate.class.getPackage();
+    String implementationVersion =
+        appAnnotatePackage != null ? appAnnotatePackage.getImplementationVersion() : null;
     VERSION = implementationVersion != null ? implementationVersion : "0.0.0-dev";
   }
 

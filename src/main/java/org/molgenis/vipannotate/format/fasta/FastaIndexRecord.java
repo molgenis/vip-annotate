@@ -2,8 +2,6 @@ package org.molgenis.vipannotate.format.fasta;
 
 import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 
-import lombok.NonNull;
-
 /**
  * @param name Name of this reference sequence.
  * @param length Total length of this reference sequence, in bases.
@@ -12,7 +10,7 @@ import lombok.NonNull;
  * @param lineWidth The number of bytes in each line, including the newline.
  */
 public record FastaIndexRecord(
-    @NonNull String name, int length, long offset, int lineBases, int lineWidth) {
+    String name, int length, long offset, int lineBases, int lineWidth) {
   public FastaIndexRecord {
     validateNonNegative(length);
     validateNonNegative(offset);

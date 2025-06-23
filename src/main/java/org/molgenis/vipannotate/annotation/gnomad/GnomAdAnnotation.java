@@ -3,16 +3,16 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.EnumSet;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.Annotation;
 
 public record GnomAdAnnotation(
-    @NonNull Source source,
-    Double af,
+    Source source,
+    @Nullable Double af,
     double faf95,
     double faf99,
     int hn,
-    @NonNull EnumSet<Filter> filters,
+    EnumSet<Filter> filters,
     double cov)
     implements Annotation {
   public enum Source {

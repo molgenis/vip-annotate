@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.format.fasta;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class FastaIndex {
   private final Map<String, FastaIndexRecord> records;
@@ -11,15 +11,15 @@ public class FastaIndex {
     records = new LinkedHashMap<>();
   }
 
-  public void addRecord(@NonNull FastaIndexRecord record) {
+  public void addRecord(FastaIndexRecord record) {
     records.put(record.name(), record);
   }
 
-  public boolean containsReferenceSequence(@NonNull String name) {
+  public boolean containsReferenceSequence(String name) {
     return records.containsKey(name);
   }
 
-  public FastaIndexRecord get(@NonNull String name) {
+  public @Nullable FastaIndexRecord get(String name) {
     return records.get(name);
   }
 }

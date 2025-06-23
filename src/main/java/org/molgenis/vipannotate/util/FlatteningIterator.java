@@ -3,13 +3,13 @@ package org.molgenis.vipannotate.util;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class FlatteningIterator<T> implements Iterator<T> {
-  @NonNull private final Iterator<List<T>> outerIterator;
-  private Iterator<T> innerIterator;
+  private final Iterator<List<T>> outerIterator;
+  @Nullable private Iterator<T> innerIterator;
 
   @Override
   public boolean hasNext() {

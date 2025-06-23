@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation.remm;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.Contig;
 import org.molgenis.vipannotate.annotation.DoubleValueAnnotation;
@@ -10,7 +9,7 @@ import org.molgenis.vipannotate.format.fasta.FastaIndexRecord;
 
 @RequiredArgsConstructor
 public class RemmTsvRecordToRemmAnnotatedPositionMapper {
-  @NonNull private final FastaIndex fastaIndex;
+  private final FastaIndex fastaIndex;
 
   public RemmAnnotatedPosition map(RemmTsvRecord remmTsvRecord) {
     FastaIndexRecord fastaIndexRecord = fastaIndex.get(remmTsvRecord.chr());

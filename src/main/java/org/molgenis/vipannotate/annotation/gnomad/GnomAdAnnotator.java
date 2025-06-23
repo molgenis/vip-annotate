@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.*;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
@@ -19,8 +18,8 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
   private static final String INFO_ID_GNOMAD_QC = "gnomAD_QC";
   private static final String INFO_ID_GNOMAD_COV = "gnomAD_COV";
 
-  @NonNull private final SequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb;
-  @NonNull private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
+  private final SequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {

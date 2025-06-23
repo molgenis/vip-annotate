@@ -1,13 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.nio.charset.StandardCharsets;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AnnotationIndexImpl implements AnnotationIndex {
-  @NonNull private VariantAnnotationIndexSmall variantAnnotationIndexSmall;
-  @NonNull private VariantAnnotationIndexBig variantAnnotationIndexBig;
+  @lombok.NonNull private VariantAnnotationIndexSmall variantAnnotationIndexSmall;
+  @lombok.NonNull private VariantAnnotationIndexBig variantAnnotationIndexBig;
 
   public int findIndex(SequenceVariant variant) {
     // TODO refactor solve elsewhere

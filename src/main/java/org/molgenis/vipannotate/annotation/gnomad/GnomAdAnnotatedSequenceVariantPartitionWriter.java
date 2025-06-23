@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotatedIntervalPartitionWriter;
@@ -16,8 +15,8 @@ import org.molgenis.vipannotate.util.TransformingIterator;
 public class GnomAdAnnotatedSequenceVariantPartitionWriter
     implements AnnotatedIntervalPartitionWriter<
         SequenceVariant, GnomAdAnnotation, AnnotatedSequenceVariant<GnomAdAnnotation>> {
-  @NonNull private final GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder;
-  @NonNull private final BinaryPartitionWriter binaryPartitionWriter;
+  private final GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder;
+  private final BinaryPartitionWriter binaryPartitionWriter;
 
   @Override
   public void write(

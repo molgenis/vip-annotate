@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
+import org.jspecify.annotations.Nullable;
+
 public final class EmptyAnnotationDataset<T extends Annotation> implements AnnotationDataset<T> {
   private static final EmptyAnnotationDataset<?> INSTANCE = new EmptyAnnotationDataset<>();
 
@@ -11,7 +13,7 @@ public final class EmptyAnnotationDataset<T extends Annotation> implements Annot
   }
 
   @Override
-  public T findByIndex(int index) {
+  public @Nullable T findByIndex(int index) {
     return null;
   }
 }

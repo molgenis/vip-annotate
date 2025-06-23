@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.Contig;
 import org.molgenis.vipannotate.annotation.SequenceVariant;
@@ -13,7 +12,7 @@ import org.molgenis.vipannotate.format.fasta.FastaIndexRecord;
 
 @RequiredArgsConstructor
 public class GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper {
-  @NonNull private final FastaIndex fastaIndex;
+  private final FastaIndex fastaIndex;
 
   public GnomAdAnnotatedSequenceVariant annotate(GnomAdTsvRecord gnomAdTsvRecord) {
     SequenceVariant variant = createVariant(gnomAdTsvRecord);

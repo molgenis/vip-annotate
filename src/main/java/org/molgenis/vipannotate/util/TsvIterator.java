@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import lombok.NonNull;
 
 /**
  * Basic tab-separated value iterator that skips lines starting with '#' as well as empty lines.
@@ -15,7 +14,7 @@ public class TsvIterator implements Iterator<String[]> {
   private final BufferedReader bufferedReader;
   private String nextLine;
 
-  public TsvIterator(@NonNull BufferedReader bufferedReader) {
+  public TsvIterator(BufferedReader bufferedReader) {
     this.bufferedReader = bufferedReader;
     advance();
   }

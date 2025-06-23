@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A difference between a reference sequence and an observed sequence.
@@ -11,15 +12,10 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode(callSuper = true)
 public class SequenceVariant extends Interval {
-  private final String alt;
+  @Nullable private final String alt;
   private final SequenceVariantType type;
 
-  public SequenceVariant(
-      @NonNull Contig contig,
-      int start,
-      int stop,
-      @NonNull String alt,
-      @NonNull SequenceVariantType type) {
+  public SequenceVariant(Contig contig, int start, int stop, String alt, SequenceVariantType type) {
     super(contig, start, stop);
     this.alt = alt;
     this.type = type;

@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation.remm;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
@@ -15,8 +14,8 @@ import org.molgenis.vipannotate.util.NumberCollections;
 public class RemmAnnotator implements VcfRecordAnnotator {
   public static final String INFO_ID_REMM = "REMM";
 
-  @NonNull private final PositionAnnotationDb<DoubleValueAnnotation> annotationDb;
-  @NonNull private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
+  private final PositionAnnotationDb<DoubleValueAnnotation> annotationDb;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {

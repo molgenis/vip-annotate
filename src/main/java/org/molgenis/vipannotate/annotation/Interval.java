@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
 
 /** Genomic interval [start, stop] */
@@ -19,7 +18,7 @@ public class Interval implements Feature {
   /** genome stop position (inclusive, 1-based) */
   private final int stop;
 
-  public Interval(@NonNull Contig contig, int start, int stop) {
+  public Interval(Contig contig, int start, int stop) {
     if (start < 0 || stop < 0 || stop < start) {
       throw new IllegalArgumentException("invalid genomic interval");
     }

@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.util;
 
+import org.jspecify.annotations.Nullable;
+
 public class Numbers {
   public static void validatePositive(int num) {
     requirePositive(num);
@@ -52,22 +54,24 @@ public class Numbers {
     return num;
   }
 
-  public static void validateNonNegativeOrNull(Double num) {
+  public static void validateNonNegativeOrNull(@Nullable Double num) {
+    //noinspection ResultOfMethodCallIgnored
     requireNonNegativeOrNull(num);
   }
 
-  public static Double requireNonNegativeOrNull(Double num) {
+  public static @Nullable Double requireNonNegativeOrNull(@Nullable Double num) {
     if (num != null && num < 0) {
       throw new IllegalArgumentException("number must be null or greater than or equal to zero");
     }
     return num;
   }
 
-  public static void validateNonNegativeOrNull(Integer num) {
+  public static void validateNonNegativeOrNull(@Nullable Integer num) {
+    //noinspection ResultOfMethodCallIgnored
     requireNonNegativeOrNull(num);
   }
 
-  public static Integer requireNonNegativeOrNull(Integer num) {
+  public static @Nullable Integer requireNonNegativeOrNull(@Nullable Integer num) {
     if (num != null && num < 0) {
       throw new IllegalArgumentException("number must be null or greater than or equal to zero");
     }

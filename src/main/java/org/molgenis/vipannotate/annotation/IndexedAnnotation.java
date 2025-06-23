@@ -14,7 +14,7 @@ public class IndexedAnnotation<T extends Annotation> implements Annotation {
 
   private final T featureAnnotation;
 
-  public IndexedAnnotation(int index, @NonNull T featureAnnotation) {
+  public IndexedAnnotation(int index, T featureAnnotation) {
     this.index = requireNonNegative(index);
     this.featureAnnotation = featureAnnotation;
   }

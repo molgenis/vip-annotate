@@ -1,17 +1,17 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationDb<T extends Annotation>
     implements AnnotationDb<SequenceVariant, T> {
-  @NonNull private final AnnotationIndexReader annotationIndexReader;
-  @NonNull private final AnnotationDatasetReader<T> annotationDatasetReader;
+  private final AnnotationIndexReader annotationIndexReader;
+  private final AnnotationDatasetReader<T> annotationDatasetReader;
 
-  private Partition.Key activeKey;
-  private AnnotationIndex activeAnnotationIndex;
-  private AnnotationDataset<T> activeAnnotationDataset;
+  private Partition.@Nullable Key activeKey;
+  @Nullable private AnnotationIndex activeAnnotationIndex;
+  @Nullable private AnnotationDataset<T> activeAnnotationDataset;
 
   @Override
   public T findAnnotations(SequenceVariant feature) {

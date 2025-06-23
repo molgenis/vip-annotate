@@ -5,15 +5,14 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class VcfHeaderParser {
-  @NonNull VcfMetaInfoLineParser vcfMetaInfoLineParser;
-  @NonNull VcfHeaderLineParser vcfHeaderLineParser;
+  private final VcfMetaInfoLineParser vcfMetaInfoLineParser;
+  private final VcfHeaderLineParser vcfHeaderLineParser;
 
-  public VcfHeader parse(@NonNull BufferedReader bufferedReader) {
+  public VcfHeader parse(BufferedReader bufferedReader) {
     List<VcfMetaInfo.Line> metaInfoLines = new ArrayList<>();
     VcfHeaderLine headerLine = null;
 

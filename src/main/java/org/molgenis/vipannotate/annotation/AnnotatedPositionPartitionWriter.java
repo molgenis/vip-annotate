@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.SizedIterator;
@@ -18,13 +17,12 @@ import org.molgenis.vipannotate.util.TransformingIterator;
 public class AnnotatedPositionPartitionWriter<
         T extends Position, U extends Annotation, V extends AnnotatedInterval<T, U>>
     implements AnnotatedIntervalPartitionWriter<T, U, V> {
-  @NonNull private final String annotationDataId; // TODO refactor: move to partition writer
-  @NonNull private final IndexedAnnotatedFeatureDatasetEncoder<U> annotationDatasetEncoder;
-  @NonNull private final BinaryPartitionWriter binaryPartitionWriter;
+  private final String annotationDataId; // TODO refactor: move to partition writer
+  private final IndexedAnnotatedFeatureDatasetEncoder<U> annotationDatasetEncoder;
+  private final BinaryPartitionWriter binaryPartitionWriter;
 
   @Override
   public void write(Partition<T, U, V> partition) {
-
     int maxAnnotations = partition.calcMaxAnnotations();
 
     MemoryBuffer memoryBuffer =

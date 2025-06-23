@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.annotation.ncer;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
-import lombok.NonNull;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
@@ -16,7 +15,7 @@ import org.molgenis.vipannotate.util.*;
 public class NcERAnnotationDbBuilder {
   public NcERAnnotationDbBuilder() {}
 
-  public void create(@NonNull Path ncERFile, @NonNull FastaIndex fastaIndex, @NonNull ZipArchiveOutputStream zipOutputStream) {
+  public void create(Path ncERFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERFile)) {
       Iterator<NcERAnnotatedPosition> iterator = create(reader, fastaIndex);
 

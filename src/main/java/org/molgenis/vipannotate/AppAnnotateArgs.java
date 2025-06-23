@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate;
 
 import java.nio.file.Path;
-import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vcf.VcfType;
 
 /**
@@ -12,9 +12,9 @@ import org.molgenis.vipannotate.format.vcf.VcfType;
  * @param debugMode whether to run the app in debug mode.
  */
 public record AppAnnotateArgs(
-    Path inputVcf,
-    @NonNull Path annotationsDir,
-    Path outputVcf,
-    Boolean force,
-    Boolean debugMode,
-    VcfType vcfType) {}
+    @Nullable Path inputVcf,
+    Path annotationsDir,
+    @Nullable Path outputVcf,
+    @Nullable Boolean force,
+    @Nullable Boolean debugMode,
+    @Nullable VcfType vcfType) {}

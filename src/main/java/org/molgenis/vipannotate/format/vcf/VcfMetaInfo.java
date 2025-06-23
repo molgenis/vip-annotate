@@ -3,17 +3,15 @@ package org.molgenis.vipannotate.format.vcf;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.NonNull;
 
-public record VcfMetaInfo(@NonNull List<Line> lines) {
+public record VcfMetaInfo(List<Line> lines) {
   public interface Line {
     String key();
 
     String line();
   }
 
-  public record Structured(@NonNull String key, @NonNull Map<String, String> keyValues)
-      implements Line {
+  public record Structured(String key, Map<String, String> keyValues) implements Line {
     public Structured {
       if (key.isEmpty()) {
         throw new IllegalArgumentException("key must not be empty");
@@ -56,7 +54,7 @@ public record VcfMetaInfo(@NonNull List<Line> lines) {
    * @param value may not be empty and must not start with a ‘<’ character
    * @see <a href="https://samtools.github.io/hts-specs/VCFv4.5.pdf">VCFv4.5 specification</a>
    */
-  public record Unstructured(@NonNull String key, @NonNull String value) implements Line {
+  public record Unstructured(String key, String value) implements Line {
     public Unstructured {
       if (value.isEmpty()) {
         throw new IllegalArgumentException("value may not be empty");
@@ -73,12 +71,7 @@ public record VcfMetaInfo(@NonNull List<Line> lines) {
   }
 
   public void addOrUpdateInfo(
-      @NonNull String id,
-      @NonNull String number,
-      @NonNull String type,
-      @NonNull String description,
-      String source,
-      String version) {
+      String id, String number, String type, String description, String source, String version) {
     LinkedHashMap<String, String> keyValues = new LinkedHashMap<>();
     keyValues.put("ID", id);
     keyValues.put("NUMBER", number);

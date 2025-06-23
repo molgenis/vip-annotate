@@ -1,13 +1,12 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 
 @RequiredArgsConstructor
 public class GnomAdParser {
-  @NonNull private final FastaIndex fastaIndex;
+  private final FastaIndex fastaIndex;
 
   public GnomAdTsvRecord parse(String[] tokens) {
     if (tokens.length != 23) {

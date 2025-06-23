@@ -2,8 +2,8 @@ package org.molgenis.vipannotate.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Annotation database containing annotations for genome positions used to annotate sequence
@@ -14,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PositionAnnotationDb<T extends Annotation>
     implements AnnotationDb<SequenceVariant, AnnotationCollection<T>> {
-  @NonNull private final AnnotationDatasetReader<T> annotationDatasetReader;
+  private final AnnotationDatasetReader<T> annotationDatasetReader;
 
-  private Partition.Key activePartitionKey;
-  private AnnotationDataset<T> activeAnnotationDataset;
+  private Partition.@Nullable Key activePartitionKey;
+  @Nullable private AnnotationDataset<T> activeAnnotationDataset;
 
   @Override
   public AnnotationCollection<T> findAnnotations(SequenceVariant feature) {

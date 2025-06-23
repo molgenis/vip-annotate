@@ -1,14 +1,13 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 @RequiredArgsConstructor
 public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotator {
-  @NonNull private final List<VcfRecordAnnotator> vcfRecordAnnotators;
+  private final List<VcfRecordAnnotator> vcfRecordAnnotators;
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
