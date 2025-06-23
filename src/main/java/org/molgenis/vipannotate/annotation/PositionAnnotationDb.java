@@ -1,35 +1,38 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Annotation database:
- *
- * <ul>
- *   <li>containing annotations for genome positions
- *   <li>to annotate sequence variants
- * </ul>
+ * Annotation database containing annotations for genome positions used to annotate sequence
+ * variants.
  *
  * @param <T> annotation type
  */
 @RequiredArgsConstructor
 public class PositionAnnotationDb<T extends Annotation>
-    implements AnnotationDb<SequenceVariant, T> {
+    implements AnnotationDb<SequenceVariant, AnnotationCollection<T>> {
   @NonNull private final AnnotationDatasetReader<T> annotationDatasetReader;
 
   private Partition.Key activePartitionKey;
   private AnnotationDataset<T> activeAnnotationDataset;
 
   @Override
-  public T findAnnotations(SequenceVariant feature) {
-    if (feature.getType() != SequenceVariantType.SNV) {
-      return null; // TODO annotate non-SNPs
+  public AnnotationCollection<T> findAnnotations(SequenceVariant feature) {
+    int start = feature.getStart();
+    int refLength = feature.getRefLength();
+    List<T> annotations = new ArrayList<>(refLength);
+    for (int i = 0; i < refLength; ++i) {
+      annotations.add(findAnnotations(feature, start + i));
     }
+    return new AnnotationCollection<>(annotations);
+  }
 
+  private T findAnnotations(SequenceVariant feature, int pos) {
     // determine partition
-    Partition.Key partitionKey =
-        new Partition.Key(feature.getContig(), Partition.calcBin(feature.getStart()));
+    Partition.Key partitionKey = Partition.Key.create(feature.getContig(), pos);
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {
@@ -37,7 +40,7 @@ public class PositionAnnotationDb<T extends Annotation>
       activePartitionKey = partitionKey;
     }
 
-    int partitionStart = Partition.getPartitionStart(partitionKey, feature.getStart());
+    int partitionStart = partitionKey.getPartitionStart(feature);
     return activeAnnotationDataset.findByIndex(partitionStart);
   }
 

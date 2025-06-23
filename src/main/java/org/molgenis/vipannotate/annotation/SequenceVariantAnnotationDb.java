@@ -16,8 +16,7 @@ public class SequenceVariantAnnotationDb<T extends Annotation>
   @Override
   public T findAnnotations(SequenceVariant feature) {
     // determine partition
-    Partition.Key partitionKey =
-        new Partition.Key(feature.getContig(), Partition.calcBin(feature.getStart()));
+    Partition.Key partitionKey = Partition.Key.create(feature);
 
     // handle partition changes
     if (!partitionKey.equals(activeKey)) {

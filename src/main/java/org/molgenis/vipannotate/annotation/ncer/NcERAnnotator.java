@@ -8,6 +8,7 @@ import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
+import org.molgenis.vipannotate.util.NumberCollections;
 
 // TODO refactor: deduplicate ncer,phylop,remm annotator
 @RequiredArgsConstructor
@@ -27,21 +28,23 @@ public class NcERAnnotator implements VcfRecordAnnotator {
   @Override
   public void annotate(VcfRecord vcfRecord) {
     Contig contig = new Contig(vcfRecord.chrom());
+    int refLength = vcfRecord.ref().length();
     int start = vcfRecord.pos();
-    int stop = vcfRecord.pos() + vcfRecord.ref().length() - 1;
+    int stop = vcfRecord.pos() + refLength - 1;
     String[] alts = vcfRecord.alt();
 
     List<DoubleValueAnnotation> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
-      DoubleValueAnnotation altAnnotation =
+      AnnotationCollection<DoubleValueAnnotation> altAnnotation =
           annotationDb.findAnnotations(
               new SequenceVariant(
-                  contig,
-                  start,
-                  stop,
-                  alt,
-                  SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt)));
-      altAnnotations.add(altAnnotation);
+                  contig, start, stop, alt, SequenceVariant.fromVcfString(refLength, alt)));
+
+      // for multi-nucleotide substitutions/deletions, select the annotation with max score
+      DoubleValueAnnotation maxAltAnnotation =
+          NumberCollections.findMax(altAnnotation.annotations(), DoubleValueAnnotation::score);
+
+      altAnnotations.add(maxAltAnnotation);
     }
 
     vcfRecordAnnotationWriter.writeInfoDouble(

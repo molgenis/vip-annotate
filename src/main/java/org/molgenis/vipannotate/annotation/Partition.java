@@ -72,5 +72,17 @@ public class Partition<
     public Key {
       validateNonNegative(bin);
     }
+
+    public <T extends Interval> int getPartitionStart(@NonNull T interval) {
+      return Partition.getPartitionStart(this, interval.getStart());
+    }
+
+    public static <T extends Interval> Key create(@NonNull T interval) {
+      return Key.create(interval.getContig(), interval.getStart());
+    }
+
+    public static Key create(@NonNull Contig contig, int pos) {
+      return new Key(contig, calcBin(pos));
+    }
   }
 }
