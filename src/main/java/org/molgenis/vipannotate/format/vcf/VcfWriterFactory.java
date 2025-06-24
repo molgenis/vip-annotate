@@ -18,7 +18,10 @@ public class VcfWriterFactory {
     OutputStream outputStream;
     if (outputVcfPath != null) {
       try {
-        Files.createDirectories(outputVcfPath.getParent());
+        Path outputVcfPathParent = outputVcfPath.getParent();
+        if (outputVcfPathParent != null) {
+          Files.createDirectories(outputVcfPathParent);
+        }
         outputStream = Files.newOutputStream(outputVcfPath);
       } catch (IOException e) {
         throw new UncheckedIOException(e);
@@ -29,7 +32,12 @@ public class VcfWriterFactory {
 
     if (outputVcfType == null) {
       if (outputVcfPath != null) {
-        String outputVcfFilename = outputVcfPath.getFileName().toString();
+        Path pathFileName = outputVcfPath.getFileName();
+        if (pathFileName == null) {
+          throw new IllegalArgumentException(
+              "Output VCF file path '%s' must not have zero elements".formatted(outputVcfPath));
+        }
+        String outputVcfFilename = pathFileName.toString();
         outputVcfType =
             outputVcfFilename.endsWith(".gz") || outputVcfFilename.endsWith(".bgz")
                 ? VcfType.COMPRESSED

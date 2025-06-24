@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.*;
+import org.jspecify.annotations.Nullable;
 
 public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
   private final BufferedReader reader;
-  private String nextLine;
+  @Nullable private String nextLine;
 
   public VcfRecordIterator(BufferedReader reader) {
     this.reader = reader;
@@ -90,14 +91,15 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
     return id;
   }
 
-  private static String[] parseAlt(String token) {
-    String[] alt;
+  private static @Nullable String[] parseAlt(String token) {
+    @Nullable String[] alt;
     if (token.equals(".")) {
       alt = new String[0];
     } else {
-      alt = token.split(",", -1);
-      for (int i = 0, altLength = alt.length; i < altLength; i++) {
-        String altToken = alt[i];
+      String[] tokens = token.split(",", -1);
+      alt = tokens;
+      for (int i = 0, tokensLength = tokens.length; i < tokensLength; i++) {
+        String altToken = tokens[i];
         if (altToken.equals(".")) {
           alt[i] = null;
         }
@@ -106,7 +108,7 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
     return alt;
   }
 
-  private static String parseQual(String token) {
+  private static @Nullable String parseQual(String token) {
     String qual;
     if (token.equals(".")) {
       qual = null;
@@ -126,7 +128,7 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
     return filter;
   }
 
-  private Map<String, String> parseInfo(String token) {
+  private Map<String, @Nullable String> parseInfo(String token) {
     if (token.equals(".")) {
       return new LinkedHashMap<>(0);
     }
@@ -134,7 +136,7 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
 
     int expectedSize = infoTokens.length;
     int capacity = (int) Math.ceil(expectedSize / 0.75);
-    Map<String, String> info = new LinkedHashMap<>(capacity);
+    Map<String, @Nullable String> info = new LinkedHashMap<>(capacity);
 
     for (String infoToken : infoTokens) {
       String[] infoTokenKeyValue = infoToken.split("=", -1);

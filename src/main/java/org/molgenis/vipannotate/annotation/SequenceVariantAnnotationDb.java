@@ -25,6 +25,7 @@ public class SequenceVariantAnnotationDb<T extends Annotation>
       activeKey = partitionKey;
     }
 
+    @SuppressWarnings("DataFlowIssue") // false positive null warning
     int index = activeAnnotationIndex.findIndex(feature);
 
     T annotationData;

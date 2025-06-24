@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.format.vcf;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public record VcfMetaInfo(List<Line> lines) {
   public interface Line {
@@ -26,7 +27,7 @@ public record VcfMetaInfo(List<Line> lines) {
     }
 
     public String id() {
-      return keyValues.get("ID");
+      return Objects.requireNonNull(keyValues.get("ID"));
     }
 
     @Override

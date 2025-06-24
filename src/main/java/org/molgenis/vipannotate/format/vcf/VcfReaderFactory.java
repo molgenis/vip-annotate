@@ -19,7 +19,12 @@ public class VcfReaderFactory {
     InputType inputType;
     InputStream inputStream;
     if (inputVcfPath != null) {
-      String inputVcfFilename = inputVcfPath.getFileName().toString();
+      Path pathFileName = inputVcfPath.getFileName();
+      if (pathFileName == null) {
+        throw new IllegalArgumentException(
+            "Input VCF file path '%s' must not have zero elements".formatted(inputVcfPath));
+      }
+      String inputVcfFilename = pathFileName.toString();
       inputType =
           inputVcfFilename.endsWith(".gz") || inputVcfFilename.endsWith(".bgz")
               ? InputType.COMPRESSED

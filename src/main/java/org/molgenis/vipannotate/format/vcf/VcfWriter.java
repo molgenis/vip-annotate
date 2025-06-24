@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.CharArrayBuffer;
 
 public class VcfWriter implements AutoCloseable {
@@ -67,7 +68,7 @@ public class VcfWriter implements AutoCloseable {
     reusableCharArrayBuffer.append('\t');
 
     // alt
-    String[] alt = vcfRecord.alt();
+    @Nullable String[] alt = vcfRecord.alt();
     writeStringValueList(alt, reusableCharArrayBuffer, ',');
     reusableCharArrayBuffer.append('\t');
 
@@ -82,7 +83,7 @@ public class VcfWriter implements AutoCloseable {
     reusableCharArrayBuffer.append('\t');
 
     // info
-    Map<String, String> info = vcfRecord.info();
+    Map<String, @Nullable String> info = vcfRecord.info();
     int infoSize = info.size();
     if (infoSize == 0) {
       reusableCharArrayBuffer.append('.');
@@ -126,7 +127,7 @@ public class VcfWriter implements AutoCloseable {
     reusableCharArrayBuffer.append('\n');
   }
 
-  private static void writeStringValue(String token, CharArrayBuffer charArrayBuffer) {
+  private static void writeStringValue(@Nullable String token, CharArrayBuffer charArrayBuffer) {
     if (token != null) {
       charArrayBuffer.append(token);
     } else {
@@ -135,7 +136,7 @@ public class VcfWriter implements AutoCloseable {
   }
 
   private static void writeStringValueList(
-      String[] token, CharArrayBuffer charArrayBuffer, char separator) {
+      @Nullable String[] token, CharArrayBuffer charArrayBuffer, char separator) {
     if (token.length == 0) {
       charArrayBuffer.append('.');
     } else if (token.length == 1) {

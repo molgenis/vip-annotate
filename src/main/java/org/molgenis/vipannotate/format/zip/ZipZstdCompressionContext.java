@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.format.zip;
 import com.github.luben.zstd.Zstd;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -19,7 +20,7 @@ public class ZipZstdCompressionContext {
     // use getBytes() instead of getArray() since the backing array might have a size other than
     // size().
     byte[] uncompressedBytes = memoryBuffer.getBytes(0, memoryBuffer.size());
-    byte[] compressedBytes = Zstd.compress(uncompressedBytes, 19);
+    byte[] compressedBytes = Objects.requireNonNull(Zstd.compress(uncompressedBytes, 19));
 
     ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(zipArchiveEntryName);
     //noinspection MagicConstant

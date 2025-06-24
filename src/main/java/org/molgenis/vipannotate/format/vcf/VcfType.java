@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.format.vcf;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 public enum VcfType {
@@ -17,13 +18,13 @@ public enum VcfType {
   COMPRESSED_LVL8(8),
   COMPRESSED_LVL9(9);
 
-  private final Integer compressionLevel;
+  @Nullable private final Integer compressionLevel;
 
   VcfType() {
     this(null);
   }
 
-  VcfType(Integer compressionLevel) {
+  VcfType(@Nullable Integer compressionLevel) {
     if (compressionLevel != null && (compressionLevel < -1 || compressionLevel > 9)) {
       throw new IllegalArgumentException("Compression level must be between -1 and 9");
     }

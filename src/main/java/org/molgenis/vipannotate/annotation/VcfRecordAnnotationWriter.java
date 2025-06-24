@@ -1,11 +1,10 @@
 package org.molgenis.vipannotate.annotation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
@@ -131,7 +130,7 @@ public class VcfRecordAnnotationWriter {
 
     DecimalFormat decimalFormat = decimalFormats.get(pattern);
     if (decimalFormat == null) {
-      decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
+      decimalFormat = requireNonNull((DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT));
       decimalFormat.applyPattern(pattern);
       decimalFormats.put(pattern, decimalFormat);
     }

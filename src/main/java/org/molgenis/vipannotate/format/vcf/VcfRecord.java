@@ -8,12 +8,12 @@ public record VcfRecord(
     int pos, // TODO validate constraint: disallowed values: −2^31 to −2^31 + 7
     String[] id,
     String ref,
-    String[] alt,
+    @Nullable String[] alt,
     @Nullable String qual,
     String[] filter,
-    Map<String, String> info,
-    @Nullable String[] format,
-    @Nullable String[] sampleData) {
+    Map<String, @Nullable String> info,
+    String @Nullable [] format,
+    String @Nullable [] sampleData) {
   public VcfRecord {
     if (pos < 0) throw new IllegalArgumentException("Position is negative");
   }

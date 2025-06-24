@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.serialization;
 
+import static java.util.Objects.requireNonNull;
+
 import me.lemire.integercompression.differential.IntegratedIntCompressor;
 import org.apache.fury.Fury;
 import org.apache.fury.memory.MemoryBuffer;
@@ -24,13 +26,14 @@ public class SortedIntArrayWrapperSerializer extends Serializer<SortedIntArrayWr
 
   @Override
   public void write(MemoryBuffer buffer, SortedIntArrayWrapper value) {
-    int[] compressed = integratedIntCompressor.compress(value.array());
+    int[] compressed = requireNonNull(integratedIntCompressor.compress(value.array()));
     intArraySerializer.write(buffer, compressed);
   }
 
   @Override
   public SortedIntArrayWrapper read(MemoryBuffer buffer) {
     int[] intArray = intArraySerializer.read(buffer);
-    return new SortedIntArrayWrapper(integratedIntCompressor.uncompress(intArray));
+    int[] uncompress = requireNonNull(integratedIntCompressor.uncompress(intArray));
+    return new SortedIntArrayWrapper(uncompress);
   }
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Basic tab-separated value iterator that skips lines starting with '#' as well as empty lines.
@@ -12,6 +13,7 @@ import java.util.NoSuchElementException;
  */
 public class TsvIterator implements Iterator<String[]> {
   private final BufferedReader bufferedReader;
+  @Nullable
   private String nextLine;
 
   public TsvIterator(BufferedReader bufferedReader) {

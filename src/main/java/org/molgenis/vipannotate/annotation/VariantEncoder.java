@@ -10,7 +10,7 @@ import org.apache.fury.memory.MemoryBuffer;
  * for rapid annotation and filtering of SNPs and indels</a>.
  */
 public class VariantEncoder {
-  public VariantEncoder() {}
+  private VariantEncoder() {}
 
   public static boolean isSmallVariant(SequenceVariant variant) {
     return isSmall(variant.getRefLength()) && isSmall(variant.getAlt().length());
