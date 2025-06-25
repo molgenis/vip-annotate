@@ -1,12 +1,13 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfReader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 import org.molgenis.vipannotate.format.vcf.VcfWriter;
-import org.molgenis.vipannotate.util.ReusableBatchIterator;
+import org.molgenis.vipannotate.util.PredicateBatchIterator;
 
 @RequiredArgsConstructor
 public class VcfAnnotator implements AutoCloseable {
@@ -17,10 +18,12 @@ public class VcfAnnotator implements AutoCloseable {
   private final VcfWriter vcfWriter;
 
   public void annotate() {
-
-    ReusableBatchIterator<VcfRecord> batchIterator =
-        new ReusableBatchIterator<>(
-            vcfReader, ANNOTATE_BATCH_SIZE); // FIXME do not batch over partition borders
+    List<VcfRecord> reusableBatchList = new ArrayList<>(ANNOTATE_BATCH_SIZE);
+    PredicateBatchIterator<VcfRecord> batchIterator =
+        new PredicateBatchIterator<>(
+            vcfReader,
+            (currentBatch, nextItem) -> currentBatch.size() < ANNOTATE_BATCH_SIZE,
+            reusableBatchList);
 
     // update header
     VcfHeader vcfHeader = vcfReader.getHeader();

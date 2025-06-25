@@ -23,18 +23,18 @@ public class AnnotatedPositionPartitionWriter<
 
   @Override
   public void write(Partition<T, U, V> partition) {
-    int maxAnnotations = partition.calcMaxAnnotations();
+    int maxAnnotations = partition.calcMaxPos();
 
     MemoryBuffer memoryBuffer =
         annotationDatasetEncoder.encode(
             createIndexedAnnotatedIntervalIterator(partition), maxAnnotations);
-    binaryPartitionWriter.write(partition.getKey(), annotationDataId, memoryBuffer);
+    binaryPartitionWriter.write(partition.key(), annotationDataId, memoryBuffer);
   }
 
   private SizedIterator<IndexedAnnotation<U>> createIndexedAnnotatedIntervalIterator(
       Partition<T, U, V> partition) {
-    Partition.Key partitionKey = partition.getKey();
-    List<V> annotatedIntervals = partition.getAnnotatedIntervals();
+    Partition.Key partitionKey = partition.key();
+    List<V> annotatedIntervals = partition.annotatedIntervals();
 
     return new SizedIterator<>(
         new TransformingIterator<>(

@@ -33,8 +33,9 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
   }
 
   public void write(Iterator<AnnotatedSequenceVariant<T>> annotatedFeatureIt) {
+    List<AnnotatedSequenceVariant<T>> reusableAnnotatedVariants = new ArrayList<>();
     for (PartitionIterator<SequenceVariant, T, AnnotatedSequenceVariant<T>> partitionIt =
-            new PartitionIterator<>(annotatedFeatureIt);
+            new PartitionIterator<>(annotatedFeatureIt, reusableAnnotatedVariants);
         partitionIt.hasNext(); ) {
       write(partitionIt.next());
     }
@@ -44,7 +45,7 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
     intEncodedAnnotatedSequenceVariants.clear();
     bigIntegerEncodedAnnotatedSequenceVariants.clear();
 
-    for (AnnotatedSequenceVariant<T> annotatedFeature : partition.getAnnotatedIntervals()) {
+    for (AnnotatedSequenceVariant<T> annotatedFeature : partition.annotatedIntervals()) {
       SequenceVariant variant = annotatedFeature.getFeature();
 
       // encode
@@ -83,7 +84,7 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
         new AnnotationIndexImpl(
             new VariantAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
             new VariantAnnotationIndexBig(bigIndex));
-    annotationIndexWriter.write(partition.getKey(), annotationIndex);
+    annotationIndexWriter.write(partition.key(), annotationIndex);
 
     // combine item data
     List<AnnotatedSequenceVariant<T>> allList =
@@ -97,7 +98,8 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
         encodedVariantAnnotation ->
             allList.add(encodedVariantAnnotation.annotatedSequenceVariant()));
 
-    partition.setAnnotatedIntervals(allList);
-    annotatedIntervalPartitionWriter.write(partition);
+    Partition<SequenceVariant, T, AnnotatedSequenceVariant<T>> allPartition =
+        new Partition<>(partition.key(), allList);
+    annotatedIntervalPartitionWriter.write(allPartition);
   }
 }

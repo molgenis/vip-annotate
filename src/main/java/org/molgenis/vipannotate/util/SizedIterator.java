@@ -4,8 +4,9 @@ import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.Iterator;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
-public class SizedIterator<T> implements Iterator<T> {
+public class SizedIterator<T extends @Nullable Object> implements Iterator<T> {
   private final Iterator<T> iterator;
   @Getter private final int size;
 

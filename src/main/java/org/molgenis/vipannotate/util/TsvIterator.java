@@ -13,8 +13,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class TsvIterator implements Iterator<String[]> {
   private final BufferedReader bufferedReader;
-  @Nullable
-  private String nextLine;
+  @Nullable private String nextLine;
 
   public TsvIterator(BufferedReader bufferedReader) {
     this.bufferedReader = bufferedReader;

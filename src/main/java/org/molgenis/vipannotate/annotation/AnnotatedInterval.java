@@ -13,11 +13,11 @@ import org.jspecify.annotations.Nullable;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class AnnotatedInterval<T extends Interval, U extends Annotation>
+public class AnnotatedInterval<T extends Interval, U extends @Nullable Annotation>
     implements AnnotatedFeature<T, U> {
   /** genome interval */
   private final T feature;
 
   /** annotation data */
-  @Nullable private final U annotation;
+  private final U annotation;
 }

@@ -3,8 +3,9 @@ package org.molgenis.vipannotate.util;
 import static org.molgenis.vipannotate.util.Numbers.requireNonNegative;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
-public class SizedIterable<T> implements Iterable<T> {
+public class SizedIterable<T extends @Nullable Object> implements Iterable<T> {
   private final Iterable<T> sourceIterable;
   @Getter private final int size;
 

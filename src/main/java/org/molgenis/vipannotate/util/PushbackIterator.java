@@ -1,8 +1,9 @@
 package org.molgenis.vipannotate.util;
 
 import java.util.*;
+import org.jspecify.annotations.Nullable;
 
-public class PushbackIterator<E> implements Iterator<E> {
+public class PushbackIterator<E extends @Nullable Object> implements Iterator<E> {
   private final Iterator<E> iterator;
   private final Deque<E> buffer;
 

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
-public class FlatteningIterator<T> implements Iterator<T> {
+public class FlatteningIterator<T extends @Nullable Object> implements Iterator<T> {
   private final Iterator<List<T>> outerIterator;
   @Nullable private Iterator<T> innerIterator;
 
@@ -24,6 +24,8 @@ public class FlatteningIterator<T> implements Iterator<T> {
     if (!hasNext()) {
       throw new NoSuchElementException();
     }
+    // suppress false positive: Method invocation 'next' may produce 'NullPointerException'
+    assert innerIterator != null;
     return innerIterator.next();
   }
 }

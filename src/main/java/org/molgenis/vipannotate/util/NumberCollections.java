@@ -5,8 +5,8 @@ import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 
 public class NumberCollections {
-  public static @Nullable <T> T findMax(
-      Collection<@Nullable T> collection, Function<@Nullable T, Double> transformFunction) {
+  public static <T extends @Nullable Object> T findMax(
+      Collection<T> collection, Function<T, Double> transformFunction) {
     if (collection.isEmpty()) {
       return null;
     }

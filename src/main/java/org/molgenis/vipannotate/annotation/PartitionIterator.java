@@ -1,25 +1,40 @@
 package org.molgenis.vipannotate.annotation;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.util.PushbackIterator;
+import java.util.*;
+import org.molgenis.vipannotate.util.PredicateBatchIterator;
 
 /**
- * Iterator elements must be sorted by contig and within each contig by position
+ * Transforms an iterator of annotated genomic intervals to an iterator of partitions that group
+ * consecutive intervals with the same key.
  *
- * @param <T>
+ * @param <T> type of genomic interval
+ * @param <U> type of genomic interval annotation
+ * @param <V> annotated genomic interval typed by T and U
  */
 public class PartitionIterator<
         T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
     implements Iterator<Partition<T, U, V>> {
-  private final PushbackIterator<V> sourceIterator;
-  @Nullable
-  private Partition<T, U, V> reusableNextPartition;
+  private final PredicateBatchIterator<V> sourceIterator;
 
+  /**
+   * Creates a new partition iterator
+   *
+   * @param sourceIterator iterator of annotated genomic intervals
+   */
   public PartitionIterator(Iterator<V> sourceIterator) {
-    this.sourceIterator = new PushbackIterator<>(sourceIterator);
-    this.reusableNextPartition = new Partition<>();
+    this.sourceIterator = new PredicateBatchIterator<>(sourceIterator, this::test);
+  }
+
+  /**
+   * Creates a new partition iterator, reuses the same list to create partitions. Useful when
+   * performance matters, use it with care.
+   *
+   * @param sourceIterator iterator of annotated genomic intervals
+   * @param reusableAnnotatedIntervalList reusable list of annotated genomic intervals
+   */
+  public PartitionIterator(Iterator<V> sourceIterator, List<V> reusableAnnotatedIntervalList) {
+    this.sourceIterator =
+        new PredicateBatchIterator<>(sourceIterator, this::test, reusableAnnotatedIntervalList);
   }
 
   @Override
@@ -29,39 +44,18 @@ public class PartitionIterator<
 
   @Override
   public Partition<T, U, V> next() {
-    if (reusableNextPartition == null) {
+    if (!hasNext()) {
       throw new NoSuchElementException();
     }
-    Partition<T, U, V> currentReusableNextPartition = reusableNextPartition;
-    advance();
-    return currentReusableNextPartition;
+
+    List<V> nextBatch = sourceIterator.next();
+    Partition.Key key = Partition.createKey(nextBatch.getFirst());
+    return new Partition<>(key, nextBatch);
   }
 
-  private void advance() {
-    if (!hasNext()) {
-      reusableNextPartition = null;
-      return;
-    }
-
-    reusableNextPartition.clear();
-
-    do {
-      V nextIntervalAnnotation = sourceIterator.next();
-
-      Contig contig = nextIntervalAnnotation.getFeature().getContig();
-      int bin = Partition.calcBin(nextIntervalAnnotation.getFeature().getStart());
-      Partition.Key partitionKey = new Partition.Key(contig, bin);
-
-      if (reusableNextPartition.getKey() == null) {
-        reusableNextPartition.setKey(partitionKey);
-      }
-
-      if (partitionKey.equals(reusableNextPartition.getKey())) {
-        reusableNextPartition.add(nextIntervalAnnotation);
-      } else {
-        sourceIterator.pushback(nextIntervalAnnotation);
-        break;
-      }
-    } while (sourceIterator.hasNext());
+  private boolean test(List<V> currentBatch, V newAnnotatedInterval) {
+    Partition.Key batchKey = Partition.createKey(currentBatch.getFirst());
+    Partition.Key newKey = Partition.createKey(newAnnotatedInterval);
+    return batchKey.equals(newKey);
   }
 }

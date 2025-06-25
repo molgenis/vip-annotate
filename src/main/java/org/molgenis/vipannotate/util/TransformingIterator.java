@@ -4,9 +4,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
-public class TransformingIterator<S, T> implements Iterator<T> {
+public class TransformingIterator<S extends @Nullable Object, T extends @Nullable Object>
+    implements Iterator<T> {
   private final Iterator<S> sourceIterator;
   private final Function<S, T> transformFunction;
 

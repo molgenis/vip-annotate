@@ -2,10 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 
-import java.util.ArrayList;
 import java.util.List;
-import lombok.*;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Partition of annotated genomic intervals
@@ -14,43 +11,31 @@ import org.jspecify.annotations.Nullable;
  * @param <U> type of genomic interval annotation
  * @param <V> annotated genomic interval typed by T and U
  */
-@Getter
-@Setter
-public class Partition<
-    T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>> {
-  public static final int NR_POS_BITS = 20;
+public record Partition<
+    T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>(
+    org.molgenis.vipannotate.annotation.Partition.Key key, List<V> annotatedIntervals) {
+  private static final int NR_POS_BITS = 20;
 
-  @Nullable private Key key;
-  @Nullable private List<V> annotatedIntervals;
-
-  public void clear() {
-    key = null;
-    if (annotatedIntervals != null) {
-      annotatedIntervals.clear();
-    }
+  public static <T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
+      Key createKey(V annotatedInterval) {
+    T interval = annotatedInterval.getFeature();
+    return new Partition.Key(interval.getContig(), calcBin(interval.getStart()));
   }
 
-  public void add(V annotatedInterval) {
-    if (annotatedIntervals == null) {
-      annotatedIntervals = new ArrayList<>(1 << NR_POS_BITS);
-    }
-    annotatedIntervals.add(annotatedInterval);
-  }
-
-  public int calcMaxAnnotations() {
+  public int calcMaxPos() {
     int maxPosInContig = key.contig().getLength();
-    boolean isLastBin = Partition.calcBin(maxPosInContig) == key.bin();
+    boolean isLastBin = calcBin(maxPosInContig) == key.bin();
 
-    int maxAnnotations;
+    int maxPos;
     if (isLastBin) {
-      maxAnnotations = Partition.calcPosInBin(maxPosInContig);
+      maxPos = Partition.calcPosInBin(maxPosInContig);
     } else {
-      maxAnnotations = 1 << Partition.NR_POS_BITS;
+      maxPos = 1 << Partition.NR_POS_BITS;
     }
-    return maxAnnotations;
+    return maxPos;
   }
 
-  public static int calcBin(int pos) {
+  private static int calcBin(int pos) {
     return pos >> NR_POS_BITS;
   }
 

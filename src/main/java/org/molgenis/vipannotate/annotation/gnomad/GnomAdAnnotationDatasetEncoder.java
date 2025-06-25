@@ -1,20 +1,28 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import org.apache.fury.memory.MemoryBuffer;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.util.*;
 
 // TODO perf: recycle memory buffers
 public class GnomAdAnnotationDatasetEncoder {
+  private static final int NR_SOURCE_ANNOTATIONS_PER_BYTE = 4;
+
   public MemoryBuffer encodeSources(SizedIterator<Source> sourceIt) {
-    int nrAnnotationsPerByte = 4;
-    int nrAnnotationBytes = Math.ceilDivExact(sourceIt.getSize(), nrAnnotationsPerByte);
+    int nrAnnotationBytes = Math.ceilDivExact(sourceIt.getSize(), NR_SOURCE_ANNOTATIONS_PER_BYTE);
 
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(nrAnnotationBytes);
-    for (ReusableBatchIterator<Source> sourceBatchIt =
-            new ReusableBatchIterator<>(sourceIt, nrAnnotationsPerByte);
+
+    List<Source> reusableSourceList = new ArrayList<>(NR_SOURCE_ANNOTATIONS_PER_BYTE);
+    for (PredicateBatchIterator<Source> sourceBatchIt =
+            new PredicateBatchIterator<>(
+                sourceIt,
+                (batch, next) -> batch.size() < NR_SOURCE_ANNOTATIONS_PER_BYTE,
+                reusableSourceList);
         sourceBatchIt.hasNext(); ) {
       int encodedSourceBatch = encodeSourceBatch(sourceBatchIt.next());
       memoryBuffer.writeByte(encodedSourceBatch);
@@ -43,7 +51,7 @@ public class GnomAdAnnotationDatasetEncoder {
   /**
    * @param afIt iterator element can be <code>null</code>
    */
-  public MemoryBuffer encodeAf(SizedIterator<Double> afIt) {
+  public MemoryBuffer encodeAf(SizedIterator<@Nullable Double> afIt) {
     return encodeQuantized16UnitIntervalDouble(afIt);
   }
 
@@ -75,8 +83,13 @@ public class GnomAdAnnotationDatasetEncoder {
     int nrAnnotationBytes = Math.ceilDivExact(filtersIt.getSize(), nrAnnotationsPerByte);
 
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(nrAnnotationBytes);
-    for (ReusableBatchIterator<EnumSet<GnomAdAnnotation.Filter>> filtersBatchIt =
-            new ReusableBatchIterator<>(filtersIt, nrAnnotationsPerByte);
+    List<EnumSet<GnomAdAnnotation.Filter>> reusableSourceList =
+        new ArrayList<>(nrAnnotationsPerByte);
+    for (PredicateBatchIterator<EnumSet<GnomAdAnnotation.Filter>> filtersBatchIt =
+            new PredicateBatchIterator<>(
+                filtersIt,
+                (batch, next) -> batch.size() < nrAnnotationsPerByte,
+                reusableSourceList);
         filtersBatchIt.hasNext(); ) {
       int encodedFiltersBatch = encodeFiltersBatch(filtersBatchIt.next());
       memoryBuffer.writeByte(encodedFiltersBatch);
@@ -124,7 +137,8 @@ public class GnomAdAnnotationDatasetEncoder {
     return memoryBuffer;
   }
 
-  private MemoryBuffer encodeQuantized16UnitIntervalDouble(SizedIterator<Double> doubleIt) {
+  private MemoryBuffer encodeQuantized16UnitIntervalDouble(
+      SizedIterator<@Nullable Double> doubleIt) {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.getSize() * Short.BYTES);
     doubleIt.forEachRemaining(
         value -> {

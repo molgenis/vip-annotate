@@ -8,10 +8,10 @@ import org.jspecify.annotations.Nullable;
  * @param <T> type of genomic feature
  * @param <U> type of annotation
  */
-public interface AnnotatedFeature<T extends Feature, U extends Annotation> {
+public interface AnnotatedFeature<T extends Feature, U extends @Nullable Annotation> {
   /** returns genomic feature */
   T getFeature();
 
   /** returns annotation for genomic feature */
-  @Nullable U getAnnotation();
+  U getAnnotation();
 }

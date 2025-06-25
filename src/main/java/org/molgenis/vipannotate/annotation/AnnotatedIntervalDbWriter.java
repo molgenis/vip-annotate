@@ -1,6 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -18,7 +20,9 @@ public class AnnotatedIntervalDbWriter<
 
   @Override
   public void write(Iterator<V> annotatedFeatureIt) {
-    for (PartitionIterator<T, U, V> partitionIt = new PartitionIterator<>(annotatedFeatureIt);
+    List<V> reusableAnnotatedIntervals = new ArrayList<>();
+    for (PartitionIterator<T, U, V> partitionIt =
+            new PartitionIterator<>(annotatedFeatureIt, reusableAnnotatedIntervals);
         partitionIt.hasNext(); ) {
       annotatedIntervalPartitionWriter.write(partitionIt.next());
     }

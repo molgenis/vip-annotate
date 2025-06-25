@@ -3,9 +3,11 @@ package org.molgenis.vipannotate.util;
 import java.util.Iterator;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
-public class TransformingIterable<S, T> implements Iterable<T> {
+public class TransformingIterable<S extends @Nullable Object, T extends @Nullable Object>
+    implements Iterable<T> {
   private final Iterable<S> sourceIterable;
   private final Function<S, T> transformFunction;
 

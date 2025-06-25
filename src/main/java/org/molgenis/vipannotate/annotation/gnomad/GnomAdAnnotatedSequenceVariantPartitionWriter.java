@@ -22,9 +22,9 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
   public void write(
       Partition<SequenceVariant, GnomAdAnnotation, AnnotatedSequenceVariant<GnomAdAnnotation>>
           partition) {
-    Partition.Key partitionKey = partition.getKey();
+    Partition.Key partitionKey = partition.key();
     List<AnnotatedSequenceVariant<GnomAdAnnotation>> annotatedFeatures =
-        partition.getAnnotatedIntervals();
+        partition.annotatedIntervals();
 
     writeSource(partitionKey, annotatedFeatures);
     writeAf(partitionKey, annotatedFeatures);

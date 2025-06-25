@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
-public class FilteringIterator<T> implements Iterator<T> {
+public class FilteringIterator<T extends @Nullable Object> implements Iterator<T> {
   private final Iterator<T> iterator;
   private final Predicate<T> predicate;
   @Nullable private T nextElement;
