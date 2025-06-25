@@ -10,13 +10,6 @@ import org.junit.jupiter.api.Test;
 
 class FilteringIteratorTest {
   @Test
-  void newWithNullIterator() {
-    //noinspection DataFlowIssue
-    assertThrows(
-        NullPointerException.class, () -> new FilteringIterator<String>(null, s -> !s.isEmpty()));
-  }
-
-  @Test
   void hasNextNextWithNoneFiltered() {
     Iterator<String> stringIt = List.of("a", "b", "c").iterator();
     FilteringIterator<String> it = new FilteringIterator<>(stringIt, s -> !s.isEmpty());

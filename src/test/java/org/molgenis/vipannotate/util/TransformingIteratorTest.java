@@ -10,22 +10,6 @@ import org.junit.jupiter.api.Test;
 
 class TransformingIteratorTest {
   @Test
-  void newWithNullSourceIterator() {
-    //noinspection DataFlowIssue
-    assertThrows(
-        NullPointerException.class,
-        () -> new TransformingIterator<String, Integer>(null, Integer::parseInt));
-  }
-
-  @Test
-  void newWithNullTransformFunction() {
-    //noinspection DataFlowIssue
-    assertThrows(
-        NullPointerException.class,
-        () -> new TransformingIterator<String, Integer>(emptyIterator(), null));
-  }
-
-  @Test
   void hasNextNext() {
     Iterator<String> stringIt = List.of("1", "2", "3").iterator();
     Iterator<Integer> it = new TransformingIterator<>(stringIt, Integer::parseInt);

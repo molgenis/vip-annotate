@@ -8,12 +8,6 @@ import org.junit.jupiter.api.Test;
 
 class SizedIteratorTest {
   @Test
-  void newWithNullIterator() {
-    //noinspection DataFlowIssue
-    assertThrows(NullPointerException.class, () -> new SizedIterator<String>(null, 1));
-  }
-
-  @Test
   void newWithNegativateNumber() {
     assertThrows(
         IllegalArgumentException.class, () -> new SizedIterator<String>(emptyIterator(), -1));

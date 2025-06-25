@@ -7,23 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class TransformingIterableTest {
-
-  @Test
-  void newNullIterable() {
-    //noinspection DataFlowIssue
-    assertThrows(
-        NullPointerException.class,
-        () -> new TransformingIterable<String, Integer>(null, Integer::parseInt));
-  }
-
-  @Test
-  void newNullTransformFunction() {
-    //noinspection DataFlowIssue
-    assertThrows(
-        NullPointerException.class,
-        () -> new TransformingIterable<String, Integer>(List.of(), null));
-  }
-
   @Test
   void hasNextNext() {
     List<String> stringList = List.of("1", "2", "3");

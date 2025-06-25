@@ -2,10 +2,21 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
 import org.apache.fury.memory.MemoryBuffer;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
-import org.molgenis.vipannotate.util.Encoder;
+import org.molgenis.vipannotate.util.DoubleCodec;
 
 public class GnomAdAnnotationDatasetDecoder {
+  private final DoubleCodec doubleCodec;
+
+  public GnomAdAnnotationDatasetDecoder() {
+    this(new DoubleCodec());
+  }
+
+  GnomAdAnnotationDatasetDecoder(DoubleCodec doubleCodec) {
+    this.doubleCodec = doubleCodec;
+  }
+
   public Source decodeSource(MemoryBuffer memoryBuffer, int sourceIndex) {
     int nrAnnotationsPerByte = 4;
     int nrBitsPerAnnotation = 2;
@@ -23,7 +34,7 @@ public class GnomAdAnnotationDatasetDecoder {
     };
   }
 
-  public Double decodeAf(MemoryBuffer memoryBuffer, int afIndex) {
+  public @Nullable Double decodeAf(MemoryBuffer memoryBuffer, int afIndex) {
     return decodeQuantized16UnitIntervalDouble(memoryBuffer, afIndex);
   }
 
@@ -42,12 +53,13 @@ public class GnomAdAnnotationDatasetDecoder {
   private double decodeQuantized16UnitIntervalDoublePrimitive(
       MemoryBuffer memoryBuffer, int afIndex) {
     short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
-    return Encoder.decodeDoubleUnitIntervalPrimitiveFromShort(value);
+    return doubleCodec.decodeDoubleUnitIntervalPrimitiveFromShort(value);
   }
 
-  private Double decodeQuantized16UnitIntervalDouble(MemoryBuffer memoryBuffer, int afIndex) {
+  private @Nullable Double decodeQuantized16UnitIntervalDouble(
+      MemoryBuffer memoryBuffer, int afIndex) {
     short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
-    return Encoder.decodeDoubleUnitIntervalFromShort(value);
+    return doubleCodec.decodeDoubleUnitIntervalFromShort(value);
   }
 
   // TODO perf: predefine all possible enum sets instead of creating new ones

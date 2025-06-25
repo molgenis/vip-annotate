@@ -11,9 +11,7 @@ import org.molgenis.vipannotate.annotation.Position;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
-import org.molgenis.vipannotate.util.FilteringIterator;
-import org.molgenis.vipannotate.util.TransformingIterator;
-import org.molgenis.vipannotate.util.TsvIterator;
+import org.molgenis.vipannotate.util.*;
 
 public class PhyloPAnnotationDbBuilder {
   public PhyloPAnnotationDbBuilder() {}

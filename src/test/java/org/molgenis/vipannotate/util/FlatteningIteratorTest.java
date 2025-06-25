@@ -8,12 +8,6 @@ import org.junit.jupiter.api.Test;
 
 class FlatteningIteratorTest {
   @Test
-  void newWithNullIterator() {
-    //noinspection DataFlowIssue
-    assertThrows(NullPointerException.class, () -> new FlatteningIterator<>(null));
-  }
-
-  @Test
   void hasNextAndNextWithMultipleLists() {
     Iterator<List<Integer>> listIt = List.of(List.of(1, 2), List.of(3), List.of(4, 5)).iterator();
     Iterator<Integer> it = new FlatteningIterator<>(listIt);

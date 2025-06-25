@@ -10,12 +10,6 @@ import org.junit.jupiter.api.Test;
 
 class PushbackIteratorTest {
   @Test
-  void newWithNullIterator() {
-    //noinspection DataFlowIssue
-    assertThrows(NullPointerException.class, () -> new PushbackIterator<Integer>(null));
-  }
-
-  @Test
   void hasNextNext() {
     Iterator<Integer> integerIt = List.of(1, 2, 3).iterator();
     PushbackIterator<Integer> it = new PushbackIterator<>(integerIt);

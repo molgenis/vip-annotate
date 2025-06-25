@@ -8,9 +8,18 @@ import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.util.*;
 
-// TODO perf: recycle memory buffers
 public class GnomAdAnnotationDatasetEncoder {
   private static final int NR_SOURCE_ANNOTATIONS_PER_BYTE = 4;
+
+  private final DoubleCodec doubleCodec;
+
+  public GnomAdAnnotationDatasetEncoder() {
+    this(new DoubleCodec());
+  }
+
+  GnomAdAnnotationDatasetEncoder(DoubleCodec doubleCodec) {
+    this.doubleCodec = doubleCodec;
+  }
 
   public MemoryBuffer encodeSources(SizedIterator<Source> sourceIt) {
     int nrAnnotationBytes = Math.ceilDivExact(sourceIt.getSize(), NR_SOURCE_ANNOTATIONS_PER_BYTE);
@@ -131,7 +140,7 @@ public class GnomAdAnnotationDatasetEncoder {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.getSize() * Short.BYTES);
     doubleIt.forEachRemaining(
         value -> {
-          short encodedValue = Encoder.encodeDoubleUnitIntervalPrimitiveAsShort(value);
+          short encodedValue = doubleCodec.encodeDoubleUnitIntervalPrimitiveAsShort(value);
           memoryBuffer.writeInt16(encodedValue);
         });
     return memoryBuffer;
@@ -142,7 +151,7 @@ public class GnomAdAnnotationDatasetEncoder {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.getSize() * Short.BYTES);
     doubleIt.forEachRemaining(
         value -> {
-          short encodedValue = Encoder.encodeDoubleUnitIntervalAsShort(value);
+          short encodedValue = doubleCodec.encodeDoubleUnitIntervalAsShort(value);
           memoryBuffer.writeInt16(encodedValue);
         });
     return memoryBuffer;

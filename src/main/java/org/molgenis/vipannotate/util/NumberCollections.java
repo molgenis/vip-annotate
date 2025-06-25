@@ -5,18 +5,18 @@ import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 
 public class NumberCollections {
-  public static <T extends @Nullable Object> T findMax(
-      Collection<T> collection, Function<T, Double> transformFunction) {
+  public static <T extends @Nullable Object, U extends @Nullable Number & Comparable<U>>
+      @Nullable T findMax(Collection<T> collection, Function<T, U> transformFunction) {
     if (collection.isEmpty()) {
       return null;
     }
 
-    Double max = null;
+    U max = null;
     T maxElement = null;
     for (T element : collection) {
-      Double number = element != null ? transformFunction.apply(element) : null;
+      U number = element != null ? transformFunction.apply(element) : null;
       if (number != null) {
-        if (max == null || number > max) {
+        if (max == null || number.compareTo(max) > 0) {
           max = number;
           maxElement = element;
         }

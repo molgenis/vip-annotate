@@ -12,7 +12,7 @@ public class Quantizer {
    * @param v v in [u, v]
    * @return quantized value in [u, v]
    */
-  public static int quantize(double value, double x, double y, int u, int v) {
+  public int quantize(double value, double x, double y, int u, int v) {
     requireInterval(x, y);
     requireInterval(u, v);
     if (value < x || value > y) {
@@ -34,7 +34,7 @@ public class Quantizer {
    * @param y y in [x, y]
    * @return dequantized value in [x, y]
    */
-  public static double dequantize(int value, int u, int v, double x, double y) {
+  public double dequantize(int value, int u, int v, double x, double y) {
     requireInterval(x, y);
     requireInterval(u, v);
     if (value < u || value > v) {
