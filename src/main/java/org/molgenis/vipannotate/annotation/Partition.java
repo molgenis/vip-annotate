@@ -13,17 +13,28 @@ import java.util.List;
  */
 public record Partition<
     T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>(
-    org.molgenis.vipannotate.annotation.Partition.Key key, List<V> annotatedIntervals) {
+    Key key, List<V> annotatedIntervals) {
   private static final int NR_POS_BITS = 20;
 
+  /** create a partition key from a contig and position */
+  public static Key createKey(Contig contig, int pos) {
+    int bin = calcBin(pos);
+    return new Partition.Key(contig, bin);
+  }
+
+  /** create a partition key based on the start position from a genomic interval */
+  public static <T extends Interval> Key createKey(T interval) {
+    return createKey(interval.getContig(), interval.getStart());
+  }
+
+  /** create a partition key based on the start position from an annotated genomic interval */
   public static <T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
       Key createKey(V annotatedInterval) {
-    T interval = annotatedInterval.getFeature();
-    return new Partition.Key(interval.getContig(), calcBin(interval.getStart()));
+    return createKey(annotatedInterval.getFeature());
   }
 
   public int calcMaxPos() {
-    int maxPosInContig = key.contig().getLength();
+    int maxPosInContig = key.contig().getLength(); // FIXME
     boolean isLastBin = calcBin(maxPosInContig) == key.bin();
 
     int maxPos;
@@ -59,16 +70,12 @@ public record Partition<
       validateNonNegative(bin);
     }
 
-    public <T extends Interval> int getPartitionStart(T interval) {
-      return Partition.getPartitionStart(this, interval.getStart());
-    }
-
-    public static <T extends Interval> Key create(T interval) {
-      return Key.create(interval.getContig(), interval.getStart());
-    }
-
-    public static Key create(Contig contig, int pos) {
-      return new Key(contig, calcBin(pos));
+    /**
+     * @param pos genomic position within the contig of this key
+     * @return the position relative to the partition
+     */
+    public int getPartitionPos(int pos) {
+      return pos - (bin << NR_POS_BITS);
     }
   }
 }

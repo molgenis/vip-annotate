@@ -21,18 +21,22 @@ public class PositionAnnotationDb<T extends Annotation>
 
   @Override
   public AnnotationCollection<T> findAnnotations(SequenceVariant feature) {
+    Contig contig = feature.getContig();
     int start = feature.getStart();
     int refLength = feature.getRefLength();
     List<T> annotations = new ArrayList<>(refLength);
     for (int i = 0; i < refLength; ++i) {
-      annotations.add(findAnnotations(feature, start + i));
+      T posAnnotations = findAnnotations(contig, start + i);
+      if (posAnnotations != null) {
+        annotations.add(posAnnotations);
+      }
     }
     return new AnnotationCollection<>(annotations);
   }
 
-  private T findAnnotations(SequenceVariant feature, int pos) {
+  private @Nullable T findAnnotations(Contig contig, int pos) {
     // determine partition
-    Partition.Key partitionKey = Partition.Key.create(feature.getContig(), pos);
+    Partition.Key partitionKey = Partition.createKey(contig, pos);
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {
@@ -40,7 +44,9 @@ public class PositionAnnotationDb<T extends Annotation>
       activePartitionKey = partitionKey;
     }
 
-    int partitionStart = partitionKey.getPartitionStart(feature);
+    int partitionStart = partitionKey.getPartitionPos(pos);
+    // suppress false positive null warning
+    //noinspection DataFlowIssue
     return activeAnnotationDataset.findByIndex(partitionStart);
   }
 

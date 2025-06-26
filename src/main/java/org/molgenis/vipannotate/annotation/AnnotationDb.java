@@ -1,7 +1,9 @@
 package org.molgenis.vipannotate.annotation;
 
+import org.jspecify.annotations.Nullable;
+
 public interface AnnotationDb<T extends Feature, U extends Annotation> extends AutoCloseable {
-  U findAnnotations(T feature);
+  @Nullable U findAnnotations(T feature);
 
   void close();
 }
