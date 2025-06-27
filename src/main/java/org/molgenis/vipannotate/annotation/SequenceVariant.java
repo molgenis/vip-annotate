@@ -15,13 +15,14 @@ public class SequenceVariant extends Interval {
   @Nullable private final String alt;
   private final SequenceVariantType type;
 
-  public SequenceVariant(Contig contig, int start, int stop, String alt, SequenceVariantType type) {
+  public SequenceVariant(
+      Contig contig, int start, int stop, @Nullable String alt, SequenceVariantType type) {
     super(contig, start, stop);
     this.alt = alt;
     this.type = type;
   }
 
-  public static SequenceVariantType fromVcfString(int refLength, String alt) {
+  public static SequenceVariantType fromVcfString(int refLength, @Nullable String alt) {
     SequenceVariantType sequenceVariantType;
     // null - missing value ('.' in vcf)
     if (alt == null) {

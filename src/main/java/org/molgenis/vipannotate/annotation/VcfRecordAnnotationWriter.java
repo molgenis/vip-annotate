@@ -6,11 +6,12 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 public class VcfRecordAnnotationWriter {
   private final StringBuilder reusableStringBuilder;
-  private Map<String, DecimalFormat> decimalFormats;
+  @Nullable private Map<String, DecimalFormat> decimalFormats;
 
   public VcfRecordAnnotationWriter() {
     reusableStringBuilder = new StringBuilder();
@@ -18,9 +19,9 @@ public class VcfRecordAnnotationWriter {
 
   public <T extends Annotation> void writeInfoString(
       VcfRecord vcfRecord,
-      List<T> annotations,
+      List<@Nullable T> annotations,
       String infoId,
-      Function<T, String> transformFunction) {
+      Function<T, @Nullable String> transformFunction) {
     reusableStringBuilder.setLength(0);
 
     boolean hasAnnotation = false;
@@ -52,9 +53,9 @@ public class VcfRecordAnnotationWriter {
 
   public <T extends Annotation> void writeInfoInteger(
       VcfRecord vcfRecord,
-      List<T> annotations,
+      List<@Nullable T> annotations,
       String infoId,
-      Function<T, Integer> transformFunction) {
+      Function<T, @Nullable Integer> transformFunction) {
     reusableStringBuilder.setLength(0);
 
     boolean hasAnnotation = false;
@@ -86,9 +87,9 @@ public class VcfRecordAnnotationWriter {
 
   public <T extends Annotation> void writeInfoDouble(
       VcfRecord vcfRecord,
-      List<T> annotations,
+      List<@Nullable T> annotations,
       String infoId,
-      Function<T, Double> transformFunction,
+      Function<T, @Nullable Double> transformFunction,
       String pattern) {
     reusableStringBuilder.setLength(0);
 

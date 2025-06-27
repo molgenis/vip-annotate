@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.*;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
@@ -87,9 +88,9 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
     Contig contig = new Contig(vcfRecord.chrom());
     int start = vcfRecord.pos();
     int stop = vcfRecord.pos() + vcfRecord.ref().length() - 1;
-    String[] alts = vcfRecord.alt();
+    @Nullable String[] alts = vcfRecord.alt();
 
-    List<GnomAdAnnotation> altAnnotations = new ArrayList<>(alts.length);
+    List<@Nullable GnomAdAnnotation> altAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
       GnomAdAnnotation altAnnotation =
           annotationDb.findAnnotations(
@@ -102,61 +103,62 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
       altAnnotations.add(altAnnotation);
     }
 
+    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoString(
         vcfRecord, altAnnotations, INFO_ID_GNOMAD_SRC, this::mapSource);
+    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord, altAnnotations, INFO_ID_GNOMAD_AF, GnomAdAnnotation::af, "#.####");
+    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord, altAnnotations, INFO_ID_GNOMAD_FAF95, GnomAdAnnotation::faf95, "#.####");
+    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord, altAnnotations, INFO_ID_GNOMAD_FAF99, GnomAdAnnotation::faf99, "#.####");
+    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoInteger(
         vcfRecord, altAnnotations, INFO_ID_GNOMAD_HN, GnomAdAnnotation::hn);
+    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoString(
         vcfRecord, altAnnotations, INFO_ID_GNOMAD_QC, this::mapFilters);
+    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord, altAnnotations, INFO_ID_GNOMAD_COV, GnomAdAnnotation::cov, "#.####");
   }
 
   private String mapSource(GnomAdAnnotation annotation) {
-    return annotation != null
-        ? switch (annotation.source()) {
-          case GENOMES -> "G";
-          case EXOMES -> "E";
-          case TOTAL -> "T";
-        }
-        : null;
+    return switch (annotation.source()) {
+      case GENOMES -> "G";
+      case EXOMES -> "E";
+      case TOTAL -> "T";
+    };
   }
 
-  private String mapFilters(GnomAdAnnotation annotation) {
+  private @Nullable String mapFilters(GnomAdAnnotation annotation) {
     String filtersStr;
 
-    if (annotation != null) {
-      EnumSet<GnomAdAnnotation.Filter> filters = annotation.filters();
-      if (!filters.isEmpty()) {
-        StringBuilder filtersStrBuilder = new StringBuilder();
+    EnumSet<GnomAdAnnotation.Filter> filters = annotation.filters();
+    if (!filters.isEmpty()) {
+      StringBuilder filtersStrBuilder = new StringBuilder();
 
-        int j = 0;
-        for (Iterator<GnomAdAnnotation.Filter> iterator = filters.iterator();
-            iterator.hasNext();
-            ++j) {
-          if (j > 0) {
-            filtersStrBuilder.append('&');
-          }
-          GnomAdAnnotation.Filter filter = iterator.next();
-          String filterStr =
-              switch (filter) {
-                case AC0 -> "AC0";
-                case AS_VQSR -> "AS_VQSR";
-                case INBREEDING_COEFF -> "InbreedingCoeff";
-              };
-          filtersStrBuilder.append(filterStr);
+      int j = 0;
+      for (Iterator<GnomAdAnnotation.Filter> iterator = filters.iterator();
+          iterator.hasNext();
+          ++j) {
+        if (j > 0) {
+          filtersStrBuilder.append('&');
         }
-
-        filtersStr = filtersStrBuilder.toString();
-      } else {
-        filtersStr = null;
+        GnomAdAnnotation.Filter filter = iterator.next();
+        String filterStr =
+            switch (filter) {
+              case AC0 -> "AC0";
+              case AS_VQSR -> "AS_VQSR";
+              case INBREEDING_COEFF -> "InbreedingCoeff";
+            };
+        filtersStrBuilder.append(filterStr);
       }
+
+      filtersStr = filtersStrBuilder.toString();
     } else {
       filtersStr = null;
     }

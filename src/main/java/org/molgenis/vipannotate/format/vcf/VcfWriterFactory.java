@@ -30,6 +30,9 @@ public class VcfWriterFactory {
       outputStream = new CloseIgnoringOutputStream(System.out);
     }
 
+    // suppress false positive:Argument 'outputStream' might be null (unknown nullability).
+    assert (outputStream != null);
+
     if (outputVcfType == null) {
       if (outputVcfPath != null) {
         Path pathFileName = outputVcfPath.getFileName();

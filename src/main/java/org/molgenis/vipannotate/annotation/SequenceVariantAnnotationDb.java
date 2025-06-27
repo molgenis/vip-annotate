@@ -14,7 +14,7 @@ public class SequenceVariantAnnotationDb<T extends Annotation>
   @Nullable private AnnotationDataset<T> activeAnnotationDataset;
 
   @Override
-  public T findAnnotations(SequenceVariant feature) {
+  public @Nullable T findAnnotations(SequenceVariant feature) {
     // determine partition
     Partition.Key partitionKey = Partition.createKey(feature);
 
