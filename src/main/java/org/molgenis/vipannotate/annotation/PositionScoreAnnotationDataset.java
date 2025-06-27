@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
-public class ContigPosScoreAnnotationDataset implements AnnotationDataset<DoubleValueAnnotation> {
+public class PositionScoreAnnotationDataset implements AnnotationDataset<DoubleValueAnnotation> {
   private final AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDataSetDecoder;
   private final MemoryBuffer scoreMemoryBuffer;
 

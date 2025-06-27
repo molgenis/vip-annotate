@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
-public class ContigPosScoreAnnotationDatasetReader
+public class PositionScoreAnnotationDatasetReader
     implements AnnotationDatasetReader<DoubleValueAnnotation> {
-  private final ContigPosScoreAnnotationDatasetFactory contigPosScoreAnnotationDatasetFactory;
+  private final PositionScoreAnnotationDatasetFactory positionScoreAnnotationDatasetFactory;
   private final AnnotationBlobReader scoresAnnotationBlobReader;
 
   @Override
@@ -15,7 +15,7 @@ public class ContigPosScoreAnnotationDatasetReader
 
     AnnotationDataset<DoubleValueAnnotation> annotationDataset;
     if (scoresMemoryBuffer != null) {
-      annotationDataset = contigPosScoreAnnotationDatasetFactory.create(scoresMemoryBuffer);
+      annotationDataset = positionScoreAnnotationDatasetFactory.create(scoresMemoryBuffer);
     } else {
       annotationDataset = EmptyAnnotationDataset.getInstance();
     }

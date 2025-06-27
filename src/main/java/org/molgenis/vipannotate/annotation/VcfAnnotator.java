@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
-import org.molgenis.vipannotate.format.vcf.VcfReader;
+import org.molgenis.vipannotate.format.vcf.VcfParser;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 import org.molgenis.vipannotate.format.vcf.VcfWriter;
 import org.molgenis.vipannotate.util.PredicateBatchIterator;
@@ -13,7 +13,7 @@ import org.molgenis.vipannotate.util.PredicateBatchIterator;
 public class VcfAnnotator implements AutoCloseable {
   private static final int ANNOTATE_BATCH_SIZE = 100; // TODO make configurable
 
-  private final VcfReader vcfReader;
+  private final VcfParser vcfParser;
   private final VcfRecordAnnotator vcfRecordAnnotator;
   private final VcfWriter vcfWriter;
 
@@ -21,12 +21,12 @@ public class VcfAnnotator implements AutoCloseable {
     List<VcfRecord> reusableBatchList = new ArrayList<>(ANNOTATE_BATCH_SIZE);
     PredicateBatchIterator<VcfRecord> batchIterator =
         new PredicateBatchIterator<>(
-            vcfReader,
+            vcfParser,
             (currentBatch, nextItem) -> currentBatch.size() < ANNOTATE_BATCH_SIZE,
             reusableBatchList);
 
     // update header
-    VcfHeader vcfHeader = vcfReader.getHeader();
+    VcfHeader vcfHeader = vcfParser.getHeader();
     vcfRecordAnnotator.updateHeader(vcfHeader);
     vcfWriter.writeHeader(vcfHeader);
 
@@ -42,6 +42,6 @@ public class VcfAnnotator implements AutoCloseable {
   public void close() {
     vcfWriter.close();
     vcfRecordAnnotator.close();
-    vcfReader.close();
+    vcfParser.close();
   }
 }

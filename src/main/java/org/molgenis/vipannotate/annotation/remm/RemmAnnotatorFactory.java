@@ -19,10 +19,10 @@ public class RemmAnnotatorFactory {
 
     MappableZipFile mappableZipFile = MappableZipFile.fromFile(annotationsFile);
 
-    ContigPosScoreAnnotationDatasetFactory annotationDatasetFactory =
-        new ContigPosScoreAnnotationDatasetFactory(new RemmAnnotationDatasetDecoder());
+    PositionScoreAnnotationDatasetFactory annotationDatasetFactory =
+        new PositionScoreAnnotationDatasetFactory(new RemmAnnotationDatasetDecoder());
     AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
-        new ContigPosScoreAnnotationDatasetReader(
+        new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
     // FIXME only one VcfRecordAnnotationWriter globally

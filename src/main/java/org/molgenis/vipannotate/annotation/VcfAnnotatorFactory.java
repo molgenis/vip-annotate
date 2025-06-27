@@ -21,11 +21,14 @@ public class VcfAnnotatorFactory implements AutoCloseable {
   }
 
   public VcfAnnotator create(
-          @Nullable Path inputVcf, Path annotationsZip, @Nullable Path outputVcf, @Nullable VcfType outputVcfType) {
-    VcfReader vcfReader = VcfReaderFactory.create(inputVcf);
+      @Nullable Path inputVcf,
+      Path annotationsZip,
+      @Nullable Path outputVcf,
+      @Nullable VcfType outputVcfType) {
+    VcfParser vcfParser = VcfParserFactory.create(inputVcf);
     VcfRecordAnnotator vcfRecordAnnotator = createVcfRecordAnnotator(annotationsZip);
     VcfWriter vcfWriter = VcfWriterFactory.create(outputVcf, outputVcfType);
-    return new VcfAnnotator(vcfReader, vcfRecordAnnotator, vcfWriter);
+    return new VcfAnnotator(vcfParser, vcfRecordAnnotator, vcfWriter);
   }
 
   private VcfRecordAnnotatorAggregator createVcfRecordAnnotator(Path annotationsDir) {

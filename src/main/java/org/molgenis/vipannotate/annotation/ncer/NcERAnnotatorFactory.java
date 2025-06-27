@@ -19,11 +19,11 @@ public class NcERAnnotatorFactory {
 
     MappableZipFile mappableZipFile = MappableZipFile.fromFile(annotationsFile);
 
-    ContigPosScoreAnnotationDatasetFactory annotationDatasetFactory =
-        new ContigPosScoreAnnotationDatasetFactory(
+    PositionScoreAnnotationDatasetFactory annotationDatasetFactory =
+        new PositionScoreAnnotationDatasetFactory(
             new NcERAnnotationDatasetDecoder(new NcERAnnotationDataCodec()));
     AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
-        new ContigPosScoreAnnotationDatasetReader(
+        new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
     // FIXME only one VcfRecordAnnotationWriter globally

@@ -19,11 +19,11 @@ public class PhyloPAnnotatorFactory {
 
     MappableZipFile mappableZipFile = MappableZipFile.fromFile(annotationsFile);
 
-    ContigPosScoreAnnotationDatasetFactory annotationDatasetFactory =
-        new ContigPosScoreAnnotationDatasetFactory(
+    PositionScoreAnnotationDatasetFactory annotationDatasetFactory =
+        new PositionScoreAnnotationDatasetFactory(
             new PhyloPAnnotationDatasetDecoder(new PhyloPAnnotationDataCodec()));
     AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
-        new ContigPosScoreAnnotationDatasetReader(
+        new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
     // FIXME only one VcfRecordAnnotationWriter globally

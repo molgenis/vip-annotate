@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class VcfReader implements Iterator<VcfRecord>, AutoCloseable {
+public class VcfParser implements Iterator<VcfRecord>, AutoCloseable {
   @Getter private final VcfHeader header;
   private final VcfRecordIterator recordIterator;
 

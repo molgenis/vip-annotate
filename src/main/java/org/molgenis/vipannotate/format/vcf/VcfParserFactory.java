@@ -7,15 +7,15 @@ import java.util.zip.GZIPInputStream;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.CloseIgnoringInputStream;
 
-public class VcfReaderFactory {
+public class VcfParserFactory {
   public enum InputType {
     COMPRESSED,
     UNCOMPRESSED
   }
 
-  private VcfReaderFactory() {}
+  private VcfParserFactory() {}
 
-  public static VcfReader create(@Nullable Path inputVcfPath) {
+  public static VcfParser create(@Nullable Path inputVcfPath) {
     InputType inputType;
     InputStream inputStream;
     if (inputVcfPath != null) {
@@ -64,14 +64,14 @@ public class VcfReaderFactory {
     return create(inputStream, inputType);
   }
 
-  private static VcfReader create(InputStream inputStream, InputType inputType) {
+  private static VcfParser create(InputStream inputStream, InputType inputType) {
     BufferedReader bufferedReader = createBufferedReader(inputStream, inputType);
 
     VcfHeader vcfHeader =
         new VcfHeaderParser(new VcfMetaInfoLineParser(), new VcfHeaderLineParser())
             .parse(bufferedReader);
     VcfRecordIterator vcfRecordIterator = new VcfRecordIterator(bufferedReader);
-    return new VcfReader(vcfHeader, vcfRecordIterator);
+    return new VcfParser(vcfHeader, vcfRecordIterator);
   }
 
   private static BufferedReader createBufferedReader(InputStream inputStream, InputType inputType) {
