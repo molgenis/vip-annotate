@@ -7,8 +7,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.Command;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
-import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.format.zip.Zip;
+import org.molgenis.vipannotate.util.Logger;
 
 // FIXME proper CLI with arg validation etc.
 public class RemmAnnotationDbBuilderCommand implements Command {

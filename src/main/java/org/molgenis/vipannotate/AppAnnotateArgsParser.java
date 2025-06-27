@@ -2,9 +2,9 @@ package org.molgenis.vipannotate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.molgenis.vipannotate.format.vcf.VcfType;
 import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Logger;
-import org.molgenis.vipannotate.format.vcf.VcfType;
 
 public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
   @Override

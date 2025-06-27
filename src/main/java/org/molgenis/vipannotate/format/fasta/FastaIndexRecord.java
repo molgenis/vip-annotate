@@ -9,8 +9,7 @@ import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
  * @param lineBases The number of bases on each line.
  * @param lineWidth The number of bytes in each line, including the newline.
  */
-public record FastaIndexRecord(
-    String name, int length, long offset, int lineBases, int lineWidth) {
+public record FastaIndexRecord(String name, int length, long offset, int lineBases, int lineWidth) {
   public FastaIndexRecord {
     validateNonNegative(length);
     validateNonNegative(offset);

@@ -25,7 +25,7 @@ public class RemmAnnotatorFactory {
         new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    // FIXME only one VcfRecordAnnotationWriter globally
+    // TODO only one VcfRecordAnnotationWriter globally
     return new RemmAnnotator(
         new PositionAnnotationDb<>(annotationDatasetReader), new VcfRecordAnnotationWriter());
   }

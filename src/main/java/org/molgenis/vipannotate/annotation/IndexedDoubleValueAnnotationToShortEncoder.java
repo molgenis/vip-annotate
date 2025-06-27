@@ -16,7 +16,7 @@ public class IndexedDoubleValueAnnotationToShortEncoder
   }
 
   IndexedDoubleValueAnnotationToShortEncoder(
-          DoubleCodec doubleCodec, double minValue, double maxValue) {
+      DoubleCodec doubleCodec, double minValue, double maxValue) {
     if (maxValue < minValue) {
       throw new IllegalArgumentException();
     }

@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-
 /**
  * Encoded sequence variant
  *
@@ -10,5 +9,4 @@ package org.molgenis.vipannotate.annotation;
  * @param <U> type of sequence variant annotation
  */
 public record EncodedAnnotatedSequenceVariant<T, U extends Annotation>(
-    T encodedSequentVariant,
-    AnnotatedSequenceVariant<U> annotatedSequenceVariant) {}
+    T encodedSequentVariant, AnnotatedSequenceVariant<U> annotatedSequenceVariant) {}

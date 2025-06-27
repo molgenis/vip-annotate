@@ -26,7 +26,7 @@ public class NcERAnnotatorFactory {
         new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    // FIXME only one VcfRecordAnnotationWriter globally
+    // TODO only one VcfRecordAnnotationWriter globally
     return new NcERAnnotator(
         new PositionAnnotationDb<>(annotationDatasetReader), new VcfRecordAnnotationWriter());
   }

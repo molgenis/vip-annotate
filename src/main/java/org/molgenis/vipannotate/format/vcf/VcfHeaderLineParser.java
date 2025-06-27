@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.format.vcf;
 
-
 public class VcfHeaderLineParser {
   private static final String HEADER_LINE_PREFIX = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO";
 

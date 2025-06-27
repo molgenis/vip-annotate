@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation.phylop;
 
-
 public class PhyloPParser {
   public PhyloPBedFeature parse(String[] tokens) {
     String chr = tokens[0];

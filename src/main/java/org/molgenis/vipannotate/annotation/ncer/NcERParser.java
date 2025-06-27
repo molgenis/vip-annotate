@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation.ncer;
 
-
 public class NcERParser {
   public NcERBedFeature parse(String[] tokens) {
     String chr = tokens[0];

@@ -41,7 +41,7 @@ public class GnomAdAnnotatorFactory {
 
     SequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb =
         new SequenceVariantAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
-    // FIXME only one VcfRecordAnnotationWriter globally
+    // TODO only one VcfRecordAnnotationWriter globally
     return new GnomAdAnnotator(annotationDb, new VcfRecordAnnotationWriter());
   }
 }
