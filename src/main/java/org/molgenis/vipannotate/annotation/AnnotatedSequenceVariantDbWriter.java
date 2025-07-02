@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.SortedIntArrayWrapper;
 
 /**
@@ -12,25 +14,17 @@ import org.molgenis.vipannotate.serialization.SortedIntArrayWrapper;
  *
  * @param <T> type of sequence variant annotation
  */
+@RequiredArgsConstructor
 public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
     implements AnnotatedFeatureDbWriter<SequenceVariant, T, AnnotatedSequenceVariant<T>> {
   private final AnnotatedIntervalPartitionWriter<SequenceVariant, T, AnnotatedSequenceVariant<T>>
       annotatedIntervalPartitionWriter;
   private final AnnotationIndexWriter annotationIndexWriter;
-  private final List<EncodedAnnotatedSequenceVariant<Integer, T>>
-      intEncodedAnnotatedSequenceVariants;
-  private final List<EncodedAnnotatedSequenceVariant<BigInteger, T>>
-      bigIntegerEncodedAnnotatedSequenceVariants;
+  @Nullable private List<IntEncodedAnnotatedSequenceVariant<T>> intEncodedAnnotatedSequenceVariants;
 
-  public AnnotatedSequenceVariantDbWriter(
-      AnnotatedIntervalPartitionWriter<SequenceVariant, T, AnnotatedSequenceVariant<T>>
-          annotatedFeaturePartitionWriter,
-      AnnotationIndexWriter annotationIndexWriter) {
-    this.annotatedIntervalPartitionWriter = annotatedFeaturePartitionWriter;
-    this.annotationIndexWriter = annotationIndexWriter;
-    intEncodedAnnotatedSequenceVariants = new ArrayList<>();
-    bigIntegerEncodedAnnotatedSequenceVariants = new ArrayList<>();
-  }
+  @Nullable
+  private List<EncodedAnnotatedSequenceVariant<BigInteger, T>>
+      bigIntegerEncodedAnnotatedSequenceVariants;
 
   public void write(Iterator<AnnotatedSequenceVariant<T>> annotatedFeatureIt) {
     List<AnnotatedSequenceVariant<T>> reusableAnnotatedVariants = new ArrayList<>();
@@ -42,8 +36,15 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
   }
 
   private void write(Partition<SequenceVariant, T, AnnotatedSequenceVariant<T>> partition) {
-    intEncodedAnnotatedSequenceVariants.clear();
-    bigIntegerEncodedAnnotatedSequenceVariants.clear();
+    intEncodedAnnotatedSequenceVariants =
+        intEncodedAnnotatedSequenceVariants != null
+            ? new ArrayList<>(intEncodedAnnotatedSequenceVariants.size())
+            : new ArrayList<>();
+
+    bigIntegerEncodedAnnotatedSequenceVariants =
+        bigIntegerEncodedAnnotatedSequenceVariants != null
+            ? new ArrayList<>(bigIntegerEncodedAnnotatedSequenceVariants.size())
+            : new ArrayList<>();
 
     for (AnnotatedSequenceVariant<T> annotatedFeature : partition.annotatedIntervals()) {
       SequenceVariant variant = annotatedFeature.getFeature();
@@ -52,7 +53,7 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
       if (VariantEncoder.isSmallVariant(variant)) {
         int encodedVariant = VariantEncoder.encodeSmall(variant);
         intEncodedAnnotatedSequenceVariants.add(
-            new EncodedAnnotatedSequenceVariant<>(encodedVariant, annotatedFeature));
+            new IntEncodedAnnotatedSequenceVariant<>(encodedVariant, annotatedFeature));
       } else {
         BigInteger encodedVariant = VariantEncoder.encodeBig(variant);
         bigIntegerEncodedAnnotatedSequenceVariants.add(
@@ -62,11 +63,11 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
 
     // create small item index
     intEncodedAnnotatedSequenceVariants.sort(
-        Comparator.comparingInt(EncodedAnnotatedSequenceVariant::encodedSequentVariant));
+        Comparator.comparingInt(IntEncodedAnnotatedSequenceVariant::encodedSequentVariant));
 
     int[] smallIndex =
         intEncodedAnnotatedSequenceVariants.stream()
-            .map(EncodedAnnotatedSequenceVariant::encodedSequentVariant)
+            .map(IntEncodedAnnotatedSequenceVariant::encodedSequentVariant)
             .mapToInt(Integer::intValue)
             .toArray();
 

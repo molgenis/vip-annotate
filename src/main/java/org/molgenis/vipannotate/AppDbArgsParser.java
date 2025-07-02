@@ -19,8 +19,10 @@ public class AppDbArgsParser extends ArgsParser<AppDbArgs> {
       case "ncer" -> AppDbArgs.Command.NCER;
       case "phylop" -> AppDbArgs.Command.PHYLOP;
       case "remm" -> AppDbArgs.Command.REMM;
+      case "spliceai" -> AppDbArgs.Command.SPLICEAI;
       default -> {
-        Logger.error("command '%s' unknown, valid values are [gnomad, ncer, phylop, remm]", arg);
+        Logger.error(
+            "command '%s' unknown, valid values are [gnomad, ncer, phylop, remm, spliceai]", arg);
         System.exit(1);
         throw new RuntimeException(); // unreachable, but suppresses IntelliJ warning
       }
@@ -34,10 +36,11 @@ public class AppDbArgsParser extends ArgsParser<AppDbArgs> {
         """
         vip-annotate-db v%s
 
-        usage: %s gnomad [arguments]
-        usage: %s ncer   [arguments]
-        usage: %s phylop [arguments]
-        usage: %s remm   [arguments]
+        usage: %s gnomad   [arguments]
+        usage: %s ncer     [arguments]
+        usage: %s phylop   [arguments]
+        usage: %s remm     [arguments]
+        usage: %s spliceai [arguments]
         usage: %s -h, --help                     print this message
         usage: %s -v, --version                  print version
         """,

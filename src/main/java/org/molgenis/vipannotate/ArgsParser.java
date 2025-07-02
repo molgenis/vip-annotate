@@ -7,7 +7,9 @@ public abstract class ArgsParser<T> {
 
   protected abstract void printUsage();
 
-  protected abstract void printVersion();
+  protected void printVersion() {
+    Logger.info("%s\n", App.getVersion());
+  }
 
   protected void validate(String[] args) {
     if (args.length == 0) {

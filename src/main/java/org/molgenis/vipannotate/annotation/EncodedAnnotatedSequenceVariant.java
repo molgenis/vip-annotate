@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 /**
- * Encoded sequence variant
+ * Sequence variant with generic encoding
  *
  * @param encodedSequentVariant encoded sequence variant
  * @param annotatedSequenceVariant annotated sequence variant

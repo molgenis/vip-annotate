@@ -98,7 +98,7 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
                   contig,
                   start,
                   stop,
-                  alt,
+                  AltAlleleRegistry.get(alt),
                   SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt)));
       altAnnotations.add(altAnnotation);
     }

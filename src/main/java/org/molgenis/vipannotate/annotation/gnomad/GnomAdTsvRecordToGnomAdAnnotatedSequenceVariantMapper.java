@@ -2,9 +2,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.EnumSet;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.Contig;
-import org.molgenis.vipannotate.annotation.SequenceVariant;
-import org.molgenis.vipannotate.annotation.SequenceVariantType;
+import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
@@ -31,8 +29,9 @@ public class GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper {
     String alt = gnomAdTsvRecord.alt();
     int start = gnomAdTsvRecord.pos();
     int end = start + ref.length() - 1;
+    AltAllele altAllele = AltAlleleRegistry.get(alt);
     SequenceVariantType type = SequenceVariant.fromVcfString(ref.length(), alt);
-    return new SequenceVariant(chrom, start, end, alt, type);
+    return new SequenceVariant(chrom, start, end, altAllele, type);
   }
 
   private static GnomAdAnnotation createAnnotation(GnomAdTsvRecord gnomAdTsvRecord) {

@@ -101,7 +101,7 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
         """
         vip-annotate v%s
 
-        usage: java -jar vip-annotate.jar [arguments]
+        usage: %s [arguments]
           -i, --input           FILE     input VCF file                           (optional, default: stdin       )
           -a, --annotations-dir DIR      annotation database directory            (required                       )
           -o, --output          FILE     output VCF file                          (optional, default: stdout      )
@@ -114,11 +114,6 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
         usage: %s [arguments]
           -v, --version                  print version
         """,
-        App.getVersion(), usage, usage);
-  }
-
-  @Override
-  protected void printVersion() {
-    Logger.info("%s\n", App.getVersion());
+        App.getVersion(), usage, usage, usage);
   }
 }

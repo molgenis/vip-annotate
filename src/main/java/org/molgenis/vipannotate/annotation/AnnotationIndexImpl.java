@@ -16,7 +16,7 @@ public class AnnotationIndexImpl implements AnnotationIndex {
       return -1;
     } else {
 
-      for (byte altBase : variant.getAlt().getBytes(StandardCharsets.UTF_8)) {
+      for (byte altBase : variant.getAlt().alt().getBytes(StandardCharsets.UTF_8)) {
 
         boolean isActg =
             switch (altBase) {

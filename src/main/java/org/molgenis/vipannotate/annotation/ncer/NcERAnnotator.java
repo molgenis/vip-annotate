@@ -37,7 +37,11 @@ public class NcERAnnotator implements VcfRecordAnnotator {
       AnnotationCollection<DoubleValueAnnotation> altAnnotation =
           annotationDb.findAnnotations(
               new SequenceVariant(
-                  contig, start, stop, alt, SequenceVariant.fromVcfString(refLength, alt)));
+                  contig,
+                  start,
+                  stop,
+                  AltAlleleRegistry.get(alt),
+                  SequenceVariant.fromVcfString(refLength, alt)));
 
       // for multi-nucleotide substitutions/deletions, select the annotation with max score
       DoubleValueAnnotation maxAltAnnotation =

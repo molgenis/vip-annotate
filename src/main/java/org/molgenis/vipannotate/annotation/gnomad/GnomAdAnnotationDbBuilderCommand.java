@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.Command;
@@ -10,25 +9,14 @@ import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.util.Logger;
 
-// FIXME proper CLI with arg validation etc.
 public class GnomAdAnnotationDbBuilderCommand implements Command {
   @Override
   public void run(String[] args) {
-    Path gnomAdFile = Path.of(args[1]);
-    Path faiFile = Path.of(args[3]);
-    Path outputFile = Path.of(args[5]);
+    GnomAdCommandArgs gnomAdCommandArgs = new GnomAdCommandArgsParser().parse(args);
 
-    if (args.length == 7 && args[6].equals("--force")) {
-      try {
-        Files.deleteIfExists(outputFile);
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    } else {
-      if (Files.exists(outputFile)) {
-        throw new IllegalArgumentException("Output file %s already exists".formatted(outputFile));
-      }
-    }
+    Path gnomAdFile = gnomAdCommandArgs.inputFile();
+    Path faiFile = gnomAdCommandArgs.faiFile();
+    Path outputFile = gnomAdCommandArgs.outputFile();
 
     Logger.info("creating database ...");
     long startCreateDb = System.currentTimeMillis();

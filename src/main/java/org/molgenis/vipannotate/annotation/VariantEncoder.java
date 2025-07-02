@@ -13,7 +13,7 @@ public class VariantEncoder {
   private VariantEncoder() {}
 
   public static boolean isSmallVariant(SequenceVariant variant) {
-    return isSmall(variant.getRefLength()) && isSmall(variant.getAlt().length());
+    return isSmall(variant.getRefLength()) && isSmall(variant.getAlt().alt().length());
   }
 
   private static boolean isSmall(int nrBases) {
@@ -37,7 +37,7 @@ public class VariantEncoder {
    */
   public static int encodeSmall(SequenceVariant variant) {
     int pos = variant.getStart();
-    byte[] altBases = variant.getAlt().getBytes(StandardCharsets.UTF_8);
+    byte[] altBases = variant.getAlt().alt().getBytes(StandardCharsets.UTF_8);
 
     int encodedPos = encodePos(pos);
     int encodedRefLength = encodeSmallNrBases(variant.getRefLength());
@@ -61,7 +61,7 @@ public class VariantEncoder {
   public static BigInteger encodeBig(SequenceVariant variant) {
     int pos = variant.getStart();
     int nrRefBases = variant.getStop() - variant.getStart() + 1;
-    byte[] altBases = variant.getAlt().getBytes(StandardCharsets.UTF_8);
+    byte[] altBases = variant.getAlt().alt().getBytes(StandardCharsets.UTF_8);
 
     int encodedPos = encodePos(pos);
     byte[] encodedAlt = encodeBigAlt(altBases);

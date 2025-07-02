@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation.phylop;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.Command;
@@ -10,16 +9,15 @@ import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.util.Logger;
 
-// FIXME proper CLI with arg validation etc.
 public class PhyloPAnnotationDbBuilderCommand implements Command {
   @Override
   public void run(String[] args) {
-    Path phyloPFile = Path.of(args[1]);
-    Path faiFile = Path.of(args[3]);
-    Path outputFile = Path.of(args[5]);
-    if (Files.exists(outputFile)) {
-      throw new IllegalArgumentException("Output file %s already exists".formatted(outputFile));
-    }
+    PhylopCommandArgs phylopCommandArgs = new PhylopCommandArgsParser().parse(args);
+
+    Path phyloPFile = phylopCommandArgs.inputFile();
+    Path faiFile = phylopCommandArgs.faiFile();
+    Path outputFile = phylopCommandArgs.outputFile();
+
     Logger.info("creating database ...");
     long startCreateDb = System.currentTimeMillis();
 

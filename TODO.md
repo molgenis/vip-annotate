@@ -2,6 +2,8 @@
 
 ## v1
 
+- [ ] fix(db): decide how to deal with 'N' in sequence variant db index format
+- [ ] refactor(db): store small and large indices in different files?
 - [ ] fix(annotate+db): resolve reported nullability issues (fix or suppress)
 - [ ] fix(db): CLI validation for individual build commands
 - [ ] refactor(annotate+db): replace commons-compress 1.28.0-SNAPSHOT dependency with something else
@@ -15,14 +17,13 @@
 
 ### other
 
-- create a follow-up story to use vip-annotate v1 in vip
+- [ ] create a follow-up story to use vip-annotate v1 in vip
 
 ### discuss
 
 - [ ] feat(annotate+db): add SpliceAI
 - [ ] fix(annotate+db): native image build broken (com.google.protobuf.* was unintentionally initialized at build time)
 - [ ] fix(annotations): investigate af-is-null-for-source issue in gnomAD, e.g., 21-5029882-CAA-A and 21-5087539-G-A
-- [ ] refactor(db): create gnomad db from source files instead of derived files
 
 ## > v1
 
@@ -34,3 +35,4 @@
   build per contig and zip when done.
 - [ ] refactor(annotate+db): add nullaway,
   see https://spring.io/blog/2025/03/10/null-safety-in-spring-apps-with-jspecify-and-null-away and https://jspecify.dev/
+- [ ] refactor(db): create gnomad db from source files instead of derived files on next gnomAD release

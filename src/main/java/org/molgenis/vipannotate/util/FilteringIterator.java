@@ -10,7 +10,7 @@ import org.jspecify.annotations.Nullable;
 public class FilteringIterator<T extends @Nullable Object> implements Iterator<T> {
   private final Iterator<T> iterator;
   private final Predicate<T> predicate;
-  @Nullable private T nextElement;
+  private T nextElement;
   private boolean nextElementSet;
 
   @Override

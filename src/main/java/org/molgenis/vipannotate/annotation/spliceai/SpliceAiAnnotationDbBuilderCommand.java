@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.remm;
+package org.molgenis.vipannotate.annotation.spliceai;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -9,14 +9,15 @@ import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.util.Logger;
 
-public class RemmAnnotationDbBuilderCommand implements Command {
+// FIXME proper CLI with arg validation etc.
+public class SpliceAiAnnotationDbBuilderCommand implements Command {
   @Override
   public void run(String[] args) {
-    RemmCommandArgs remmCommandArgs = new RemmCommandArgsParser().parse(args);
+    SpliceAiCommandArgs spliceAiCommandArgs = new SpliceAiCommandArgsParser().parse(args);
 
-    Path remmFile = remmCommandArgs.inputFile();
-    Path faiFile = remmCommandArgs.faiFile();
-    Path outputFile = remmCommandArgs.outputFile();
+    Path spliceAiSnvFile = spliceAiCommandArgs.inputFile();
+    Path faiFile = spliceAiCommandArgs.faiFile();
+    Path outputFile = spliceAiCommandArgs.outputFile();
 
     Logger.info("creating database ...");
     long startCreateDb = System.currentTimeMillis();
@@ -25,7 +26,8 @@ public class RemmAnnotationDbBuilderCommand implements Command {
 
     try (ZipArchiveOutputStream zipArchiveOutputStream =
         Zip.createZipArchiveOutputStream(outputFile)) {
-      new RemmAnnotationDbBuilder().create(remmFile, fastaIndex, zipArchiveOutputStream);
+      new SpliceAiAnnotationDbBuilder()
+          .create(spliceAiSnvFile, faiFile, fastaIndex, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

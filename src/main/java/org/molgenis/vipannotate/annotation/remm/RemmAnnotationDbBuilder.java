@@ -17,8 +17,8 @@ import org.molgenis.vipannotate.util.TsvIterator;
 public class RemmAnnotationDbBuilder {
   public RemmAnnotationDbBuilder() {}
 
-  public void create(Path ncERFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
-    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERFile)) {
+  public void create(Path remmFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
+    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(remmFile)) {
       Iterator<RemmAnnotatedPosition> iterator = create(reader, fastaIndex);
 
       MemoryBuffer reusableMemoryBuffer = MemoryBuffer.newHeapBuffer((1 << 20) * Byte.BYTES);

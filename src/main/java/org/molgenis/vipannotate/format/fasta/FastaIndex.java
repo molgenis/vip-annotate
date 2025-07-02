@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.format.fasta;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
@@ -21,5 +22,9 @@ public class FastaIndex {
 
   public @Nullable FastaIndexRecord get(String name) {
     return records.get(name);
+  }
+
+  public Collection<FastaIndexRecord> getRecords() {
+    return records.values();
   }
 }

@@ -10,5 +10,6 @@ public record AppDbArgs(Command command, String[] args) {
     NCER,
     PHYLOP,
     REMM,
+    SPLICEAI
   }
 }

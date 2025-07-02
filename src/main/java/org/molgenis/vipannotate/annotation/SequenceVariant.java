@@ -12,16 +12,17 @@ import org.jspecify.annotations.Nullable;
 @ToString
 @EqualsAndHashCode(callSuper = true)
 public class SequenceVariant extends Interval {
-  @Nullable private final String alt;
+  private final AltAllele alt;
   private final SequenceVariantType type;
 
   public SequenceVariant(
-      Contig contig, int start, int stop, @Nullable String alt, SequenceVariantType type) {
+      Contig contig, int start, int stop, AltAllele alt, SequenceVariantType type) {
     super(contig, start, stop);
     this.alt = alt;
     this.type = type;
   }
 
+  // TODO refactor:move to other class
   public static SequenceVariantType fromVcfString(int refLength, @Nullable String alt) {
     SequenceVariantType sequenceVariantType;
     // null - missing value ('.' in vcf)

@@ -40,7 +40,7 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
                   contig,
                   start,
                   stop,
-                  alt,
+                  AltAlleleRegistry.get(alt),
                   SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt)));
 
       // for multi-nucleotide substitutions/deletions, select the annotation with max score
