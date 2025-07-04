@@ -7,6 +7,7 @@ import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.remm.RemmAnnotatorFactory;
+import org.molgenis.vipannotate.annotation.spliceai.SpliceAiAnnotatorFactory;
 import org.molgenis.vipannotate.format.vcf.*;
 
 public class VcfAnnotatorFactory implements AutoCloseable {
@@ -40,12 +41,15 @@ public class VcfAnnotatorFactory implements AutoCloseable {
         new PhyloPAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
     VcfRecordAnnotator vcfRecordAnnotatorRemm =
         new RemmAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+    VcfRecordAnnotator vcfRecordAnnotatorSpliceAi =
+        new SpliceAiAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
     return new VcfRecordAnnotatorAggregator(
         List.of(
             vcfRecordAnnotatorGnomAd,
             vcfRecordAnnotatorNcER,
             vcfRecordAnnotatorPhyloP,
-            vcfRecordAnnotatorRemm));
+            vcfRecordAnnotatorRemm,
+            vcfRecordAnnotatorSpliceAi));
   }
 
   @Override

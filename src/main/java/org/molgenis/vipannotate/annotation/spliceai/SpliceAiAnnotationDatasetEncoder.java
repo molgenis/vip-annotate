@@ -19,7 +19,8 @@ public class SpliceAiAnnotationDatasetEncoder {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(doubleIt.getSize() * Byte.BYTES);
     doubleIt.forEachRemaining(
         value -> {
-          byte encodedValue = doubleCodec.encodeDoubleUnitIntervalAsByte(value);
+          byte encodedValue =
+              doubleCodec.encodeDoubleUnitIntervalAsByte(value); // FIXME encode primitive
           memoryBuffer.writeByte(encodedValue);
         });
     return memoryBuffer;
