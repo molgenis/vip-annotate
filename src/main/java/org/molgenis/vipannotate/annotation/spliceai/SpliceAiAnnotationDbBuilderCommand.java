@@ -26,8 +26,7 @@ public class SpliceAiAnnotationDbBuilderCommand implements Command {
 
     try (ZipArchiveOutputStream zipArchiveOutputStream =
         Zip.createZipArchiveOutputStream(outputFile)) {
-      new SpliceAiAnnotationDbBuilder()
-          .create(spliceAiSnvFile, faiFile, fastaIndex, zipArchiveOutputStream);
+      new SpliceAiAnnotationDbBuilder().create(spliceAiSnvFile, fastaIndex, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

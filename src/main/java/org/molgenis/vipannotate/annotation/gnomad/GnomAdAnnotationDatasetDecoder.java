@@ -50,19 +50,6 @@ public class GnomAdAnnotationDatasetDecoder {
     return memoryBuffer.getInt32(index * 4);
   }
 
-  private double decodeQuantized16UnitIntervalDoublePrimitive(
-      MemoryBuffer memoryBuffer, int afIndex) {
-    short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
-    return doubleCodec.decodeDoubleUnitIntervalPrimitiveFromShort(value);
-  }
-
-  private @Nullable Double decodeQuantized16UnitIntervalDouble(
-      MemoryBuffer memoryBuffer, int afIndex) {
-    short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
-    return doubleCodec.decodeDoubleUnitIntervalFromShort(value);
-  }
-
-  // TODO perf: predefine all possible enum sets instead of creating new ones
   public EnumSet<GnomAdAnnotation.Filter> decodeFilters(
       MemoryBuffer memoryBuffer, int sourceIndex) {
     int nrAnnotationsPerByte = 2;
@@ -89,5 +76,17 @@ public class GnomAdAnnotationDatasetDecoder {
 
   public double decodeCov(MemoryBuffer memoryBuffer, int afIndex) {
     return decodeQuantized16UnitIntervalDoublePrimitive(memoryBuffer, afIndex);
+  }
+
+  private double decodeQuantized16UnitIntervalDoublePrimitive(
+      MemoryBuffer memoryBuffer, int afIndex) {
+    short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
+    return doubleCodec.decodeDoubleUnitIntervalPrimitiveFromShort(value);
+  }
+
+  private @Nullable Double decodeQuantized16UnitIntervalDouble(
+      MemoryBuffer memoryBuffer, int afIndex) {
+    short value = memoryBuffer.getInt16(afIndex * Short.BYTES);
+    return doubleCodec.decodeDoubleUnitIntervalFromShort(value);
   }
 }

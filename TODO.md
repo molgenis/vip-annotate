@@ -13,7 +13,7 @@
 - [ ] test(annotate+db): unit tests
 - [ ] test(annotate+db): system tests
 - [ ] build(annotate+db): Travis
-- [ ] build(annotate+db): validate formatting
+- [x] build(annotate+db): validate formatting
 
 ### other
 
