@@ -27,7 +27,6 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
     List<AnnotatedSequenceVariant<SpliceAiAnnotation>> annotatedFeatures =
         partition.annotatedIntervals();
 
-    // TODO write gene symbol identifier
     writeScore(
         partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaScoreAcceptorGain, "ds_ag");
     writeScore(
@@ -39,7 +38,7 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
     writePos(
         partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaPositionAcceptorLoss, "dp_al");
     writePos(partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaPositionDonorGain, "dp_dg");
-    writePos(partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaPositionDonorGain, "dp_dl");
+    writePos(partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaPositionDonorLoss, "dp_dl");
   }
 
   private void writeScore(
