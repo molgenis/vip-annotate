@@ -10,6 +10,7 @@ import org.molgenis.vipannotate.format.zip.MappableZipFile;
 @RequiredArgsConstructor
 public class RemmAnnotatorFactory {
   private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
     Path annotationsFile = annotationsDir.resolve("remm.zip");
@@ -25,8 +26,7 @@ public class RemmAnnotatorFactory {
         new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    // TODO only one VcfRecordAnnotationWriter globally
     return new RemmAnnotator(
-        new PositionAnnotationDb<>(annotationDatasetReader), new VcfRecordAnnotationWriter());
+        new PositionAnnotationDb<>(annotationDatasetReader), vcfRecordAnnotationWriter);
   }
 }

@@ -10,6 +10,7 @@ import org.molgenis.vipannotate.format.zip.MappableZipFile;
 @RequiredArgsConstructor
 public class PhyloPAnnotatorFactory {
   private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
     Path annotationsFile = annotationsDir.resolve("phylop.zip");
@@ -26,8 +27,7 @@ public class PhyloPAnnotatorFactory {
         new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    // TODO only one VcfRecordAnnotationWriter globally
     return new PhyloPAnnotator(
-        new PositionAnnotationDb<>(annotationDatasetReader), new VcfRecordAnnotationWriter());
+        new PositionAnnotationDb<>(annotationDatasetReader), vcfRecordAnnotationWriter);
   }
 }

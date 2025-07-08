@@ -10,6 +10,7 @@ import org.molgenis.vipannotate.format.zip.MappableZipFile;
 @RequiredArgsConstructor
 public class NcERAnnotatorFactory {
   private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
     Path annotationsFile = annotationsDir.resolve("ncer.zip");
@@ -26,8 +27,7 @@ public class NcERAnnotatorFactory {
         new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));
 
-    // TODO only one VcfRecordAnnotationWriter globally
     return new NcERAnnotator(
-        new PositionAnnotationDb<>(annotationDatasetReader), new VcfRecordAnnotationWriter());
+        new PositionAnnotationDb<>(annotationDatasetReader), vcfRecordAnnotationWriter);
   }
 }

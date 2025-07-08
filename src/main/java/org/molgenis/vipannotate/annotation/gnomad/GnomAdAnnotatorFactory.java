@@ -11,6 +11,7 @@ import org.molgenis.vipannotate.serialization.FuryFactory;
 @RequiredArgsConstructor
 public class GnomAdAnnotatorFactory {
   private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
     Path annotationsFile = annotationsDir.resolve("gnomad.zip");
@@ -41,7 +42,6 @@ public class GnomAdAnnotatorFactory {
 
     SequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb =
         new SequenceVariantAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
-    // TODO only one VcfRecordAnnotationWriter globally
-    return new GnomAdAnnotator(annotationDb, new VcfRecordAnnotationWriter());
+    return new GnomAdAnnotator(annotationDb, vcfRecordAnnotationWriter);
   }
 }

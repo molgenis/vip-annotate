@@ -11,15 +11,14 @@ import org.molgenis.vipannotate.serialization.FuryFactory;
 @RequiredArgsConstructor
 public class SpliceAiAnnotatorFactory {
   private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
     SequenceVariantAnnotationDb<SpliceAiAnnotation> snvAnnotationDb =
         createAnnotationDb(annotationsDir, "spliceai_snv.zip");
     SequenceVariantAnnotationDb<SpliceAiAnnotation> indelAnnotationDb =
         createAnnotationDb(annotationsDir, "spliceai_indel.zip");
-    // TODO only one VcfRecordAnnotationWriter globally
-    return new SpliceAiAnnotator(
-        snvAnnotationDb, indelAnnotationDb, new VcfRecordAnnotationWriter());
+    return new SpliceAiAnnotator(snvAnnotationDb, indelAnnotationDb, vcfRecordAnnotationWriter);
   }
 
   private SequenceVariantAnnotationDb<SpliceAiAnnotation> createAnnotationDb(
