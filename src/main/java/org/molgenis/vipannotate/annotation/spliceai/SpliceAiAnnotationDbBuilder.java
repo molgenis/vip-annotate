@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
 import java.nio.file.Path;
+import java.util.Objects;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
@@ -9,6 +10,7 @@ import org.molgenis.vipannotate.format.vcf.VcfParser;
 import org.molgenis.vipannotate.format.vcf.VcfParserFactory;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.util.FilteringIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 
 public class SpliceAiAnnotationDbBuilder {
@@ -26,8 +28,7 @@ public class SpliceAiAnnotationDbBuilder {
               SpliceAiVcfRecord, @Nullable AnnotatedSequenceVariant<SpliceAiAnnotation>>
           spliceAiIt =
               new TransformingIterator<>(
-                  new TransformingIterator<>(vcfParser, spliceAiParser::parse),
-                  mapper::annotate);
+                  new TransformingIterator<>(vcfParser, spliceAiParser::parse), mapper::annotate);
 
       SpliceAiAnnotationDatasetEncoder spliceAiAnnotationDatasetEncoder =
           new SpliceAiAnnotationDatasetEncoder();
@@ -39,7 +40,7 @@ public class SpliceAiAnnotationDbBuilder {
               new SpliceAiAnnotatedSequenceVariantPartitionWriter(
                   spliceAiAnnotationDatasetEncoder, binaryPartitionWriter),
               new AnnotationIndexWriter(FuryFactory.createFury(), binaryPartitionWriter))
-          .write(spliceAiIt);
+          .write(new FilteringIterator<>(spliceAiIt, Objects::nonNull));
     }
   }
 }
