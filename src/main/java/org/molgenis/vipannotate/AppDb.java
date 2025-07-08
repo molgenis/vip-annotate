@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate;
 
-import java.util.Scanner;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotationDbBuilderCommand;
@@ -10,19 +9,12 @@ import org.molgenis.vipannotate.util.Logger;
 
 public class AppDb {
   public static void main(String[] args) {
-    Scanner s = new Scanner(System.in);
-    System.out.println("Press enter to continue.....");
-    s.nextLine();
-
     try {
       AppDbArgs appDbArgs = new AppDbArgsParser().parse(args);
       getCommand(appDbArgs).run(appDbArgs.args());
     } catch (Exception e) {
       handleException(e);
     }
-
-    System.out.println("Press enter to continue.....");
-    s.nextLine();
   }
 
   private static Command getCommand(AppDbArgs appDbArgs) {
