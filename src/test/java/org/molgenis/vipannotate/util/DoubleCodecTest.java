@@ -110,6 +110,14 @@ class DoubleCodecTest {
   }
 
   @Test
+  void encodeDoublePrimitiveUnitIntervalAsByte() {
+    double value = 1.23d;
+    //noinspection DataFlowIssue
+    doReturn(100).when(quantizer).quantize(value, 0d, 1d, 0, 255);
+    assertEquals(100, doubleCodec.encodeDoublePrimitiveUnitIntervalAsByte(value));
+  }
+
+  @Test
   void decodeDoublePrimitiveFromByteInSignedRange() {
     byte value = 100;
     double x = -2d;
@@ -127,6 +135,15 @@ class DoubleCodecTest {
     //noinspection DataFlowIssue
     doReturn(1.23d).when(quantizer).dequantize(200, 0, 255, x, y);
     assertEquals(1.23d, doubleCodec.decodeDoublePrimitiveFromByte(value, x, y), 1E-6);
+  }
+
+  @Test
+  void decodeDoublePrimitiveUnitIntervalFromByte() {
+    byte value = 100;
+    //noinspection DataFlowIssue
+    doReturn(1.23d).when(quantizer).dequantize(100, 0, 255, 0d, 1d);
+    double decodedValue = doubleCodec.decodeDoublePrimitiveUnitIntervalFromByte(value);
+    assertEquals(1.23d, decodedValue, 1E-6);
   }
 
   @Test

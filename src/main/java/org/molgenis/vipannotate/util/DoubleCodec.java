@@ -88,6 +88,16 @@ public class DoubleCodec {
   }
 
   /**
+   * encodes a double in [0,1] as byte. the maximum error after decoding an encoded value is 1/512.
+   *
+   * @param value double in [0,1]
+   * @return encoded byte
+   */
+  public byte encodeDoublePrimitiveUnitIntervalAsByte(double value) {
+    return encodeDoublePrimitiveAsByte(value, 0d, 1d);
+  }
+
+  /**
    * decodes a byte as double in [x,y]. the maximum error after decoding an encoded value is
    * (y-x)/512.
    *
@@ -97,6 +107,16 @@ public class DoubleCodec {
   public double decodeDoublePrimitiveFromByte(byte value, double x, double y) {
     int unsignedInt = Byte.toUnsignedInt(value);
     return quantizer.dequantize(unsignedInt, 0, INTERVAL_BYTE_MAX, x, y);
+  }
+
+  /**
+   * decodes a byte as double in [0,1]. the maximum error after decoding an encoded value is 1/512.
+   *
+   * @param value encoded value
+   * @return double in [x,y]
+   */
+  public double decodeDoublePrimitiveUnitIntervalFromByte(byte value) {
+    return decodeDoublePrimitiveFromByte(value, 0d, 1d);
   }
 
   /**
