@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import java.nio.file.Path;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotatorFactory;
@@ -10,15 +11,13 @@ import org.molgenis.vipannotate.annotation.remm.RemmAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.spliceai.SpliceAiAnnotatorFactory;
 import org.molgenis.vipannotate.format.vcf.*;
 
+@RequiredArgsConstructor
 public class VcfAnnotatorFactory implements AutoCloseable {
-  public final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  private final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfAnnotatorFactory() {
-    this(new AnnotationBlobReaderFactory());
-  }
-
-  VcfAnnotatorFactory(AnnotationBlobReaderFactory annotationBlobReaderFactory) {
-    this.annotationBlobReaderFactory = annotationBlobReaderFactory;
+    this(new AnnotationBlobReaderFactory(), new VcfRecordAnnotationWriter());
   }
 
   public VcfAnnotator create(
@@ -34,15 +33,20 @@ public class VcfAnnotatorFactory implements AutoCloseable {
 
   private VcfRecordAnnotatorAggregator createVcfRecordAnnotator(Path annotationsDir) {
     VcfRecordAnnotator vcfRecordAnnotatorGnomAd =
-        new GnomAdAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+        new GnomAdAnnotatorFactory(annotationBlobReaderFactory, vcfRecordAnnotationWriter)
+            .create(annotationsDir);
     VcfRecordAnnotator vcfRecordAnnotatorNcER =
-        new NcERAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+        new NcERAnnotatorFactory(annotationBlobReaderFactory, vcfRecordAnnotationWriter)
+            .create(annotationsDir);
     VcfRecordAnnotator vcfRecordAnnotatorPhyloP =
-        new PhyloPAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+        new PhyloPAnnotatorFactory(annotationBlobReaderFactory, vcfRecordAnnotationWriter)
+            .create(annotationsDir);
     VcfRecordAnnotator vcfRecordAnnotatorRemm =
-        new RemmAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+        new RemmAnnotatorFactory(annotationBlobReaderFactory, vcfRecordAnnotationWriter)
+            .create(annotationsDir);
     VcfRecordAnnotator vcfRecordAnnotatorSpliceAi =
-        new SpliceAiAnnotatorFactory(annotationBlobReaderFactory).create(annotationsDir);
+        new SpliceAiAnnotatorFactory(annotationBlobReaderFactory, vcfRecordAnnotationWriter)
+            .create(annotationsDir);
     return new VcfRecordAnnotatorAggregator(
         List.of(
             vcfRecordAnnotatorGnomAd,
