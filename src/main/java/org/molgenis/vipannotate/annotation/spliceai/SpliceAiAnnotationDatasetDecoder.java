@@ -16,15 +16,10 @@ public class SpliceAiAnnotationDatasetDecoder {
 
   public double decodeScore(MemoryBuffer memoryBuffer, int index) {
     byte value = memoryBuffer.getByte(index);
-    Double doubleValue =
-        doubleCodec.decodeDoubleUnitIntervalFromByte(value); // FIXME decode primitive
-    if (doubleValue == null) {
-      throw new NullPointerException();
-    }
-    return doubleValue;
+    return doubleCodec.decodeDoublePrimitiveUnitIntervalFromByte(value);
   }
 
   public byte decodePos(MemoryBuffer memoryBuffer, int index) {
-    return memoryBuffer.getByte(index);
+    return (byte) (memoryBuffer.getByte(index) - 50);
   }
 }
