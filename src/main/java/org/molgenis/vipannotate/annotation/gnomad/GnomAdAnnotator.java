@@ -19,7 +19,7 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
   private static final String INFO_ID_GNOMAD_QC = "gnomAD_QC";
   private static final String INFO_ID_GNOMAD_COV = "gnomAD_COV";
 
-  private final SequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb;
+  private final SequenceVariantAnnotationDb<SequenceVariant, GnomAdAnnotation> annotationDb;
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   @Override

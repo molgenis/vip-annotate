@@ -2,12 +2,14 @@
 
 ## v1
 
-- [ ] fix(db): decide how to deal with 'N' in sequence variant db index format
-- [ ] refactor(db): store small and large indices in different files?
+- [ ] perf(db): use 16-bit instead of 20-bit buckets to reduce required direct memory and allow for more annotations
+- [ ] perf(db): write small and big index to different files because often only small is required
+- [ ] perf(db): space-efficient alternative to BigInteger (Java bincode alternative?), will break db format
+- [ ] perf(db): big index does not apply 'IntegratedIntCompressor'
+- [ ] fix(db): write alts with 'N' to big index instead of skipping in SpliceAI annotator
 - [ ] fix(annotate+db): resolve reported nullability issues (fix or suppress)
 - [ ] fix(db): CLI validation for individual build commands
 - [ ] refactor(annotate+db): replace commons-compress 1.28.0-SNAPSHOT dependency with something else
-- [ ] perf(build): space-efficient alternative to BigInteger (Java bincode alternative?), will break db format
 - [ ] test(annotate): benchmark VEP duration with gnomad/ncer/phylop/remm/spliceai vs without
 - [ ] test(annotate): measure how much memory is used including off-heap memory
 - [ ] test(annotate+db): unit tests

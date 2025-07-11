@@ -24,8 +24,8 @@ public class GnomAdAnnotatorFactory {
         annotationBlobReaderFactory.create(mappableZipFile, "idx");
 
     Fury fury = FuryFactory.createFury();
-    AnnotationIndexReader annotationIndexReader =
-        new AnnotationIndexReader(annotationBlobReader, fury);
+    SequenceVariantAnnotationIndexReader annotationIndexReader =
+        new SequenceVariantAnnotationIndexReader(annotationBlobReader, fury);
 
     GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory =
         new GnomAdAnnotationDatasetFactory(new GnomAdAnnotationDatasetDecoder());
@@ -40,7 +40,7 @@ public class GnomAdAnnotatorFactory {
             annotationBlobReaderFactory.create(mappableZipFile, "filters"),
             annotationBlobReaderFactory.create(mappableZipFile, "cov"));
 
-    SequenceVariantAnnotationDb<GnomAdAnnotation> annotationDb =
+    SequenceVariantAnnotationDb<SequenceVariant, GnomAdAnnotation> annotationDb =
         new SequenceVariantAnnotationDb<>(annotationIndexReader, annotationDatasetReader);
     return new GnomAdAnnotator(annotationDb, vcfRecordAnnotationWriter);
   }

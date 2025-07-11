@@ -50,12 +50,12 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
       SequenceVariant variant = annotatedFeature.getFeature();
 
       // encode
-      if (VariantEncoder.isSmallVariant(variant)) {
-        int encodedVariant = VariantEncoder.encodeSmall(variant);
+      if (SequenceVariantEncoder.isSmallVariant(variant)) {
+        int encodedVariant = SequenceVariantEncoder.encodeSmall(variant);
         intEncodedAnnotatedSequenceVariants.add(
             new IntEncodedAnnotatedSequenceVariant<>(encodedVariant, annotatedFeature));
       } else {
-        BigInteger encodedVariant = VariantEncoder.encodeBig(variant);
+        BigInteger encodedVariant = SequenceVariantEncoder.encodeBig(variant);
         bigIntegerEncodedAnnotatedSequenceVariants.add(
             new EncodedAnnotatedSequenceVariant<>(encodedVariant, annotatedFeature));
       }
@@ -82,9 +82,9 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
 
     // write index
     AnnotationIndex annotationIndex =
-        new AnnotationIndexImpl(
-            new VariantAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
-            new VariantAnnotationIndexBig(bigIndex));
+        new SequenceVariantAnnotationIndex(
+            new SequenceVariantAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
+            new SequenceVariantAnnotationIndexBig(bigIndex));
     annotationIndexWriter.write(partition.key(), annotationIndex);
 
     // combine item data

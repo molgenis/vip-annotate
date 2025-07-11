@@ -9,18 +9,15 @@ import org.apache.fury.memory.MemoryBuffer;
  * Based on <a href="https://doi.org/10.1093/nar/gkac931">Echtvar: compressed variant representation
  * for rapid annotation and filtering of SNPs and indels</a>.
  */
-public class VariantEncoder {
-  private VariantEncoder() {}
+public class SequenceVariantEncoder {
+  private SequenceVariantEncoder() {}
 
   public static boolean isSmallVariant(SequenceVariant variant) {
-    return isSmall(variant.getRefLength()) && isSmall(variant.getAlt().alt().length());
+    return variant.getRefLength() <= 4 && variant.getAlt().alt().length() <= 4;
   }
 
   private static boolean isSmall(int nrBases) {
-    if (nrBases == 0) {
-      throw new IllegalArgumentException("number of ref alt must be > 0");
-    }
-    return nrBases <= 6;
+    return true; // FIXME
   }
 
   /**

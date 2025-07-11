@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public record VariantAnnotationIndexBig(BigInteger[] encodedVariants) implements Serializable {
+public record SequenceVariantAnnotationIndexBig(BigInteger[] encodedVariants)
+    implements Serializable {
   public int findIndex(SequenceVariant variant) {
-    BigInteger encodedVariant = VariantEncoder.encodeBig(variant);
+    BigInteger encodedVariant = SequenceVariantEncoder.encodeBig(variant);
     int index = Arrays.binarySearch(encodedVariants, encodedVariant);
     return index >= 0 ? index : -1;
   }

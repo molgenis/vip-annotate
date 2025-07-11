@@ -1,16 +1,17 @@
 package org.molgenis.vipannotate.annotation;
 
-final class EmptyAnnotationIndex implements AnnotationIndex {
-  private static final EmptyAnnotationIndex INSTANCE = new EmptyAnnotationIndex();
+final class EmptyAnnotationIndex<T extends Feature> implements AnnotationIndex<T> {
+  private static final EmptyAnnotationIndex<?> INSTANCE = new EmptyAnnotationIndex<>();
 
   private EmptyAnnotationIndex() {}
 
-  public static EmptyAnnotationIndex getInstance() {
-    return INSTANCE;
+  @SuppressWarnings("unchecked")
+  public static <T extends Feature> EmptyAnnotationIndex<T> getInstance() {
+    return (EmptyAnnotationIndex<T>) INSTANCE;
   }
 
   @Override
-  public int findIndex(SequenceVariant variant) {
+  public int findIndex(T feature) {
     return -1;
   }
 }

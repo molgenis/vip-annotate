@@ -14,15 +14,15 @@ public class SpliceAiAnnotatorFactory {
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
-    SequenceVariantAnnotationDb<SpliceAiAnnotation> snvAnnotationDb =
+    SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation> snvAnnotationDb =
         createAnnotationDb(annotationsDir, "spliceai_snv.zip");
-    SequenceVariantAnnotationDb<SpliceAiAnnotation> indelAnnotationDb =
+    SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation> indelAnnotationDb =
         createAnnotationDb(annotationsDir, "spliceai_indel.zip");
     return new SpliceAiAnnotator(snvAnnotationDb, indelAnnotationDb, vcfRecordAnnotationWriter);
   }
 
-  private SequenceVariantAnnotationDb<SpliceAiAnnotation> createAnnotationDb(
-      Path annotationsDir, String filename) {
+  private SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation>
+      createAnnotationDb(Path annotationsDir, String filename) {
     Path snpAnnotationsFile = annotationsDir.resolve(filename);
     if (Files.notExists(snpAnnotationsFile)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(snpAnnotationsFile));
@@ -33,8 +33,8 @@ public class SpliceAiAnnotatorFactory {
         annotationBlobReaderFactory.create(mappableZipFile, "idx");
 
     Fury fury = FuryFactory.createFury();
-    AnnotationIndexReader annotationIndexReader =
-        new AnnotationIndexReader(annotationBlobReader, fury);
+    SequenceVariantGeneContextAnnotationIndexReader annotationIndexReader =
+        new SequenceVariantGeneContextAnnotationIndexReader(annotationBlobReader, fury);
 
     SpliceAiAnnotationDatasetFactory spliceAiAnnotationDatasetFactory =
         new SpliceAiAnnotationDatasetFactory(new SpliceAiAnnotationDatasetDecoder());

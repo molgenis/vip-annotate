@@ -20,8 +20,10 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
   private static final String INFO_ID_SPLICEAI_DPDG = "spliceAI_DPDG";
   private static final String INFO_ID_SPLICEAI_DPDL = "spliceAI_DPDL";
 
-  private final SequenceVariantAnnotationDb<SpliceAiAnnotation> snvAnnotationDb;
-  private final SequenceVariantAnnotationDb<SpliceAiAnnotation> indelAnnotationDb;
+  private final SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation>
+      snvAnnotationDb;
+  private final SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation>
+      indelAnnotationDb;
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   @Override
@@ -104,12 +106,17 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
     for (String alt : alts) {
       SequenceVariantType sequenceVariantType =
           SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt);
-      SequenceVariantAnnotationDb<SpliceAiAnnotation> annotationDb =
+      SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation> annotationDb =
           sequenceVariantType == SequenceVariantType.SNV ? snvAnnotationDb : indelAnnotationDb;
       SpliceAiAnnotation altAnnotation =
           annotationDb.findAnnotations(
-              new SequenceVariant(
-                  contig, start, stop, AltAlleleRegistry.get(alt), sequenceVariantType));
+              new SequenceVariantGeneContext(
+                  contig,
+                  start,
+                  stop,
+                  AltAlleleRegistry.get(alt),
+                  sequenceVariantType,
+                  new Gene(Gene.Source.REFSEQ, -1))); // FIXME actual gene
       altAnnotations.add(altAnnotation);
     }
 
