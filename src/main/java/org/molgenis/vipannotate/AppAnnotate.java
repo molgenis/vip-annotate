@@ -1,11 +1,14 @@
 package org.molgenis.vipannotate;
 
+import static org.molgenis.vipannotate.util.MemorySizeValidator.validateMemorySizes;
+
 import java.nio.file.Path;
 import org.apache.fury.logging.LoggerFactory;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.VcfAnnotator;
 import org.molgenis.vipannotate.annotation.VcfAnnotatorFactory;
 import org.molgenis.vipannotate.format.vcf.VcfType;
+import org.molgenis.vipannotate.util.AppException;
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppAnnotate {
@@ -15,9 +18,11 @@ public class AppAnnotate {
   }
 
   public static void main(String[] args) {
+
     AppAnnotateArgs appAnnotateArgs = null;
     try {
       appAnnotateArgs = new AppAnnotateArgsParser().parse(args);
+      validateMemorySizes();
       run(appAnnotateArgs);
     } catch (Exception e) {
       handleException(e, appAnnotateArgs != null ? appAnnotateArgs.debugMode() : null);
@@ -44,15 +49,22 @@ public class AppAnnotate {
   }
 
   private static void handleException(Exception e, @Nullable Boolean debugMode) {
-    if (debugMode != null && debugMode) {
+    int exitStatus;
+    if (e instanceof AppException appException) {
+      Logger.error("%s", e.getMessage());
+      if (debugMode != null && debugMode) {
+        appException.printStackTrace(System.err);
+      }
+      exitStatus = appException.getErrorCode().getCode();
+    } else {
       String message = e.getMessage();
       if (message != null) {
         Logger.error("%s", message);
       }
       e.printStackTrace(System.err);
-    } else {
-      Logger.error("something went wrong");
+      Logger.error("an unexpected error occurred");
+      exitStatus = 1;
     }
-    System.exit(1);
+    System.exit(exitStatus);
   }
 }
