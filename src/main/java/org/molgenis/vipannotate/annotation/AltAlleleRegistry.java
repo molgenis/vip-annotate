@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import org.jspecify.annotations.Nullable;
 
+/** Registry of common alternate alleles to reduce pressure on the garbage collector */
 public class AltAlleleRegistry {
   private static final AltAllele[] ALT_ALLELES;
 
