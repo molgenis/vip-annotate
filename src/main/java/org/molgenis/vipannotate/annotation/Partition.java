@@ -14,7 +14,7 @@ import java.util.List;
 public record Partition<
     T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>(
     Key key, List<V> annotatedIntervals) {
-  private static final int NR_POS_BITS = 20;
+  private static final int NR_POS_BITS = 18;
 
   /** create a partition key from a contig and position */
   public static Key createKey(Contig contig, int pos) {

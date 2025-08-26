@@ -24,7 +24,7 @@ class PartitionIteratorTest {
     Contig chr1 = new Contig("chr1", 248956422);
     Contig chr2 = new Contig("chr2", 242193529);
 
-    Interval interval0 = new Interval(chr1, 1, (1 << 20) + 1);
+    Interval interval0 = new Interval(chr1, 1, (1 << 18) + 1);
     AnnotatedInterval<Interval, Annotation> annotatedInterval0 =
         new AnnotatedInterval<>(interval0, mock(Annotation.class));
 
@@ -32,11 +32,11 @@ class PartitionIteratorTest {
     AnnotatedInterval<Interval, Annotation> annotatedInterval1 =
         new AnnotatedInterval<>(interval1, mock(Annotation.class));
 
-    Interval interval2 = new Interval(chr1, (1 << 20), (1 << 20) + 1); // boundary check
+    Interval interval2 = new Interval(chr1, (1 << 18), (1 << 18) + 1); // boundary check
     AnnotatedInterval<Interval, Annotation> annotatedInterval2 =
         new AnnotatedInterval<>(interval2, mock(Annotation.class));
 
-    Interval interval3 = new Interval(chr1, (1 << 20) + 1, (1 << 20) + 2);
+    Interval interval3 = new Interval(chr1, (1 << 18) + 1, (1 << 18) + 2);
     AnnotatedInterval<Interval, Annotation> annotatedInterval3 =
         new AnnotatedInterval<>(interval3, mock(Annotation.class));
 
