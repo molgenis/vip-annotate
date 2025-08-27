@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /** A sequence variant in the context of a gene */
+@Deprecated
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = true)

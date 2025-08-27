@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 
+@Deprecated
 @RequiredArgsConstructor
 public class SequenceVariantGeneContextAnnotationIndex
     implements AnnotationIndex<SequenceVariantGeneContext> {

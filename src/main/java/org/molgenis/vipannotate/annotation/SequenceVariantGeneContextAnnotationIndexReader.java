@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fury.Fury;
 import org.apache.fury.memory.MemoryBuffer;
 
+@Deprecated
 @RequiredArgsConstructor
 public class SequenceVariantGeneContextAnnotationIndexReader
     implements AnnotationIndexReader<SequenceVariantGeneContext> {

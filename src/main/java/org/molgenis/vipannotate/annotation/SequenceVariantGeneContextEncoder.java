@@ -9,6 +9,7 @@ import org.apache.fury.memory.MemoryBuffer;
  * Based on <a href="https://doi.org/10.1093/nar/gkac931">Echtvar: compressed variant representation
  * for rapid annotation and filtering of SNPs and indels</a>.
  */
+@Deprecated
 public class SequenceVariantGeneContextEncoder {
   private SequenceVariantGeneContextEncoder() {}
 
