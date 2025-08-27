@@ -116,7 +116,7 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
                   stop,
                   AltAlleleRegistry.get(alt),
                   sequenceVariantType,
-                  new Gene(Gene.Source.REFSEQ, -1))); // FIXME actual gene
+                  new Gene(Gene.Source.NCBI, -1))); // FIXME actual gene
       altAnnotations.add(altAnnotation);
     }
 

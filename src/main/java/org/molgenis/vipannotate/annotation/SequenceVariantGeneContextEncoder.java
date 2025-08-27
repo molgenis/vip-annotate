@@ -68,7 +68,7 @@ public class SequenceVariantGeneContextEncoder {
     return switch (source) {
       case HGNC -> 0;
       case ENSEMBL -> 1;
-      case REFSEQ -> 2;
+      case NCBI -> 2;
       case OMIM -> 3;
     };
   }

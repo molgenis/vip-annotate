@@ -14,7 +14,7 @@ public record Gene(Source source, int identifier) {
   public enum Source {
     HGNC,
     ENSEMBL,
-    REFSEQ,
+    NCBI,
     OMIM
   }
 }
