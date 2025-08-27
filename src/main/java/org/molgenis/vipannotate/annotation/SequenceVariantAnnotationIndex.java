@@ -1,19 +1,21 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.util.IndexRange;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndex implements AnnotationIndex<SequenceVariant> {
   private final SequenceVariantAnnotationIndexSmall sequenceVariantAnnotationIndexSmall;
   private final SequenceVariantAnnotationIndexBig sequenceVariantAnnotationIndexBig;
 
-  public int findIndex(SequenceVariant feature) {
+  public @Nullable IndexRange findIndexes(SequenceVariant feature) {
     // TODO refactor solve elsewhere
     boolean canDetermineIndex = true;
     if (feature.getType() == SequenceVariantType.STRUCTURAL
         || feature.getType() == SequenceVariantType.OTHER) {
-      return -1;
+      return null;
     } else {
 
       for (byte altBase : feature.getAlt().alt().getBytes(StandardCharsets.UTF_8)) {
@@ -30,15 +32,15 @@ public class SequenceVariantAnnotationIndex implements AnnotationIndex<SequenceV
       }
     }
     if (!canDetermineIndex) {
-      return -1;
+      return null;
     }
 
-    int index;
+    IndexRange indexRange;
     if (SequenceVariantEncoder.isSmallVariant(feature)) {
-      index = sequenceVariantAnnotationIndexSmall.findIndex(feature);
+      indexRange = sequenceVariantAnnotationIndexSmall.findIndex(feature);
     } else {
-      index = sequenceVariantAnnotationIndexBig.findIndex(feature);
+      indexRange = sequenceVariantAnnotationIndexBig.findIndex(feature);
     }
-    return index;
+    return indexRange;
   }
 }

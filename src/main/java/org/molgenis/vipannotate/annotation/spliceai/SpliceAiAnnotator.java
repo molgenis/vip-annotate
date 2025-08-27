@@ -108,7 +108,7 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
           SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt);
       SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation> annotationDb =
           sequenceVariantType == SequenceVariantType.SNV ? snvAnnotationDb : indelAnnotationDb;
-      SpliceAiAnnotation altAnnotation =
+      Collection<SpliceAiAnnotation> altAnnotation =
           annotationDb.findAnnotations(
               new SequenceVariantGeneContext(
                   contig,
@@ -117,56 +117,48 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
                   AltAlleleRegistry.get(alt),
                   sequenceVariantType,
                   new Gene(Gene.Source.NCBI, -1))); // FIXME actual gene
-      altAnnotations.add(altAnnotation);
+      altAnnotations.addAll(altAnnotation);
     }
 
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord,
         altAnnotations,
         INFO_ID_SPLICEAI_DSAG,
         SpliceAiAnnotation::deltaScoreAcceptorGain,
         "#.##");
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord,
         altAnnotations,
         INFO_ID_SPLICEAI_DSAL,
         SpliceAiAnnotation::deltaScoreAcceptorLoss,
         "#.##");
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord,
         altAnnotations,
         INFO_ID_SPLICEAI_DSDG,
         SpliceAiAnnotation::deltaScoreDonorGain,
         "#.##");
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoDouble(
         vcfRecord,
         altAnnotations,
         INFO_ID_SPLICEAI_DSDL,
         SpliceAiAnnotation::deltaScoreDonorLoss,
         "#.##");
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoInteger(
         vcfRecord,
         altAnnotations,
         INFO_ID_SPLICEAI_DPAG,
         (annotation) -> (int) annotation.deltaPositionAcceptorGain());
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoInteger(
         vcfRecord,
         altAnnotations,
         INFO_ID_SPLICEAI_DPAL,
         (annotation) -> (int) annotation.deltaPositionAcceptorLoss());
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoInteger(
         vcfRecord,
         altAnnotations,
         INFO_ID_SPLICEAI_DPDG,
         (annotation) -> (int) annotation.deltaPositionDonorGain());
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoInteger(
         vcfRecord,
         altAnnotations,

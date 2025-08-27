@@ -2,13 +2,14 @@ package org.molgenis.vipannotate.annotation;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Arrays;
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.IndexRange;
+import org.molgenis.vipannotate.util.IndexRangeFinder;
 
 public record SequenceVariantAnnotationIndexBig(BigInteger[] encodedVariants)
     implements Serializable {
-  public int findIndex(SequenceVariant variant) {
+  public @Nullable IndexRange findIndex(SequenceVariant variant) {
     BigInteger encodedVariant = SequenceVariantEncoder.encodeBig(variant);
-    int index = Arrays.binarySearch(encodedVariants, encodedVariant);
-    return index >= 0 ? index : -1;
+    return IndexRangeFinder.findIndexes(encodedVariants, encodedVariant);
   }
 }

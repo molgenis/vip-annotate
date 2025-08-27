@@ -1,7 +1,10 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.IndexRange;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends Annotation>
@@ -14,7 +17,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
   @Nullable private AnnotationDataset<U> activeAnnotationDataset;
 
   @Override
-  public @Nullable U findAnnotations(T feature) {
+  public List<U> findAnnotations(T feature) {
     // determine partition
     Partition.Key partitionKey = Partition.createKey(feature);
 
@@ -25,22 +28,22 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
       activeKey = partitionKey;
     }
 
-    @SuppressWarnings("DataFlowIssue") // false positive null warning
-    int index = activeAnnotationIndex.findIndex(feature);
+    @SuppressWarnings("DataFlowIssue")
+    IndexRange indexRange = activeAnnotationIndex.findIndexes(feature);
 
-    U annotationData;
-    if (index != -1) {
+    List<U> annotations;
+    if (indexRange != null) {
       if (activeAnnotationDataset == null) {
         // load annotation data on the first index hit
         activeAnnotationDataset = annotationDatasetReader.read(activeKey);
       }
 
-      annotationData = activeAnnotationDataset.findByIndex(index);
+      annotations = activeAnnotationDataset.findByIndexes(indexRange);
     } else {
-      annotationData = null;
+      annotations = Collections.emptyList();
     }
 
-    return annotationData;
+    return annotations;
   }
 
   @Override

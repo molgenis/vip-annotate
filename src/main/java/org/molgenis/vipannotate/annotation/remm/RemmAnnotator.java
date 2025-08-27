@@ -1,8 +1,10 @@
 package org.molgenis.vipannotate.annotation.remm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
@@ -31,9 +33,9 @@ public class RemmAnnotator implements VcfRecordAnnotator {
     int stop = vcfRecord.pos() + vcfRecord.ref().length() - 1;
     String[] alts = vcfRecord.alt();
 
-    List<DoubleValueAnnotation> altAnnotations = new ArrayList<>(alts.length);
+    List<@Nullable DoubleValueAnnotation> altsAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
-      AnnotationCollection<DoubleValueAnnotation> altAnnotation =
+      Collection<DoubleValueAnnotation> altAnnotations =
           annotationDb.findAnnotations(
               new SequenceVariant(
                   contig,
@@ -44,12 +46,12 @@ public class RemmAnnotator implements VcfRecordAnnotator {
 
       // for multi-nucleotide substitutions/deletions, select the annotation with max score
       DoubleValueAnnotation maxAltAnnotation =
-          NumberCollections.findMax(altAnnotation.annotations(), DoubleValueAnnotation::score);
-      altAnnotations.add(maxAltAnnotation);
+          NumberCollections.findMax(altAnnotations, DoubleValueAnnotation::score);
+      altsAnnotations.add(maxAltAnnotation);
     }
 
     vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altAnnotations, INFO_ID_REMM, DoubleValueAnnotation::score, "#.###");
+        vcfRecord, altsAnnotations, INFO_ID_REMM, DoubleValueAnnotation::score, "#.###");
   }
 
   @Override

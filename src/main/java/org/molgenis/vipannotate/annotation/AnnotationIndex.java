@@ -1,8 +1,11 @@
 package org.molgenis.vipannotate.annotation;
 
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.IndexRange;
+
 public interface AnnotationIndex<T extends Feature> {
   /**
-   * @return non-negative annotation data index or <code>-1</code> if no index exists for variant
+   * @return annotation data index range or <code>null</code> if no index exists for variant
    */
-  int findIndex(T feature);
+  @Nullable IndexRange findIndexes(T feature);
 }

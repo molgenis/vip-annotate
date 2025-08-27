@@ -1,14 +1,16 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.SortedIntArrayWrapper;
+import org.molgenis.vipannotate.util.IndexRange;
+import org.molgenis.vipannotate.util.IndexRangeFinder;
 
 public record SequenceVariantAnnotationIndexSmall(SortedIntArrayWrapper encodedVariants)
     implements Serializable {
-  public int findIndex(SequenceVariant variant) {
+  public @Nullable IndexRange findIndex(SequenceVariant variant) {
     int encodedSmallVariant = SequenceVariantEncoder.encodeSmall(variant);
-    int index = Arrays.binarySearch(encodedVariants.array(), encodedSmallVariant);
-    return index >= 0 ? index : -1;
+    int[] encodedVariantsArray = encodedVariants.array();
+    return IndexRangeFinder.findIndexes(encodedVariantsArray, encodedSmallVariant);
   }
 }

@@ -90,9 +90,9 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
     int stop = vcfRecord.pos() + vcfRecord.ref().length() - 1;
     @Nullable String[] alts = vcfRecord.alt();
 
-    List<@Nullable GnomAdAnnotation> altAnnotations = new ArrayList<>(alts.length);
+    List<@Nullable GnomAdAnnotation> altsAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
-      GnomAdAnnotation altAnnotation =
+      List<GnomAdAnnotation> altAnnotations =
           annotationDb.findAnnotations(
               new SequenceVariant(
                   contig,
@@ -100,30 +100,31 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
                   stop,
                   AltAlleleRegistry.get(alt),
                   SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt)));
-      altAnnotations.add(altAnnotation);
+
+      // only zero or one annotation per alt allowed
+      if (altAnnotations.isEmpty()) {
+        altsAnnotations.add(null);
+      } else if (altAnnotations.size() == 1) {
+        altsAnnotations.add(altAnnotations.getFirst());
+      } else {
+        throw new RuntimeException("Multiple AltAllele annotations found"); // TODO typed exception
+      }
     }
 
-    //noinspection DataFlowIssue
     vcfRecordAnnotationWriter.writeInfoString(
-        vcfRecord, altAnnotations, INFO_ID_GNOMAD_SRC, this::mapSource);
-    //noinspection DataFlowIssue
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_SRC, this::mapSource);
     vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altAnnotations, INFO_ID_GNOMAD_AF, GnomAdAnnotation::af, "#.####");
-    //noinspection DataFlowIssue
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_AF, GnomAdAnnotation::af, "#.####");
     vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altAnnotations, INFO_ID_GNOMAD_FAF95, GnomAdAnnotation::faf95, "#.####");
-    //noinspection DataFlowIssue
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_FAF95, GnomAdAnnotation::faf95, "#.####");
     vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altAnnotations, INFO_ID_GNOMAD_FAF99, GnomAdAnnotation::faf99, "#.####");
-    //noinspection DataFlowIssue
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_FAF99, GnomAdAnnotation::faf99, "#.####");
     vcfRecordAnnotationWriter.writeInfoInteger(
-        vcfRecord, altAnnotations, INFO_ID_GNOMAD_HN, GnomAdAnnotation::hn);
-    //noinspection DataFlowIssue
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_HN, GnomAdAnnotation::hn);
     vcfRecordAnnotationWriter.writeInfoString(
-        vcfRecord, altAnnotations, INFO_ID_GNOMAD_QC, this::mapFilters);
-    //noinspection DataFlowIssue
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_QC, this::mapFilters);
     vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altAnnotations, INFO_ID_GNOMAD_COV, GnomAdAnnotation::cov, "#.####");
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_COV, GnomAdAnnotation::cov, "#.####");
   }
 
   private String mapSource(GnomAdAnnotation annotation) {

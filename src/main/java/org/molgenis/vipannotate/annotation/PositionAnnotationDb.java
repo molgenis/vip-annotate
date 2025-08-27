@@ -13,14 +13,14 @@ import org.jspecify.annotations.Nullable;
  */
 @RequiredArgsConstructor
 public class PositionAnnotationDb<T extends Annotation>
-    implements AnnotationDb<SequenceVariant, AnnotationCollection<T>> {
+    implements AnnotationDb<SequenceVariant, T> {
   private final AnnotationDatasetReader<T> annotationDatasetReader;
 
   private Partition.@Nullable Key activePartitionKey;
-  @Nullable private AnnotationDataset<T> activeAnnotationDataset;
+  @Nullable private AnnotationDataset<@Nullable T> activeAnnotationDataset;
 
   @Override
-  public AnnotationCollection<T> findAnnotations(SequenceVariant feature) {
+  public List<T> findAnnotations(SequenceVariant feature) {
     Contig contig = feature.getContig();
     int start = feature.getStart();
     int refLength = feature.getRefLength();
@@ -31,7 +31,7 @@ public class PositionAnnotationDb<T extends Annotation>
         annotations.add(posAnnotations);
       }
     }
-    return new AnnotationCollection<>(annotations);
+    return annotations;
   }
 
   private @Nullable T findAnnotations(Contig contig, int pos) {

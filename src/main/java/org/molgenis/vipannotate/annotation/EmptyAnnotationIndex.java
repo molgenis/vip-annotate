@@ -1,5 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.IndexRange;
+
 final class EmptyAnnotationIndex<T extends Feature> implements AnnotationIndex<T> {
   private static final EmptyAnnotationIndex<?> INSTANCE = new EmptyAnnotationIndex<>();
 
@@ -11,7 +14,7 @@ final class EmptyAnnotationIndex<T extends Feature> implements AnnotationIndex<T
   }
 
   @Override
-  public int findIndex(T feature) {
-    return -1;
+  public @Nullable IndexRange findIndexes(T feature) {
+    return null;
   }
 }
