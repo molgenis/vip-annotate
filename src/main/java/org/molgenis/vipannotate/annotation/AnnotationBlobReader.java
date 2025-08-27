@@ -9,7 +9,11 @@ import org.jspecify.annotations.Nullable;
 public class AnnotationBlobReader implements AutoCloseable {
   private final String blobId;
   private final PartitionDatasetReader partitionDatasetReader;
-  @lombok.NonNull private ByteBuffer reusableDirectByteBuffer;
+
+  // make NonNull to include in constructor and allow setting to null in close
+  @SuppressWarnings("NullableProblems")
+  @lombok.NonNull
+  private ByteBuffer reusableDirectByteBuffer;
 
   /**
    * @return memory buffer or <code>null</code> if blob does not exist

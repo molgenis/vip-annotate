@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SequenceVariantGeneContextAnnotationIndex
     implements AnnotationIndex<SequenceVariantGeneContext> {
-  @lombok.NonNull private SequenceVariantGeneContextAnnotationIndexSmall annotationIndexSmall;
-  @lombok.NonNull private SequenceVariantGeneContextAnnotationIndexBig annotationIndexBig;
+  private final SequenceVariantGeneContextAnnotationIndexSmall annotationIndexSmall;
+  private final SequenceVariantGeneContextAnnotationIndexBig annotationIndexBig;
 
   public int findIndex(SequenceVariantGeneContext feature) {
     // TODO refactor solve elsewhere
