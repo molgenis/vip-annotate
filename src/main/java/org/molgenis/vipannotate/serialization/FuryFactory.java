@@ -24,8 +24,6 @@ public class FuryFactory {
     fury.register(SequenceVariantAnnotationIndexSmall.class, true);
     fury.register(SequenceVariantAnnotationIndexBig.class, true);
     fury.register(SequenceVariantAnnotationIndex.class, true);
-    fury.registerSerializer(
-        SortedLongArrayWrapper.class, SortedLongArrayWrapperSerializer.class); // TODO remove?
   }
 
   private FuryFactory() {}
