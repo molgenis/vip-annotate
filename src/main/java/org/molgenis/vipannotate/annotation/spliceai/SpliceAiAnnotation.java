@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.spliceai;
 import org.molgenis.vipannotate.annotation.Annotation;
 
 public record SpliceAiAnnotation(
-    // String hgncGeneSymbol, // FIXME add gene identifier instead of symbol
+    int ncbiGeneId,
     double deltaScoreAcceptorGain,
     double deltaScoreAcceptorLoss,
     double deltaScoreDonorGain,

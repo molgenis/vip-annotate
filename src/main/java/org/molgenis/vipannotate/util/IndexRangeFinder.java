@@ -19,7 +19,7 @@ public class IndexRangeFinder {
     // find last occurrence
     int last = index;
     while (last < arr.length - 1 && arr[last + 1] == key) {
-      --last;
+      ++last;
     }
 
     return new IndexRange(first, last);

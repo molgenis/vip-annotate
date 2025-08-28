@@ -19,7 +19,8 @@ public class NcERAnnotationDbBuilder {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERFile)) {
       Iterator<NcERAnnotatedPosition> iterator = create(reader, fastaIndex);
 
-      MemoryBuffer reusableMemoryBuffer = MemoryBuffer.newHeapBuffer((1 << 20) * Short.BYTES);
+      MemoryBuffer reusableMemoryBuffer =
+          MemoryBuffer.newHeapBuffer((1 << 20) * Short.BYTES); // FIXME 18, other places as well?
 
       ZipZstdCompressionContext zipZstdCompressionContext =
           new ZipZstdCompressionContext(zipOutputStream);

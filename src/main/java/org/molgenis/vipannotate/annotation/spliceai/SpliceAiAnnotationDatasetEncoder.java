@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
 import org.apache.fury.memory.MemoryBuffer;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.*;
 
 public class SpliceAiAnnotationDatasetEncoder {
@@ -13,6 +14,12 @@ public class SpliceAiAnnotationDatasetEncoder {
 
   SpliceAiAnnotationDatasetEncoder(DoubleCodec doubleCodec) {
     this.doubleCodec = doubleCodec;
+  }
+
+  public MemoryBuffer encodeGeneId(SizedIterator<@Nullable Integer> geneIdIt) {
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(geneIdIt.getSize() * Byte.BYTES);
+    geneIdIt.forEachRemaining(value -> memoryBuffer.writeByte(value != null ? value : -1));
+    return memoryBuffer;
   }
 
   public MemoryBuffer encodeScore(SizedIterator<Double> doubleIt) {

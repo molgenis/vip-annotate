@@ -14,15 +14,15 @@ public class SpliceAiAnnotatorFactory {
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
-    SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation> snvAnnotationDb =
+    SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> snvAnnotationDb =
         createAnnotationDb(annotationsDir, "spliceai_snv.zip");
-    SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation> indelAnnotationDb =
+    SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> indelAnnotationDb =
         createAnnotationDb(annotationsDir, "spliceai_indel.zip");
     return new SpliceAiAnnotator(snvAnnotationDb, indelAnnotationDb, vcfRecordAnnotationWriter);
   }
 
-  private SequenceVariantAnnotationDb<SequenceVariantGeneContext, SpliceAiAnnotation>
-      createAnnotationDb(Path annotationsDir, String filename) {
+  private SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> createAnnotationDb(
+      Path annotationsDir, String filename) {
     Path snpAnnotationsFile = annotationsDir.resolve(filename);
     if (Files.notExists(snpAnnotationsFile)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(snpAnnotationsFile));
@@ -33,14 +33,16 @@ public class SpliceAiAnnotatorFactory {
         annotationBlobReaderFactory.create(mappableZipFile, "idx");
 
     Fury fury = FuryFactory.createFury();
-    SequenceVariantGeneContextAnnotationIndexReader annotationIndexReader =
-        new SequenceVariantGeneContextAnnotationIndexReader(annotationBlobReader, fury);
+    SequenceVariantAnnotationIndexReader annotationIndexReader =
+        new SequenceVariantAnnotationIndexReader(annotationBlobReader, fury);
 
     SpliceAiAnnotationDatasetFactory spliceAiAnnotationDatasetFactory =
         new SpliceAiAnnotationDatasetFactory(new SpliceAiAnnotationDatasetDecoder());
     AnnotationDatasetReader<SpliceAiAnnotation> annotationDatasetReader =
         new SpliceAiAnnotationDatasetReader(
             spliceAiAnnotationDatasetFactory,
+            annotationBlobReaderFactory.create(mappableZipFile, "gene_idx"),
+            annotationBlobReaderFactory.create(mappableZipFile, "gene_ref"),
             annotationBlobReaderFactory.create(mappableZipFile, "ds_ag"),
             annotationBlobReaderFactory.create(mappableZipFile, "ds_al"),
             annotationBlobReaderFactory.create(mappableZipFile, "ds_dg"),

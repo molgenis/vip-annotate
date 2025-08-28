@@ -8,6 +8,8 @@ public class SpliceAiAnnotationDatasetFactory {
   private final SpliceAiAnnotationDatasetDecoder annotationDatasetDecoder;
 
   public SpliceAiAnnotationDataset create(
+      MemoryBuffer geneIdxMemoryBuffer,
+      MemoryBuffer geneRefMemoryBuffer,
       MemoryBuffer dsagMemoryBuffer,
       MemoryBuffer dsalMemoryBuffer,
       MemoryBuffer dsdgMemoryBuffer,
@@ -18,6 +20,8 @@ public class SpliceAiAnnotationDatasetFactory {
       MemoryBuffer dpdlMemoryBuffer) {
     return new SpliceAiAnnotationDataset(
         annotationDatasetDecoder,
+        geneIdxMemoryBuffer,
+        geneRefMemoryBuffer,
         dsagMemoryBuffer,
         dsalMemoryBuffer,
         dsdgMemoryBuffer,

@@ -11,18 +11,24 @@ import org.molgenis.vipannotate.format.vcf.VcfParserFactory;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 import org.molgenis.vipannotate.serialization.FuryFactory;
 import org.molgenis.vipannotate.util.FilteringIterator;
+import org.molgenis.vipannotate.util.HgncToNcbiGeneIdMapper;
 import org.molgenis.vipannotate.util.TransformingIterator;
 
 public class SpliceAiAnnotationDbBuilder {
   public SpliceAiAnnotationDbBuilder() {}
 
   public void create(
-      Path spliceAiFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
+      Path spliceAiFile,
+      HgncToNcbiGeneIdMapper hgncToNcbiGeneIdMapper,
+      FastaIndex fastaIndex,
+      ZipArchiveOutputStream zipOutputStream) {
 
     SpliceAiParser spliceAiParser = new SpliceAiParser();
     ContigRegistry contigRegistry = ContigRegistry.create(fastaIndex);
+
     SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper mapper =
-        new SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper(contigRegistry);
+        new SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper(
+            contigRegistry, hgncToNcbiGeneIdMapper);
     try (VcfParser vcfParser = VcfParserFactory.create(spliceAiFile)) {
       TransformingIterator<
               SpliceAiVcfRecord, @Nullable AnnotatedSequenceVariant<SpliceAiAnnotation>>

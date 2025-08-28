@@ -7,15 +7,16 @@ import org.molgenis.vipannotate.Command;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 import org.molgenis.vipannotate.format.zip.Zip;
+import org.molgenis.vipannotate.util.HgncToNcbiGeneIdMapper;
 import org.molgenis.vipannotate.util.Logger;
 
-// FIXME proper CLI with arg validation etc.
 public class SpliceAiAnnotationDbBuilderCommand implements Command {
   @Override
   public void run(String[] args) {
     SpliceAiCommandArgs spliceAiCommandArgs = new SpliceAiCommandArgsParser().parse(args);
 
-    Path spliceAiSnvFile = spliceAiCommandArgs.inputFile();
+    Path spliceAiFile = spliceAiCommandArgs.inputFile();
+    Path ncbiGeneFile = spliceAiCommandArgs.ncbiGeneFile();
     Path faiFile = spliceAiCommandArgs.faiFile();
     Path outputFile = spliceAiCommandArgs.outputFile();
 
@@ -23,10 +24,12 @@ public class SpliceAiAnnotationDbBuilderCommand implements Command {
     long startCreateDb = System.currentTimeMillis();
 
     FastaIndex fastaIndex = FastaIndexParser.create(faiFile);
+    HgncToNcbiGeneIdMapper hgncToNcbiGeneIdMapper = HgncToNcbiGeneIdMapper.create(ncbiGeneFile);
 
     try (ZipArchiveOutputStream zipArchiveOutputStream =
         Zip.createZipArchiveOutputStream(outputFile)) {
-      new SpliceAiAnnotationDbBuilder().create(spliceAiSnvFile, fastaIndex, zipArchiveOutputStream);
+      new SpliceAiAnnotationDbBuilder()
+          .create(spliceAiFile, hgncToNcbiGeneIdMapper, fastaIndex, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

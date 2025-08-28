@@ -8,6 +8,8 @@ import org.molgenis.vipannotate.annotation.*;
 public class SpliceAiAnnotationDatasetReader
     implements AnnotationDatasetReader<SpliceAiAnnotation> {
   private final SpliceAiAnnotationDatasetFactory spliceAiAnnotationDatasetFactory;
+  private final AnnotationBlobReader geneIdxAnnotationBlobReader;
+  private final AnnotationBlobReader geneRefAnnotationBlobReader;
   private final AnnotationBlobReader dsagAnnotationBlobReader;
   private final AnnotationBlobReader dsalAnnotationBlobReader;
   private final AnnotationBlobReader dsdgAnnotationBlobReader;
@@ -19,6 +21,8 @@ public class SpliceAiAnnotationDatasetReader
 
   @Override
   public AnnotationDataset<SpliceAiAnnotation> read(Partition.Key partitionKey) {
+    MemoryBuffer geneIdxMemoryBuffer = geneIdxAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer geneRefMemoryBuffer = geneRefAnnotationBlobReader.read(partitionKey);
     MemoryBuffer dsagMemoryBuffer = dsagAnnotationBlobReader.read(partitionKey);
     MemoryBuffer dsalMemoryBuffer = dsalAnnotationBlobReader.read(partitionKey);
     MemoryBuffer dsdgMemoryBuffer = dsdgAnnotationBlobReader.read(partitionKey);
@@ -29,16 +33,21 @@ public class SpliceAiAnnotationDatasetReader
     MemoryBuffer dpdlMemoryBuffer = dpdlAnnotationBlobReader.read(partitionKey);
 
     AnnotationDataset<SpliceAiAnnotation> annotationDataset;
-    if (dsagMemoryBuffer != null
+    if (geneIdxMemoryBuffer != null
+        && geneRefMemoryBuffer != null
+        && dsagMemoryBuffer != null
         && dsalMemoryBuffer != null
         && dsdgMemoryBuffer != null
         && dsdlMemoryBuffer != null
         && dpagMemoryBuffer != null
         && dpalMemoryBuffer != null
         && dpdgMemoryBuffer != null
-        && dpdlMemoryBuffer != null) {
+        && dpdlMemoryBuffer
+            != null) { // TODO geneIdxMemoryBuffer and geneRefMemoryBuffer could be null?
       annotationDataset =
           spliceAiAnnotationDatasetFactory.create(
+              geneIdxMemoryBuffer,
+              geneRefMemoryBuffer,
               dsagMemoryBuffer,
               dsalMemoryBuffer,
               dsdgMemoryBuffer,
@@ -55,6 +64,8 @@ public class SpliceAiAnnotationDatasetReader
 
   @Override
   public void close() {
+    geneIdxAnnotationBlobReader.close();
+    geneRefAnnotationBlobReader.close();
     dsagAnnotationBlobReader.close();
     dsalAnnotationBlobReader.close();
     dsdgAnnotationBlobReader.close();

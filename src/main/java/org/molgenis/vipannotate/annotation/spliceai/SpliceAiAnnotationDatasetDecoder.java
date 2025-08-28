@@ -14,6 +14,14 @@ public class SpliceAiAnnotationDatasetDecoder {
     this.doubleCodec = doubleCodec;
   }
 
+  public int decodeGeneIndex(MemoryBuffer memoryBuffer, int index) {
+    return memoryBuffer.getInt32(index);
+  }
+
+  public int decodeGeneRef(MemoryBuffer memoryBuffer, int index) {
+    return memoryBuffer.getByte(index);
+  }
+
   public double decodeScore(MemoryBuffer memoryBuffer, int index) {
     byte value = memoryBuffer.getByte(index);
     return doubleCodec.decodeDoublePrimitiveUnitIntervalFromByte(value);

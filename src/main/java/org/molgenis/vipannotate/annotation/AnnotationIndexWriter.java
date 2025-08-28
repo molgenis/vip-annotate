@@ -14,7 +14,8 @@ public class AnnotationIndexWriter {
   private final Fury fury;
   private final BinaryPartitionWriter binaryPartitionWriter;
 
-  public void write(Partition.Key partitionKey, AnnotationIndex annotationIndex) {
+  public void write(
+      Partition.Key partitionKey, AnnotationIndex<? extends Feature> annotationIndex) {
     try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(BUFFER_CAPACITY)) {
       fury.serializeJavaObject(byteArrayOutputStream, annotationIndex);
       byte[] uncompressedByteArray = byteArrayOutputStream.toByteArray();

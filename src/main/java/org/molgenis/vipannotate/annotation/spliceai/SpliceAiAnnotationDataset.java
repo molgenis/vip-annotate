@@ -7,6 +7,8 @@ import org.molgenis.vipannotate.annotation.AnnotationDataset;
 @RequiredArgsConstructor
 public class SpliceAiAnnotationDataset implements AnnotationDataset<SpliceAiAnnotation> {
   private final SpliceAiAnnotationDatasetDecoder annotationDataDecoder;
+  private final MemoryBuffer geneIdxMemoryBuffer;
+  private final MemoryBuffer geneRefMemoryBuffer;
   private final MemoryBuffer dsagMemoryBuffer;
   private final MemoryBuffer dsalMemoryBuffer;
   private final MemoryBuffer dsdgMemoryBuffer;
@@ -18,6 +20,9 @@ public class SpliceAiAnnotationDataset implements AnnotationDataset<SpliceAiAnno
 
   @Override
   public SpliceAiAnnotation findByIndex(int index) {
+    int ncbiGeneId =
+        annotationDataDecoder.decodeGeneIndex(
+            geneIdxMemoryBuffer, annotationDataDecoder.decodeGeneRef(geneRefMemoryBuffer, index));
     double dsag = annotationDataDecoder.decodeScore(dsagMemoryBuffer, index);
     double dsal = annotationDataDecoder.decodeScore(dsalMemoryBuffer, index);
     double dsdg = annotationDataDecoder.decodeScore(dsdgMemoryBuffer, index);
@@ -26,6 +31,6 @@ public class SpliceAiAnnotationDataset implements AnnotationDataset<SpliceAiAnno
     byte dpal = annotationDataDecoder.decodePos(dpalMemoryBuffer, index);
     byte dpdg = annotationDataDecoder.decodePos(dpdgMemoryBuffer, index);
     byte dpdl = annotationDataDecoder.decodePos(dpdlMemoryBuffer, index);
-    return new SpliceAiAnnotation(dsag, dsal, dsdg, dsdl, dpag, dpal, dpdg, dpdl);
+    return new SpliceAiAnnotation(ncbiGeneId, dsag, dsal, dsdg, dsdl, dpag, dpal, dpdg, dpdl);
   }
 }

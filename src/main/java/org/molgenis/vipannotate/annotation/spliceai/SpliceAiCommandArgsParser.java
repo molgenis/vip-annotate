@@ -10,16 +10,17 @@ import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Logger;
 
 public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
-  private static final String COMMAND = "remm";
+  private static final String COMMAND = "spliceai";
 
   @Override
   public SpliceAiCommandArgs parse(String[] args) {
     // FIXME proper parsing
     Path inputFile = Path.of(args[1]);
-    Path faiFile = Path.of(args[3]);
-    Path outputFile = Path.of(args[5]);
+    Path ncbiGeneFile = Path.of(args[3]);
+    Path faiFile = Path.of(args[5]);
+    Path outputFile = Path.of(args[7]);
 
-    if (args.length == 7 && args[6].equals("--force")) {
+    if (args.length == 9 && args[8].equals("--force")) {
       try {
         Files.deleteIfExists(outputFile);
       } catch (IOException e) {
@@ -31,7 +32,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
       }
     }
 
-    return new SpliceAiCommandArgs(inputFile, faiFile, outputFile);
+    return new SpliceAiCommandArgs(inputFile, ncbiGeneFile, faiFile, outputFile);
   }
 
   @Override
@@ -47,6 +48,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
 
               usage: %s [arguments]
                 -i, --input           FILE     input file, e.g. spliceai_scores.masked.*.hg38.vcf.gz (required)
+                -g, --gene_index      FILE     gene index file from https://www.ncbi.nlm.nih.gov/datasets/gene/taxon/9606 with columns 'Gene ID' and 'Symbol'
                 -r, --reference_index FILE     reference sequence index .fai file                    (required)
                 -o, --output          FILE     output annotation database .zip file                  (required)
                 -f, --force                    overwrite existing output file                        (optional)

@@ -81,7 +81,8 @@ public class AnnotatedSequenceVariantDbWriter<T extends Annotation>
             .toArray(new BigInteger[0]);
 
     // write index
-    AnnotationIndex annotationIndex =
+    @SuppressWarnings("DataFlowIssue") // no null-check needed for smallIndex
+    AnnotationIndex<SequenceVariant> annotationIndex =
         new SequenceVariantAnnotationIndex(
             new SequenceVariantAnnotationIndexSmall(new SortedIntArrayWrapper(smallIndex)),
             new SequenceVariantAnnotationIndexBig(bigIndex));

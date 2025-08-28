@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.apache.fury.memory.MemoryBuffer;
@@ -27,6 +27,25 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
     List<AnnotatedSequenceVariant<SpliceAiAnnotation>> annotatedFeatures =
         partition.annotatedIntervals();
 
+    Map<Integer, Integer> ncbiGeneIdToLocalGeneIdMap = new LinkedHashMap<>();
+    int localIndex = 0;
+    for (AnnotatedSequenceVariant<SpliceAiAnnotation> annotatedFeature : annotatedFeatures) {
+      int ncbiGeneId = annotatedFeature.getAnnotation().ncbiGeneId();
+      if (!ncbiGeneIdToLocalGeneIdMap.containsKey(ncbiGeneId)) {
+        ncbiGeneIdToLocalGeneIdMap.put(ncbiGeneId, localIndex++);
+      }
+    }
+    int[] ncbiGeneIds =
+        ncbiGeneIdToLocalGeneIdMap.keySet().stream().mapToInt(Integer::intValue).toArray();
+
+    //noinspection DataFlowIssue
+    writeGeneIndex(partitionKey, ncbiGeneIds);
+    writeGene(
+        partitionKey,
+        annotatedFeatures,
+        SpliceAiAnnotation::ncbiGeneId,
+        ncbiGeneIdToLocalGeneIdMap);
+
     writeScore(
         partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaScoreAcceptorGain, "ds_ag");
     writeScore(
@@ -39,6 +58,31 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
         partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaPositionAcceptorLoss, "dp_al");
     writePos(partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaPositionDonorGain, "dp_dg");
     writePos(partitionKey, annotatedFeatures, SpliceAiAnnotation::deltaPositionDonorLoss, "dp_dl");
+  }
+
+  private void writeGeneIndex(Partition.Key partitionKey, int[] geneIndex) {
+    MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(geneIndex.length * Integer.BYTES);
+    for (int index : geneIndex) {
+      memoryBuffer.writeInt32(index);
+    }
+    binaryPartitionWriter.write(partitionKey, "gene_idx", memoryBuffer);
+  }
+
+  private void writeGene(
+      Partition.Key partitionKey,
+      List<AnnotatedSequenceVariant<SpliceAiAnnotation>> annotatedVariants,
+      Function<SpliceAiAnnotation, Integer> geneIdFunction,
+      Map<Integer, Integer> ncbiGeneIdToLocalGeneIdMap) {
+    MemoryBuffer memoryBuffer =
+        spliceAiAnnotationDatasetEncoder.encodeGeneId(
+            new SizedIterator<>(
+                new TransformingIterator<>(
+                    annotatedVariants.iterator(),
+                    annotatedVariant ->
+                        ncbiGeneIdToLocalGeneIdMap.get(
+                            geneIdFunction.apply(annotatedVariant.getAnnotation()))),
+                annotatedVariants.size()));
+    binaryPartitionWriter.write(partitionKey, "gene_ref", memoryBuffer);
   }
 
   private void writeScore(
