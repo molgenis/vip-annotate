@@ -110,11 +110,12 @@ public class VcfWriter implements AutoCloseable {
       reusableCharArrayBuffer.append('=');
       reusableCharArrayBuffer.append(valueIterator.next());
     }
-    reusableCharArrayBuffer.append('\t');
 
     // format
     boolean hasGenotypeInfo = vcfRecord.sampleData() != null;
     if (hasGenotypeInfo) {
+      reusableCharArrayBuffer.append('\t');
+
       // format
       String[] format = requireNonNull(vcfRecord.format());
       writeStringValueList(format, reusableCharArrayBuffer, ':');
