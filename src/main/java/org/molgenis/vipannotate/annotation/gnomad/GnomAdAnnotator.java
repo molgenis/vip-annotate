@@ -14,13 +14,6 @@ import org.molgenis.vipannotate.util.DecimalFormatRegistry;
 @RequiredArgsConstructor
 public class GnomAdAnnotator implements VcfRecordAnnotator {
   private static final String INFO_ID_GNOMAD = "gnomAD";
-  private static final String INFO_ID_GNOMAD_SRC = "gnomAD_SRC";
-  private static final String INFO_ID_GNOMAD_AF = "gnomAD_AF";
-  private static final String INFO_ID_GNOMAD_FAF95 = "gnomAD_FAF95";
-  private static final String INFO_ID_GNOMAD_FAF99 = "gnomAD_FAF99";
-  private static final String INFO_ID_GNOMAD_HN = "gnomAD_HN";
-  private static final String INFO_ID_GNOMAD_QC = "gnomAD_QC";
-  private static final String INFO_ID_GNOMAD_COV = "gnomAD_COV";
 
   private final SequenceVariantAnnotationDb<SequenceVariant, GnomAdAnnotation> annotationDb;
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
