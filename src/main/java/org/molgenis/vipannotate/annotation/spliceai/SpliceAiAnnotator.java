@@ -55,10 +55,10 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
     }
 
     vcfRecordAnnotationWriter.writeInfoString(
-        vcfRecord, altsAnnotations, INFO_ID_SPLICEAI, this::writeSpliceAiString);
+        vcfRecord, altsAnnotations, INFO_ID_SPLICEAI, this::createInfoAltString);
   }
 
-  private @Nullable CharSequence writeSpliceAiString(List<SpliceAiAnnotation> annotations) {
+  private @Nullable CharSequence createInfoAltString(List<SpliceAiAnnotation> annotations) {
     if (reusableStringBuilder == null) {
       reusableStringBuilder = new StringBuilder();
     } else {
@@ -72,7 +72,7 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
     if (!annotations.isEmpty()) {
       for (int i = 0, annotationsSize = annotations.size(); i < annotationsSize; i++) {
         if (i > 0) {
-          reusableStringBuilder.append(',');
+          reusableStringBuilder.append('&');
         }
 
         SpliceAiAnnotation annotation = annotations.get(i);

@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
@@ -8,9 +9,11 @@ import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfMetaInfo;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
+import org.molgenis.vipannotate.util.DecimalFormatRegistry;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotator implements VcfRecordAnnotator {
+  private static final String INFO_ID_GNOMAD = "gnomAD";
   private static final String INFO_ID_GNOMAD_SRC = "gnomAD_SRC";
   private static final String INFO_ID_GNOMAD_AF = "gnomAD_AF";
   private static final String INFO_ID_GNOMAD_FAF95 = "gnomAD_FAF95";
@@ -21,64 +24,18 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
 
   private final SequenceVariantAnnotationDb<SequenceVariant, GnomAdAnnotation> annotationDb;
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
+  private @Nullable StringBuilder reusableStringBuilder;
+  private @Nullable DecimalFormat reusableDecimalFormat;
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
     VcfMetaInfo vcfMetaInfo = vcfHeader.vcfMetaInfo();
 
     vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_GNOMAD_SRC,
-        "A",
-        "Character",
-        "gnomAD source: E=exomes, G=genomes, T=total",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_GNOMAD_AF,
-        "A",
-        "Float",
-        "gnomAD allele frequency",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_GNOMAD_FAF95,
-        "A",
-        "Float",
-        "gnomAD filtering allele frequency (95% confidence)",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_GNOMAD_FAF99,
-        "A",
-        "Float",
-        "gnomAD filtering allele frequency (99% confidence)",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_GNOMAD_HN,
-        "A",
-        "Integer",
-        "gnomAD number of homozygotes",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_GNOMAD_QC,
+        INFO_ID_GNOMAD,
         "A",
         "String",
-        "gnomAD quality control filters that failed",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_GNOMAD_COV,
-        "A",
-        "Float",
-        "gnomAD coverage (percent of individuals in gnomAD source)",
+        "gnomAD v4.1.0 annotation formatted as 'SRC|AF|FAF95|FAF99|HN|QC|COV'; SRC=source (E=exomes, G=genomes, T=total), AF=allele frequency, FAF95=filtering allele frequency (95% confidence), FAF99=filtering allele frequency (99% confidence), HN=number of homozygotes, QC=quality control filters that failed, COV=coverage (percent of individuals in gnomAD source)",
         App.getName(),
         App.getVersion());
   }
@@ -112,19 +69,47 @@ public class GnomAdAnnotator implements VcfRecordAnnotator {
     }
 
     vcfRecordAnnotationWriter.writeInfoString(
-        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_SRC, this::mapSource);
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_AF, GnomAdAnnotation::af, "#.####");
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_FAF95, GnomAdAnnotation::faf95, "#.####");
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_FAF99, GnomAdAnnotation::faf99, "#.####");
-    vcfRecordAnnotationWriter.writeInfoInteger(
-        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_HN, GnomAdAnnotation::hn);
-    vcfRecordAnnotationWriter.writeInfoString(
-        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_QC, this::mapFilters);
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord, altsAnnotations, INFO_ID_GNOMAD_COV, GnomAdAnnotation::cov, "#.####");
+        vcfRecord, altsAnnotations, INFO_ID_GNOMAD, this::createInfoAltString);
+  }
+
+  private @Nullable CharSequence createInfoAltString(@Nullable GnomAdAnnotation annotation) {
+    if (reusableStringBuilder == null) {
+      reusableStringBuilder = new StringBuilder();
+    } else {
+      reusableStringBuilder.setLength(0);
+    }
+
+    if (reusableDecimalFormat == null) {
+      reusableDecimalFormat = DecimalFormatRegistry.getDecimalFormat("#.####");
+    }
+
+    if (annotation != null) {
+      String filters = mapFilters(annotation);
+      reusableStringBuilder.append(mapSource(annotation)).append('|');
+
+      Double af = annotation.af();
+      if (af != null) {
+        reusableStringBuilder.append(reusableDecimalFormat.format(af));
+      }
+
+      reusableStringBuilder
+          .append('|')
+          .append(reusableDecimalFormat.format(annotation.faf95()))
+          .append('|')
+          .append(reusableDecimalFormat.format(annotation.faf99()))
+          .append('|')
+          .append(annotation.hn())
+          .append('|');
+
+      if (filters != null) {
+        reusableStringBuilder.append(filters);
+      }
+      reusableStringBuilder.append('|').append(reusableDecimalFormat.format(annotation.cov()));
+    } else {
+      reusableStringBuilder.append('.');
+    }
+
+    return reusableStringBuilder;
   }
 
   private String mapSource(GnomAdAnnotation annotation) {
