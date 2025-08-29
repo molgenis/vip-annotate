@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.format.vcf;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
@@ -111,10 +113,10 @@ public class VcfWriter implements AutoCloseable {
     reusableCharArrayBuffer.append('\t');
 
     // format
-    boolean hasGenotypeInfo = vcfRecord.sampleData().length > 0;
+    boolean hasGenotypeInfo = vcfRecord.sampleData() != null;
     if (hasGenotypeInfo) {
       // format
-      String[] format = vcfRecord.format();
+      String[] format = requireNonNull(vcfRecord.format());
       writeStringValueList(format, reusableCharArrayBuffer, ':');
       reusableCharArrayBuffer.append('\t');
 
