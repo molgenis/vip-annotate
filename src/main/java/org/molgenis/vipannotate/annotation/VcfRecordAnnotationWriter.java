@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -29,7 +28,7 @@ public class VcfRecordAnnotationWriter {
       }
 
       T annotation = annotations.get(i);
-      if (annotation != null) {
+      if (annotation != null) { // FIXME won't work for List<List<?>>
         CharSequence strValue = transformFunction.apply(annotation);
         if (strValue != null) {
           reusableStringBuilder.append(strValue);
