@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
@@ -8,87 +9,27 @@ import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfMetaInfo;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
+import org.molgenis.vipannotate.util.DecimalFormatRegistry;
 
 @RequiredArgsConstructor
 public class SpliceAiAnnotator implements VcfRecordAnnotator {
-  private static final String INFO_ID_SPLICEAI_DSAG = "spliceAI_DSAG";
-  private static final String INFO_ID_SPLICEAI_DSAL = "spliceAI_DSAL";
-  private static final String INFO_ID_SPLICEAI_DSDG = "spliceAI_DSDG";
-  private static final String INFO_ID_SPLICEAI_DSDL = "spliceAI_DSDL";
-  private static final String INFO_ID_SPLICEAI_DPAG = "spliceAI_DPAG";
-  private static final String INFO_ID_SPLICEAI_DPAL = "spliceAI_DPAL";
-  private static final String INFO_ID_SPLICEAI_DPDG = "spliceAI_DPDG";
-  private static final String INFO_ID_SPLICEAI_DPDL = "spliceAI_DPDL";
+  private static final String INFO_ID_SPLICEAI = "SpliceAI";
 
   private final SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> snvAnnotationDb;
   private final SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> indelAnnotationDb;
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
+  private @Nullable StringBuilder reusableStringBuilder;
+  private @Nullable DecimalFormat reusableDecimalFormat;
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
     VcfMetaInfo vcfMetaInfo = vcfHeader.vcfMetaInfo();
 
     vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DSAG,
+        INFO_ID_SPLICEAI,
         "A",
-        "Float",
-        "SpliceAI delta score for acceptor gain",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DSAL,
-        "A",
-        "Float",
-        "SpliceAI delta score for acceptor loss",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DSDG,
-        "A",
-        "Float",
-        "SpliceAI delta score for donor gain",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DSDL,
-        "A",
-        "Float",
-        "SpliceAI delta score for donor loss",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DPAG,
-        "A",
-        "Integer",
-        "SpliceAI delta position for acceptor gain",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DPAL,
-        "A",
-        "Integer",
-        "SpliceAI delta position for acceptor loss",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DPDG,
-        "A",
-        "Integer",
-        "SpliceAI delta position for donor gain",
-        App.getName(),
-        App.getVersion());
-
-    vcfMetaInfo.addOrUpdateInfo(
-        INFO_ID_SPLICEAI_DPDL,
-        "A",
-        "Integer",
-        "SpliceAI delta position for donor loss",
+        "String",
+        "SpliceAI annotations per ALT allele. Multiple annotations per allele are separated by '&'. Each annotation is formatted as 'NCBI_GENE_ID|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL' where DS stands for delta scores, DP stands for delta positions, AG for acceptor gain, AL for acceptor loss, DG for donor gain and DL for donor loss.",
         App.getName(),
         App.getVersion());
   }
@@ -100,63 +41,110 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
     int stop = vcfRecord.pos() + vcfRecord.ref().length() - 1;
     @Nullable String[] alts = vcfRecord.alt();
 
-    List<@Nullable SpliceAiAnnotation> altAnnotations = new ArrayList<>(alts.length);
+    List<List<SpliceAiAnnotation>> altsAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
       SequenceVariantType sequenceVariantType =
           SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt);
       SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> annotationDb =
           sequenceVariantType == SequenceVariantType.SNV ? snvAnnotationDb : indelAnnotationDb;
-      Collection<SpliceAiAnnotation> altAnnotation =
+      List<SpliceAiAnnotation> altAnnotations =
           annotationDb.findAnnotations(
               new SequenceVariant(
                   contig, start, stop, AltAlleleRegistry.get(alt), sequenceVariantType));
-      altAnnotations.addAll(altAnnotation);
+      altsAnnotations.add(altAnnotations);
     }
 
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DSAG,
-        SpliceAiAnnotation::deltaScoreAcceptorGain,
-        "#.##");
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DSAL,
-        SpliceAiAnnotation::deltaScoreAcceptorLoss,
-        "#.##");
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DSDG,
-        SpliceAiAnnotation::deltaScoreDonorGain,
-        "#.##");
-    vcfRecordAnnotationWriter.writeInfoDouble(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DSDL,
-        SpliceAiAnnotation::deltaScoreDonorLoss,
-        "#.##");
-    vcfRecordAnnotationWriter.writeInfoInteger(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DPAG,
-        (annotation) -> (int) annotation.deltaPositionAcceptorGain());
-    vcfRecordAnnotationWriter.writeInfoInteger(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DPAL,
-        (annotation) -> (int) annotation.deltaPositionAcceptorLoss());
-    vcfRecordAnnotationWriter.writeInfoInteger(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DPDG,
-        (annotation) -> (int) annotation.deltaPositionDonorGain());
-    vcfRecordAnnotationWriter.writeInfoInteger(
-        vcfRecord,
-        altAnnotations,
-        INFO_ID_SPLICEAI_DPDL,
-        (annotation) -> (int) annotation.deltaPositionDonorLoss());
+    vcfRecordAnnotationWriter.writeInfoString(
+        vcfRecord, altsAnnotations, INFO_ID_SPLICEAI, this::writeSpliceAiString);
+  }
+
+  private @Nullable CharSequence writeSpliceAiString(List<SpliceAiAnnotation> annotations) {
+    if (reusableStringBuilder == null) {
+      reusableStringBuilder = new StringBuilder();
+    } else {
+      reusableStringBuilder.setLength(0);
+    }
+
+    if (reusableDecimalFormat == null) {
+      reusableDecimalFormat = DecimalFormatRegistry.getDecimalFormat("#.##");
+    }
+
+    if (!annotations.isEmpty()) {
+      for (int i = 0, annotationsSize = annotations.size(); i < annotationsSize; i++) {
+        if (i > 0) {
+          reusableStringBuilder.append(',');
+        }
+
+        SpliceAiAnnotation annotation = annotations.get(i);
+        reusableStringBuilder
+            .append(annotation.ncbiGeneId())
+            .append('|')
+            .append(reusableDecimalFormat.format(annotation.deltaScoreAcceptorGain()))
+            .append('|')
+            .append(reusableDecimalFormat.format(annotation.deltaScoreAcceptorLoss()))
+            .append('|')
+            .append(reusableDecimalFormat.format(annotation.deltaScoreDonorGain()))
+            .append('|')
+            .append(reusableDecimalFormat.format(annotation.deltaScoreDonorLoss()))
+            .append('|')
+            .append(annotation.deltaScoreAcceptorGain())
+            .append('|')
+            .append(annotation.deltaScoreAcceptorLoss())
+            .append('|')
+            .append(annotation.deltaScoreDonorGain())
+            .append('|')
+            .append(annotation.deltaScoreDonorLoss());
+      }
+
+    } else {
+      reusableStringBuilder.append('.');
+    }
+    return reusableStringBuilder;
+
+    //      vcfRecordAnnotationWriter.writeInfoDouble(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DSAG,
+    //              SpliceAiAnnotation::deltaScoreAcceptorGain,
+    //              "#.##");
+    //      vcfRecordAnnotationWriter.writeInfoDouble(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DSAL,
+    //              SpliceAiAnnotation::deltaScoreAcceptorLoss,
+    //              "#.##");
+    //      vcfRecordAnnotationWriter.writeInfoDouble(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DSDG,
+    //              SpliceAiAnnotation::deltaScoreDonorGain,
+    //              "#.##");
+    //      vcfRecordAnnotationWriter.writeInfoDouble(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DSDL,
+    //              SpliceAiAnnotation::deltaScoreDonorLoss,
+    //              "#.##");
+    //      vcfRecordAnnotationWriter.writeInfoInteger(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DPAG,
+    //              (annotation) -> (int) annotation.deltaPositionAcceptorGain());
+    //      vcfRecordAnnotationWriter.writeInfoInteger(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DPAL,
+    //              (annotation) -> (int) annotation.deltaPositionAcceptorLoss());
+    //      vcfRecordAnnotationWriter.writeInfoInteger(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DPDG,
+    //              (annotation) -> (int) annotation.deltaPositionDonorGain());
+    //      vcfRecordAnnotationWriter.writeInfoInteger(
+    //              vcfRecord,
+    //              altAnnotations,
+    //              INFO_ID_SPLICEAI_DPDL,
+    //              (annotation) -> (int) annotation.deltaPositionDonorLoss());
   }
 
   @Override
