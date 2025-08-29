@@ -23,7 +23,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
   public void updateHeader(VcfHeader vcfHeader) {
     vcfHeader
         .vcfMetaInfo()
-        .addOrUpdateInfo(INFO_ID_NCER, "1", "Float", "ncER score", App.getName(), App.getVersion());
+        .addOrUpdateInfo(INFO_ID_NCER, "A", "Float", "ncER score", App.getName(), App.getVersion());
   }
 
   @Override

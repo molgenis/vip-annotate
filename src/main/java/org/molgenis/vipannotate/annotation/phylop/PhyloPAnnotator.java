@@ -24,7 +24,7 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
     vcfHeader
         .vcfMetaInfo()
         .addOrUpdateInfo(
-            INFO_ID_PHYLOP, "1", "Float", "phyloP score", App.getName(), App.getVersion());
+            INFO_ID_PHYLOP, "A", "Float", "phyloP score", App.getName(), App.getVersion());
   }
 
   @Override
