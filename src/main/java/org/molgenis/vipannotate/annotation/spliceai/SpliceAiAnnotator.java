@@ -87,64 +87,19 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
             .append('|')
             .append(reusableDecimalFormat.format(annotation.deltaScoreDonorLoss()))
             .append('|')
-            .append(annotation.deltaScoreAcceptorGain())
+            .append(annotation.deltaPositionAcceptorGain())
             .append('|')
-            .append(annotation.deltaScoreAcceptorLoss())
+            .append(annotation.deltaPositionAcceptorLoss())
             .append('|')
-            .append(annotation.deltaScoreDonorGain())
+            .append(annotation.deltaPositionDonorGain())
             .append('|')
-            .append(annotation.deltaScoreDonorLoss());
+            .append(annotation.deltaPositionDonorLoss());
       }
 
     } else {
       reusableStringBuilder.append('.');
     }
     return reusableStringBuilder;
-
-    //      vcfRecordAnnotationWriter.writeInfoDouble(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DSAG,
-    //              SpliceAiAnnotation::deltaScoreAcceptorGain,
-    //              "#.##");
-    //      vcfRecordAnnotationWriter.writeInfoDouble(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DSAL,
-    //              SpliceAiAnnotation::deltaScoreAcceptorLoss,
-    //              "#.##");
-    //      vcfRecordAnnotationWriter.writeInfoDouble(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DSDG,
-    //              SpliceAiAnnotation::deltaScoreDonorGain,
-    //              "#.##");
-    //      vcfRecordAnnotationWriter.writeInfoDouble(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DSDL,
-    //              SpliceAiAnnotation::deltaScoreDonorLoss,
-    //              "#.##");
-    //      vcfRecordAnnotationWriter.writeInfoInteger(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DPAG,
-    //              (annotation) -> (int) annotation.deltaPositionAcceptorGain());
-    //      vcfRecordAnnotationWriter.writeInfoInteger(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DPAL,
-    //              (annotation) -> (int) annotation.deltaPositionAcceptorLoss());
-    //      vcfRecordAnnotationWriter.writeInfoInteger(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DPDG,
-    //              (annotation) -> (int) annotation.deltaPositionDonorGain());
-    //      vcfRecordAnnotationWriter.writeInfoInteger(
-    //              vcfRecord,
-    //              altAnnotations,
-    //              INFO_ID_SPLICEAI_DPDL,
-    //              (annotation) -> (int) annotation.deltaPositionDonorLoss());
   }
 
   @Override
