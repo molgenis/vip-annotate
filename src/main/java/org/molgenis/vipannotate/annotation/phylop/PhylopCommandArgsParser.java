@@ -46,10 +46,11 @@ public class PhylopCommandArgsParser extends ArgsParser<PhylopCommandArgs> {
               vip-annotate v%s
 
               usage: %s [arguments]
-                -i, --input           FILE     input file, e.g. hg38.phyloP100way.bed.gz (required)
-                -r, --reference_index FILE     reference sequence index .fai file        (required)
-                -o, --output          FILE     output annotation database .zip file      (required)
-                -f, --force                    overwrite existing output file            (optional)
+                -i, --input           FILE                input file, e.g. hg38.phyloP100way.bed.gz            (required)
+                -x, --reference_index FILE                reference sequence index .fai file                   (required)
+                -o, --output          FILE                output annotation database .zip file                 (required)
+                -r, --regions         chr|chr:beg-end[,…] comma-separated list of regions (inclusive, 1-based) (optional)
+                -f, --force                               overwrite existing output file                       (optional)
 
               usage: %s [arguments]
                 -h, --help                     print this message

@@ -47,17 +47,20 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
               vip-annotate v%s
 
               usage: %s [arguments]
-                -i, --input           FILE     input file, e.g. spliceai_scores.masked.*.hg38.vcf.gz (required)
-                -g, --gene_index      FILE     gene index file from https://www.ncbi.nlm.nih.gov/datasets/gene/taxon/9606 with columns 'Gene ID' and 'Symbol'
-                -r, --reference_index FILE     reference sequence index .fai file                    (required)
-                -o, --output          FILE     output annotation database .zip file                  (required)
-                -f, --force                    overwrite existing output file                        (optional)
+                -i, --input           FILE                input file, e.g. spliceai_scores.masked.*.hg38.vcf.gz (required)
+                -g, --gene_index      FILE                tab-separated NCBI gene index file¹                   (required)
+                -x, --reference_index FILE                reference sequence index .fai file                    (required)
+                -o, --output          FILE                output annotation database .zip file                  (required)
+                -r, --regions         chr|chr:beg-end[,…] comma-separated list of regions (inclusive, 1-based)  (optional)
+                -f, --force                               overwrite existing output file                        (optional)
 
               usage: %s [arguments]
                 -h, --help                     print this message
 
               usage: %s [arguments]
                 -v, --version                  print version
+
+              ¹ available from https://www.ncbi.nlm.nih.gov/datasets/gene/taxon/9606 with columns 'Gene ID' and 'Symbol'
               """,
         App.getVersion(), usage, usage, usage);
   }
