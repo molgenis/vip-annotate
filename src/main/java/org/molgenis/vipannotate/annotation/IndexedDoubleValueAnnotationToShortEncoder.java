@@ -35,7 +35,7 @@ public class IndexedDoubleValueAnnotationToShortEncoder
       IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation, MemoryBuffer memoryBuffer) {
     Double score = indexedAnnotation.getFeatureAnnotation().score();
     short encodedScore = doubleCodec.encodeDoubleAsShort(score, minValue, maxValue);
-    memoryBuffer.putInt16(indexedAnnotation.getIndex(), encodedScore);
+    memoryBuffer.putInt16(indexedAnnotation.getIndex() * getAnnotationSizeInBytes(), encodedScore);
   }
 
   @Override
