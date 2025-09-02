@@ -1,11 +1,11 @@
-package org.molgenis.vipannotate.annotation.spliceai;
+package org.molgenis.vipannotate.annotation;
 
 import java.nio.file.Path;
 import org.jspecify.annotations.Nullable;
 
-public record SpliceAiCommandArgs(
+/** {@link org.molgenis.vipannotate.AppDb} command-line arguments shared between commands */
+public record DbCommandArgs(
     Path inputFile,
-    Path ncbiGeneFile,
     Path faiFile,
     Path outputFile,
     @Nullable String regionsStr,

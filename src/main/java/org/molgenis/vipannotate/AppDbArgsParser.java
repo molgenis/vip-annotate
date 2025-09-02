@@ -46,9 +46,4 @@ public class AppDbArgsParser extends ArgsParser<AppDbArgs> {
         """,
         App.getVersion(), usage, usage);
   }
-
-  @Override
-  protected void printVersion() {
-    Logger.info("%s\n", App.getVersion());
-  }
 }

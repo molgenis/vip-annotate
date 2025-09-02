@@ -12,8 +12,7 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
     super.validate(args);
 
     Path input = null, annotationsDir = null, output = null;
-    Boolean force = null;
-    Boolean debug = null;
+    Boolean force = null, debug = null;
     VcfType outputVcfType = null;
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
@@ -83,14 +82,6 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
       System.exit(1);
     }
     return new AppAnnotateArgs(input, annotationsDir, output, force, debug, outputVcfType);
-  }
-
-  private String parseArgValue(String[] args, int i, String arg) {
-    if (i + 1 == args.length || args[i + 1].startsWith("-")) {
-      Logger.error("missing value for option '%s'", arg);
-      System.exit(1);
-    }
-    return args[i + 1];
   }
 
   @Override

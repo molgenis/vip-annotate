@@ -18,6 +18,7 @@ public class Interval implements Feature {
   /** genome stop position (inclusive, 1-based) */
   private final int stop;
 
+  // TODO validate start-stop against contig.length is not null
   public Interval(Contig contig, int start, int stop) {
     if (start < 0 || stop < 0 || stop < start) {
       throw new IllegalArgumentException("invalid genomic interval");

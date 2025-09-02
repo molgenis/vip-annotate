@@ -3,8 +3,10 @@ package org.molgenis.vipannotate.annotation.phylop;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fury.memory.MemoryBuffer;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.IndexedAnnotationEncoder;
 import org.molgenis.vipannotate.annotation.Position;
@@ -17,10 +19,13 @@ public class PhyloPAnnotationDbBuilder {
   public PhyloPAnnotationDbBuilder() {}
 
   public void create(
-      Path phyloPFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
+      Path phyloPFile,
+      @Nullable List<Region> regions,
+      FastaIndex fastaIndex,
+      ZipArchiveOutputStream zipOutputStream) {
 
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(phyloPFile)) {
-      Iterator<PhyloPAnnotatedPosition> iterator = create(reader, fastaIndex);
+      Iterator<PhyloPAnnotatedPosition> iterator = create(reader, regions, fastaIndex);
 
       MemoryBuffer reusableMemoryBuffer = MemoryBuffer.newHeapBuffer((1 << 20) * Short.BYTES);
 
@@ -53,14 +58,48 @@ public class PhyloPAnnotationDbBuilder {
   }
 
   private Iterator<PhyloPAnnotatedPosition> create(
-      BufferedReader bufferedReader, FastaIndex fastaIndex) {
+      BufferedReader bufferedReader, @Nullable List<Region> regions, FastaIndex fastaIndex) {
     PhyloPParser phyloPParser = new PhyloPParser();
     PhyloPBedFeatureToPhyloPAnnotatedPositionMapper mapper =
         new PhyloPBedFeatureToPhyloPAnnotatedPositionMapper(fastaIndex);
-    return new TransformingIterator<>(
+    return new FilteringIterator<>(new TransformingIterator<>(
         new FilteringIterator<>(
             new TransformingIterator<>(new TsvIterator(bufferedReader), phyloPParser::parse),
             e -> fastaIndex.containsReferenceSequence(e.chr())),
-        mapper::map);
+        mapper::map), annotatedPosition -> filter(annotatedPosition, regions));
   }
+
+    private boolean filter(
+            @Nullable PhyloPAnnotatedPosition annotatedPosition, @Nullable List<Region> regions) {
+        boolean keep;
+        if (annotatedPosition == null) {
+            keep = false;
+        } else if (regions == null) {
+            keep = true;
+        } else {
+            keep = false;
+            for (Region region : regions) {
+                Position position = annotatedPosition.getFeature();
+                if (region.getContig().equals(position.getContig())) {
+                    if (region.getStart() != null) {
+                        if (position.getStart() >= region.getStart()) {
+                            if (region.getStop() != null) {
+                                if (position.getStart() <= region.getStop()) {
+                                    keep = true;
+                                    break;
+                                }
+                            } else {
+                                keep = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        keep = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return keep;
+    }
 }

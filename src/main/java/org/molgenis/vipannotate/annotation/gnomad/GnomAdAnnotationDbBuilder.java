@@ -3,13 +3,17 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.util.FilteringIterator;
+import org.molgenis.vipannotate.util.Region;
 import org.molgenis.vipannotate.util.TransformingIterator;
 import org.molgenis.vipannotate.util.TsvIterator;
 
@@ -17,10 +21,13 @@ public class GnomAdAnnotationDbBuilder {
   public GnomAdAnnotationDbBuilder() {}
 
   public void create(
-      Path gnomAdFile, FastaIndex fastaIndex, ZipArchiveOutputStream zipOutputStream) {
+      Path gnomAdFile,
+      @Nullable List<Region> regions,
+      FastaIndex fastaIndex,
+      ZipArchiveOutputStream zipOutputStream) {
     try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(gnomAdFile)) {
       Iterator<AnnotatedSequenceVariant<GnomAdAnnotation>> gnomAdIterator =
-          create(reader, fastaIndex);
+          create(reader, regions, fastaIndex);
       GnomAdAnnotationDatasetEncoder gnomAdAnnotationDataSetEncoder =
           new GnomAdAnnotationDatasetEncoder();
 
@@ -39,12 +46,49 @@ public class GnomAdAnnotationDbBuilder {
   }
 
   private Iterator<AnnotatedSequenceVariant<GnomAdAnnotation>> create(
-      BufferedReader bufferedReader, FastaIndex fastaIndex) {
+      BufferedReader bufferedReader, @Nullable List<Region> regions, FastaIndex fastaIndex) {
     GnomAdParser gnomAdParser = new GnomAdParser(fastaIndex);
     GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper gnomadAnnotationCreator =
         new GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper(fastaIndex);
-    return new TransformingIterator<>(
-        new TransformingIterator<>(new TsvIterator(bufferedReader), gnomAdParser::parse),
-        gnomadAnnotationCreator::annotate);
+    return new FilteringIterator<>(
+        new TransformingIterator<>(
+            new TransformingIterator<>(new TsvIterator(bufferedReader), gnomAdParser::parse),
+            gnomadAnnotationCreator::annotate),
+        annotatedSequenceVariant -> filter(annotatedSequenceVariant, regions));
+  }
+
+  private boolean filter(
+      @Nullable AnnotatedSequenceVariant<GnomAdAnnotation> annotatedSequenceVariant,
+      @Nullable List<Region> regions) {
+    boolean keep;
+    if (annotatedSequenceVariant == null) {
+      keep = false;
+    } else if (regions == null) {
+      keep = true;
+    } else {
+      keep = false;
+      for (Region region : regions) {
+        SequenceVariant sequenceVariant = annotatedSequenceVariant.getFeature();
+        if (region.getContig().equals(sequenceVariant.getContig())) {
+          if (region.getStart() != null) {
+            if (sequenceVariant.getStart() >= region.getStart()) {
+              if (region.getStop() != null) {
+                if (sequenceVariant.getStart() <= region.getStop()) {
+                  keep = true;
+                  break;
+                }
+              } else {
+                keep = true;
+                break;
+              }
+            }
+          } else {
+            keep = true;
+            break;
+          }
+        }
+      }
+    }
+    return keep;
   }
 }
