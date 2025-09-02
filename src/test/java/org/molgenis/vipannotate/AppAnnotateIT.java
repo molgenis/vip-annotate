@@ -16,14 +16,12 @@ public class AppAnnotateIT {
     ClassLoader classLoader = getClass().getClassLoader();
     @SuppressWarnings("DataFlowIssue")
     Path inputVcfFile =
-        Paths.get((classLoader.getResource("annotate/chr2_bin633/input.vcf")).toURI());
+        Paths.get((classLoader.getResource("annotate/chr2_166195185-166375987/input.vcf")).toURI());
 
-    // FIXME replace production annotation database with test annotation database with chr2 bin633
-    //    @SuppressWarnings("DataFlowIssue")
-    //    Path annotationsDir =
-    // Paths.get((classLoader.getResource("annotate/annotations")).toURI());
     @SuppressWarnings("DataFlowIssue")
-    Path annotationsDir = Path.of(System.getenv("ANNOTATIONS_DIR"));
+    Path annotationsDir =
+        Paths.get(
+            (classLoader.getResource("annotate/chr2_166195185-166375987/annotations")).toURI());
 
     String[] args = {
       "--input", inputVcfFile.toString(), "--annotations-dir", annotationsDir.toString()
@@ -53,8 +51,8 @@ public class AppAnnotateIT {
 ##INFO=<ID=REMM,NUMBER=A,TYPE=Float,DESCRIPTION="REMM score",SOURCE="vip-annotate",VERSION="0.0.0-dev">
 ##INFO=<ID=SpliceAI,NUMBER=A,TYPE=String,DESCRIPTION="SpliceAI annotations per ALT allele. Multiple annotations per allele are separated by '&'. Each annotation is formatted as 'NCBI_GENE_ID|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL' where DS stands for delta scores, DP stands for delta positions, AG for acceptor gain, AL for acceptor loss, DG for donor gain and DL for donor loss.",SOURCE="vip-annotate",VERSION="0.0.0-dev">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-chr2	166305791	.	C	T	.	.	gnomAD=T|0|0|0|0||0.9993;ncER=21.1753;phyloP=9.995;REMM=0.988;SpliceAI=6335|0|0|0|0.99|-3|-5|-3|1
-chr2	166305792	.	G	A,C	.	.	gnomAD=T|0|0|0|0||0.9992,T|0|0|0|0||0.9992;ncER=21.1753,21.1753;phyloP=9.996,9.996;REMM=0.992,0.992;SpliceAI=6335|0|0|0.03|0|-15|-7|2|0,6335|0|0|0|0|-1|-6|0|-4
+chr2	166305791	.	C	T	.	.	gnomAD=T|0|0|0|0||0.9993;ncER=99.8932;phyloP=9.995;REMM=0.988;SpliceAI=6335|0|0|0|0.99|-3|-5|-3|1
+chr2	166305792	.	G	A,C	.	.	gnomAD=T|0|0|0|0||0.9992,T|0|0|0|0||0.9992;ncER=99.9313,99.9313;phyloP=9.996,9.996;REMM=0.992,0.992;SpliceAI=6335|0|0|0.03|0|-15|-7|2|0,6335|0|0|0|0|-1|-6|0|-4
 """;
     assertEquals(expectedOutput, output);
   }
