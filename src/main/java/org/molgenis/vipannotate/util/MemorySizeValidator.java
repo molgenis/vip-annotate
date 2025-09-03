@@ -8,7 +8,9 @@ import java.util.List;
 public class MemorySizeValidator {
   static final long ONE_MB = 1024L * 1024L;
   static final long THRESHOLD_DIRECT_MEMORY = 512 * ONE_MB;
-  static final long THRESHOLD_HEAP_SIZE = 256 * ONE_MB;
+  static final long THRESHOLD_HEAP_SIZE =
+      Math.floorDiv(
+          256 * ONE_MB * 9, 10); // 90% because getting actual max heap size is an approximation
 
   /**
    * throws a RuntimeException if max direct memory size is less than 512MB or max heap size is less
@@ -19,7 +21,7 @@ public class MemorySizeValidator {
       return; // GraalVM native image does not use a JVM, no validation required
     }
 
-    long maxHeapSize = getJvmMaxHeapSize();
+    long maxHeapSize = getJvmMaxHeapSizeApproximation();
     if (maxHeapSize < THRESHOLD_HEAP_SIZE) {
       throw new InvalidMaxHeapSizeException(THRESHOLD_HEAP_SIZE, maxHeapSize);
     }
@@ -41,10 +43,10 @@ public class MemorySizeValidator {
       }
     }
 
-    return getJvmMaxHeapSize(); // default max direct memory size is the max heap size
+    return getJvmMaxHeapSizeApproximation(); // default max direct memory size is the max heap size
   }
 
-  private static long getJvmMaxHeapSize() {
+  private static long getJvmMaxHeapSizeApproximation() {
     return requireNonNull(Runtime.getRuntime()).maxMemory();
   }
 
