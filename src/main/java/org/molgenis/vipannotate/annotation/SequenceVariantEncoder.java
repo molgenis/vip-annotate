@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
@@ -13,19 +15,21 @@ public class SequenceVariantEncoder {
   private SequenceVariantEncoder() {}
 
   public static boolean isSmallVariant(SequenceVariant variant) {
-    return variant.getRefLength() <= 4 && variant.getAlt().alt().length() <= 4;
-  }
-
-  private static boolean isSmall(int nrBases) {
-    return true; // FIXME
+    return switch (variant.getType()) {
+      case SNV, MNV, INDEL, INSERTION, DELETION -> {
+        String alt = variant.getAlt().alt();
+        yield alt != null && alt.length() <= 4 && isActg(alt) && variant.getRefLength() <= 16;
+      }
+      case STRUCTURAL, OTHER -> false;
+    };
   }
 
   /**
-   * Returns an encoded variant for variants with [1,4] reference bases and [1,4] alternate bases
+   * Returns an encoded variant for variants with [1,16] reference bases and [1,4] alternate bases
    *
    * <ul>
-   *   <li>{@code 20 bits} encoded position
-   *   <li>{@code 02 bits} encoded ref length
+   *   <li>{@code 18 bits} encoded position
+   *   <li>{@code 04 bits} encoded ref length
    *   <li>{@code 02 bits} encoded alt length
    *   <li>{@code 08 bits} encoded alt
    * </ul>
@@ -33,21 +37,13 @@ public class SequenceVariantEncoder {
    * @return encoded variant
    */
   public static int encodeSmall(SequenceVariant variant) {
-    int pos = variant.getStart();
-    byte[] altBases = variant.getAlt().alt().getBytes(StandardCharsets.UTF_8);
+    byte[] altBases = requireNonNull(variant.getAlt().alt()).getBytes(StandardCharsets.UTF_8);
 
-    int encodedPos = encodePos(pos);
-    int encodedRefLength = encodeSmallNrBases(variant.getRefLength());
-    int encodedAltLength = encodeSmallNrBases(altBases.length);
-    int encodedAlt;
-    try {
-      encodedAlt = encodeSmallAlt(altBases);
-    } catch (IllegalArgumentException e) {
-      System.out.println(variant);
-      throw e;
-    }
-
-    return encodedPos << 12 | encodedRefLength << 10 | encodedAltLength << 8 | encodedAlt;
+    int encodedPos = encodePos(variant.getStart());
+    int encodedRefLength = encodeNrBases(variant.getRefLength());
+    int encodedAltLength = encodeNrBases(altBases.length);
+    int encodedAlt = encodeSmallAlt(altBases);
+    return encodedPos << 14 | encodedRefLength << 10 | encodedAltLength << 8 | encodedAlt;
   }
 
   /**
@@ -56,53 +52,33 @@ public class SequenceVariantEncoder {
    * @return encoded variant
    */
   public static BigInteger encodeBig(SequenceVariant variant) {
-    int pos = variant.getStart();
-    int nrRefBases = variant.getStop() - variant.getStart() + 1;
-    byte[] altBases = variant.getAlt().alt().getBytes(StandardCharsets.UTF_8);
+    String alt = variant.getAlt().alt();
+    byte[] altBases = alt != null ? alt.getBytes(StandardCharsets.UTF_8) : new byte[0];
 
-    int encodedPos = encodePos(pos);
+    int encodedPos = encodePos(variant.getStart());
+    int encodedRefLength = encodeNrBases(variant.getRefLength());
     byte[] encodedAlt = encodeBigAlt(altBases);
 
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(32);
     memoryBuffer.writeVarUint32(encodedPos);
-    memoryBuffer.writeVarUint32(nrRefBases);
-    memoryBuffer.writeVarUint32(altBases.length);
+    memoryBuffer.writeVarUint32(encodedRefLength);
     memoryBuffer.writeBytes(encodedAlt);
 
     return new BigInteger(memoryBuffer.getHeapMemory(), 0, memoryBuffer.writerIndex());
   }
 
-  /**
-   * encoding:
-   *
-   * <ul>
-   *   <li>{@code 00} = 1 reference base
-   *   <li>{@code 01} = 2 reference bases
-   *   <li>{@code 10} = 3 reference bases
-   *   <li>{@code 11} = 4 reference bases
-   * </ul>
-   *
-   * @param nrBases number of bases in the range of {@code [1,4]}
-   * @return number of bases encoded in two bits
-   */
-  private static int encodeSmallNrBases(int nrBases) {
-    validateSmall(nrBases);
+  /** encodes number of bases as zero-based number */
+  private static int encodeNrBases(int nrBases) {
     return nrBases - 1;
   }
 
   /**
    * @param pos position >= 1
-   * @return position encoded in 20 bits
+   * @return position encoded in 18 bits
    */
   private static int encodePos(int pos) {
     if (pos < 1) throw new IllegalArgumentException("start must be greater than or equal to 1");
     return Partition.calcPosInBin(pos);
-  }
-
-  private static void validateSmall(int nrBases) {
-    if (!isSmall(nrBases)) {
-      throw new IllegalArgumentException("number of alt is outside of range [1,4]");
-    }
   }
 
   /**
@@ -119,7 +95,6 @@ public class SequenceVariantEncoder {
    * @return alternate alt encoded in 8 bits
    */
   private static int encodeSmallAlt(byte[] altBases) {
-    validateSmall(altBases.length);
 
     int encodedAlt = 0;
     for (int i = 0; i < altBases.length; i++) {
@@ -159,5 +134,20 @@ public class SequenceVariantEncoder {
           throw new IllegalArgumentException(
               "alt base '%s' not allowed, must be one of A,C,G,T".formatted((char) altBase));
     };
+  }
+
+  private static boolean isActg(String alt) {
+    for (int i = 0, len = alt.length(); i < len; i++) {
+      switch (alt.charAt(i)) {
+        case 'A':
+        case 'C':
+        case 'T':
+        case 'G':
+          break;
+        default:
+          return false;
+      }
+    }
+    return true;
   }
 }
