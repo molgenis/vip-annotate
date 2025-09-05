@@ -126,7 +126,8 @@ public class GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper {
     return switch (source) {
       case EXOMES -> gnomAdTsvRecord.covExomes();
       case GENOMES -> gnomAdTsvRecord.covGenomes();
-      case TOTAL -> gnomAdTsvRecord.covJoint();
+      // FIXME workaround for invalid cov joint in input gnomAD resource
+      case TOTAL -> gnomAdTsvRecord.covJoint() > 1 ? 1 : gnomAdTsvRecord.covJoint();
     };
   }
 }
