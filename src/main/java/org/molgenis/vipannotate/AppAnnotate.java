@@ -3,7 +3,6 @@ package org.molgenis.vipannotate;
 import static org.molgenis.vipannotate.util.MemorySizeValidator.validateMemorySizes;
 
 import java.nio.file.Path;
-import org.apache.fury.logging.LoggerFactory;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.VcfAnnotator;
 import org.molgenis.vipannotate.annotation.VcfAnnotatorFactory;
@@ -12,11 +11,6 @@ import org.molgenis.vipannotate.util.AppException;
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppAnnotate {
-
-  static {
-    LoggerFactory.disableLogging(); // disable apache fury logging
-  }
-
   public static void main(String[] args) {
 
     AppAnnotateArgs appAnnotateArgs = null;
