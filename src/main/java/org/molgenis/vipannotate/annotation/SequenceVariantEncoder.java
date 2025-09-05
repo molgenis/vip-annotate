@@ -76,7 +76,7 @@ public class SequenceVariantEncoder {
    * @param pos position >= 1
    * @return position encoded in 18 bits
    */
-  private static int encodePos(int pos) {
+  private static int encodePos(int pos) { // TODO make zero-based
     if (pos < 1) throw new IllegalArgumentException("start must be greater than or equal to 1");
     return Partition.calcPosInBin(pos);
   }
