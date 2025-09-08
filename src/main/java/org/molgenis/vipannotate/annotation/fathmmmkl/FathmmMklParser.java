@@ -13,20 +13,13 @@ public class FathmmMklParser {
     }
 
     int i = 0;
-    String chrom = parseChrom(tokens[i++]);
+    String chrom = tokens[i++];
     int pos = Integer.parseInt(tokens[i++]);
     String ref = tokens[i++];
     String alt = tokens[i++];
     double score = parseDouble(tokens[i]);
 
     return new FathmmMklTsvRecord(chrom, pos, ref, alt, score);
-  }
-
-  private String parseChrom(String token) {
-    if (!fastaIndex.containsReferenceSequence(token)) {
-      throw new IllegalArgumentException(token + " is not a valid chrom");
-    }
-    return token;
   }
 
   private static double parseDouble(String token) {

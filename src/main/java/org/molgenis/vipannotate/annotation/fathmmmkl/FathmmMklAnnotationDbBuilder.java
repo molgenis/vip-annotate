@@ -55,7 +55,9 @@ public class FathmmMklAnnotationDbBuilder {
         new TransformingIterator<>(
             new FilteringIterator<>(
                 new TransformingIterator<>(new TsvIterator(bufferedReader), fathmmMklParser::parse),
-                x -> !(x.score() < 0 || x.score() > 1)),
+                x ->
+                    fastaIndex.containsReferenceSequence(x.chrom())
+                        && !(x.score() < 0 || x.score() > 1)),
             tsvRecordToSequenceVariantMapper::annotate),
         annotatedSequenceVariant -> filter(annotatedSequenceVariant, regions));
   }
