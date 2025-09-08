@@ -10,7 +10,7 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <version.apache.commons.compress>1.28.0-SNAPSHOT</version.apache.commons.compress>
+        <version.apache.commons.compress>1.28.0</version.apache.commons.compress>
         <version.apache.fury>0.10.3</version.apache.fury>
         <version.graalvm.native.maven.plugin>0.10.6</version.graalvm.native.maven.plugin>
         <version.jacoco.maven.plugin>0.8.13</version.jacoco.maven.plugin>
@@ -272,21 +272,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <!-- added for g:org.apache.commons a:commons-compress -->
-        <repository>
-            <id>apache.snapshots</id>
-            <name>Apache Development Snapshot Repository</name>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencyManagement>
         <dependencies>
