@@ -5,7 +5,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.util.List;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.molgenis.vipannotate.util.DoubleCodec;

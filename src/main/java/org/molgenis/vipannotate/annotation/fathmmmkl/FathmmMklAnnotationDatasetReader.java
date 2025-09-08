@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation.fathmmmkl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.*;
 
 @RequiredArgsConstructor

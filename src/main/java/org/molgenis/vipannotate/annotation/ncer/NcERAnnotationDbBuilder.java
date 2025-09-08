@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.Position;

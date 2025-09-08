@@ -3,10 +3,10 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
-import org.apache.fury.Fury;
+import org.apache.fory.Fory;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.zip.MappableZipFile;
-import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.serialization.ForyFactory;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotatorFactory {
@@ -23,9 +23,9 @@ public class GnomAdAnnotatorFactory {
     AnnotationBlobReader annotationBlobReader =
         annotationBlobReaderFactory.create(mappableZipFile, "idx");
 
-    Fury fury = FuryFactory.createFury();
+    Fory fory = ForyFactory.createFory();
     SequenceVariantAnnotationIndexReader annotationIndexReader =
-        new SequenceVariantAnnotationIndexReader(annotationBlobReader, fury);
+        new SequenceVariantAnnotationIndexReader(annotationBlobReader, fory);
 
     GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory =
         new GnomAdAnnotationDatasetFactory(new GnomAdAnnotationDatasetDecoder());

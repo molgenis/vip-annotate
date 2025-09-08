@@ -1,13 +1,13 @@
 package org.molgenis.vipannotate.util;
 
 import java.io.PrintStream;
-import org.apache.fury.logging.LoggerFactory;
+import org.apache.fory.logging.LoggerFactory;
 
 public class Logger {
-    static {
-        LoggerFactory.disableLogging(); // disable apache fury logging
-    }
-    
+  static {
+    LoggerFactory.disableLogging(); // disable apache fory logging
+  }
+
   public static boolean REDIRECT_STDOUT_TO_STDERR = false;
   public static boolean ENABLE_DEBUG_LOGGING = false;
 

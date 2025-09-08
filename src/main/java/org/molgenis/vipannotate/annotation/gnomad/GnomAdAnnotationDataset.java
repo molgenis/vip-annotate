@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotationDataset;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;

@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class SpliceAiAnnotationDatasetFactory {

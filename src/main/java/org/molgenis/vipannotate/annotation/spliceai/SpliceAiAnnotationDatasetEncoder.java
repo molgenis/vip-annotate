@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.*;
 

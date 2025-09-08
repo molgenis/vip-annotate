@@ -3,24 +3,24 @@ package org.molgenis.vipannotate.serialization;
 import static java.util.Objects.requireNonNull;
 
 import me.lemire.integercompression.differential.IntegratedIntCompressor;
-import org.apache.fury.Fury;
-import org.apache.fury.memory.MemoryBuffer;
-import org.apache.fury.serializer.ArraySerializers;
-import org.apache.fury.serializer.Serializer;
+import org.apache.fory.Fory;
+import org.apache.fory.memory.MemoryBuffer;
+import org.apache.fory.serializer.ArraySerializers;
+import org.apache.fory.serializer.Serializer;
 
 /**
  * Serializer for sorted int arrays.
  *
- * @see <a href="https://fury.apache.org/docs/specification/fury_java_serialization_spec#array">Fury
+ * @see <a href="https://fory.apache.org/docs/specification/fory_java_serialization_spec#array">Fory
  *     Java Serialization Format</a>
  */
 public class SortedIntArrayWrapperSerializer extends Serializer<SortedIntArrayWrapper> {
   private final ArraySerializers.IntArraySerializer intArraySerializer;
   private final IntegratedIntCompressor integratedIntCompressor;
 
-  public SortedIntArrayWrapperSerializer(Fury fury) {
-    super(fury, SortedIntArrayWrapper.class);
-    this.intArraySerializer = new ArraySerializers.IntArraySerializer(fury);
+  public SortedIntArrayWrapperSerializer(Fory fory) {
+    super(fory, SortedIntArrayWrapper.class);
+    this.intArraySerializer = new ArraySerializers.IntArraySerializer(fory);
     this.integratedIntCompressor = new IntegratedIntCompressor();
   }
 

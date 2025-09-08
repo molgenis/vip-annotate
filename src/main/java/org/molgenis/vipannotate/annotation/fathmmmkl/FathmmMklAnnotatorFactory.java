@@ -3,11 +3,11 @@ package org.molgenis.vipannotate.annotation.fathmmmkl;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
-import org.apache.fury.Fury;
+import org.apache.fory.Fory;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.gnomad.*;
 import org.molgenis.vipannotate.format.zip.MappableZipFile;
-import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.serialization.ForyFactory;
 
 @RequiredArgsConstructor
 public class FathmmMklAnnotatorFactory {
@@ -24,9 +24,9 @@ public class FathmmMklAnnotatorFactory {
     AnnotationBlobReader annotationBlobReader =
         annotationBlobReaderFactory.create(mappableZipFile, "idx");
 
-    Fury fury = FuryFactory.createFury();
+    Fory fory = ForyFactory.createFory();
     SequenceVariantAnnotationIndexReader annotationIndexReader =
-        new SequenceVariantAnnotationIndexReader(annotationBlobReader, fury);
+        new SequenceVariantAnnotationIndexReader(annotationBlobReader, fory);
 
     FathmmMklAnnotationDatasetFactory annotationDatasetFactory =
         new FathmmMklAnnotationDatasetFactory(new FathmmMklAnnotationDatasetDecoder());

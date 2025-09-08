@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.util.*;

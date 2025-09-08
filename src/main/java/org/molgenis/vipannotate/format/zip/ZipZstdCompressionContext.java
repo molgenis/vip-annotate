@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.Logger;
 
 @RequiredArgsConstructor

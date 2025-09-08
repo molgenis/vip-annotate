@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation.fathmmmkl;
 
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.DoubleCodec;
 
 public class FathmmMklAnnotationDatasetDecoder {
@@ -15,7 +15,7 @@ public class FathmmMklAnnotationDatasetDecoder {
   }
 
   public double decodeScore(MemoryBuffer memoryBuffer, int index) {
-      byte value = memoryBuffer.getByte(index * Byte.BYTES);
-      return doubleCodec.decodeDoublePrimitiveUnitIntervalFromByte(value);
+    byte value = memoryBuffer.getByte(index * Byte.BYTES);
+    return doubleCodec.decodeDoublePrimitiveUnitIntervalFromByte(value);
   }
 }

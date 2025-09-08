@@ -11,7 +11,7 @@ import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
-import org.molgenis.vipannotate.serialization.FuryFactory;
+import org.molgenis.vipannotate.serialization.ForyFactory;
 import org.molgenis.vipannotate.util.FilteringIterator;
 import org.molgenis.vipannotate.util.Region;
 import org.molgenis.vipannotate.util.TransformingIterator;
@@ -38,7 +38,7 @@ public class FathmmMklAnnotationDbBuilder {
       new AnnotatedSequenceVariantDbWriter<>(
               new FathmmMklAnnotatedSequenceVariantPartitionWriter(
                   annotationDatasetEncoder, binaryPartitionWriter),
-              new AnnotationIndexWriter(FuryFactory.createFury(), binaryPartitionWriter))
+              new AnnotationIndexWriter(ForyFactory.createFory(), binaryPartitionWriter))
           .write(sequenceVariantIterator);
     } catch (IOException e) {
       throw new UncheckedIOException(e);

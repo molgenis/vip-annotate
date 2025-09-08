@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 
 public interface AnnotationEncoder<T extends Annotation> {
   /**

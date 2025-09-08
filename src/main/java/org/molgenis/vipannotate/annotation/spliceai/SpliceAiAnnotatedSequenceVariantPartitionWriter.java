@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation.spliceai;
 import java.util.*;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.annotation.AnnotatedIntervalPartitionWriter;
 import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
 import org.molgenis.vipannotate.annotation.BinaryPartitionWriter;

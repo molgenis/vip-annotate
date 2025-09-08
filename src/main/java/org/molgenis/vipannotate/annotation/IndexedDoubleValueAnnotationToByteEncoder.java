@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.DoubleCodec;
 
 public class IndexedDoubleValueAnnotationToByteEncoder

@@ -4,7 +4,7 @@ import com.github.luben.zstd.ZstdDecompressCtx;
 import java.nio.ByteBuffer;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor

@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation.fathmmmkl;
 
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.*;
 
 public class FathmmMklAnnotationDatasetEncoder {

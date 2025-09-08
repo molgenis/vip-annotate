@@ -1,14 +1,14 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.fury.Fury;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.Fory;
+import org.apache.fory.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexReader
     implements AnnotationIndexReader<SequenceVariant> {
   private final AnnotationBlobReader annotationBlobReader;
-  private final Fury fury;
+  private final Fory fory;
 
   /**
    * @return annotation index
@@ -17,7 +17,7 @@ public class SequenceVariantAnnotationIndexReader
   public AnnotationIndex<SequenceVariant> read(Partition.Key partitionKey) {
     MemoryBuffer memoryBuffer = annotationBlobReader.read(partitionKey);
     return memoryBuffer != null
-        ? fury.deserializeJavaObject(memoryBuffer, SequenceVariantAnnotationIndex.class)
+        ? fory.deserializeJavaObject(memoryBuffer, SequenceVariantAnnotationIndex.class)
         : EmptyAnnotationIndex.getInstance();
   }
 

@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
-import org.apache.fury.memory.MemoryBuffer;
+import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.AlleleUtils;
 
 /**
