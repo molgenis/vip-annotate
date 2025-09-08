@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.annotation.fathmmmkl.FathmmMklAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotatorFactory;
@@ -32,6 +33,9 @@ public class VcfAnnotatorFactory implements AutoCloseable {
   }
 
   private VcfRecordAnnotatorAggregator createVcfRecordAnnotator(Path annotationsDir) {
+    VcfRecordAnnotator vcfRecordAnnotatorFathmmMkl =
+        new FathmmMklAnnotatorFactory(annotationBlobReaderFactory, vcfRecordAnnotationWriter)
+            .create(annotationsDir);
     VcfRecordAnnotator vcfRecordAnnotatorGnomAd =
         new GnomAdAnnotatorFactory(annotationBlobReaderFactory, vcfRecordAnnotationWriter)
             .create(annotationsDir);
@@ -49,6 +53,7 @@ public class VcfAnnotatorFactory implements AutoCloseable {
             .create(annotationsDir);
     return new VcfRecordAnnotatorAggregator(
         List.of(
+            vcfRecordAnnotatorFathmmMkl,
             vcfRecordAnnotatorGnomAd,
             vcfRecordAnnotatorNcER,
             vcfRecordAnnotatorPhyloP,

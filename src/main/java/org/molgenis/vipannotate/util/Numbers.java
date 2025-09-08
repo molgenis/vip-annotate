@@ -77,4 +77,10 @@ public class Numbers {
     }
     return num;
   }
+
+  public static void validateUnitInterval(double num) {
+    if (num < 0 || num > 1) {
+      throw new IllegalArgumentException("number must be in range [0, 1]");
+    }
+  }
 }

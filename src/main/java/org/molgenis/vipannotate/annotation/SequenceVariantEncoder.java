@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 import org.apache.fury.memory.MemoryBuffer;
+import org.molgenis.vipannotate.util.AlleleUtils;
 
 /**
  * Based on <a href="https://doi.org/10.1093/nar/gkac931">Echtvar: compressed variant representation
@@ -18,7 +19,10 @@ public class SequenceVariantEncoder {
     return switch (variant.getType()) {
       case SNV, MNV, INDEL, INSERTION, DELETION -> {
         String alt = variant.getAlt().alt();
-        yield alt != null && alt.length() <= 4 && isActg(alt) && variant.getRefLength() <= 16;
+        yield alt != null
+            && alt.length() <= 4
+            && AlleleUtils.isActg(alt)
+            && variant.getRefLength() <= 16;
       }
       case STRUCTURAL, OTHER -> false;
     };
@@ -134,20 +138,5 @@ public class SequenceVariantEncoder {
           throw new IllegalArgumentException(
               "alt base '%s' not allowed, must be one of A,C,G,T".formatted((char) altBase));
     };
-  }
-
-  private static boolean isActg(String alt) {
-    for (int i = 0, len = alt.length(); i < len; i++) {
-      switch (alt.charAt(i)) {
-        case 'A':
-        case 'C':
-        case 'T':
-        case 'G':
-          break;
-        default:
-          return false;
-      }
-    }
-    return true;
   }
 }

@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.annotation.phylop;
+package org.molgenis.vipannotate.annotation.fathmmmkl;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -15,14 +15,14 @@ import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.util.Region;
 import org.molgenis.vipannotate.util.RegionParser;
 
-public class PhyloPAnnotationDbBuilderCommand implements Command {
-  private static final String COMMAND = "phylop";
+public class FathmmMklAnnotationDbBuilderCommand implements Command {
+  private static final String COMMAND = "fathmm_mkl";
 
   @Override
   public void run(String[] args) {
     AppDbCommandArgs commandArgs = new AppDbCommandArgsParser(COMMAND).parse(args);
 
-    Path phyloPFile = commandArgs.inputFile();
+    Path inputFile = commandArgs.inputFile();
     Path faiFile = commandArgs.faiFile();
     Path outputFile = commandArgs.outputFile();
 
@@ -37,8 +37,8 @@ public class PhyloPAnnotationDbBuilderCommand implements Command {
 
     try (ZipArchiveOutputStream zipArchiveOutputStream =
         Zip.createZipArchiveOutputStream(outputFile)) {
-      new PhyloPAnnotationDbBuilder()
-          .create(phyloPFile, regions, fastaIndex, zipArchiveOutputStream);
+      new FathmmMklAnnotationDbBuilder()
+          .create(inputFile, regions, fastaIndex, zipArchiveOutputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

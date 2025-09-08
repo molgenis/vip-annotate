@@ -1,10 +1,10 @@
-package org.molgenis.vipannotate.annotation;
+package org.molgenis.vipannotate;
 
 import java.nio.file.Path;
 import org.jspecify.annotations.Nullable;
 
 /** {@link org.molgenis.vipannotate.AppDb} command-line arguments shared between commands */
-public record DbCommandArgs(
+public record AppDbCommandArgs(
     Path inputFile,
     Path faiFile,
     Path outputFile,

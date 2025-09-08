@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate;
 
+import org.molgenis.vipannotate.annotation.fathmmmkl.FathmmMklAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotationDbBuilderCommand;
@@ -19,6 +20,7 @@ public class AppDb {
 
   private static Command getCommand(AppDbArgs appDbArgs) {
     return switch (appDbArgs.command()) {
+      case FATHMM_MKL -> new FathmmMklAnnotationDbBuilderCommand();
       case GNOMAD_SHORT_VARIANT -> new GnomAdAnnotationDbBuilderCommand();
       case NCER -> new NcERAnnotationDbBuilderCommand();
       case PHYLOP -> new PhyloPAnnotationDbBuilderCommand();

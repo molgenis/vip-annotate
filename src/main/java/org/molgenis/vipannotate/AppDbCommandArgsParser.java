@@ -1,19 +1,17 @@
-package org.molgenis.vipannotate.annotation;
+package org.molgenis.vipannotate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.App;
-import org.molgenis.vipannotate.ArgsParser;
 import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Logger;
 
 @RequiredArgsConstructor
-public class DbCommandArgsParser extends ArgsParser<DbCommandArgs> {
+public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
   private final String command;
 
   @Override
-  public DbCommandArgs parse(String[] args) {
+  public AppDbCommandArgs parse(String[] args) {
     super.validate(args);
 
     Path inputFile = null, faiFile = null, outputFile = null;
@@ -79,7 +77,7 @@ public class DbCommandArgsParser extends ArgsParser<DbCommandArgs> {
       System.exit(1);
     }
 
-    return new DbCommandArgs(inputFile, faiFile, outputFile, regionsStr, force, debug);
+    return new AppDbCommandArgs(inputFile, faiFile, outputFile, regionsStr, force, debug);
   }
 
   @Override

@@ -4,6 +4,7 @@ import static org.molgenis.vipannotate.util.Numbers.*;
 
 import java.util.EnumSet;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.AlleleUtils;
 
 public record GnomAdTsvRecord(
     String chrom,
@@ -61,16 +62,8 @@ public record GnomAdTsvRecord(
   }
 
   private void validateAllele(String allele) {
-    for (int i = 0, alleleLength = allele.length(); i < alleleLength; i++) {
-      switch (allele.charAt(i)) {
-        case 'A':
-        case 'C':
-        case 'T':
-        case 'G':
-          break;
-        default:
-          throw new IllegalArgumentException(allele + " is not a valid allele.");
-      }
+    if (!AlleleUtils.isActg(allele)) {
+      throw new IllegalArgumentException(allele + " is not a valid allele.");
     }
   }
 }
