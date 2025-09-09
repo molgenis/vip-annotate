@@ -17,7 +17,7 @@
         <version.jspecify>1.0.0</version.jspecify>
         <version.junit.bom>5.12.2</version.junit.bom>
         <version.lemire.integercompression>0.2.1</version.lemire.integercompression>
-        <version.lombok>1.18.38</version.lombok>
+        <version.lombok>1.18.40</version.lombok>
         <version.luben.zstd.jni>1.5.7-3</version.luben.zstd.jni>
         <version.maven.assembly.plugin>3.7.1</version.maven.assembly.plugin>
         <version.maven.clean.plugin>3.5.0</version.maven.clean.plugin>
@@ -96,7 +96,9 @@
                     <version>${version.spotless.maven.plugin}</version>
                     <configuration>
                         <java>
-                            <googleJavaFormat/>
+                            <googleJavaFormat>
+                                <version>1.28.0</version>
+                            </googleJavaFormat>
                         </java>
                     </configuration>
                     <executions>

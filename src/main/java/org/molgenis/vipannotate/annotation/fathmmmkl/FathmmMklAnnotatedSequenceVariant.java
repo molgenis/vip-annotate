@@ -13,7 +13,8 @@ import org.molgenis.vipannotate.annotation.*;
 @EqualsAndHashCode(callSuper = true)
 public class FathmmMklAnnotatedSequenceVariant
     extends AnnotatedSequenceVariant<FathmmMklAnnotation> {
-  public FathmmMklAnnotatedSequenceVariant(SequenceVariant variant, FathmmMklAnnotation annotation) {
+  public FathmmMklAnnotatedSequenceVariant(
+      SequenceVariant variant, FathmmMklAnnotation annotation) {
     super(variant, annotation);
   }
 }
