@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 public record VcfMetaInfo(List<Line> lines) {
   public interface Line {
@@ -72,7 +73,7 @@ public record VcfMetaInfo(List<Line> lines) {
   }
 
   public void addOrUpdateInfo(
-      String id, String number, String type, String description, String source, String version) {
+          String id, String number, String type, String description, @Nullable String source, @Nullable String version) {
     LinkedHashMap<String, String> keyValues = new LinkedHashMap<>();
     keyValues.put("ID", id);
     keyValues.put("NUMBER", number);

@@ -32,7 +32,7 @@ public class NcERAnnotator implements VcfRecordAnnotator {
     int refLength = vcfRecord.ref().length();
     int start = vcfRecord.pos();
     int stop = vcfRecord.pos() + refLength - 1;
-    String[] alts = vcfRecord.alt();
+    @Nullable String[] alts = vcfRecord.alt();
 
     List<@Nullable DoubleValueAnnotation> altsAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {

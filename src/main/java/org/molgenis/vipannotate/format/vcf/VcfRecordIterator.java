@@ -52,7 +52,7 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
     int pos = Integer.parseInt(tokens[1]);
     String[] id = parseId(tokens[2]);
     String ref = tokens[3];
-    String[] alt = parseAlt(tokens[4]);
+    @Nullable String[] alt = parseAlt(tokens[4]);
     String qual = parseQual(tokens[5]);
     String[] filter = parseFilter(tokens[6]);
     Map<String, String> info = parseInfo(tokens[7]);

@@ -32,7 +32,7 @@ public class PhyloPAnnotator implements VcfRecordAnnotator {
     Contig contig = new Contig(vcfRecord.chrom());
     int start = vcfRecord.pos();
     int stop = vcfRecord.pos() + vcfRecord.ref().length() - 1;
-    String[] alts = vcfRecord.alt();
+    @Nullable String[] alts = vcfRecord.alt();
 
     List<@Nullable DoubleValueAnnotation> altsAnnotations = new ArrayList<>(alts.length);
     for (String alt : alts) {
