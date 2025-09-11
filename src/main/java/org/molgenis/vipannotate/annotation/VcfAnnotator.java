@@ -7,6 +7,7 @@ import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfParser;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 import org.molgenis.vipannotate.format.vcf.VcfWriter;
+import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.util.PredicateBatchIterator;
 
 @RequiredArgsConstructor
@@ -31,10 +32,33 @@ public class VcfAnnotator implements AutoCloseable {
     vcfWriter.writeHeader(vcfHeader);
 
     // update records
+    long start = System.currentTimeMillis();
+    Logger.debug("annotating records");
+
+    int processedRecords = 0;
     while (batchIterator.hasNext()) {
       List<VcfRecord> batch = batchIterator.next();
       vcfRecordAnnotator.annotate(batch);
       vcfWriter.write(batch);
+
+      // log progress
+      if (Logger.isDebugEnabled()) {
+        processedRecords += batch.size();
+        if (processedRecords % 100000 < ANNOTATE_BATCH_SIZE) {
+          Logger.debug("processed %d records", processedRecords);
+        }
+      }
+    }
+
+    if (Logger.isDebugEnabled()) {
+      // log progress (remainder)
+      if (processedRecords % 100000 >= ANNOTATE_BATCH_SIZE) {
+        Logger.debug("processed %d records", processedRecords);
+      }
+      long duration = System.currentTimeMillis() - start;
+      Logger.debug(
+          "annotating records took %d s, %d records/s",
+          Math.divideExact(duration, 1000L), Math.divideExact(processedRecords * 1000L, duration));
     }
   }
 

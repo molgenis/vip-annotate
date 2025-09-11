@@ -52,7 +52,9 @@ public class FathmmMklAnnotator implements VcfRecordAnnotator {
       } else if (altAnnotations.size() == 1) {
         altsAnnotations.add(altAnnotations.getFirst());
       } else {
-        throw new RuntimeException("Multiple AltAllele annotations found"); // TODO typed exception
+        // fathmm annotation resource can contain multiple chr-pos-ref_len-alt annotations
+        // FIXME remove workaround after fathmm annotation resource fix
+        altsAnnotations.add(altAnnotations.getFirst());
       }
     }
 

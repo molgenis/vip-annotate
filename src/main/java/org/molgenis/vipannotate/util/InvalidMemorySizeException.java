@@ -3,7 +3,10 @@ package org.molgenis.vipannotate.util;
 import static org.molgenis.vipannotate.util.MemorySizeValidator.ONE_MB;
 import static org.molgenis.vipannotate.util.MemorySizeValidator.THRESHOLD_HEAP_SIZE;
 
+import java.io.Serial;
+
 public abstract class InvalidMemorySizeException extends AppException {
+  @Serial private static final long serialVersionUID = 1L;
 
   public InvalidMemorySizeException(String message) {
     super(

@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate;
 
+import org.apache.fory.logging.LoggerFactory;
 import org.molgenis.vipannotate.annotation.fathmmmkl.FathmmMklAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotationDbBuilderCommand;
 import org.molgenis.vipannotate.annotation.ncer.NcERAnnotationDbBuilderCommand;
@@ -9,7 +10,9 @@ import org.molgenis.vipannotate.annotation.spliceai.SpliceAiAnnotationDbBuilderC
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppDb {
-  public static void main(String[] args) {
+  static void main(String[] args) {
+    LoggerFactory.disableLogging(); // disable apache fory logging
+
     try {
       AppDbArgs appDbArgs = new AppDbArgsParser().parse(args);
       getCommand(appDbArgs).run(appDbArgs.args());

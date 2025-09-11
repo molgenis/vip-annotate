@@ -55,7 +55,6 @@ public class Numbers {
   }
 
   public static void validateNonNegativeOrNull(@Nullable Double num) {
-    //noinspection ResultOfMethodCallIgnored
     requireNonNegativeOrNull(num);
   }
 
@@ -67,7 +66,6 @@ public class Numbers {
   }
 
   public static void validateNonNegativeOrNull(@Nullable Integer num) {
-    //noinspection ResultOfMethodCallIgnored
     requireNonNegativeOrNull(num);
   }
 

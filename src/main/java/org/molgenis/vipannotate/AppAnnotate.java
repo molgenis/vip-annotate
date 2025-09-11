@@ -3,6 +3,7 @@ package org.molgenis.vipannotate;
 import static org.molgenis.vipannotate.util.MemorySizeValidator.validateMemorySizes;
 
 import java.nio.file.Path;
+import org.apache.fory.logging.LoggerFactory;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.VcfAnnotator;
 import org.molgenis.vipannotate.annotation.VcfAnnotatorFactory;
@@ -11,7 +12,8 @@ import org.molgenis.vipannotate.util.AppException;
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppAnnotate {
-  public static void main(String[] args) {
+  static void main(String[] args) {
+    LoggerFactory.disableLogging(); // disable apache fory logging
 
     AppAnnotateArgs appAnnotateArgs = null;
     try {
@@ -28,6 +30,10 @@ public class AppAnnotate {
     Path annotationsDir = appAnnotateArgs.annotationsDir();
     Path outputVcf = appAnnotateArgs.outputVcf();
     VcfType outputVcfType = appAnnotateArgs.vcfType();
+
+    if (appAnnotateArgs.debugMode() != null && appAnnotateArgs.debugMode()) {
+      Logger.ENABLE_DEBUG_LOGGING = true;
+    }
 
     if (outputVcf == null) {
       // output vcf is written to System.out, redirect logs to System.err
