@@ -161,4 +161,28 @@ class NumbersTest {
   void requireNonNegativeOrNullDoubleInvalid() {
     assertThrows(IllegalArgumentException.class, () -> Numbers.requireNonNegativeOrNull(-1d));
   }
+
+  @Test
+  void validateIntervalOrNullValid() {
+    assertDoesNotThrow(() -> Numbers.validateIntervalOrNull((byte) 0, (byte) -1, (byte) 1));
+  }
+
+  @Test
+  void validateIntervalOrNullValidNull() {
+    assertDoesNotThrow(() -> Numbers.validateIntervalOrNull(null, (byte) -1, (byte) 1));
+  }
+
+  @Test
+  void validateIntervalOrNullInvalidFrom() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> Numbers.validateIntervalOrNull((byte) -2, (byte) -1, (byte) 1));
+  }
+
+  @Test
+  void validateIntervalOrNullInvalidTo() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> Numbers.validateIntervalOrNull((byte) 2, (byte) -1, (byte) 1));
+  }
 }

@@ -86,16 +86,31 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
             .append(reusableDecimalFormat.format(annotation.deltaScoreDonorGain()))
             .append('|')
             .append(reusableDecimalFormat.format(annotation.deltaScoreDonorLoss()))
-            .append('|')
-            .append(annotation.deltaPositionAcceptorGain())
-            .append('|')
-            .append(annotation.deltaPositionAcceptorLoss())
-            .append('|')
-            .append(annotation.deltaPositionDonorGain())
-            .append('|')
-            .append(annotation.deltaPositionDonorLoss());
-      }
+            .append('|');
 
+        Byte deltaPositionAcceptorGain = annotation.deltaPositionAcceptorGain();
+        if (deltaPositionAcceptorGain != null) {
+          reusableStringBuilder.append(deltaPositionAcceptorGain);
+        }
+
+        reusableStringBuilder.append('|');
+        Byte deltaPositionAcceptorLoss = annotation.deltaPositionAcceptorLoss();
+        if (deltaPositionAcceptorLoss != null) {
+          reusableStringBuilder.append(deltaPositionAcceptorLoss);
+        }
+
+        reusableStringBuilder.append('|');
+        Byte deltaPositionDonorGain = annotation.deltaPositionDonorGain();
+        if (deltaPositionDonorGain != null) {
+          reusableStringBuilder.append(deltaPositionDonorGain);
+        }
+
+        reusableStringBuilder.append('|');
+        Byte deltaPositionDonorLoss = annotation.deltaPositionDonorLoss();
+        if (deltaPositionDonorLoss != null) {
+          reusableStringBuilder.append(deltaPositionDonorLoss);
+        }
+      }
     } else {
       reusableStringBuilder.append('.');
     }

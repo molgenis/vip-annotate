@@ -81,4 +81,11 @@ public class Numbers {
       throw new IllegalArgumentException("number must be in range [0, 1]");
     }
   }
+
+  public static void validateIntervalOrNull(@Nullable Byte num, byte from, byte to) {
+    if (num != null && (num < from || num > to)) {
+      throw new IllegalArgumentException(
+          "number '%d' must be null or in range [%d, %d]".formatted(num, from, to));
+    }
+  }
 }

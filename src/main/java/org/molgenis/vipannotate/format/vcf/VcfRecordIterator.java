@@ -55,7 +55,7 @@ public class VcfRecordIterator implements Iterator<VcfRecord>, AutoCloseable {
     @Nullable String[] alt = parseAlt(tokens[4]);
     String qual = parseQual(tokens[5]);
     String[] filter = parseFilter(tokens[6]);
-    Map<String, String> info = parseInfo(tokens[7]);
+    Map<String, @Nullable String> info = parseInfo(tokens[7]);
 
     String[] format;
     String[] sampleData;

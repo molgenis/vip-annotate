@@ -38,9 +38,9 @@ public class SpliceAiAnnotationDatasetEncoder {
    * @param posIt positions in the range [-50, 50]
    * @return memory buffer with encoded positions
    */
-  public MemoryBuffer encodePos(SizedIterator<Byte> posIt) {
+  public MemoryBuffer encodePos(SizedIterator<@Nullable Byte> posIt) {
     MemoryBuffer memoryBuffer = MemoryBuffer.newHeapBuffer(posIt.getSize() * Byte.BYTES);
-    posIt.forEachRemaining(value -> memoryBuffer.writeByte(value + 50));
+    posIt.forEachRemaining(value -> memoryBuffer.writeByte(value != null ? value + 51 : 0));
     return memoryBuffer;
   }
 }

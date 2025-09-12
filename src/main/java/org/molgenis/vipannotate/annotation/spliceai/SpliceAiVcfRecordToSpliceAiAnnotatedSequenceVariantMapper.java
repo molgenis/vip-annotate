@@ -23,7 +23,7 @@ public class SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper {
 
     Contig contig = contigRegistry.getContig(chromStr);
     if (contig == null) {
-      return null;
+      throw new RuntimeException("Contig " + chromStr + " not found");
     }
 
     String ref = spliceAiVcfRecord.ref();
@@ -41,17 +41,36 @@ public class SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper {
   private @Nullable SpliceAiAnnotation createAnnotation(SpliceAiVcfRecord spliceAiVcfRecord) {
     String hgncGeneSymbol = spliceAiVcfRecord.hgncGeneSymbol();
     Integer ncbiGeneId = geneIdMapper.map(hgncGeneSymbol);
-    if (ncbiGeneId == null) return null;
+    if (ncbiGeneId == null) {
+      return null;
+    }
+
+    double deltaScoreAcceptorGain = spliceAiVcfRecord.deltaScoreAcceptorGain();
+    double deltaScoreAcceptorLoss = spliceAiVcfRecord.deltaScoreAcceptorLoss();
+    double deltaScoreDonorGain = spliceAiVcfRecord.deltaScoreDonorGain();
+    double deltaScoreDonorLoss = spliceAiVcfRecord.deltaScoreDonorLoss();
+
+    // variant delta scores range from 0 to 1 and can be interpreted as the probability of the
+    // variant being splice-altering, so it does not make sense to annotate delta positions when the
+    // corresponding delta score is 0.
+    Byte deltaPositionAcceptorGain =
+        deltaScoreAcceptorGain != 0 ? spliceAiVcfRecord.deltaPositionAcceptorGain() : null;
+    Byte deltaPositionAcceptorLoss =
+        deltaScoreAcceptorLoss != 0 ? spliceAiVcfRecord.deltaPositionAcceptorLoss() : null;
+    Byte deltaPositionDonorGain =
+        deltaScoreDonorGain != 0 ? spliceAiVcfRecord.deltaPositionDonorGain() : null;
+    Byte deltaPositionDonorLoss =
+        deltaScoreDonorLoss != 0 ? spliceAiVcfRecord.deltaPositionDonorLoss() : null;
 
     return new SpliceAiAnnotation(
         ncbiGeneId,
-        spliceAiVcfRecord.deltaScoreAcceptorGain(),
-        spliceAiVcfRecord.deltaScoreAcceptorLoss(),
-        spliceAiVcfRecord.deltaScoreDonorGain(),
-        spliceAiVcfRecord.deltaScoreDonorLoss(),
-        spliceAiVcfRecord.deltaPositionAcceptorGain(),
-        spliceAiVcfRecord.deltaPositionAcceptorLoss(),
-        spliceAiVcfRecord.deltaPositionDonorGain(),
-        spliceAiVcfRecord.deltaPositionDonorLoss());
+        deltaScoreAcceptorGain,
+        deltaScoreAcceptorLoss,
+        deltaScoreDonorGain,
+        deltaScoreDonorLoss,
+        deltaPositionAcceptorGain,
+        deltaPositionAcceptorLoss,
+        deltaPositionDonorGain,
+        deltaPositionDonorLoss);
   }
 }

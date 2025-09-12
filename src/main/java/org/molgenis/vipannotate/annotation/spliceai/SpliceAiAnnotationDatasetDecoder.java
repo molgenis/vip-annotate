@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
 import org.apache.fory.memory.MemoryBuffer;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.DoubleCodec;
 
 public class SpliceAiAnnotationDatasetDecoder {
@@ -27,7 +28,8 @@ public class SpliceAiAnnotationDatasetDecoder {
     return doubleCodec.decodeDoublePrimitiveUnitIntervalFromByte(value);
   }
 
-  public byte decodePos(MemoryBuffer memoryBuffer, int index) {
-    return (byte) (memoryBuffer.getByte(index) - 50);
+  public @Nullable Byte decodePos(MemoryBuffer memoryBuffer, int index) {
+    byte b = memoryBuffer.getByte(index);
+    return b != 0 ? (byte) (b - 51) : null;
   }
 }

@@ -30,6 +30,18 @@ class SpliceAiAnnotationDatasetDecoderTest {
   @Test
   void decodePos() {
     MemoryBuffer memoryBuffer = MemoryBuffer.fromByteArray(new byte[] {25, 50, 75});
-    assertEquals(0, spliceAiAnnotationDatasetDecoder.decodePos(memoryBuffer, 1));
+    assertEquals((byte) -1, spliceAiAnnotationDatasetDecoder.decodePos(memoryBuffer, 1));
+  }
+
+  @Test
+  void decodePosZero() {
+    MemoryBuffer memoryBuffer = MemoryBuffer.fromByteArray(new byte[] {25, 51, 75});
+    assertEquals((byte) 0, (byte) spliceAiAnnotationDatasetDecoder.decodePos(memoryBuffer, 1));
+  }
+
+  @Test
+  void decodePosNull() {
+    MemoryBuffer memoryBuffer = MemoryBuffer.fromByteArray(new byte[] {25, 0, 75});
+    assertNull(spliceAiAnnotationDatasetDecoder.decodePos(memoryBuffer, 1));
   }
 }

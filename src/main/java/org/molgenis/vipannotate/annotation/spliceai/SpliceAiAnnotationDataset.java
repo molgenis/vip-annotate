@@ -27,10 +27,10 @@ public class SpliceAiAnnotationDataset implements AnnotationDataset<SpliceAiAnno
     double dsal = annotationDataDecoder.decodeScore(dsalMemoryBuffer, index);
     double dsdg = annotationDataDecoder.decodeScore(dsdgMemoryBuffer, index);
     double dsdl = annotationDataDecoder.decodeScore(dsdlMemoryBuffer, index);
-    byte dpag = annotationDataDecoder.decodePos(dpagMemoryBuffer, index);
-    byte dpal = annotationDataDecoder.decodePos(dpalMemoryBuffer, index);
-    byte dpdg = annotationDataDecoder.decodePos(dpdgMemoryBuffer, index);
-    byte dpdl = annotationDataDecoder.decodePos(dpdlMemoryBuffer, index);
+    Byte dpag = annotationDataDecoder.decodePos(dpagMemoryBuffer, index);
+    Byte dpal = annotationDataDecoder.decodePos(dpalMemoryBuffer, index);
+    Byte dpdg = annotationDataDecoder.decodePos(dpdgMemoryBuffer, index);
+    Byte dpdl = annotationDataDecoder.decodePos(dpdlMemoryBuffer, index);
     return new SpliceAiAnnotation(ncbiGeneId, dsag, dsal, dsdg, dsdl, dpag, dpal, dpdg, dpdl);
   }
 }

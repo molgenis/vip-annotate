@@ -53,8 +53,9 @@ public class AppAnnotateIT {
 ##INFO=<ID=REMM,NUMBER=A,TYPE=Float,DESCRIPTION="REMM score",SOURCE="vip-annotate",VERSION="0.0.0-dev">
 ##INFO=<ID=SpliceAI,NUMBER=A,TYPE=String,DESCRIPTION="SpliceAI annotations per ALT allele. Multiple annotations per allele are separated by '&'. Each annotation is formatted as 'NCBI_GENE_ID|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL' where DS stands for delta scores, DP stands for delta positions, AG for acceptor gain, AL for acceptor loss, DG for donor gain and DL for donor loss.",SOURCE="vip-annotate",VERSION="0.0.0-dev">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-chr2	166305791	.	C	T	.	.	FATHMM_MKL=0.996;gnomAD=T|0|0|0|0||1;ncER=99.8932;phyloP=9.995;REMM=0.988;SpliceAI=6335|0|0|0|0.99|-3|-5|-3|1
-chr2	166305792	.	G	A,C	.	.	FATHMM_MKL=0.996,0.996;gnomAD=T|0|0|0|0||1,T|0|0|0|0||1;ncER=99.9313,99.9313;phyloP=9.996,9.996;REMM=0.992,0.992;SpliceAI=6335|0|0|0.03|0|-15|-7|2|0,6335|0|0|0|0|-1|-6|0|-4
+chr2	166195200	.	C	G	.	.	FATHMM_MKL=0.169;gnomAD=T|0.0001|0|0|0||0.9977;ncER=58.0966;phyloP=-0.131;REMM=0.012;SpliceAI=6335|0|0|0|0||||
+chr2	166305791	.	C	T	.	.	FATHMM_MKL=0.996;gnomAD=T|0|0|0|0||1;ncER=99.8932;phyloP=7.905;REMM=0.988;SpliceAI=6335|0|0|0|0.99||||1
+chr2	166305792	.	G	A,C	.	.	FATHMM_MKL=0.996,0.996;gnomAD=T|0|0|0|0||1,T|0|0|0|0||1;ncER=99.9313,99.9313;phyloP=8.143,8.143;REMM=0.992,0.992;SpliceAI=6335|0|0|0.03|0|||2|,6335|0|0|0|0||||
 """;
     assertEquals(expectedOutput, output);
   }

@@ -2,5 +2,6 @@
 ##reference=file:///references/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 ##contig=<ID=chr2,length=242193529>
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr2	166195200	.	C	G	.	.	.
 chr2	166305791	.	C	T	.	.	.
 chr2	166305792	.	G	A,C	.	.	.
