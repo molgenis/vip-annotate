@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.util.DoubleCodec;
+import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IndexRange;
 
 @SuppressWarnings("DataFlowIssue")
@@ -21,7 +22,7 @@ class IndexedDoubleValueAnnotationToShortEncoderTest {
   @BeforeEach
   void setUp() {
     indexedDoubleValueAnnotationToShortEncoder =
-        new IndexedDoubleValueAnnotationToShortEncoder(doubleCodec, -1d, 1d);
+        new IndexedDoubleValueAnnotationToShortEncoder(doubleCodec, new DoubleInterval(-1d, 1d));
   }
 
   @Test

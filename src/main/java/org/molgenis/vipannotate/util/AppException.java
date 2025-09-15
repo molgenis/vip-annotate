@@ -1,10 +1,12 @@
 package org.molgenis.vipannotate.util;
 
+import java.io.Serial;
 import lombok.Getter;
 
 /** root application exception */
 @Getter
 public class AppException extends RuntimeException {
+  @Serial private static final long serialVersionUID = 1L;
   private final ErrorCode errorCode;
 
   public AppException(String message, ErrorCode errorCode) {

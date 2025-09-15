@@ -46,6 +46,27 @@ public class Quantizer {
     return x + ((value - u) * scale);
   }
 
+  /**
+   * dequantize an int value in the interval [u,v] into a double in the interval [x,y]. the maximum
+   * error of dequantize(quantize(value)) is 1 / (2 * (v - u)).
+   *
+   * @param value value in [u, v]
+   * @param u u in [u, v]
+   * @param v v in [u, v]
+   * @param valueInterval [x, y]
+   * @return dequantized value in [x, y]
+   */
+  public double dequantize(int value, int u, int v, DoubleInterval valueInterval) {
+    requireInterval(u, v);
+    if (value < u || value > v) {
+      throw new IllegalArgumentException(
+          "dequantization value %d is not in range [%d, %d]".formatted(value, u, v));
+    }
+
+    double scale = (valueInterval.max() - valueInterval.min()) / (v - u);
+    return valueInterval.min() + ((value - u) * scale);
+  }
+
   private static void requireInterval(double x, double y) {
     if (y < x) {
       throw new IllegalArgumentException();

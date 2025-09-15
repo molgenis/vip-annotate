@@ -156,6 +156,24 @@ public class DoubleCodec {
   }
 
   /**
+   * decodes a short as double in [x,y]or <code>null</code>. the maximum error after decoding an
+   * encoded value is (y-x)/131.070.
+   *
+   * @param value encoded value
+   * @return double in [x,y] or <code>null</code>
+   */
+  public @Nullable Double decodeDoubleFromShort(short value, DoubleInterval valueInterval) {
+    Double decodedValue;
+    if (value != 0) {
+      int unsignedValue = Short.toUnsignedInt(value);
+      decodedValue = quantizer.dequantize(unsignedValue, 1, INTERVAL_SHORT_MAX, valueInterval);
+    } else {
+      decodedValue = null;
+    }
+    return decodedValue;
+  }
+
+  /**
    * encodes a double in [x,y] as short. the maximum error after decoding an encoded value is
    * (y-x)/131.072.
    *
