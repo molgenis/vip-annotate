@@ -2,6 +2,8 @@ package org.molgenis.vipannotate.annotation.spliceai;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.ArgsParser;
 import org.molgenis.vipannotate.util.GraalVm;
@@ -15,7 +17,8 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
   public SpliceAiCommandArgs parse(String[] args) {
     super.validate(args);
 
-    Path inputFile = null, ncbiGeneFile = null, faiFile = null, outputFile = null;
+    List<Path> inputFiles = new ArrayList<>(2);
+    Path ncbiGeneFile = null, faiFile = null, outputFile = null;
     String regionsStr = null;
     Boolean force = null, debug = null;
     for (int i = 0; i < args.length; i++) {
@@ -23,11 +26,12 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
       switch (arg) {
         case "-i":
         case "--input":
-          inputFile = Path.of(parseArgValue(args, i++, arg));
+          Path inputFile = Path.of(parseArgValue(args, i++, arg));
           if (Files.notExists(inputFile)) {
             Logger.error("'%s' value '%s' does not exist", arg, inputFile);
             System.exit(1);
           }
+          inputFiles.add(inputFile);
           break;
         case "-n":
         case "--ncbi-gene-index":
@@ -68,8 +72,16 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
       }
     }
 
-    if (inputFile == null) {
-      Logger.error("missing required option '%s' or '%s'", "-i", "--input");
+    if (inputFiles.isEmpty()) {
+      Logger.error("missing required 1st option '%s' or '%s'", "-i", "--input");
+      System.exit(1);
+    }
+    if (inputFiles.size() == 1) {
+      Logger.error("missing required 2nd option '%s' or '%s'", "-i", "--input");
+      System.exit(1);
+    }
+    if (inputFiles.size() != 2) {
+      Logger.error("exactly two values required for option '%s' or '%s'", "-i", "--input");
       System.exit(1);
     }
     if (ncbiGeneFile == null) {
@@ -91,7 +103,14 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
     }
 
     return new SpliceAiCommandArgs(
-        inputFile, ncbiGeneFile, faiFile, outputFile, regionsStr, force, debug);
+        inputFiles.get(0),
+        inputFiles.get(1),
+        ncbiGeneFile,
+        faiFile,
+        outputFile,
+        regionsStr,
+        force,
+        debug);
   }
 
   @Override
@@ -106,12 +125,12 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
               vip-annotate v%s
 
               usage: %s [arguments]
-                -i, --input           FILE                input file, e.g. spliceai_scores.masked.*.hg38.vcf.gz (required)
-                -n, --ncbi_gene_index FILE                tab-separated NCBI gene index file¹                   (required)
-                -x, --reference_index FILE                reference sequence index .fai file                    (required)
-                -o, --output          FILE                output annotation database .zip file                  (required)
-                -r, --regions         chr|chr:beg-end[,…] comma-separated list of regions (inclusive, 1-based)  (optional)
-                -f, --force                               overwrite existing output file                        (optional)
+                -i, --input           FILE                input file, e.g. spliceai_scores.masked.*.hg38.vcf.gz¹ (required)
+                -n, --ncbi_gene_index FILE                tab-separated NCBI gene index file²                    (required)
+                -x, --reference_index FILE                reference sequence index .fai file                     (required)
+                -o, --output          FILE                output annotation database .zip file                   (required)
+                -r, --regions         chr|chr:beg-end[,…] comma-separated list of regions (inclusive, 1-based)   (optional)
+                -f, --force                               overwrite existing output file                         (optional)
 
               usage: %s [arguments]
                 -h, --help                     print this message
@@ -119,7 +138,8 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
               usage: %s [arguments]
                 -v, --version                  print version
 
-              ¹ available from https://www.ncbi.nlm.nih.gov/datasets/gene/taxon/9606 with columns 'Gene ID' and 'Symbol'
+              ¹ --input is required twice, once for snv.vcf.gz and once for indel.vcf.gz
+              ² available from https://www.ncbi.nlm.nih.gov/datasets/gene/taxon/9606 with columns 'Gene ID' and 'Symbol'
               """,
         App.getVersion(), usage, usage, usage);
   }

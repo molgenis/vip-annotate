@@ -12,7 +12,7 @@ import org.molgenis.vipannotate.util.AppException;
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppAnnotate {
-  static void main(String[] args) {
+  public static void main(String[] args) {
     LoggerFactory.disableLogging(); // disable apache fory logging
 
     AppAnnotateArgs appAnnotateArgs = null;

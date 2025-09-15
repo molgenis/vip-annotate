@@ -4,7 +4,8 @@ import java.nio.file.Path;
 import org.jspecify.annotations.Nullable;
 
 public record SpliceAiCommandArgs(
-    Path inputFile,
+    Path inputFile1,
+    Path inputFile2,
     Path ncbiGeneFile,
     Path faiFile,
     Path outputFile,

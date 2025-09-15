@@ -14,11 +14,9 @@ public class SpliceAiAnnotatorFactory {
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
 
   public VcfRecordAnnotator create(Path annotationsDir) {
-    SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> snvAnnotationDb =
-        createAnnotationDb(annotationsDir, "spliceai_snv.zip");
-    SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> indelAnnotationDb =
-        createAnnotationDb(annotationsDir, "spliceai_indel.zip");
-    return new SpliceAiAnnotator(snvAnnotationDb, indelAnnotationDb, vcfRecordAnnotationWriter);
+    SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> annotationDb =
+        createAnnotationDb(annotationsDir, "spliceai.zip");
+    return new SpliceAiAnnotator(annotationDb, vcfRecordAnnotationWriter);
   }
 
   private SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> createAnnotationDb(

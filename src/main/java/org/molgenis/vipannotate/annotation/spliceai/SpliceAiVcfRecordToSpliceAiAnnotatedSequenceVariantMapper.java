@@ -23,7 +23,7 @@ public class SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper {
 
     Contig contig = contigRegistry.getContig(chromStr);
     if (contig == null) {
-      throw new RuntimeException("Contig " + chromStr + " not found");
+      return null; // skip contigs such as chr1_KI270766v1_alt
     }
 
     String ref = spliceAiVcfRecord.ref();

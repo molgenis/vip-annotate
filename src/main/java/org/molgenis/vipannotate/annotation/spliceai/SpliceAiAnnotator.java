@@ -15,8 +15,7 @@ import org.molgenis.vipannotate.util.DecimalFormatRegistry;
 public class SpliceAiAnnotator implements VcfRecordAnnotator {
   private static final String INFO_ID_SPLICEAI = "SpliceAI";
 
-  private final SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> snvAnnotationDb;
-  private final SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> indelAnnotationDb;
+  private final SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> annotationDb;
   private final VcfRecordAnnotationWriter vcfRecordAnnotationWriter;
   private @Nullable StringBuilder reusableStringBuilder;
   private @Nullable DecimalFormat reusableDecimalFormat;
@@ -45,8 +44,6 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
     for (String alt : alts) {
       SequenceVariantType sequenceVariantType =
           SequenceVariant.fromVcfString(vcfRecord.ref().length(), alt);
-      SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> annotationDb =
-          sequenceVariantType == SequenceVariantType.SNV ? snvAnnotationDb : indelAnnotationDb;
       List<SpliceAiAnnotation> altAnnotations =
           annotationDb.findAnnotations(
               new SequenceVariant(
@@ -58,7 +55,7 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
         vcfRecord, altsAnnotations, INFO_ID_SPLICEAI, this::createInfoAltString);
   }
 
-  private @Nullable CharSequence createInfoAltString(List<SpliceAiAnnotation> annotations) {
+  private CharSequence createInfoAltString(List<SpliceAiAnnotation> annotations) {
     if (reusableStringBuilder == null) {
       reusableStringBuilder = new StringBuilder();
     } else {
@@ -119,7 +116,6 @@ public class SpliceAiAnnotator implements VcfRecordAnnotator {
 
   @Override
   public void close() {
-    snvAnnotationDb.close();
-    indelAnnotationDb.close();
+    annotationDb.close();
   }
 }

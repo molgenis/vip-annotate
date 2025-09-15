@@ -4,4 +4,5 @@
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 chr2	166195200	.	C	G	.	.	.
 chr2	166305791	.	C	T	.	.	.
+chr2	166305791	.	CG	C	.	.	.
 chr2	166305792	.	G	A,C	.	.	.

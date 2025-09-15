@@ -10,7 +10,7 @@ import org.molgenis.vipannotate.annotation.spliceai.SpliceAiAnnotationDbBuilderC
 import org.molgenis.vipannotate.util.Logger;
 
 public class AppDb {
-  static void main(String[] args) {
+  public static void main(String[] args) {
     LoggerFactory.disableLogging(); // disable apache fory logging
 
     try {

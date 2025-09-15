@@ -8,18 +8,17 @@ import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfParser;
 import org.molgenis.vipannotate.format.vcf.VcfParserFactory;
+import org.molgenis.vipannotate.format.vcf.VcfRecord;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
 import org.molgenis.vipannotate.serialization.ForyFactory;
-import org.molgenis.vipannotate.util.FilteringIterator;
-import org.molgenis.vipannotate.util.HgncToNcbiGeneIdMapper;
-import org.molgenis.vipannotate.util.Region;
-import org.molgenis.vipannotate.util.TransformingIterator;
+import org.molgenis.vipannotate.util.*;
 
 public class SpliceAiAnnotationDbBuilder {
   public SpliceAiAnnotationDbBuilder() {}
 
   public void create(
-      Path spliceAiFile,
+      Path spliceAiFile1,
+      Path spliceAiFile2,
       HgncToNcbiGeneIdMapper hgncToNcbiGeneIdMapper,
       @Nullable List<Region> regions,
       ContigRegistry contigRegistry,
@@ -30,11 +29,15 @@ public class SpliceAiAnnotationDbBuilder {
     SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper mapper =
         new SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper(
             contigRegistry, hgncToNcbiGeneIdMapper);
-    try (VcfParser vcfParser = VcfParserFactory.create(spliceAiFile)) {
+    try (VcfParser vcfParser1 = VcfParserFactory.create(spliceAiFile1);
+        VcfParser vcfParser2 = VcfParserFactory.create(spliceAiFile2)) {
       Iterator<AnnotatedSequenceVariant<SpliceAiAnnotation>> spliceAiIt =
           new FilteringIterator<>(
               new TransformingIterator<>(
-                  new TransformingIterator<>(vcfParser, spliceAiParser::parse), mapper::annotate),
+                  new TransformingIterator<>(
+                      new MergingIterator<>(vcfParser1, vcfParser2, this::compare),
+                      spliceAiParser::parse),
+                  mapper::annotate),
               annotatedSequenceVariant -> filter(annotatedSequenceVariant, regions));
 
       SpliceAiAnnotationDatasetEncoder spliceAiAnnotationDatasetEncoder =
@@ -49,6 +52,13 @@ public class SpliceAiAnnotationDbBuilder {
               new AnnotationIndexWriter(ForyFactory.createFory(), binaryPartitionWriter))
           .write(spliceAiIt);
     }
+  }
+
+  private int compare(VcfRecord vcfRecord1, VcfRecord vcfRecord2) {
+    if (!vcfRecord1.chrom().equals(vcfRecord2.chrom())) {
+      return -1;
+    }
+    return vcfRecord1.pos() <= vcfRecord2.pos() ? -1 : 1;
   }
 
   private boolean filter(
