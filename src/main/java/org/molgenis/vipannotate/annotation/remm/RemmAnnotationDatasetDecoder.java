@@ -1,12 +1,11 @@
 package org.molgenis.vipannotate.annotation.remm;
 
 import org.apache.fory.memory.MemoryBuffer;
-import org.molgenis.vipannotate.annotation.AnnotationDatasetDecoder;
+import org.molgenis.vipannotate.annotation.AnnotationDecoder;
 import org.molgenis.vipannotate.annotation.DoubleValueAnnotation;
 import org.molgenis.vipannotate.util.DoubleCodec;
 
-public class RemmAnnotationDatasetDecoder
-    implements AnnotationDatasetDecoder<DoubleValueAnnotation> {
+public class RemmAnnotationDatasetDecoder implements AnnotationDecoder<DoubleValueAnnotation> {
   private final DoubleCodec doubleCodec;
 
   public RemmAnnotationDatasetDecoder() {

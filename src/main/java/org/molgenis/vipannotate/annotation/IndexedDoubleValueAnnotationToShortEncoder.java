@@ -1,9 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
-import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
-
 import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.DoubleCodec;
+import org.molgenis.vipannotate.util.IndexRange;
 
 public class IndexedDoubleValueAnnotationToShortEncoder
     implements IndexedAnnotationEncoder<DoubleValueAnnotation> {
@@ -11,12 +10,10 @@ public class IndexedDoubleValueAnnotationToShortEncoder
   private final double minValue;
   private final double maxValue;
 
-  public IndexedDoubleValueAnnotationToShortEncoder(double minValue, double maxValue) {
-    this(new DoubleCodec(), minValue, maxValue);
-  }
-
-  IndexedDoubleValueAnnotationToShortEncoder(
-      DoubleCodec doubleCodec, double minValue, double maxValue) {
+  public IndexedDoubleValueAnnotationToShortEncoder(
+      DoubleCodec doubleCodec,
+      double minValue,
+      double maxValue) { // TODO replace with DoubleInterval
     if (maxValue < minValue) {
       throw new IllegalArgumentException();
     }
@@ -34,19 +31,17 @@ public class IndexedDoubleValueAnnotationToShortEncoder
   public void encode(
       IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation, MemoryBuffer memoryBuffer) {
     Double score = indexedAnnotation.getFeatureAnnotation().score();
+    int memoryBufferIndex = indexedAnnotation.getIndex() * getAnnotationSizeInBytes();
     short encodedScore = doubleCodec.encodeDoubleAsShort(score, minValue, maxValue);
-    memoryBuffer.putInt16(indexedAnnotation.getIndex() * getAnnotationSizeInBytes(), encodedScore);
+    memoryBuffer.putInt16(memoryBufferIndex, encodedScore);
   }
 
   @Override
-  public void clear(int indexStart, int indexEnd, MemoryBuffer memoryBuffer) {
-    validateNonNegative(indexStart);
-    validateNonNegative(indexEnd);
-    if (indexEnd < indexStart) throw new IllegalArgumentException();
-
+  public void clear(IndexRange indexRange, MemoryBuffer memoryBuffer) {
     short encodedNullScore = doubleCodec.encodeDoubleAsShort(null, minValue, maxValue);
-    for (int i = indexStart; i < indexEnd; i++) {
-      memoryBuffer.putByte(i, encodedNullScore);
+    for (int i = indexRange.start(), indexEnd = indexRange.end(); i < indexEnd; i++) {
+      int memoryBufferIndex = i * getAnnotationSizeInBytes();
+      memoryBuffer.putInt16(memoryBufferIndex, encodedNullScore);
     }
   }
 }

@@ -8,7 +8,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.fory.memory.MemoryBuffer;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.annotation.IndexedAnnotationEncoder;
 import org.molgenis.vipannotate.annotation.Position;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.zip.Zip;
@@ -35,8 +34,7 @@ public class PhyloPAnnotationDbBuilder {
           new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
 
       // annotation encoder
-      IndexedAnnotationEncoder<DoubleValueAnnotation> annotationEncoder =
-          new IndexedDoubleValueAnnotationToByteEncoder(-20.0d, 10.003d);
+      PhyloPAnnotationEncoder annotationEncoder = new PhyloPAnnotationEncoder(new DoubleCodec());
 
       // annotation dataset encoder
       IndexedAnnotatedFeatureDatasetEncoder<DoubleValueAnnotation> annotationDatasetEncoder =

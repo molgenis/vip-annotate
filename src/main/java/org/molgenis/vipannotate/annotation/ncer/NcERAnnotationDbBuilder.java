@@ -34,7 +34,7 @@ public class NcERAnnotationDbBuilder {
           new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
 
       // annotation encoder
-      NcERAnnotationEncoder annotationEncoder = new NcERAnnotationEncoder();
+      NcERAnnotationEncoder annotationEncoder = new NcERAnnotationEncoder(new DoubleCodec());
 
       // annotation dataset encoder
       IndexedAnnotatedFeatureDatasetEncoder<DoubleValueAnnotation> annotationDatasetEncoder =

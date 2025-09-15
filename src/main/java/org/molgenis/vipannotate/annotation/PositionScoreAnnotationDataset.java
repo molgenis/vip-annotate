@@ -5,7 +5,7 @@ import org.apache.fory.memory.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class PositionScoreAnnotationDataset implements AnnotationDataset<DoubleValueAnnotation> {
-  private final AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDataSetDecoder;
+  private final AnnotationDecoder<DoubleValueAnnotation> annotationDataSetDecoder;
   private final MemoryBuffer scoreMemoryBuffer;
 
   @Override

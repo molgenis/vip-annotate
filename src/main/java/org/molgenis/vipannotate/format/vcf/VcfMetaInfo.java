@@ -73,7 +73,12 @@ public record VcfMetaInfo(List<Line> lines) {
   }
 
   public void addOrUpdateInfo(
-          String id, String number, String type, String description, @Nullable String source, @Nullable String version) {
+      String id,
+      String number,
+      String type,
+      String description,
+      @Nullable String source,
+      @Nullable String version) {
     LinkedHashMap<String, String> keyValues = new LinkedHashMap<>();
     keyValues.put("ID", id);
     keyValues.put("NUMBER", number);

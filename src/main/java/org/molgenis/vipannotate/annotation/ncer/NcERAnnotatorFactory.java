@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.zip.MappableZipFile;
+import org.molgenis.vipannotate.util.DoubleCodec;
 
 // TODO refactor: deduplicate ncer,phylop,remm factory
 @RequiredArgsConstructor
@@ -21,8 +22,7 @@ public class NcERAnnotatorFactory {
     MappableZipFile mappableZipFile = MappableZipFile.fromFile(annotationsFile);
 
     PositionScoreAnnotationDatasetFactory annotationDatasetFactory =
-        new PositionScoreAnnotationDatasetFactory(
-            new NcERAnnotationDatasetDecoder(new NcERAnnotationDataCodec()));
+        new PositionScoreAnnotationDatasetFactory(new NcERAnnotationDecoder(new DoubleCodec()));
     AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
         new PositionScoreAnnotationDatasetReader(
             annotationDatasetFactory, annotationBlobReaderFactory.create(mappableZipFile, "score"));

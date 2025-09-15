@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.fory.memory.MemoryBuffer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.molgenis.vipannotate.util.DoubleCodec;
@@ -37,10 +39,15 @@ class SpliceAiAnnotationDatasetEncoderTest {
 
   @Test
   void encodePos() {
-    List<Byte> positions = List.of((byte) -25, (byte) 0, (byte) 25);
+    List<@Nullable Byte> positions = new ArrayList<>();
+    positions.add(null);
+    positions.add((byte) -25);
+    positions.add((byte) 0);
+    positions.add((byte) 25);
+
     MemoryBuffer memoryBuffer =
         spliceAiAnnotationDatasetEncoder.encodePos(
             new SizedIterator<>(positions.iterator(), positions.size()));
-    assertArrayEquals(new byte[] {25, 50, 75}, memoryBuffer.getArray());
+    assertArrayEquals(new byte[] {0, 26, 51, 76}, memoryBuffer.getArray());
   }
 }
