@@ -36,7 +36,7 @@ class IndexedDoubleValueAnnotationToShortEncoderTest {
         new IndexedAnnotation<>(2, new DoubleValueAnnotation(3d));
 
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
-    when(doubleCodec.encodeDoubleAsShort(3d, -1, 1d)).thenReturn((short) 123);
+    when(doubleCodec.encodeDoubleAsShort(3d, new DoubleInterval(-1d, 1d))).thenReturn((short) 123);
     indexedDoubleValueAnnotationToShortEncoder.encode(indexedAnnotation, memoryBuffer);
     verify(memoryBuffer).putInt16(4, (short) 123);
   }
@@ -44,7 +44,8 @@ class IndexedDoubleValueAnnotationToShortEncoderTest {
   @Test
   void clear() {
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
-    when(doubleCodec.encodeDoubleAsShort(null, -1, 1d)).thenReturn((short) 123);
+    when(doubleCodec.encodeDoubleAsShort(null, new DoubleInterval(-1d, 1d)))
+        .thenReturn((short) 123);
     indexedDoubleValueAnnotationToShortEncoder.clear(new IndexRange(2, 4), memoryBuffer);
     verify(memoryBuffer).putInt16(4, (short) 123);
     verify(memoryBuffer).putInt16(6, (short) 123);

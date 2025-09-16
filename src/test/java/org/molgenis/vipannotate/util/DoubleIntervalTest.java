@@ -24,4 +24,15 @@ class DoubleIntervalTest {
   void intervalInvalid() {
     assertThrows(IllegalArgumentException.class, () -> new DoubleInterval(1d, -1d));
   }
+
+  @Test
+  void contains() {
+    DoubleInterval interval = new DoubleInterval(-1d, 1d);
+    assertAll(
+        () -> assertFalse(interval.contains(-2d)),
+        () -> assertTrue(interval.contains(-1d)),
+        () -> assertTrue(interval.contains(0d)),
+        () -> assertTrue(interval.contains(1d)),
+        () -> assertFalse(interval.contains(2d)));
+  }
 }

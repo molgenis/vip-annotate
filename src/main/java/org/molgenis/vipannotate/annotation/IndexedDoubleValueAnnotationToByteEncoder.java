@@ -1,28 +1,16 @@
 package org.molgenis.vipannotate.annotation;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.fory.memory.MemoryBuffer;
 import org.molgenis.vipannotate.util.DoubleCodec;
+import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IndexRange;
 
+@RequiredArgsConstructor
 public class IndexedDoubleValueAnnotationToByteEncoder
     implements IndexedAnnotationEncoder<DoubleValueAnnotation> {
   private final DoubleCodec doubleCodec;
-  private final double minValue;
-  private final double maxValue;
-
-  public IndexedDoubleValueAnnotationToByteEncoder(double minValue, double maxValue) {
-    this(new DoubleCodec(), minValue, maxValue);
-  }
-
-  IndexedDoubleValueAnnotationToByteEncoder(
-      DoubleCodec doubleCodec, double minValue, double maxValue) {
-    if (maxValue < minValue) {
-      throw new IllegalArgumentException();
-    }
-    this.doubleCodec = doubleCodec;
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-  }
+  private final DoubleInterval valueInterval;
 
   @Override
   public int getAnnotationSizeInBytes() {
@@ -33,13 +21,13 @@ public class IndexedDoubleValueAnnotationToByteEncoder
   public void encode(
       IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation, MemoryBuffer memoryBuffer) {
     Double score = indexedAnnotation.getFeatureAnnotation().score();
-    byte encodedScore = doubleCodec.encodeDoubleAsByte(score, minValue, maxValue);
+    byte encodedScore = doubleCodec.encodeDoubleAsByte(score, valueInterval);
     memoryBuffer.putByte(indexedAnnotation.getIndex() * getAnnotationSizeInBytes(), encodedScore);
   }
 
   @Override
   public void clear(IndexRange indexRange, MemoryBuffer memoryBuffer) {
-    byte encodedNullScore = doubleCodec.encodeDoubleAsByte(null, minValue, maxValue);
+    byte encodedNullScore = doubleCodec.encodeDoubleAsByte(null, valueInterval);
     for (int i = indexRange.start(), indexEnd = indexRange.end(); i < indexEnd; i++) {
       memoryBuffer.putByte(i * getAnnotationSizeInBytes(), encodedNullScore);
     }

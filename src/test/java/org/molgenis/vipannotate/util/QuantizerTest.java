@@ -20,22 +20,30 @@ class QuantizerTest {
 
   @Test
   void quantizeInvalidSourceInterval() {
-    assertThrows(IllegalArgumentException.class, () -> new Quantizer().quantize(1d, 1d, 0d, 0, 1));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Quantizer().quantize(1d, new DoubleInterval(1d, 0d), new IntInterval(0, 1)));
   }
 
   @Test
   void quantizeInvalidTargetInterval() {
-    assertThrows(IllegalArgumentException.class, () -> new Quantizer().quantize(1d, 0d, 1d, 1, 0));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Quantizer().quantize(1d, new DoubleInterval(0d, 1d), new IntInterval(1, 0)));
   }
 
   @Test
   void quantizeInvalidValueOutsideOfRangeLeft() {
-    assertThrows(IllegalArgumentException.class, () -> new Quantizer().quantize(-1d, 0d, 1d, 0, 1));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Quantizer().quantize(-1d, new DoubleInterval(0d, 1d), new IntInterval(0, 1)));
   }
 
   @Test
   void quantizeInvalidValueOutsideOfRangeRight() {
-    assertThrows(IllegalArgumentException.class, () -> new Quantizer().quantize(2d, 0d, 1d, 0, 1));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Quantizer().quantize(2d, new DoubleInterval(0d, 1d), new IntInterval(0, 1)));
   }
 
   @ParameterizedTest
@@ -48,8 +56,10 @@ class QuantizerTest {
     Quantizer quantizer = new Quantizer();
     for (int i = 0; i < nrIterations; ++i) {
       double value = x + (y - x) * Math.random(); // number in [x,y)
-      int quantizedValue = quantizer.quantize(value, x, y, u, v);
-      double dequantizedValue = quantizer.dequantize(quantizedValue, u, v, x, y);
+      int quantizedValue =
+          quantizer.quantize(value, new DoubleInterval(x, y), new IntInterval(u, v));
+      double dequantizedValue =
+          quantizer.dequantize(quantizedValue, new IntInterval(u, v), new DoubleInterval(x, y));
       totalQuantizationError += value - dequantizedValue;
       assertEquals(value, dequantizedValue, maxQuantizationError);
     }
@@ -64,30 +74,40 @@ class QuantizerTest {
     double maxQuantizationError = 1d / (2 * (v - u));
 
     Quantizer quantizer = new Quantizer();
-    int quantizedValue = quantizer.quantize(yAndValue, x, yAndValue, u, v);
-    double dequantizedValue = quantizer.dequantize(quantizedValue, u, v, x, yAndValue);
+    int quantizedValue =
+        quantizer.quantize(yAndValue, new DoubleInterval(x, yAndValue), new IntInterval(u, v));
+    double dequantizedValue =
+        quantizer.dequantize(
+            quantizedValue, new IntInterval(u, v), new DoubleInterval(x, yAndValue));
 
     assertEquals(yAndValue, dequantizedValue, maxQuantizationError);
   }
 
   @Test
   void dequantizeInvalidSourceInterval() {
-    assertThrows(IllegalArgumentException.class, () -> new Quantizer().dequantize(1, 0, 1, 1d, 0d));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Quantizer().dequantize(1, new IntInterval(0, 1), new DoubleInterval(1d, 0d)));
   }
 
   @Test
   void dequantizeInvalidTargetInterval() {
-    assertThrows(IllegalArgumentException.class, () -> new Quantizer().dequantize(1, 1, 0, 0d, 1d));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Quantizer().dequantize(1, new IntInterval(1, 0), new DoubleInterval(0d, 1d)));
   }
 
   @Test
   void dequantizeInvalidValueOutsideOfRangeLeft() {
     assertThrows(
-        IllegalArgumentException.class, () -> new Quantizer().dequantize(-1, 0, 1, 0d, 1d));
+        IllegalArgumentException.class,
+        () -> new Quantizer().dequantize(-1, new IntInterval(0, 1), new DoubleInterval(0d, 1d)));
   }
 
   @Test
   void dequantizeInvalidValueOutsideOfRangeRight() {
-    assertThrows(IllegalArgumentException.class, () -> new Quantizer().dequantize(2, 0, 1, 0d, 1d));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Quantizer().dequantize(2, new IntInterval(0, 1), new DoubleInterval(0d, 1d)));
   }
 }

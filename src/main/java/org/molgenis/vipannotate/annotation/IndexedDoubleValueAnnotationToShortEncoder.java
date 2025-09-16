@@ -22,15 +22,13 @@ public class IndexedDoubleValueAnnotationToShortEncoder
       IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation, MemoryBuffer memoryBuffer) {
     Double score = indexedAnnotation.getFeatureAnnotation().score();
     int memoryBufferIndex = indexedAnnotation.getIndex() * getAnnotationSizeInBytes();
-    short encodedScore =
-        doubleCodec.encodeDoubleAsShort(score, doubleInterval.min(), doubleInterval.max());
+    short encodedScore = doubleCodec.encodeDoubleAsShort(score, doubleInterval);
     memoryBuffer.putInt16(memoryBufferIndex, encodedScore);
   }
 
   @Override
   public void clear(IndexRange indexRange, MemoryBuffer memoryBuffer) {
-    short encodedNullScore =
-        doubleCodec.encodeDoubleAsShort(null, doubleInterval.min(), doubleInterval.max());
+    short encodedNullScore = doubleCodec.encodeDoubleAsShort(null, doubleInterval);
     for (int i = indexRange.start(), indexEnd = indexRange.end(); i < indexEnd; i++) {
       int memoryBufferIndex = i * getAnnotationSizeInBytes();
       memoryBuffer.putInt16(memoryBufferIndex, encodedNullScore);

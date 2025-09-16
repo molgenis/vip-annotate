@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.util.DoubleCodec;
+import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IndexRange;
 
 @SuppressWarnings("DataFlowIssue")
@@ -21,7 +22,7 @@ class IndexedDoubleValueAnnotationToByteEncoderTest {
   @BeforeEach
   void setUp() {
     indexedDoubleValueAnnotationToByteEncoder =
-        new IndexedDoubleValueAnnotationToByteEncoder(doubleCodec, -1d, 1d);
+        new IndexedDoubleValueAnnotationToByteEncoder(doubleCodec, new DoubleInterval(-1d, 1d));
   }
 
   @Test
@@ -35,7 +36,7 @@ class IndexedDoubleValueAnnotationToByteEncoderTest {
         new IndexedAnnotation<>(2, new DoubleValueAnnotation(3d));
 
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
-    when(doubleCodec.encodeDoubleAsByte(3d, -1, 1d)).thenReturn((byte) 123);
+    when(doubleCodec.encodeDoubleAsByte(3d, new DoubleInterval(-1d, 1d))).thenReturn((byte) 123);
     indexedDoubleValueAnnotationToByteEncoder.encode(indexedAnnotation, memoryBuffer);
     verify(memoryBuffer).putByte(2, (byte) 123);
   }
@@ -43,7 +44,7 @@ class IndexedDoubleValueAnnotationToByteEncoderTest {
   @Test
   void clear() {
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
-    when(doubleCodec.encodeDoubleAsByte(null, -1, 1d)).thenReturn((byte) 123);
+    when(doubleCodec.encodeDoubleAsByte(null, new DoubleInterval(-1d, 1d))).thenReturn((byte) 123);
     indexedDoubleValueAnnotationToByteEncoder.clear(new IndexRange(2, 4), memoryBuffer);
     verify(memoryBuffer).putByte(2, (byte) 123);
     verify(memoryBuffer).putByte(3, (byte) 123);

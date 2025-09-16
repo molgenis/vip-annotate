@@ -4,8 +4,10 @@ import org.jspecify.annotations.Nullable;
 
 /** Double encoder and decoder. Encoding is lossy using a quantizer */
 public class DoubleCodec {
-  private static final int INTERVAL_BYTE_MAX = (1 << Byte.SIZE) - 1;
-  private static final int INTERVAL_SHORT_MAX = (1 << Short.SIZE) - 1;
+  private static final IntInterval QUANTIZATION_LEVELS_0_255 = new IntInterval(0, 255);
+  private static final IntInterval QUANTIZATION_LEVELS_1_255 = new IntInterval(1, 255);
+  private static final IntInterval QUANTIZATION_LEVELS_0_65535 = new IntInterval(0, 65535);
+  private static final IntInterval QUANTIZATION_LEVELS_1_65535 = new IntInterval(1, 65535);
 
   private final Quantizer quantizer;
 
@@ -22,12 +24,13 @@ public class DoubleCodec {
    * encoded value is (y-x)/510.
    *
    * @param value double in [x,y] or <code>null</code>
+   * @param valueInterval value interval [x,y]
    * @return encoded byte
    */
-  public byte encodeDoubleAsByte(@Nullable Double value, double x, double y) {
+  public byte encodeDoubleAsByte(@Nullable Double value, DoubleInterval valueInterval) {
     byte encodedValue;
     if (value != null) {
-      int unsignedValue = quantizer.quantize(value, x, y, 1, INTERVAL_BYTE_MAX);
+      int unsignedValue = quantizer.quantize(value, valueInterval, QUANTIZATION_LEVELS_1_255);
       encodedValue = (byte) unsignedValue;
     } else {
       encodedValue = 0;
@@ -40,13 +43,14 @@ public class DoubleCodec {
    * encoded value is (y-x)/510.
    *
    * @param value encoded value
+   * @param valueInterval value interval [x,y]
    * @return double in [x,y] or <code>null</code>
    */
-  public @Nullable Double decodeDoubleFromByte(byte value, double x, double y) {
+  public @Nullable Double decodeDoubleFromByte(byte value, DoubleInterval valueInterval) {
     Double decodedValue;
     if (value != 0) {
       int unsignedValue = Byte.toUnsignedInt(value);
-      decodedValue = quantizer.dequantize(unsignedValue, 1, INTERVAL_BYTE_MAX, x, y);
+      decodedValue = quantizer.dequantize(unsignedValue, QUANTIZATION_LEVELS_1_255, valueInterval);
     } else {
       decodedValue = null;
     }
@@ -61,7 +65,7 @@ public class DoubleCodec {
    * @return encoded byte
    */
   public byte encodeDoubleUnitIntervalAsByte(@Nullable Double value) {
-    return encodeDoubleAsByte(value, 0d, 1d);
+    return encodeDoubleAsByte(value, DoubleInterval.UNIT);
   }
 
   /**
@@ -72,7 +76,7 @@ public class DoubleCodec {
    * @return double in [0,1] or <code>null</code>
    */
   public @Nullable Double decodeDoubleUnitIntervalFromByte(byte value) {
-    return decodeDoubleFromByte(value, 0d, 1d);
+    return decodeDoubleFromByte(value, DoubleInterval.UNIT);
   }
 
   /**
@@ -80,10 +84,11 @@ public class DoubleCodec {
    * (y-x)/512.
    *
    * @param value double in [x,y]
+   * @param valueInterval value interval [x,y]
    * @return encoded byte
    */
-  public byte encodeDoublePrimitiveAsByte(double value, double x, double y) {
-    int unsignedValue = quantizer.quantize(value, x, y, 0, INTERVAL_BYTE_MAX);
+  public byte encodeDoublePrimitiveAsByte(double value, DoubleInterval valueInterval) {
+    int unsignedValue = quantizer.quantize(value, valueInterval, QUANTIZATION_LEVELS_0_255);
     return (byte) unsignedValue;
   }
 
@@ -94,7 +99,7 @@ public class DoubleCodec {
    * @return encoded byte
    */
   public byte encodeDoublePrimitiveUnitIntervalAsByte(double value) {
-    return encodeDoublePrimitiveAsByte(value, 0d, 1d);
+    return encodeDoublePrimitiveAsByte(value, DoubleInterval.UNIT);
   }
 
   /**
@@ -102,11 +107,12 @@ public class DoubleCodec {
    * (y-x)/512.
    *
    * @param value encoded value
+   * @param valueInterval value interval [x,y]
    * @return double in [x,y]
    */
-  public double decodeDoublePrimitiveFromByte(byte value, double x, double y) {
+  public double decodeDoublePrimitiveFromByte(byte value, DoubleInterval valueInterval) {
     int unsignedInt = Byte.toUnsignedInt(value);
-    return quantizer.dequantize(unsignedInt, 0, INTERVAL_BYTE_MAX, x, y);
+    return quantizer.dequantize(unsignedInt, QUANTIZATION_LEVELS_0_255, valueInterval);
   }
 
   /**
@@ -116,7 +122,7 @@ public class DoubleCodec {
    * @return double in [x,y]
    */
   public double decodeDoublePrimitiveUnitIntervalFromByte(byte value) {
-    return decodeDoublePrimitiveFromByte(value, 0d, 1d);
+    return decodeDoublePrimitiveFromByte(value, DoubleInterval.UNIT);
   }
 
   /**
@@ -126,10 +132,10 @@ public class DoubleCodec {
    * @param value double in [x,y] or <code>null</code>
    * @return encoded short
    */
-  public short encodeDoubleAsShort(@Nullable Double value, double x, double y) {
+  public short encodeDoubleAsShort(@Nullable Double value, DoubleInterval valueInterval) {
     short encodedValue;
     if (value != null) {
-      int unsignedValue = quantizer.quantize(value, x, y, 1, INTERVAL_SHORT_MAX);
+      int unsignedValue = quantizer.quantize(value, valueInterval, QUANTIZATION_LEVELS_1_65535);
       encodedValue = (short) unsignedValue;
     } else {
       encodedValue = 0;
@@ -138,35 +144,19 @@ public class DoubleCodec {
   }
 
   /**
-   * decodes a short as double in [x,y]or <code>null</code>. the maximum error after decoding an
+   * decodes a short as double in [x,y] or <code>null</code>. the maximum error after decoding an
    * encoded value is (y-x)/131.070.
    *
    * @param value encoded value
-   * @return double in [x,y] or <code>null</code>
-   */
-  public @Nullable Double decodeDoubleFromShort(short value, double x, double y) {
-    Double decodedValue;
-    if (value != 0) {
-      int unsignedValue = Short.toUnsignedInt(value);
-      decodedValue = quantizer.dequantize(unsignedValue, 1, INTERVAL_SHORT_MAX, x, y);
-    } else {
-      decodedValue = null;
-    }
-    return decodedValue;
-  }
-
-  /**
-   * decodes a short as double in [x,y]or <code>null</code>. the maximum error after decoding an
-   * encoded value is (y-x)/131.070.
-   *
-   * @param value encoded value
+   * @param valueInterval decoded value interval [x,y]
    * @return double in [x,y] or <code>null</code>
    */
   public @Nullable Double decodeDoubleFromShort(short value, DoubleInterval valueInterval) {
     Double decodedValue;
     if (value != 0) {
       int unsignedValue = Short.toUnsignedInt(value);
-      decodedValue = quantizer.dequantize(unsignedValue, 1, INTERVAL_SHORT_MAX, valueInterval);
+      decodedValue =
+          quantizer.dequantize(unsignedValue, QUANTIZATION_LEVELS_1_65535, valueInterval);
     } else {
       decodedValue = null;
     }
@@ -178,10 +168,11 @@ public class DoubleCodec {
    * (y-x)/131.072.
    *
    * @param value double in [x,y]
+   * @param valueInterval value interval [x,y]
    * @return encoded short
    */
-  public short encodeDoublePrimitiveAsShort(double value, double x, double y) {
-    int unsignedValue = quantizer.quantize(value, x, y, 0, INTERVAL_SHORT_MAX);
+  public short encodeDoublePrimitiveAsShort(double value, DoubleInterval valueInterval) {
+    int unsignedValue = quantizer.quantize(value, valueInterval, QUANTIZATION_LEVELS_0_65535);
     return (short) unsignedValue;
   }
 
@@ -190,11 +181,12 @@ public class DoubleCodec {
    * (y-x)/131.072.
    *
    * @param value encoded value
+   * @param valueInterval value interval [x,y]
    * @return double in [x,y]
    */
-  public double decodeDoublePrimitiveFromShort(short value, double x, double y) {
+  public double decodeDoublePrimitiveFromShort(short value, DoubleInterval valueInterval) {
     int unsignedInt = Short.toUnsignedInt(value);
-    return quantizer.dequantize(unsignedInt, 0, INTERVAL_SHORT_MAX, x, y);
+    return quantizer.dequantize(unsignedInt, QUANTIZATION_LEVELS_0_65535, valueInterval);
   }
 
   /**
@@ -205,7 +197,7 @@ public class DoubleCodec {
    * @return encoded short
    */
   public short encodeDoubleUnitIntervalAsShort(@Nullable Double value) {
-    return encodeDoubleAsShort(value, 0d, 1d);
+    return encodeDoubleAsShort(value, DoubleInterval.UNIT);
   }
 
   /**
@@ -216,7 +208,7 @@ public class DoubleCodec {
    * @return double in [0,1]or <code>null</code>
    */
   public @Nullable Double decodeDoubleUnitIntervalFromShort(short value) {
-    return decodeDoubleFromShort(value, 0d, 1d);
+    return decodeDoubleFromShort(value, DoubleInterval.UNIT);
   }
 
   /**
@@ -227,7 +219,7 @@ public class DoubleCodec {
    * @return encoded short
    */
   public short encodeDoubleUnitIntervalPrimitiveAsShort(double value) {
-    return encodeDoublePrimitiveAsShort(value, 0d, 1d);
+    return encodeDoublePrimitiveAsShort(value, DoubleInterval.UNIT);
   }
 
   /**
@@ -238,6 +230,6 @@ public class DoubleCodec {
    * @return double in [0,1]
    */
   public double decodeDoubleUnitIntervalPrimitiveFromShort(short value) {
-    return decodeDoublePrimitiveFromShort(value, 0d, 1d);
+    return decodeDoublePrimitiveFromShort(value, DoubleInterval.UNIT);
   }
 }

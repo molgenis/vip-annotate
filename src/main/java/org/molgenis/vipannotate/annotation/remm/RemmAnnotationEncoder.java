@@ -1,9 +1,11 @@
 package org.molgenis.vipannotate.annotation.remm;
 
 import org.molgenis.vipannotate.annotation.IndexedDoubleValueAnnotationToByteEncoder;
+import org.molgenis.vipannotate.util.DoubleCodec;
+import org.molgenis.vipannotate.util.DoubleInterval;
 
 public class RemmAnnotationEncoder extends IndexedDoubleValueAnnotationToByteEncoder {
-  public RemmAnnotationEncoder() {
-    super(0d, 1d);
+  public RemmAnnotationEncoder(DoubleCodec doubleCodec) {
+    super(doubleCodec, DoubleInterval.UNIT);
   }
 }

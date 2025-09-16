@@ -21,4 +21,15 @@ class IntIntervalTest {
   void intervalInvalid() {
     assertThrows(IllegalArgumentException.class, () -> new IntInterval(1, -1));
   }
+
+  @Test
+  void contains() {
+    IntInterval interval = new IntInterval(-1, 1);
+    assertAll(
+        () -> assertFalse(interval.contains(-2)),
+        () -> assertTrue(interval.contains(-1)),
+        () -> assertTrue(interval.contains(0)),
+        () -> assertTrue(interval.contains(1)),
+        () -> assertFalse(interval.contains(2)));
+  }
 }

@@ -12,4 +12,8 @@ public record IntInterval(int min, int max) {
       throw new IllegalArgumentException("min > max");
     }
   }
+
+  public boolean contains(int value) {
+    return value >= min && value <= max;
+  }
 }

@@ -12,10 +12,7 @@ import org.molgenis.vipannotate.annotation.Position;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.zip.Zip;
 import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
-import org.molgenis.vipannotate.util.FilteringIterator;
-import org.molgenis.vipannotate.util.Region;
-import org.molgenis.vipannotate.util.TransformingIterator;
-import org.molgenis.vipannotate.util.TsvIterator;
+import org.molgenis.vipannotate.util.*;
 
 public class RemmAnnotationDbBuilder {
   public RemmAnnotationDbBuilder() {}
@@ -36,7 +33,7 @@ public class RemmAnnotationDbBuilder {
           new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
 
       // annotation encoder
-      RemmAnnotationEncoder annotationEncoder = new RemmAnnotationEncoder();
+      RemmAnnotationEncoder annotationEncoder = new RemmAnnotationEncoder(new DoubleCodec());
 
       // annotation dataset encoder
       IndexedAnnotatedFeatureDatasetEncoder<DoubleValueAnnotation> annotationDatasetEncoder =
