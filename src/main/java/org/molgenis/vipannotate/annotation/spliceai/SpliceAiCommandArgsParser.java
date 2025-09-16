@@ -2,8 +2,6 @@ package org.molgenis.vipannotate.annotation.spliceai;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.ArgsParser;
 import org.molgenis.vipannotate.util.GraalVm;
@@ -17,8 +15,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
   public SpliceAiCommandArgs parse(String[] args) {
     super.validate(args);
 
-    List<Path> inputFiles = new ArrayList<>(2);
-    Path ncbiGeneFile = null, faiFile = null, outputFile = null;
+    Path inputFile = null, ncbiGeneFile = null, faiFile = null, outputFile = null;
     String regionsStr = null;
     Boolean force = null, debug = null;
     for (int i = 0; i < args.length; i++) {
@@ -26,12 +23,11 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
       switch (arg) {
         case "-i":
         case "--input":
-          Path inputFile = Path.of(parseArgValue(args, i++, arg));
+          inputFile = Path.of(parseArgValue(args, i++, arg));
           if (Files.notExists(inputFile)) {
             Logger.error("'%s' value '%s' does not exist", arg, inputFile);
             System.exit(1);
           }
-          inputFiles.add(inputFile);
           break;
         case "-n":
         case "--ncbi-gene-index":
@@ -72,16 +68,8 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
       }
     }
 
-    if (inputFiles.isEmpty()) {
-      Logger.error("missing required 1st option '%s' or '%s'", "-i", "--input");
-      System.exit(1);
-    }
-    if (inputFiles.size() == 1) {
-      Logger.error("missing required 2nd option '%s' or '%s'", "-i", "--input");
-      System.exit(1);
-    }
-    if (inputFiles.size() != 2) {
-      Logger.error("exactly two values required for option '%s' or '%s'", "-i", "--input");
+    if (inputFile == null) {
+      Logger.error("missing required option '%s' or '%s'", "-i", "--input");
       System.exit(1);
     }
     if (ncbiGeneFile == null) {
@@ -103,14 +91,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
     }
 
     return new SpliceAiCommandArgs(
-        inputFiles.get(0),
-        inputFiles.get(1),
-        ncbiGeneFile,
-        faiFile,
-        outputFile,
-        regionsStr,
-        force,
-        debug);
+        inputFile, ncbiGeneFile, faiFile, outputFile, regionsStr, force, debug);
   }
 
   @Override

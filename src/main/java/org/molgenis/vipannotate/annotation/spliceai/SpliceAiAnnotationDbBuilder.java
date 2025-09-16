@@ -17,8 +17,7 @@ public class SpliceAiAnnotationDbBuilder {
   public SpliceAiAnnotationDbBuilder() {}
 
   public void create(
-      Path spliceAiFile1,
-      Path spliceAiFile2,
+      Path spliceAiFile,
       HgncToNcbiGeneIdMapper hgncToNcbiGeneIdMapper,
       @Nullable List<Region> regions,
       ContigRegistry contigRegistry,
@@ -29,15 +28,11 @@ public class SpliceAiAnnotationDbBuilder {
     SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper mapper =
         new SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper(
             contigRegistry, hgncToNcbiGeneIdMapper);
-    try (VcfParser vcfParser1 = VcfParserFactory.create(spliceAiFile1);
-        VcfParser vcfParser2 = VcfParserFactory.create(spliceAiFile2)) {
+    try (VcfParser vcfParser = VcfParserFactory.create(spliceAiFile)) {
       Iterator<AnnotatedSequenceVariant<SpliceAiAnnotation>> spliceAiIt =
           new FilteringIterator<>(
               new TransformingIterator<>(
-                  new TransformingIterator<>(
-                      new MergingIterator<>(vcfParser1, vcfParser2, this::compare),
-                      spliceAiParser::parse),
-                  mapper::annotate),
+                  new TransformingIterator<>(vcfParser, spliceAiParser::parse), mapper::annotate),
               annotatedSequenceVariant -> filter(annotatedSequenceVariant, regions));
 
       SpliceAiAnnotationDatasetEncoder spliceAiAnnotationDatasetEncoder =

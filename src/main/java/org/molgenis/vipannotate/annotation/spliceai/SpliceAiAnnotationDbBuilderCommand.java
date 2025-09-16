@@ -21,8 +21,7 @@ public class SpliceAiAnnotationDbBuilderCommand implements Command {
       Logger.ENABLE_DEBUG_LOGGING = true;
     }
 
-    Path spliceAiFile1 = spliceAiCommandArgs.inputFile1();
-    Path spliceAiFile2 = spliceAiCommandArgs.inputFile2();
+    Path spliceAiFile = spliceAiCommandArgs.inputFile();
     Path ncbiGeneFile = spliceAiCommandArgs.ncbiGeneFile();
     Path faiFile = spliceAiCommandArgs.faiFile();
     Path outputFile = spliceAiCommandArgs.outputFile();
@@ -40,8 +39,7 @@ public class SpliceAiAnnotationDbBuilderCommand implements Command {
         Zip.createZipArchiveOutputStream(outputFile)) {
       new SpliceAiAnnotationDbBuilder()
           .create(
-              spliceAiFile1,
-              spliceAiFile2,
+              spliceAiFile,
               hgncToNcbiGeneIdMapper,
               regions,
               contigRegistry,
