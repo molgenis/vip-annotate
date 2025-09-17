@@ -17,7 +17,7 @@ public class MemorySizeValidator {
    * than 256MB.
    */
   public static void validateMemorySizes() {
-    if (RuntimeDetector.isNativeImage()) {
+    if (GraalVm.isGraalVmRuntime()) {
       return; // GraalVM native image does not use a JVM, no validation required
     }
 

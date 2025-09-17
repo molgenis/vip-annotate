@@ -86,7 +86,7 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
 
   @Override
   protected void printUsage() {
-    boolean isGraalRuntime = GraalVm.isGraalRuntime();
+    boolean isGraalRuntime = GraalVm.isGraalVmRuntime();
     String usage = isGraalRuntime ? "vip-annotate.exe" : "java -jar vip-annotate.jar";
     Logger.info(
         """

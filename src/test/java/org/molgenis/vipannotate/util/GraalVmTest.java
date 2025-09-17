@@ -22,20 +22,20 @@ class GraalVmTest {
   }
 
   @Test
-  void isGraalRuntime() {
+  void isGraalVmRuntime() {
     System.setProperty("org.graalvm.nativeimage.imagecode", "runtime");
-    assertTrue(GraalVm.isGraalRuntime());
+    assertTrue(GraalVm.isGraalVmRuntime());
   }
 
   @Test
-  void isGraalRuntimeFalseNoProperty() {
+  void isGraalVmRuntimeFalseNoProperty() {
     System.clearProperty("org.graalvm.nativeimage.imagecode");
-    assertFalse(GraalVm.isGraalRuntime());
+    assertFalse(GraalVm.isGraalVmRuntime());
   }
 
   @Test
-  void isGraalRuntimeFalsePropertyValueMismatch() {
+  void isGraalVmRuntimeFalsePropertyValueMismatch() {
     System.setProperty("org.graalvm.nativeimage.imagecode", "buildtime");
-    assertFalse(GraalVm.isGraalRuntime());
+    assertFalse(GraalVm.isGraalVmRuntime());
   }
 }

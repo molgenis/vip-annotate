@@ -96,7 +96,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
 
   @Override
   protected void printUsage() {
-    boolean isGraalRuntime = GraalVm.isGraalRuntime();
+    boolean isGraalRuntime = GraalVm.isGraalVmRuntime();
     String usage =
         isGraalRuntime
             ? "vip-annotate.exe %s".formatted(COMMAND)
