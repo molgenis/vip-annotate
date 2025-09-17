@@ -10,15 +10,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("DataFlowIssue")
 public class AppAnnotateIT {
   @Test
   public void testAnnotate() throws URISyntaxException {
     ClassLoader classLoader = getClass().getClassLoader();
-    @SuppressWarnings("DataFlowIssue")
+
     Path inputVcfFile =
         Paths.get((classLoader.getResource("annotate/chr2_166195185-166375987/input.vcf")).toURI());
 
-    @SuppressWarnings("DataFlowIssue")
     Path annotationsDir =
         Paths.get(
             (classLoader.getResource("annotate/chr2_166195185-166375987/annotations")).toURI());
@@ -39,8 +39,7 @@ public class AppAnnotateIT {
       }
       output = byteArrayOutputStream.toString(UTF_8);
     }
-    // TODO repair test after GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapper fixme is
-    // resolved
+
     String expectedOutput =
 """
 ##fileformat=VCFv4.5
