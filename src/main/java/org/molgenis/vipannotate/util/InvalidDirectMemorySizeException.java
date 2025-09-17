@@ -9,7 +9,7 @@ public class InvalidDirectMemorySizeException extends InvalidMemorySizeException
 
   public InvalidDirectMemorySizeException(long expectedSizeBytes, long actualSizeBytes) {
     super(
-        "maximum direct memory size (%d MB) is less than the required %d MB"
-            .formatted(actualSizeBytes / ONE_MB, expectedSizeBytes / ONE_MB));
+        "maximum direct memory size (%.0f MB) is less than the required %.0f MB."
+            .formatted(actualSizeBytes / (double) ONE_MB, expectedSizeBytes / (double) ONE_MB));
   }
 }
