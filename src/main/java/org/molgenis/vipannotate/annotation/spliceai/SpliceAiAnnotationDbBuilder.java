@@ -69,11 +69,11 @@ public class SpliceAiAnnotationDbBuilder {
       keep = false;
       for (Region region : regions) {
         SequenceVariant sequenceVariant = spliceAiAnnotationAnnotatedSequenceVariant.getFeature();
-        if (region.getContig().equals(sequenceVariant.getContig())) {
-          if (region.getStart() != null) {
-            if (sequenceVariant.getStart() >= region.getStart()) {
-              if (region.getStop() != null) {
-                if (sequenceVariant.getStart() <= region.getStop()) {
+        if (region.contig().equals(sequenceVariant.getContig())) {
+          if (region.start() != null) {
+            if (sequenceVariant.getStart() >= region.start()) {
+              if (region.stop() != null) {
+                if (sequenceVariant.getStart() <= region.stop()) {
                   keep = true;
                   break;
                 }

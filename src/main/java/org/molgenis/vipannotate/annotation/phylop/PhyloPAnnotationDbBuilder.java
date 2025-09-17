@@ -80,11 +80,11 @@ public class PhyloPAnnotationDbBuilder {
       keep = false;
       for (Region region : regions) {
         Position position = annotatedPosition.getFeature();
-        if (region.getContig().equals(position.getContig())) {
-          if (region.getStart() != null) {
-            if (position.getStart() >= region.getStart()) {
-              if (region.getStop() != null) {
-                if (position.getStart() <= region.getStop()) {
+        if (region.contig().equals(position.getContig())) {
+          if (region.start() != null) {
+            if (position.getStart() >= region.start()) {
+              if (region.stop() != null) {
+                if (position.getStart() <= region.stop()) {
                   keep = true;
                   break;
                 }
