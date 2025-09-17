@@ -15,7 +15,7 @@
         <version.graalvm.native.maven.plugin>0.10.6</version.graalvm.native.maven.plugin>
         <version.jacoco.maven.plugin>0.8.13</version.jacoco.maven.plugin>
         <version.jspecify>1.0.0</version.jspecify>
-        <version.junit.bom>5.12.2</version.junit.bom>
+        <version.junit.bom>5.13.4</version.junit.bom>
         <version.lemire.integercompression>0.2.1</version.lemire.integercompression>
         <version.lombok>1.18.40</version.lombok>
         <version.luben.zstd.jni>1.5.7-3</version.luben.zstd.jni>
@@ -50,6 +50,9 @@
         </profile>
         <profile>
             <id>native</id>
+            <properties>
+                <package.main.class>org.molgenis.vipannotate.AppAnnotate</package.main.class>
+            </properties>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -72,13 +75,6 @@
                                     <goal>compile-no-fork</goal>
                                 </goals>
                                 <phase>package</phase>
-                            </execution>
-                            <execution>
-                                <id>test-native</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <phase>test</phase>
                             </execution>
                         </executions>
                     </plugin>
