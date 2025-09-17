@@ -22,12 +22,12 @@
         <version.maven.assembly.plugin>3.7.1</version.maven.assembly.plugin>
         <version.maven.clean.plugin>3.5.0</version.maven.clean.plugin>
         <version.maven.compiler.plugin>3.14.0</version.maven.compiler.plugin>
-        <version.maven.enforcer.plugin>3.5.0</version.maven.enforcer.plugin>
+        <version.maven.enforcer.plugin>3.6.1</version.maven.enforcer.plugin>
         <version.maven.jar.plugin>3.4.2</version.maven.jar.plugin>
-        <version.maven.failsafe.plugin>3.5.3</version.maven.failsafe.plugin>
+        <version.maven.failsafe.plugin>3.5.4</version.maven.failsafe.plugin>
         <version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
-        <version.maven.surefire.plugin>3.5.3</version.maven.surefire.plugin>
-        <version.mockito>5.18.0</version.mockito>
+        <version.maven.surefire.plugin>3.5.4</version.maven.surefire.plugin>
+        <version.mockito>5.19.0</version.mockito>
         <version.openjdk.jmh>1.37</version.openjdk.jmh>
         <version.spotless.maven.plugin>2.44.5</version.spotless.maven.plugin>
     </properties>
