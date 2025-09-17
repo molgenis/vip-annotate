@@ -4,7 +4,12 @@ public class AlleleUtils {
   private AlleleUtils() {}
 
   public static boolean isActg(String alt) {
-    for (int i = 0, len = alt.length(); i < len; i++) {
+    int len = alt.length();
+    if (len == 0) {
+      return false;
+    }
+
+    for (int i = 0; i < len; i++) {
       switch (alt.charAt(i)) {
         case 'A':
         case 'C':
@@ -15,6 +20,7 @@ public class AlleleUtils {
           return false;
       }
     }
+
     return true;
   }
 }
