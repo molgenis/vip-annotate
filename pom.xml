@@ -77,6 +77,11 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <buildArgs>
+                                        <buildArg>
+                                            --initialize-at-build-time==org.molgenis.vipannotate.serialization,me.lemire.integercompression,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndex,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndexBig,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndexSmall
+                                        </buildArg>
+                                        <buildArg>-O3</buildArg>
+                                        <buildArg>--no-fallback</buildArg>
                                         <!-- ignore the 'use G1 GC for improved latency and throughput' recommendation -->
                                         <buildArg>--gc=serial</buildArg>
                                         <!-- keep in sync with MemorySizeValidator.java -->
