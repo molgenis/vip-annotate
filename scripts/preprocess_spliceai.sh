@@ -1,11 +1,4 @@
 #!/bin/bash
-#SBATCH --job-name=vip_annotate_preprocess
-#SBATCH --output=vip_annotate_preprocess_output.log
-#SBATCH --error=vip_annotate_preprocess_error.log
-#SBATCH --time=5:59:59
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=4G
-
 set -euo pipefail
 
 SCRIPT_NAME="$(basename "$0")"
