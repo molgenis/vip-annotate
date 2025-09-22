@@ -1,21 +1,29 @@
 package org.molgenis.vipannotate;
 
+import org.apache.fory.Fory;
+
 public class App {
-  private static final String NAME = "vip-annotate";
-  private static final String VERSION;
+  static void main() {
+    Fory fory = ForyFactory.createFory();
 
-  static {
-    Package appAnnotatePackage = AppAnnotate.class.getPackage();
-    String implementationVersion =
-        appAnnotatePackage != null ? appAnnotatePackage.getImplementationVersion() : null;
-    VERSION = implementationVersion != null ? implementationVersion : "0.0.0-dev";
-  }
+    System.out.println("serialize/deserialize int wrapper class");
+    {
+      ForyFactory.IntWrapperClass obj = new ForyFactory.IntWrapperClass(1);
+      byte[] bytes = fory.serializeJavaObject(obj);
+      ForyFactory.IntWrapperClass deserialized =
+          fory.deserializeJavaObject(bytes, ForyFactory.IntWrapperClass.class);
+      System.out.println("toString():" + deserialized);
+    }
+    System.out.println("success");
 
-  public static String getName() {
-    return NAME;
-  }
-
-  public static String getVersion() {
-    return VERSION;
+    System.out.println("serialize/deserialize int wrapper record");
+    {
+      ForyFactory.IntWrapperRecord obj = new ForyFactory.IntWrapperRecord(1);
+      byte[] bytes = fory.serializeJavaObject(obj);
+      ForyFactory.IntWrapperRecord deserialized =
+          fory.deserializeJavaObject(bytes, ForyFactory.IntWrapperRecord.class);
+      System.out.println("toString():" + deserialized);
+    }
+    System.out.println("success");
   }
 }
