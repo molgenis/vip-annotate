@@ -248,6 +248,21 @@
                             <fail>true</fail>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>enforce-properties</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireProperty>
+                                    <property>zstd.jni.classifier</property>
+                                    <message>Property 'zstd.jni.classifier' is required but not set.</message>
+                                </requireProperty>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -346,6 +361,8 @@
                 <groupId>com.github.luben</groupId>
                 <artifactId>zstd-jni</artifactId>
                 <version>${version.luben.zstd.jni}</version>
+                <!--suppress UnresolvedMavenProperty -->
+                <classifier>${zstd.jni.classifier}</classifier>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -359,6 +376,8 @@
         <dependency>
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
+            <!--suppress UnresolvedMavenProperty -->
+            <classifier>${zstd.jni.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>me.lemire.integercompression</groupId>
