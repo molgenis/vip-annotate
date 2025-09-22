@@ -12,7 +12,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <version.apache.commons.compress>1.28.0</version.apache.commons.compress>
         <version.apache.fory>0.12.2</version.apache.fory>
-        <version.graalvm.native.maven.plugin>0.10.6</version.graalvm.native.maven.plugin>
+        <version.graalvm.native.maven.plugin>0.11.0</version.graalvm.native.maven.plugin>
         <version.jacoco.maven.plugin>0.8.13</version.jacoco.maven.plugin>
         <version.jspecify>1.0.0</version.jspecify>
         <version.junit.bom>5.13.4</version.junit.bom>
