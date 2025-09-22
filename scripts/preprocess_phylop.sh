@@ -68,7 +68,7 @@ preprocess() {
   # convert wig to bed
   wget --quiet --continue https://github.com/bedops/bedops/releases/download/v2.4.41/bedops_linux_x86_64-v2.4.41.tar.bz2
   tar jxf bedops_linux_x86_64-v2.4.41.tar.bz2
-  PATH=./bin:$PATH wig2bed < "${output_tmp_wig}" > "${output_tmp_bed}"
+  PATH=./bin:$PATH wig2bed --max-mem 4G < "${output_tmp_wig}" > "${output_tmp_bed}"
   rm "${output_tmp_wig}"
 
   # convert bed to bed.gz and index
