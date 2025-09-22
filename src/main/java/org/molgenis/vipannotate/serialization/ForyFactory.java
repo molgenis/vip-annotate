@@ -24,6 +24,7 @@ public class ForyFactory {
     fory.register(SequenceVariantAnnotationIndexSmall.class, true);
     fory.register(SequenceVariantAnnotationIndexBig.class, true);
     fory.register(SequenceVariantAnnotationIndex.class, true);
+    fory.ensureSerializersCompiled();
   }
 
   private ForyFactory() {}
