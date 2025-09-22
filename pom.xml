@@ -30,6 +30,7 @@
         <version.mockito>5.19.0</version.mockito>
         <version.openjdk.jmh>1.37</version.openjdk.jmh>
         <version.spotless.maven.plugin>2.44.5</version.spotless.maven.plugin>
+        <zstd.jni.classifier>win_amd64</zstd.jni.classifier>
     </properties>
 
     <profiles>
