@@ -78,7 +78,7 @@
                                 <configuration>
                                     <buildArgs>
                                         <buildArg>
-                                            --initialize-at-build-time==org.molgenis.vipannotate.serialization,me.lemire.integercompression,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndex,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndexBig,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndexSmall
+                                            --initialize-at-build-time=org.molgenis.vipannotate.serialization,me.lemire.integercompression,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndexSmall,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndexBig,org.molgenis.vipannotate.annotation.SequenceVariantAnnotationIndex
                                         </buildArg>
                                         <buildArg>-O3</buildArg>
                                         <buildArg>--no-fallback</buildArg>
