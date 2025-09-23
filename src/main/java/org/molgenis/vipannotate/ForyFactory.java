@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate;
 
+import java.math.BigInteger;
 import org.apache.fory.Fory;
 import org.apache.fory.config.Language;
 
@@ -13,9 +14,14 @@ public class ForyFactory {
             .requireClassRegistration(true)
             .registerGuavaTypes(false)
             .build();
-    fory.register(ObjImpl.class, true);
-    fory.register(ObjConcrete.class, true);
-    fory.register(ObjGenericImpl.class, true);
+
+    // issue #1 : BigInteger[] needs to be registered, but only for GraalVm
+    if (GraalVm.isGraalVmRuntime()) {
+      fory.register(BigInteger[].class);
+    }
+    fory.register(SequenceVariantAnnotationIndexBig.class, true);
+    fory.register(SequenceVariantAnnotationIndexSmall.class, true);
+    fory.register(SequenceVariantAnnotationIndex.class, true);
     fory.ensureSerializersCompiled();
   }
 
@@ -25,15 +31,13 @@ public class ForyFactory {
     return fory;
   }
 
-  public interface Obj {}
+  public static class GraalVm {
+    private static final String GRAALVM_IMAGE_CODE_KEY = "org.graalvm.nativeimage.imagecode";
+    private static final String GRAALVM_IMAGE_RUNTIME = "runtime";
 
-  public static class ObjImpl implements Obj {}
-
-  public abstract static class ObjAbstract {}
-
-  public static class ObjConcrete extends ObjAbstract {}
-
-  public interface ObjGeneric<T extends Number> {}
-
-  public static class ObjGenericImpl implements ObjGeneric<Integer> {}
+    /** Returns true if the current process is executing at image runtime. */
+    public static boolean isGraalVmRuntime() {
+      return GRAALVM_IMAGE_RUNTIME.equals(System.getProperty(GRAALVM_IMAGE_CODE_KEY));
+    }
+  }
 }
