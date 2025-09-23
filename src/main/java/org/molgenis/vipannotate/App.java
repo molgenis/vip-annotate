@@ -25,5 +25,15 @@ public class App {
       System.out.println("toString():" + deserialized);
     }
     System.out.println("success");
+
+    System.out.println("serialize/deserialize");
+    {
+      ForyFactory.ObjGenericImpl ObjGenericImpl = new ForyFactory.ObjGenericImpl();
+      byte[] bytes = fory.serializeJavaObject(ObjGenericImpl);
+      ForyFactory.ObjGenericImpl deserialized =
+          fory.deserializeJavaObject(bytes, ForyFactory.ObjGenericImpl.class);
+      System.out.println("toString():" + deserialized);
+    }
+    System.out.println("success");
   }
 }

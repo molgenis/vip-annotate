@@ -15,6 +15,7 @@ public class ForyFactory {
             .build();
     fory.register(ObjImpl.class, true);
     fory.register(ObjConcrete.class, true);
+    fory.register(ObjGenericImpl.class, true);
     fory.ensureSerializersCompiled();
   }
 
@@ -31,4 +32,8 @@ public class ForyFactory {
   public abstract static class ObjAbstract {}
 
   public static class ObjConcrete extends ObjAbstract {}
+
+  public interface ObjGeneric<T extends Number> {}
+
+  public static class ObjGenericImpl implements ObjGeneric<Integer> {}
 }
