@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate;
 
-import java.util.Objects;
 import org.apache.fory.Fory;
 import org.apache.fory.config.Language;
 
@@ -14,8 +13,8 @@ public class ForyFactory {
             .requireClassRegistration(true)
             .registerGuavaTypes(false)
             .build();
-    fory.register(IntWrapperRecord.class, true);
-    fory.register(IntWrapperClass.class, true);
+    fory.register(ObjImpl.class, true);
+    fory.register(ObjConcrete.class, true);
     fory.ensureSerializersCompiled();
   }
 
@@ -25,35 +24,11 @@ public class ForyFactory {
     return fory;
   }
 
-  public record IntWrapperRecord(int integer) {}
+  public interface Obj {}
 
-  public static final class IntWrapperClass {
-    private final int integer;
+  public static class ObjImpl implements Obj {}
 
-    public IntWrapperClass(int integer) {
-      this.integer = integer;
-    }
+  public abstract static class ObjAbstract {}
 
-    public int integer() {
-      return integer;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj == this) return true;
-      if (obj == null || obj.getClass() != this.getClass()) return false;
-      var that = (IntWrapperClass) obj;
-      return this.integer == that.integer;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(integer);
-    }
-
-    @Override
-    public String toString() {
-      return "IntWrapperClass[" + "integer=" + integer + ']';
-    }
-  }
+  public static class ObjConcrete extends ObjAbstract {}
 }
