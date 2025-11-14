@@ -3,17 +3,18 @@ package org.molgenis.vipannotate.annotation.spliceai;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.molgenis.vipannotate.Command;
 import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.RegionParser;
+import org.molgenis.vipannotate.annotation.AnnotationVdbArchiveWriter;
 import org.molgenis.vipannotate.annotation.ContigRegistry;
 import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
-import org.molgenis.vipannotate.format.zip.Zip;
+import org.molgenis.vipannotate.format.vdb.VdbArchiveWriter;
+import org.molgenis.vipannotate.format.vdb.VdbArchiveWriterFactory;
+import org.molgenis.vipannotate.format.vdb.VdbMemoryBufferFactory;
 import org.molgenis.vipannotate.util.HgncToNcbiGeneIdMapper;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
-import org.molgenis.vipannotate.util.Output;
 
 // TODO dedup with *AnnotationDbBuilderCommand
 public class SpliceAiAnnotationDbBuilderCommand implements Command {
@@ -24,12 +25,7 @@ public class SpliceAiAnnotationDbBuilderCommand implements Command {
     Input spliceAiInput = commandArgs.input();
     Path ncbiGeneFile = commandArgs.ncbiGeneFile();
     Path faiFile = commandArgs.faiFile();
-    Output dbOutput = commandArgs.output();
-
-    if (dbOutput.path() == null) {
-      // output db is written to System.out, redirect logs to System.err
-      Logger.REDIRECT_STDOUT_TO_STDERR = true;
-    }
+    Path dbOutput = commandArgs.output();
 
     Logger.debug("creating database ...");
     long startCreateDb = System.currentTimeMillis();
@@ -40,17 +36,20 @@ public class SpliceAiAnnotationDbBuilderCommand implements Command {
         regionsStr != null ? new RegionParser(contigRegistry).parse(regionsStr) : null;
     HgncToNcbiGeneIdMapper hgncToNcbiGeneIdMapper = HgncToNcbiGeneIdMapper.create(ncbiGeneFile);
 
-    try (ZipArchiveOutputStream zipArchiveOutputStream =
-        Zip.createZipArchiveOutputStream(dbOutput)) {
+    boolean force = commandArgs.force() != null && commandArgs.force();
+    VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
+    VdbArchiveWriter vdbArchiveWriter =
+        VdbArchiveWriterFactory.create(memBufferFactory).create(dbOutput, force);
+    try (AnnotationVdbArchiveWriter archiveWriter =
+        AnnotationVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
       new SpliceAiAnnotationDbBuilder()
           .create(
               spliceAiInput,
               hgncToNcbiGeneIdMapper,
               regions,
               contigRegistry,
-              zipArchiveOutputStream);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
+              archiveWriter,
+              memBufferFactory);
     }
 
     long endCreateDb = System.currentTimeMillis();

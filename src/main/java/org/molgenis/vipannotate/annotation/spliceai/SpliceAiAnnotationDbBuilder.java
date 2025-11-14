@@ -2,16 +2,14 @@ package org.molgenis.vipannotate.annotation.spliceai;
 
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfParser;
 import org.molgenis.vipannotate.format.vcf.VcfParserFactory;
-import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
+import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
+import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
 import org.molgenis.vipannotate.util.*;
-import org.molgenis.zstd.ZstdProvider;
 
 public class SpliceAiAnnotationDbBuilder {
   public SpliceAiAnnotationDbBuilder() {}
@@ -21,7 +19,8 @@ public class SpliceAiAnnotationDbBuilder {
       HgncToNcbiGeneIdMapper hgncToNcbiGeneIdMapper,
       @Nullable List<Region> regions,
       ContigRegistry contigRegistry,
-      ZipArchiveOutputStream zipOutputStream) {
+      BinaryPartitionWriter partitionWriter,
+      MemoryBufferFactory memBufferFactory) {
 
     SpliceAiParser spliceAiParser = new SpliceAiParser();
 
@@ -39,19 +38,16 @@ public class SpliceAiAnnotationDbBuilder {
 
       SpliceAiAnnotationDatasetEncoder spliceAiAnnotationDatasetEncoder =
           new SpliceAiAnnotationDatasetEncoder();
-      ZipZstdCompressionContext zipZstdCompressionContext =
-          new ZipZstdCompressionContext(
-              zipOutputStream, ZstdProvider.INSTANCE.get().createCompressionContext());
-      BinaryPartitionWriter binaryPartitionWriter =
-          new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
+
       // TODO check if only needs to be created once
-      BinarySerializer<AnnotationIndex<SequenceVariant>> indexDispatcherSerializer =
-          SequenceVariantAnnotationIndexDispatcherSerializerFactory.create().createSerializer();
+      MemoryBufferWriter<AnnotationIndex<SequenceVariant>> indexDispatcherWriter =
+          SequenceVariantAnnotationIndexDispatcherWriterFactory.create(memBufferFactory)
+              .createWriter();
+
       new AnnotatedSequenceVariantDbWriter<>(
               new SpliceAiAnnotatedSequenceVariantPartitionWriter(
-                  spliceAiAnnotationDatasetEncoder, binaryPartitionWriter),
-              new SequenceVariantAnnotationIndexWriter<>(
-                  indexDispatcherSerializer, binaryPartitionWriter),
+                  spliceAiAnnotationDatasetEncoder, partitionWriter),
+              new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
               SequenceVariantEncoderDispatcherFactory.create())
           .write(spliceAiIt);
     }

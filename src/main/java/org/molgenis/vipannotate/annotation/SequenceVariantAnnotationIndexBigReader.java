@@ -2,25 +2,13 @@ package org.molgenis.vipannotate.annotation;
 
 import java.math.BigInteger;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 @RequiredArgsConstructor
-public class SequenceVariantAnnotationIndexBigSerializer<T extends SequenceVariant>
-    implements BinarySerializer<AnnotationIndex<T>> {
+public class SequenceVariantAnnotationIndexBigReader<T extends SequenceVariant>
+    implements MemoryBufferReader<AnnotationIndex<T>> {
   private final SequenceVariantEncoder<T> encoder;
-
-  @Override
-  public void writeTo(MemoryBuffer memoryBuffer, AnnotationIndex<T> index) {
-    SequenceVariantAnnotationIndexBig<T> indexBig = getTyped(index);
-
-    BigInteger[] encodedVariants = indexBig.getEncodedVariantsArray();
-    memoryBuffer.putVarUnsignedInt(encodedVariants.length);
-    for (BigInteger encodedVariant : encodedVariants) {
-      byte[] byteArray = encodedVariant.toByteArray();
-      memoryBuffer.putByteArray(byteArray);
-    }
-  }
 
   @Override
   public SequenceVariantAnnotationIndexBig<T> readFrom(MemoryBuffer memoryBuffer) {
@@ -41,11 +29,6 @@ public class SequenceVariantAnnotationIndexBigSerializer<T extends SequenceVaria
     }
     readIntoEncodedVariantsArray(memoryBuffer, bigIntegerArray, nrEncodedVariants);
     indexBig.reset(bigIntegerArray, nrEncodedVariants);
-  }
-
-  @Override
-  public SequenceVariantAnnotationIndexBig<T> readEmpty() {
-    return SequenceVariantAnnotationIndexBigFactory.create();
   }
 
   private static void readIntoEncodedVariantsArray(

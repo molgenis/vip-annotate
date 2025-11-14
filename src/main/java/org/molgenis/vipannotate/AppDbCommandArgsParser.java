@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
-import org.molgenis.vipannotate.util.Output;
 
 @RequiredArgsConstructor
 public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
@@ -18,7 +17,7 @@ public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
 
     Input input = null;
     Path faiFile = null;
-    Output output = null;
+    Path output = null;
     String regionsStr = null;
     Boolean force = null;
     for (int i = 0; i < args.length; i++) {
@@ -32,7 +31,7 @@ public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
                 "'%s' value '%s' does not exist".formatted(arg, faiFile));
           }
         }
-        case "-o", "--output" -> output = parseArgOutputValue(args, i++, arg);
+        case "-o", "--output" -> output = Path.of(parseArgValue(args, i++, arg));
         case "-r", "--regions" -> regionsStr = parseArgValue(args, i++, arg);
         case "-f", "--force" -> force = Boolean.TRUE;
         default -> throw new ArgValidationException("unknown option '%s'".formatted(arg));
@@ -52,7 +51,7 @@ public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
           "missing required option '%s' or '%s'".formatted("-o", "--output"));
     }
 
-    if (output.path() != null && force == null && Files.exists(output.path())) {
+    if (force == null && Files.exists(output)) {
       throw new ArgValidationException(
           "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output));
     }

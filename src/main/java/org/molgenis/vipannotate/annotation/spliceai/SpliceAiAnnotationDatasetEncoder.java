@@ -23,7 +23,7 @@ public class SpliceAiAnnotationDatasetEncoder {
     geneIdIt.forEachRemaining(
         geneId -> {
           byte encodedGeneId = geneId != null ? safeIntToByte(geneId) : (byte) -1;
-          memoryBuffer.putByte(encodedGeneId);
+          memoryBuffer.putByteUnchecked(encodedGeneId);
         });
     return memoryBuffer;
   }
@@ -33,7 +33,7 @@ public class SpliceAiAnnotationDatasetEncoder {
     doubleIt.forEachRemaining(
         doubleValue -> {
           byte encodedScore = doubleCodec.encodeDoublePrimitiveUnitIntervalAsByte(doubleValue);
-          memoryBuffer.putByte(encodedScore);
+          memoryBuffer.putByteUnchecked(encodedScore);
         });
     return memoryBuffer;
   }
@@ -49,7 +49,7 @@ public class SpliceAiAnnotationDatasetEncoder {
     posIt.forEachRemaining(
         byteValue -> {
           byte encodedPos = (byte) (byteValue != null ? byteValue + 51 : 0);
-          memoryBuffer.putByte(encodedPos);
+          memoryBuffer.putByteUnchecked(encodedPos);
         });
     return memoryBuffer;
   }

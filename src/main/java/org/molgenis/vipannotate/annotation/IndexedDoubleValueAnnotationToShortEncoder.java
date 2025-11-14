@@ -18,7 +18,7 @@ public class IndexedDoubleValueAnnotationToShortEncoder
   }
 
   @Override
-  public void encode(
+  public void encodeInto(
       IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation, MemoryBuffer memoryBuffer) {
     Double score = indexedAnnotation.getFeatureAnnotation().score();
     short encodedScore = doubleCodec.encodeDoubleAsShort(score, doubleInterval);
@@ -28,6 +28,7 @@ public class IndexedDoubleValueAnnotationToShortEncoder
   @Override
   public void clear(IndexRange indexRange, MemoryBuffer memoryBuffer) {
     short encodedNullScore = doubleCodec.encodeDoubleAsShort(null, doubleInterval);
+    // TODO use .fill(..)
     for (int i = indexRange.start(), indexEnd = indexRange.end(); i <= indexEnd; i++) {
       memoryBuffer.setShortAtIndex(i, encodedNullScore);
     }

@@ -16,6 +16,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationIndex<T> activeAnnotationIndex;
+  private boolean activeAnnotationIndexValid = false;
   @Nullable private AnnotationDataset<U> activeAnnotationDataset;
 
   @SuppressWarnings({"DataFlowIssue", "NullAway"})
@@ -34,23 +35,27 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
       activePartitionKey = partitionKey;
     }
 
-    IndexRange indexRange = activeAnnotationIndex.findIndexes(feature);
+    if (activeAnnotationIndexValid) {
+      IndexRange indexRange = activeAnnotationIndex.findIndexes(feature);
 
-    if (indexRange != null) {
-      if (activeAnnotationDataset == null) {
-        // load annotation data on the first index hit
-        activeAnnotationDataset = annotationDatasetReader.read(activePartitionKey);
+      if (indexRange != null) {
+        if (activeAnnotationDataset == null) {
+          // load annotation data on the first index hit
+          activeAnnotationDataset = annotationDatasetReader.read(activePartitionKey);
+        }
+
+        activeAnnotationDataset.findByIndexes(indexRange, annotations);
       }
-
-      activeAnnotationDataset.findByIndexes(indexRange, annotations);
     }
   }
 
-  private void updateActiveAnnotationIndex(PartitionKey partitionKey) {
+  private void updateActiveAnnotationIndex(PartitionKey key) {
     if (activeAnnotationIndex == null) {
-      activeAnnotationIndex = annotationIndexReader.read(partitionKey);
+      // perf: allocate an annotation index once and reuse the same instance after
+      activeAnnotationIndex = annotationIndexReader.read(key);
+      activeAnnotationIndexValid = (activeAnnotationIndex != null);
     } else {
-      annotationIndexReader.readInto(partitionKey, activeAnnotationIndex);
+      activeAnnotationIndexValid = annotationIndexReader.readInto(key, activeAnnotationIndex);
     }
   }
 

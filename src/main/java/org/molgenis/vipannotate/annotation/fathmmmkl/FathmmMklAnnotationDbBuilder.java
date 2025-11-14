@@ -3,20 +3,18 @@ package org.molgenis.vipannotate.annotation.fathmmmkl;
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
-import org.molgenis.vipannotate.format.zip.Zip;
-import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
+import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
+import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
 import org.molgenis.vipannotate.util.FilteringIterator;
+import org.molgenis.vipannotate.util.Gzip;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.TransformingIterator;
 import org.molgenis.vipannotate.util.TsvIterator;
-import org.molgenis.zstd.ZstdProvider;
 
 public class FathmmMklAnnotationDbBuilder {
   public FathmmMklAnnotationDbBuilder() {}
@@ -25,27 +23,23 @@ public class FathmmMklAnnotationDbBuilder {
       Input input,
       @Nullable List<Region> regions,
       FastaIndex fastaIndex,
-      ZipArchiveOutputStream zipOutputStream) {
-    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(input)) {
+      BinaryPartitionWriter partitionWriter,
+      MemoryBufferFactory memBufferFactory) {
+    try (BufferedReader reader = Gzip.createBufferedReaderUtf8FromGzip(input)) {
       Iterator<AnnotatedSequenceVariant<FathmmMklAnnotation>> sequenceVariantIterator =
           create(reader, regions, fastaIndex);
       FathmmMklAnnotationDatasetEncoder annotationDatasetEncoder =
           new FathmmMklAnnotationDatasetEncoder();
 
       // TODO check if only needs to be created once
-      BinarySerializer<AnnotationIndex<SequenceVariant>> indexDispatcherSerializer =
-          SequenceVariantAnnotationIndexDispatcherSerializerFactory.create().createSerializer();
+      MemoryBufferWriter<AnnotationIndex<SequenceVariant>> indexDispatcherWriter =
+          SequenceVariantAnnotationIndexDispatcherWriterFactory.create(memBufferFactory)
+              .createWriter();
 
-      ZipZstdCompressionContext zipZstdCompressionContext =
-          new ZipZstdCompressionContext(
-              zipOutputStream, ZstdProvider.INSTANCE.get().createCompressionContext());
-      BinaryPartitionWriter binaryPartitionWriter =
-          new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
       new AnnotatedSequenceVariantDbWriter<>(
               new FathmmMklAnnotatedSequenceVariantPartitionWriter(
-                  annotationDatasetEncoder, binaryPartitionWriter),
-              new SequenceVariantAnnotationIndexWriter<>(
-                  indexDispatcherSerializer, binaryPartitionWriter),
+                  annotationDatasetEncoder, partitionWriter),
+              new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
               SequenceVariantEncoderDispatcherFactory.create())
           .write(sequenceVariantIterator);
     } catch (IOException e) {

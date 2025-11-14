@@ -3,32 +3,14 @@ package org.molgenis.vipannotate.annotation;
 import java.lang.foreign.MemorySegment;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.streamvbyte.StreamVByte;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 @RequiredArgsConstructor
-public class SequenceVariantAnnotationIndexSmallSerializer<T extends SequenceVariant>
-    implements BinarySerializer<AnnotationIndex<T>> {
+public class SequenceVariantAnnotationIndexSmallReader<T extends SequenceVariant>
+    implements MemoryBufferReader<AnnotationIndex<T>> {
   private final SequenceVariantEncoder<T> encoder;
   private final StreamVByte streamVByte;
-
-  @Override
-  public void writeTo(MemoryBuffer memoryBuffer, AnnotationIndex<T> index) {
-    SequenceVariantAnnotationIndexSmall<T> indexSmall = getTyped(index);
-    int[] encodedVariantsArray = indexSmall.getEncodedVariantsArray();
-    long maxCompressedBytes = streamVByte.maxCompressedBytes(encodedVariantsArray.length);
-
-    memoryBuffer.ensureCapacity(
-        memoryBuffer.getPosition() + MemoryBuffer.VAR_INT_MAX_BYTE_SIZE + maxCompressedBytes);
-
-    memoryBuffer.putVarUnsignedIntUnchecked(encodedVariantsArray.length);
-    long nrBytesWritten =
-        streamVByte.deltaEncode(
-            MemorySegment.ofArray(encodedVariantsArray),
-            memoryBuffer.asMemorySegment(memoryBuffer.getPosition()),
-            encodedVariantsArray.length);
-    memoryBuffer.setPosition(memoryBuffer.getPosition() + nrBytesWritten);
-  }
 
   @Override
   public SequenceVariantAnnotationIndexSmall<T> readFrom(MemoryBuffer memoryBuffer) {
@@ -54,19 +36,15 @@ public class SequenceVariantAnnotationIndexSmallSerializer<T extends SequenceVar
     indexSmall.reset(encodedVariantsArray, nrEncodedVariants);
   }
 
-  @Override
-  public SequenceVariantAnnotationIndexSmall<T> readEmpty() {
-    return SequenceVariantAnnotationIndexSmallFactory.create();
-  }
-
   private void readIntoEncodedVariantsArray(
-      MemoryBuffer byteMemoryBuffer, int[] encodedVariantsArray, int nrEncodedVariants) {
+      MemoryBuffer memBuffer, int[] encodedVariantsArray, int nrEncodedVariants) {
+    long pos = memBuffer.getPosition();
     long nrBytesRead =
         streamVByte.deltaDecode(
-            byteMemoryBuffer.asMemorySegment(byteMemoryBuffer.getPosition()),
+            memBuffer.getMemSegment(),
             MemorySegment.ofArray(encodedVariantsArray),
             nrEncodedVariants);
-    byteMemoryBuffer.setPosition(byteMemoryBuffer.getPosition() + nrBytesRead);
+    memBuffer.setPosition(pos + nrBytesRead);
   }
 
   private SequenceVariantAnnotationIndexSmall<T> getTyped(AnnotationIndex<T> annotationIndex) {

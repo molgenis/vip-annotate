@@ -6,24 +6,22 @@ import static org.molgenis.vipannotate.annotation.SequenceVariantType.STRUCTURAL
 import java.nio.file.Path;
 import java.util.EnumSet;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.format.zip.MappableZipFile;
 import org.molgenis.vipannotate.util.DoubleCodec;
 
 public class NcERAnnotatorFactory extends PositionAnnotatorFactory<DoubleValueAnnotation> {
   public NcERAnnotatorFactory(
-      AnnotationBlobReaderFactory annotationBlobReaderFactory,
-      PartitionResolver partitionResolver) {
-    super(annotationBlobReaderFactory, partitionResolver);
+      AnnotationVdbArchiveReaderFactory archiveReaderFactory, PartitionResolver partitionResolver) {
+    super(archiveReaderFactory, partitionResolver);
   }
 
   @Override
   public VcfRecordAnnotator create(Path annotationsDir) {
-    MappableZipFile zipFile = loadZipFile(annotationsDir, "ncer.zip");
+    AnnotationVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "ncer.zip");
 
     AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
         new PositionScoreAnnotationDatasetReader(
             new PositionScoreAnnotationDatasetFactory(new NcERAnnotationDecoder(new DoubleCodec())),
-            annotationBlobReaderFactory.create(zipFile, "score"));
+            new AnnotationBlobReader("score", archiveReader));
 
     @SuppressWarnings("DataFlowIssue")
     PositionAnnotationDb<DoubleValueAnnotation> annotationDb =

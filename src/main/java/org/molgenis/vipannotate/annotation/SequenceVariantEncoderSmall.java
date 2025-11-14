@@ -29,8 +29,8 @@ public class SequenceVariantEncoderSmall<T extends SequenceVariant>
   private static int encodeAsInt(SequenceVariant variant) {
     CharSequence altBases = variant.getAlt().get();
     int encodedPos = SequenceVariantEncoderUtils.encodePos(variant.getStart());
-    int encodedRefLength = SequenceVariantEncoderUtils.encodeNrBases(variant.getRefLength());
-    int encodedAltLength = SequenceVariantEncoderUtils.encodeNrBases(altBases.length());
+    int encodedRefLength = SequenceVariantEncoderUtils.encodeBaseCount(variant.getRefLength());
+    int encodedAltLength = SequenceVariantEncoderUtils.encodeBaseCount(altBases.length());
     int encodedAlt = encodeAlt(altBases);
     return encodedPos << 14 | encodedRefLength << 10 | encodedAltLength << 8 | encodedAlt;
   }
@@ -51,7 +51,7 @@ public class SequenceVariantEncoderSmall<T extends SequenceVariant>
   private static int encodeAlt(CharSequence altBases) {
     int encodedAlt = 0;
     for (int i = 0, length = altBases.length(); i < length; i++) {
-      int encodedAltBase = SequenceVariantEncoderUtils.encodeAltBase(altBases.charAt(i));
+      int encodedAltBase = SequenceVariantEncoderUtils.encodeActgBase(altBases.charAt(i));
       encodedAlt |= encodedAltBase << (i * 2);
     }
     return encodedAlt;

@@ -4,9 +4,8 @@ import java.util.EnumSet;
 
 public abstract class PositionAnnotatorFactory<U extends Annotation> extends AnnotatorFactory {
   public PositionAnnotatorFactory(
-      AnnotationBlobReaderFactory annotationBlobReaderFactory,
-      PartitionResolver partitionResolver) {
-    super(annotationBlobReaderFactory, partitionResolver);
+      AnnotationVdbArchiveReaderFactory archiveReaderFactory, PartitionResolver partitionResolver) {
+    super(archiveReaderFactory, partitionResolver);
   }
 
   protected PositionAnnotationDb<U> buildAnnotationDb(

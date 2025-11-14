@@ -5,37 +5,37 @@ import static org.molgenis.vipannotate.annotation.SequenceVariantType.*;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.format.zip.MappableZipFile;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
+import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 public class SpliceAiAnnotatorFactory
     extends SequenceVariantAnnotatorFactory<SequenceVariant, SpliceAiAnnotation> {
   public SpliceAiAnnotatorFactory(
-      AnnotationBlobReaderFactory annotationBlobReaderFactory,
+      AnnotationVdbArchiveReaderFactory archiveReaderFactory,
       PartitionResolver partitionResolver,
-      BinarySerializer<AnnotationIndex<SequenceVariant>> indexSerializer) {
-    super(annotationBlobReaderFactory, partitionResolver, indexSerializer);
+      MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader) {
+    super(archiveReaderFactory, partitionResolver, indexReader);
   }
 
   @Override
   public VcfRecordAnnotator create(Path annotationsDir) {
-    MappableZipFile zipFile = loadZipFile(annotationsDir, "spliceai.zip");
+    AnnotationVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "spliceai.zip");
+
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
-        createIndexReader(zipFile);
+        createIndexReader(archiveReader);
 
     AnnotationDatasetReader<SpliceAiAnnotation> annotationDatasetReader =
         new SpliceAiAnnotationDatasetReader(
             new SpliceAiAnnotationDatasetFactory(new SpliceAiAnnotationDatasetDecoder()),
-            annotationBlobReaderFactory.create(zipFile, "gene_idx"),
-            annotationBlobReaderFactory.create(zipFile, "gene_ref"),
-            annotationBlobReaderFactory.create(zipFile, "ds_ag"),
-            annotationBlobReaderFactory.create(zipFile, "ds_al"),
-            annotationBlobReaderFactory.create(zipFile, "ds_dg"),
-            annotationBlobReaderFactory.create(zipFile, "ds_dl"),
-            annotationBlobReaderFactory.create(zipFile, "dp_ag"),
-            annotationBlobReaderFactory.create(zipFile, "dp_al"),
-            annotationBlobReaderFactory.create(zipFile, "dp_dg"),
-            annotationBlobReaderFactory.create(zipFile, "dp_dl"));
+            new AnnotationBlobReader("gene_idx", archiveReader),
+            new AnnotationBlobReader("gene_ref", archiveReader),
+            new AnnotationBlobReader("ds_ag", archiveReader),
+            new AnnotationBlobReader("ds_al", archiveReader),
+            new AnnotationBlobReader("ds_dg", archiveReader),
+            new AnnotationBlobReader("ds_dl", archiveReader),
+            new AnnotationBlobReader("dp_ag", archiveReader),
+            new AnnotationBlobReader("dp_al", archiveReader),
+            new AnnotationBlobReader("dp_dg", archiveReader),
+            new AnnotationBlobReader("dp_dl", archiveReader));
 
     SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> annotationDb =
         buildAnnotationDb(

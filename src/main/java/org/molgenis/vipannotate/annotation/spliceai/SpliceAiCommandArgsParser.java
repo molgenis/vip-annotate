@@ -8,7 +8,6 @@ import org.molgenis.vipannotate.ArgsParser;
 import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
-import org.molgenis.vipannotate.util.Output;
 
 // TODO deduplicate, see DbCommandArgsPars
 public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
@@ -20,7 +19,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
 
     Input input = null;
     Path ncbiGeneFile = null, faiFile = null;
-    Output output = null;
+    Path output = null;
     String regionsStr = null;
     Boolean force = null;
     for (int i = 0; i < args.length; i++) {
@@ -41,7 +40,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
                 "'%s' value '%s' does not exist".formatted(arg, faiFile));
           }
         }
-        case "-o", "--output" -> output = parseArgOutputValue(args, i++, arg);
+        case "-o", "--output" -> output = Path.of(parseArgValue(args, i++, arg));
         case "-r", "--regions" -> regionsStr = parseArgValue(args, i++, arg);
         case "-f", "--force" -> force = Boolean.TRUE;
         default -> throw new ArgValidationException("unknown option '%s'".formatted(arg));
@@ -64,9 +63,9 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
       throw new ArgValidationException(
           "missing required option '%s' or '%s'".formatted("-x", "--reference_index"));
     }
-    if (output.path() != null && force == null && Files.exists(output.path())) {
+    if (force == null && Files.exists(output)) {
       throw new ArgValidationException(
-          "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output.path()));
+          "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output));
     }
 
     return new SpliceAiCommandArgs(input, ncbiGeneFile, faiFile, output, regionsStr, force);

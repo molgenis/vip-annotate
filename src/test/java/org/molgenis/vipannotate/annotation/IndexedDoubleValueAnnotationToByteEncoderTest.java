@@ -31,13 +31,13 @@ class IndexedDoubleValueAnnotationToByteEncoderTest {
   }
 
   @Test
-  void encode() {
+  void encodeInto() {
     IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation =
         new IndexedAnnotation<>(2, new DoubleValueAnnotation(3d));
 
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
     when(doubleCodec.encodeDoubleAsByte(3d, new DoubleInterval(-1d, 1d))).thenReturn((byte) 123);
-    indexedDoubleValueAnnotationToByteEncoder.encode(indexedAnnotation, memoryBuffer);
+    indexedDoubleValueAnnotationToByteEncoder.encodeInto(indexedAnnotation, memoryBuffer);
     verify(memoryBuffer).setByteAtIndex(2, (byte) 123);
   }
 

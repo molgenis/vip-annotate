@@ -6,34 +6,34 @@ import static org.molgenis.vipannotate.annotation.SequenceVariantType.STRUCTURAL
 import java.nio.file.Path;
 import java.util.EnumSet;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.format.zip.MappableZipFile;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
+import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 public class GnomAdAnnotatorFactory
     extends SequenceVariantAnnotatorFactory<SequenceVariant, GnomAdAnnotation> {
   public GnomAdAnnotatorFactory(
-      AnnotationBlobReaderFactory annotationBlobReaderFactory,
+      AnnotationVdbArchiveReaderFactory archiveReaderFactory,
       PartitionResolver partitionResolver,
-      BinarySerializer<AnnotationIndex<SequenceVariant>> indexSerializer) {
-    super(annotationBlobReaderFactory, partitionResolver, indexSerializer);
+      MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader) {
+    super(archiveReaderFactory, partitionResolver, indexReader);
   }
 
   @Override
   public VcfRecordAnnotator create(Path annotationsDir) {
-    MappableZipFile zipFile = loadZipFile(annotationsDir, "gnomad.zip");
+    AnnotationVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "gnomad.zip");
+
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
-        createIndexReader(zipFile);
+        createIndexReader(archiveReader);
 
     AnnotationDatasetReader<GnomAdAnnotation> annotationDatasetReader =
         new GnomAdAnnotationDatasetReader(
             new GnomAdAnnotationDatasetFactory(new GnomAdAnnotationDatasetDecoder()),
-            annotationBlobReaderFactory.create(zipFile, "src"),
-            annotationBlobReaderFactory.create(zipFile, "af"),
-            annotationBlobReaderFactory.create(zipFile, "faf95"),
-            annotationBlobReaderFactory.create(zipFile, "faf99"),
-            annotationBlobReaderFactory.create(zipFile, "hn"),
-            annotationBlobReaderFactory.create(zipFile, "filters"),
-            annotationBlobReaderFactory.create(zipFile, "cov"));
+            new AnnotationBlobReader("src", archiveReader),
+            new AnnotationBlobReader("af", archiveReader),
+            new AnnotationBlobReader("faf95", archiveReader),
+            new AnnotationBlobReader("faf99", archiveReader),
+            new AnnotationBlobReader("hn", archiveReader),
+            new AnnotationBlobReader("filters", archiveReader),
+            new AnnotationBlobReader("cov", archiveReader));
 
     @SuppressWarnings("DataFlowIssue")
     SequenceVariantAnnotationDb<SequenceVariant, GnomAdAnnotation> annotationDb =

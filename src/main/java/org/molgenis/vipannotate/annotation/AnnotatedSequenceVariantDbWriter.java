@@ -5,6 +5,7 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type;
+import org.molgenis.vipannotate.util.Logger;
 
 /**
  * Writes annotated sequence variants to a partitioned database
@@ -36,6 +37,11 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
 
   @SuppressWarnings("DataFlowIssue")
   private void write(Partition<SequenceVariant, U, AnnotatedSequenceVariant<U>> partition) {
+    if (Logger.isDebugEnabled()) {
+      Logger.debug(
+          "processing partition %s/%d", partition.key().contig().getName(), partition.key().bin());
+    }
+
     intEncodedAnnotatedSequenceVariants =
         intEncodedAnnotatedSequenceVariants != null
             ? new ArrayList<>(intEncodedAnnotatedSequenceVariants.size())

@@ -31,7 +31,7 @@ class PhyloPAnnotationEncoderDecoderIT {
     MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new short[1000]);
     for (int i = 0; i < 1000; ++i) {
       Double randomScore = scoreMin + (scoreMax - scoreMin) * Math.random();
-      phyloPAnnotationEncoder.encode(
+      phyloPAnnotationEncoder.encodeInto(
           new IndexedAnnotation<>(i, new DoubleValueAnnotation(randomScore)), memoryBuffer);
       DoubleValueAnnotation doubleValueAnnotation = phyloPAnnotationDecoder.decode(memoryBuffer, i);
 

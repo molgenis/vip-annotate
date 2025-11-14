@@ -30,8 +30,8 @@ public class SequenceVariantEncoderBig<T extends SequenceVariant>
     CharSequence altBases = variant.getAlt().get(); // FIXME not true, can be symbolic etc.
 
     int encodedPos = SequenceVariantEncoderUtils.encodePos(variant.getStart());
-    int encodedRefLength = SequenceVariantEncoderUtils.encodeNrBases(variant.getRefLength());
-    int encodedAltLength = SequenceVariantEncoderUtils.encodeNrBases(altBases.length());
+    int encodedRefLength = SequenceVariantEncoderUtils.encodeBaseCount(variant.getRefLength());
+    int encodedAltLength = SequenceVariantEncoderUtils.encodeBaseCount(altBases.length());
 
     try (MemoryBuffer memoryBuffer = MemoryBuffer.wrap(bytes)) {
       memoryBuffer.putVarUnsignedIntUnchecked(encodedPos);
@@ -46,7 +46,7 @@ public class SequenceVariantEncoderBig<T extends SequenceVariant>
     int bitPos = 0;
 
     for (int i = 0; i < nrBases; i++) {
-      int enc = SequenceVariantEncoderUtils.encodeAltBase(altBases.charAt(i)) & 0b11; // 2 bits
+      int enc = SequenceVariantEncoderUtils.encodeActgBase(altBases.charAt(i)) & 0b11; // 2 bits
       int byteIndex = offset + (bitPos / 8);
       int bitOffset = bitPos % 8;
 

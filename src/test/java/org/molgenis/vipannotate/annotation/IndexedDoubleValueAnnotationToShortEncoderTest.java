@@ -31,13 +31,13 @@ class IndexedDoubleValueAnnotationToShortEncoderTest {
   }
 
   @Test
-  void encode() {
+  void encodeInto() {
     IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation =
         new IndexedAnnotation<>(2, new DoubleValueAnnotation(3d));
 
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
     when(doubleCodec.encodeDoubleAsShort(3d, new DoubleInterval(-1d, 1d))).thenReturn((short) 123);
-    indexedDoubleValueAnnotationToShortEncoder.encode(indexedAnnotation, memoryBuffer);
+    indexedDoubleValueAnnotationToShortEncoder.encodeInto(indexedAnnotation, memoryBuffer);
     verify(memoryBuffer).setShortAtIndex(2, (short) 123);
   }
 

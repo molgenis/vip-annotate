@@ -4,20 +4,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.format.zip.MappableZipFile;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AnnotatorFactory {
-  protected final AnnotationBlobReaderFactory annotationBlobReaderFactory;
+  protected final AnnotationVdbArchiveReaderFactory archiveReaderFactory;
   protected final PartitionResolver partitionResolver;
 
   public abstract VcfRecordAnnotator create(Path annotationsDir);
 
-  protected MappableZipFile loadZipFile(Path dir, String filename) {
-    Path file = dir.resolve(filename);
+  protected AnnotationVdbArchiveReader createArchiveReader(Path annotationsDir, String filename) {
+    Path file = annotationsDir.resolve(filename);
     if (Files.notExists(file)) {
       throw new IllegalArgumentException("'%s' does not exist".formatted(file));
     }
-    return MappableZipFile.fromFile(file);
+    return archiveReaderFactory.create(file);
   }
 }

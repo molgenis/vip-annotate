@@ -57,11 +57,12 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
   }
 
   private void writeGeneIndex(PartitionKey partitionKey, int[] geneIndexes) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new int[geneIndexes.length]);
+    MemoryBuffer memBuffer = MemoryBuffer.wrap(new int[geneIndexes.length]);
     for (int geneIndex : geneIndexes) {
-      memoryBuffer.putInt(geneIndex);
+      memBuffer.putInt(geneIndex);
     }
-    binaryPartitionWriter.write(partitionKey, "gene_idx", memoryBuffer);
+    memBuffer.flip();
+    binaryPartitionWriter.write(partitionKey, "gene_idx", memBuffer);
   }
 
   private void writeGene(
@@ -69,7 +70,7 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
       List<AnnotatedSequenceVariant<SpliceAiAnnotation>> annotatedVariants,
       Function<SpliceAiAnnotation, Integer> geneIdFunction,
       Map<Integer, Integer> ncbiGeneIdToLocalGeneIdMap) {
-    MemoryBuffer memoryBuffer =
+    MemoryBuffer memBuffer =
         spliceAiAnnotationDatasetEncoder.encodeGeneId(
             new SizedIterator<>(
                 new TransformingIterator<>(
@@ -78,7 +79,8 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
                         ncbiGeneIdToLocalGeneIdMap.get(
                             geneIdFunction.apply(annotatedVariant.getAnnotation()))),
                 annotatedVariants.size()));
-    binaryPartitionWriter.write(partitionKey, "gene_ref", memoryBuffer);
+    memBuffer.flip();
+    binaryPartitionWriter.write(partitionKey, "gene_ref", memBuffer);
   }
 
   private void writeScore(
@@ -86,14 +88,15 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
       List<AnnotatedSequenceVariant<SpliceAiAnnotation>> annotatedVariants,
       Function<SpliceAiAnnotation, Double> scoreFunction,
       String dataId) {
-    MemoryBuffer memoryBuffer =
+    MemoryBuffer memBuffer =
         spliceAiAnnotationDatasetEncoder.encodeScore(
             new SizedIterator<>(
                 new TransformingIterator<>(
                     annotatedVariants.iterator(),
                     annotatedVariant -> scoreFunction.apply(annotatedVariant.getAnnotation())),
                 annotatedVariants.size()));
-    binaryPartitionWriter.write(partitionKey, dataId, memoryBuffer);
+    memBuffer.flip();
+    binaryPartitionWriter.write(partitionKey, dataId, memBuffer);
   }
 
   private void writePos(
@@ -101,13 +104,14 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
       List<AnnotatedSequenceVariant<SpliceAiAnnotation>> annotatedVariants,
       Function<SpliceAiAnnotation, Byte> posFunction,
       String dataId) {
-    MemoryBuffer memoryBuffer =
+    MemoryBuffer memBuffer =
         spliceAiAnnotationDatasetEncoder.encodePos(
             new SizedIterator<>(
                 new TransformingIterator<>(
                     annotatedVariants.iterator(),
                     annotatedVariant -> posFunction.apply(annotatedVariant.getAnnotation())),
                 annotatedVariants.size()));
-    binaryPartitionWriter.write(partitionKey, dataId, memoryBuffer);
+    memBuffer.flip();
+    binaryPartitionWriter.write(partitionKey, dataId, memBuffer);
   }
 }

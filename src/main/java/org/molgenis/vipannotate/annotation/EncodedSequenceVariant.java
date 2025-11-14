@@ -65,6 +65,7 @@ public class EncodedSequenceVariant {
 
   public enum Type {
     SMALL,
-    BIG
+    BIG,
+    OTHER
   }
 }

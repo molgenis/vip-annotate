@@ -6,5 +6,6 @@ public interface AnnotationEncoder<T extends Annotation> {
   /** {@return the size of one annotation in bytes} */
   int getAnnotationSizeInBytes();
 
-  void encode(T annotation, MemoryBuffer memoryBuffer);
+  /** Encode an annotation into the given {@link MemoryBuffer}. */
+  void encodeInto(T annotation, MemoryBuffer memoryBuffer);
 }

@@ -48,5 +48,5 @@ deploy:
   draft: true
   on:
     # deploy test
-    branch: 0.0.1-alpha
+    branch: /^0\.0\.1-alpha(\.\d+)?$/
     tags: true

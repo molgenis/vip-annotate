@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import java.lang.foreign.MemorySegment;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
@@ -8,14 +7,24 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 @RequiredArgsConstructor
 public class AnnotationBlobReader implements AutoCloseable {
   private final String blobId;
-  private final PartitionDatasetReader partitionDatasetReader;
-  private final MemorySegment memorySegment;
+  private final BinaryPartitionReader partitionReader;
+  @Nullable private MemoryBuffer reusableMemBuffer;
 
   /** {@return memory buffer or <code>null</code> if blob does not exist} */
   public @Nullable MemoryBuffer read(PartitionKey partitionKey) {
-    return partitionDatasetReader.read(partitionKey, blobId, memorySegment);
+    if (reusableMemBuffer == null) {
+      reusableMemBuffer = partitionReader.read(partitionKey, blobId);
+    } else {
+      reusableMemBuffer.clear();
+      reusableMemBuffer = partitionReader.readInto(partitionKey, blobId, reusableMemBuffer);
+    }
+    return reusableMemBuffer;
   }
 
   @Override
-  public void close() {}
+  public void close() {
+    if (reusableMemBuffer != null) {
+      reusableMemBuffer.close();
+    }
+  }
 }

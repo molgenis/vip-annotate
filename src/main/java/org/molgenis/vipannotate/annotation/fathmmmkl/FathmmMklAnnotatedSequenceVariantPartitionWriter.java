@@ -28,13 +28,14 @@ public class FathmmMklAnnotatedSequenceVariantPartitionWriter
   private void writeScore(
       PartitionKey partitionKey,
       List<AnnotatedSequenceVariant<FathmmMklAnnotation>> annotatedVariants) {
-    MemoryBuffer memoryBuffer =
+    MemoryBuffer memBuffer =
         annotationDatasetEncoder.encodeScores(
             new SizedIterator<>(
                 new TransformingIterator<>(
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().score()),
                 annotatedVariants.size()));
-    binaryPartitionWriter.write(partitionKey, "score", memoryBuffer);
+    memBuffer.flip();
+    binaryPartitionWriter.write(partitionKey, "score", memBuffer);
   }
 }

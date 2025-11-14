@@ -18,6 +18,7 @@ public class FathmmMklAnnotationDatasetReader
     if (scoreMemoryBuffer != null) {
       annotationDataset = annotationDatasetFactory.create(scoreMemoryBuffer);
     } else {
+      // TODO readInto dataset similar to index
       annotationDataset = EmptyAnnotationDataset.getInstance();
     }
     return annotationDataset;

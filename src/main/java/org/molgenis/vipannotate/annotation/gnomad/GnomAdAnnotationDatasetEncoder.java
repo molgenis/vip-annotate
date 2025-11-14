@@ -36,7 +36,7 @@ public class GnomAdAnnotationDatasetEncoder {
     sourceBatchIt.forEachRemaining(
         sourceBatch -> {
           int encodedSourceBatch = encodeSourceBatch(sourceBatch);
-          memoryBuffer.putByte((byte) encodedSourceBatch);
+          memoryBuffer.putByteUnchecked((byte) encodedSourceBatch);
         });
 
     return memoryBuffer;
@@ -110,7 +110,7 @@ public class GnomAdAnnotationDatasetEncoder {
     filtersBatchIt.forEachRemaining(
         filtersBatch -> {
           int encodedFiltersBatch = encodeFiltersBatch(filtersBatch);
-          memoryBuffer.putByte(safeIntToByte(encodedFiltersBatch));
+          memoryBuffer.putByteUnchecked(safeIntToByte(encodedFiltersBatch));
         });
     return memoryBuffer;
   }

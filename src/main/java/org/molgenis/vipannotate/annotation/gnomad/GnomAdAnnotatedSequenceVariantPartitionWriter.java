@@ -41,6 +41,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().source()),
                 annotatedVariants.size()));
+    memoryBuffer.flip();
     binaryPartitionWriter.write(partitionKey, "src", memoryBuffer);
   }
 
@@ -54,6 +55,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().af()),
                 annotatedVariants.size()));
+    memoryBuffer.flip();
     binaryPartitionWriter.write(partitionKey, "af", memoryBuffer);
   }
 
@@ -67,6 +69,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().faf95()),
                 annotatedVariants.size()));
+    memoryBuffer.flip();
     binaryPartitionWriter.write(partitionKey, "faf95", memoryBuffer);
   }
 
@@ -80,6 +83,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().faf99()),
                 annotatedVariants.size()));
+    memoryBuffer.flip();
     binaryPartitionWriter.write(partitionKey, "faf99", memoryBuffer);
   }
 
@@ -93,6 +97,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().hn()),
                 annotatedVariants.size()));
+    memoryBuffer.flip();
     binaryPartitionWriter.write(partitionKey, "hn", memoryBuffer);
   }
 
@@ -106,6 +111,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().filters()),
                 annotatedVariants.size()));
+    memoryBuffer.flip();
     binaryPartitionWriter.write(partitionKey, "filters", memoryBuffer);
   }
 
@@ -119,6 +125,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
                     annotatedVariants.iterator(),
                     annotatedVariant -> annotatedVariant.getAnnotation().cov()),
                 annotatedVariants.size()));
+    memoryBuffer.flip();
     binaryPartitionWriter.write(partitionKey, "cov", memoryBuffer);
   }
 }

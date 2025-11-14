@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation.fathmmmkl;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.*;
 
+// TODO rename to Writer?
 public class FathmmMklAnnotationDatasetEncoder {
   private final DoubleCodec doubleCodec;
 
@@ -19,7 +20,7 @@ public class FathmmMklAnnotationDatasetEncoder {
     scoreIt.forEachRemaining(
         value -> {
           byte encodedValue = doubleCodec.encodeDoublePrimitiveUnitIntervalAsByte(value);
-          memoryBuffer.putByte(encodedValue);
+          memoryBuffer.putByteUnchecked(encodedValue);
         });
     return memoryBuffer;
   }

@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 @SuppressWarnings({"DataFlowIssue", "NullAway", "NullableProblems", "unchecked"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexReaderTest {
   @Mock private AnnotationBlobReader annotationBlobReader;
-  @Mock private BinarySerializer<AnnotationIndex<SequenceVariant>> indexSerializer;
+  @Mock private MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader;
 
   private SequenceVariantAnnotationIndexReader<SequenceVariant>
       sequenceVariantAnnotationIndexReader;
@@ -24,7 +24,7 @@ class SequenceVariantAnnotationIndexReaderTest {
   @BeforeEach
   void setUp() {
     sequenceVariantAnnotationIndexReader =
-        new SequenceVariantAnnotationIndexReader<>(annotationBlobReader, indexSerializer);
+        new SequenceVariantAnnotationIndexReader<>(annotationBlobReader, indexReader);
   }
 
   @AfterEach
@@ -40,7 +40,7 @@ class SequenceVariantAnnotationIndexReaderTest {
         mock(SequenceVariantAnnotationIndexDispatcher.class);
 
     when(annotationBlobReader.read(partitionKey)).thenReturn(memoryBuffer);
-    when(indexSerializer.readFrom(memoryBuffer)).thenReturn(indexDispatcher);
+    when(indexReader.readFrom(memoryBuffer)).thenReturn(indexDispatcher);
 
     assertEquals(indexDispatcher, sequenceVariantAnnotationIndexReader.read(partitionKey));
   }
@@ -48,9 +48,7 @@ class SequenceVariantAnnotationIndexReaderTest {
   @Test
   void readNotExists() {
     PartitionKey partitionKey = mock(PartitionKey.class);
-    AnnotationIndex<SequenceVariant> index = mock(AnnotationIndex.class);
-    when(indexSerializer.readEmpty()).thenReturn(index);
-    assertEquals(index, sequenceVariantAnnotationIndexReader.read(partitionKey));
+    assertNull(sequenceVariantAnnotationIndexReader.read(partitionKey));
   }
 
   @Test
@@ -62,8 +60,8 @@ class SequenceVariantAnnotationIndexReaderTest {
     @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
-    sequenceVariantAnnotationIndexReader.readInto(partitionKey, index);
-    verify(indexSerializer).readInto(memoryBuffer, index);
+    assertTrue(sequenceVariantAnnotationIndexReader.readInto(partitionKey, index));
+    verify(indexReader).readInto(memoryBuffer, index);
   }
 
   @Test
@@ -72,8 +70,7 @@ class SequenceVariantAnnotationIndexReaderTest {
     @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
-    sequenceVariantAnnotationIndexReader.readInto(partitionKey, index);
-
-    assertAll(() -> verify(index).reset(), () -> verifyNoInteractions(indexSerializer));
+    boolean indexExists = sequenceVariantAnnotationIndexReader.readInto(partitionKey, index);
+    assertAll(() -> assertFalse(indexExists), () -> verifyNoInteractions(indexReader));
   }
 }

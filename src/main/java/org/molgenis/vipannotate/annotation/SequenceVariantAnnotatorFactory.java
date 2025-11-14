@@ -1,25 +1,25 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.EnumSet;
-import org.molgenis.vipannotate.format.zip.MappableZipFile;
-import org.molgenis.vipannotate.serialization.BinarySerializer;
+import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 public abstract class SequenceVariantAnnotatorFactory<
         T extends SequenceVariant, U extends Annotation>
     extends AnnotatorFactory {
-  private final BinarySerializer<AnnotationIndex<T>> indexSerializer;
+  private final MemoryBufferReader<AnnotationIndex<T>> indexReader;
 
   public SequenceVariantAnnotatorFactory(
-      AnnotationBlobReaderFactory annotationBlobReaderFactory,
+      AnnotationVdbArchiveReaderFactory archiveReaderFactory,
       PartitionResolver partitionResolver,
-      BinarySerializer<AnnotationIndex<T>> indexSerializer) {
-    super(annotationBlobReaderFactory, partitionResolver);
-    this.indexSerializer = indexSerializer;
+      MemoryBufferReader<AnnotationIndex<T>> indexReader) {
+    super(archiveReaderFactory, partitionResolver);
+    this.indexReader = indexReader;
   }
 
-  protected SequenceVariantAnnotationIndexReader<T> createIndexReader(MappableZipFile zip) {
+  protected SequenceVariantAnnotationIndexReader<T> createIndexReader(
+      AnnotationVdbArchiveReader archiveReader) {
     return new SequenceVariantAnnotationIndexReader<>(
-        annotationBlobReaderFactory.create(zip, "idx"), indexSerializer);
+        new AnnotationBlobReader("idx", archiveReader), indexReader);
   }
 
   protected SequenceVariantAnnotationDb<T, U> buildAnnotationDb(

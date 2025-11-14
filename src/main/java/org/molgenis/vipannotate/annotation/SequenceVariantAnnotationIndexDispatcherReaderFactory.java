@@ -5,27 +5,27 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.streamvbyte.StreamVByte;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class SequenceVariantAnnotationIndexDispatcherSerializerFactory<T extends SequenceVariant> {
+public class SequenceVariantAnnotationIndexDispatcherReaderFactory<T extends SequenceVariant> {
   private final SequenceVariantEncoderDispatcher<T> encoderDispatcher;
 
   public static <T extends SequenceVariant>
-      SequenceVariantAnnotationIndexDispatcherSerializerFactory<T> create() {
+      SequenceVariantAnnotationIndexDispatcherReaderFactory<T> create() {
     SequenceVariantEncoderDispatcher<T> encoderDispatcher =
         SequenceVariantEncoderDispatcherFactory.create();
-    return new SequenceVariantAnnotationIndexDispatcherSerializerFactory<>(encoderDispatcher);
+    return new SequenceVariantAnnotationIndexDispatcherReaderFactory<>(encoderDispatcher);
   }
 
-  public SequenceVariantAnnotationIndexDispatcherSerializer<T> createSerializer() {
-    SequenceVariantAnnotationIndexDispatcherSerializer<T> serializer =
-        new SequenceVariantAnnotationIndexDispatcherSerializer<>();
-    serializer.register(
+  public SequenceVariantAnnotationIndexDispatcherReader<T> createReader() {
+    SequenceVariantAnnotationIndexDispatcherReader<T> reader =
+        new SequenceVariantAnnotationIndexDispatcherReader<>();
+    reader.register(
         EncodedSequenceVariant.Type.SMALL,
-        new SequenceVariantAnnotationIndexSmallSerializer<>(
+        new SequenceVariantAnnotationIndexSmallReader<>(
             encoderDispatcher.getEncoder(EncodedSequenceVariant.Type.SMALL), StreamVByte.create()));
-    serializer.register(
+    reader.register(
         EncodedSequenceVariant.Type.BIG,
-        new SequenceVariantAnnotationIndexBigSerializer<>(
+        new SequenceVariantAnnotationIndexBigReader<>(
             encoderDispatcher.getEncoder(EncodedSequenceVariant.Type.BIG)));
-    return serializer;
+    return reader;
   }
 }

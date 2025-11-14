@@ -3,17 +3,14 @@ package org.molgenis.vipannotate.annotation.ncer;
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.Position;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
-import org.molgenis.vipannotate.format.zip.Zip;
-import org.molgenis.vipannotate.format.zip.ZipZstdCompressionContext;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
 import org.molgenis.vipannotate.util.*;
-import org.molgenis.zstd.ZstdProvider;
+import org.molgenis.vipannotate.util.Gzip;
 
 public class NcERAnnotationDbBuilder {
   public NcERAnnotationDbBuilder() {}
@@ -22,30 +19,21 @@ public class NcERAnnotationDbBuilder {
       Input ncERInput,
       @Nullable List<Region> regions,
       FastaIndex fastaIndex,
-      ZipArchiveOutputStream zipOutputStream) {
-    try (BufferedReader reader = Zip.createBufferedReaderUtf8FromGzip(ncERInput)) {
+      BinaryPartitionWriter partitionWriter,
+      MemoryBufferFactory memBufferFactory) {
+    try (BufferedReader reader = Gzip.createBufferedReaderUtf8FromGzip(ncERInput)) {
       Iterator<NcERAnnotatedPosition> iterator = create(reader, regions, fastaIndex);
-
-      MemoryBuffer reusableMemoryBuffer = MemoryBuffer.wrap(new short[1 << 18]);
-
-      ZipZstdCompressionContext zipZstdCompressionContext =
-          new ZipZstdCompressionContext(
-              zipOutputStream, ZstdProvider.INSTANCE.get().createCompressionContext());
-      BinaryPartitionWriter binaryPartitionWriter =
-          new ZipZstdBinaryPartitionWriter(zipZstdCompressionContext);
 
       // annotation encoder
       NcERAnnotationEncoder annotationEncoder = new NcERAnnotationEncoder(new DoubleCodec());
-
-      // annotation dataset encoder
-      IndexedAnnotatedFeatureDatasetEncoder<DoubleValueAnnotation> annotationDatasetEncoder =
-          new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder, reusableMemoryBuffer);
 
       // annotation dataset writer
       AnnotatedPositionPartitionWriter<Position, DoubleValueAnnotation, NcERAnnotatedPosition>
           annotationDatasetWriter =
               new AnnotatedPositionPartitionWriter<>(
-                  "score", annotationDatasetEncoder, binaryPartitionWriter);
+                  "score",
+                  new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder, memBufferFactory),
+                  partitionWriter);
 
       AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, NcERAnnotatedPosition>
           annotationDbWriter = new AnnotatedIntervalDbWriter<>(annotationDatasetWriter);

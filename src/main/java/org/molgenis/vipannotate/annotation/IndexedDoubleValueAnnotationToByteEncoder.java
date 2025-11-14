@@ -18,7 +18,7 @@ public class IndexedDoubleValueAnnotationToByteEncoder
   }
 
   @Override
-  public void encode(
+  public void encodeInto(
       IndexedAnnotation<DoubleValueAnnotation> indexedAnnotation, MemoryBuffer memoryBuffer) {
     Double score = indexedAnnotation.getFeatureAnnotation().score();
     byte encodedScore = doubleCodec.encodeDoubleAsByte(score, valueInterval);
@@ -29,6 +29,7 @@ public class IndexedDoubleValueAnnotationToByteEncoder
   @Override
   public void clear(IndexRange indexRange, MemoryBuffer memoryBuffer) {
     byte encodedNullScore = doubleCodec.encodeDoubleAsByte(null, valueInterval);
+    // TODO use .fill(..)
     for (int i = indexRange.start(), indexEnd = indexRange.end(); i < indexEnd; i++) {
       memoryBuffer.setByteAtIndex((long) i * getAnnotationSizeInBytes(), encodedNullScore);
     }

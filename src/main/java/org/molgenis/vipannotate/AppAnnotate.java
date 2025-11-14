@@ -41,11 +41,10 @@ public class AppAnnotate extends App {
       Logger.REDIRECT_STDOUT_TO_STDERR = true;
     }
 
-    try (VcfAnnotatorFactory vcfAnnotatorFactory = VcfAnnotatorFactory.create()) {
-      try (VcfAnnotator vcfAnnotator =
-          vcfAnnotatorFactory.create(inputVcf, annotationsDir, outputVcf, outputVcfType)) {
-        vcfAnnotator.annotate();
-      }
+    VcfAnnotatorFactory vcfAnnotatorFactory = VcfAnnotatorFactory.create();
+    try (VcfAnnotator vcfAnnotator =
+        vcfAnnotatorFactory.create(inputVcf, annotationsDir, outputVcf, outputVcfType)) {
+      vcfAnnotator.annotate();
     }
   }
 }
