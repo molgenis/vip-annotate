@@ -8,6 +8,10 @@ package org.molgenis.vipannotate.annotation;
  * @param <V> annotated genomic interval typed by T and U
  */
 public interface AnnotatedIntervalPartitionWriter<
-    T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>> {
+        T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
+    extends AutoCloseable {
   void write(Partition<T, U, V> partition);
+
+  @Override
+  void close();
 }

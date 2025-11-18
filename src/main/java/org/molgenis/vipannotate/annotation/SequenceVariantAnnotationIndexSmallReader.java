@@ -13,10 +13,10 @@ public class SequenceVariantAnnotationIndexSmallReader<T extends SequenceVariant
   private final StreamVByte streamVByte;
 
   @Override
-  public SequenceVariantAnnotationIndexSmall<T> readFrom(MemoryBuffer memoryBuffer) {
-    int nrEncodedVariants = memoryBuffer.getVarUnsignedInt();
+  public SequenceVariantAnnotationIndexSmall<T> readFrom(MemoryBuffer memBuffer) {
+    int nrEncodedVariants = memBuffer.getVarUnsignedInt();
     int[] encodedVariantsArray = new int[nrEncodedVariants];
-    readIntoEncodedVariantsArray(memoryBuffer, encodedVariantsArray, nrEncodedVariants);
+    readIntoEncodedVariantsArray(memBuffer, encodedVariantsArray, nrEncodedVariants);
     return new SequenceVariantAnnotationIndexSmall<>(
         encoder, encodedVariantsArray, nrEncodedVariants);
   }

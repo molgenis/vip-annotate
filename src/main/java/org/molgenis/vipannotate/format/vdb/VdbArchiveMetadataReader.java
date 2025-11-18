@@ -2,10 +2,8 @@ package org.molgenis.vipannotate.format.vdb;
 
 import org.molgenis.vipannotate.format.vdb.VdbArchiveMetadata.VdbArchiveMetadataBuilder;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
-public class VdbArchiveMetadataReader implements MemoryBufferReader<VdbArchiveMetadata> {
-  @Override
+public class VdbArchiveMetadataReader {
   public VdbArchiveMetadata readFrom(MemoryBuffer memBuffer) {
     int nrRecords = memBuffer.getInt();
 
@@ -17,16 +15,11 @@ public class VdbArchiveMetadataReader implements MemoryBufferReader<VdbArchiveMe
       prevOffset = offset;
 
       long length = memBuffer.getLong();
-      CompressionMethod compressionMethod = CompressionMethod.fromValue(memBuffer.getByte());
-
-      builder.addEntry(offset, length, compressionMethod);
+      Compression compression = Compression.fromValue(memBuffer.getByte());
+      IoMode ioMode = IoMode.fromValue(memBuffer.getByte());
+      builder.addEntry(offset, length, compression, ioMode);
     }
 
     return builder.build();
-  }
-
-  @Override
-  public void readInto(MemoryBuffer memoryBuffer, VdbArchiveMetadata object) {
-    throw new RuntimeException("Not implemented"); // FIXME
   }
 }

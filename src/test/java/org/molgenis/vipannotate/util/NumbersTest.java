@@ -215,4 +215,14 @@ class NumbersTest {
   void safeIntToByteTooHigh() {
     assertThrows(IllegalArgumentException.class, () -> Numbers.safeIntToByte(256));
   }
+
+  @Test
+  void nextPowerOf2() {
+    assertAll(
+        () -> assertEquals(1, Numbers.nextPowerOf2(0)),
+        () -> assertEquals(1, Numbers.nextPowerOf2(1)),
+        () -> assertEquals(2, Numbers.nextPowerOf2(2)),
+        () -> assertEquals(4, Numbers.nextPowerOf2(3)),
+        () -> assertEquals(8, Numbers.nextPowerOf2(5)));
+  }
 }

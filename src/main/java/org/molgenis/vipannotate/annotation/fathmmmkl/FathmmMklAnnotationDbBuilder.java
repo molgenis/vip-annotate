@@ -8,6 +8,7 @@ import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.AnnotatedSequenceVariant;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
+import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
 import org.molgenis.vipannotate.util.FilteringIterator;
@@ -36,12 +37,15 @@ public class FathmmMklAnnotationDbBuilder {
           SequenceVariantAnnotationIndexDispatcherWriterFactory.create(memBufferFactory)
               .createWriter();
 
-      new AnnotatedSequenceVariantDbWriter<>(
-              new FathmmMklAnnotatedSequenceVariantPartitionWriter(
-                  annotationDatasetEncoder, partitionWriter),
-              new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
-              SequenceVariantEncoderDispatcherFactory.create())
-          .write(sequenceVariantIterator);
+      try (FathmmMklAnnotatedSequenceVariantPartitionWriter fathmmMklPartitionWriter =
+          new FathmmMklAnnotatedSequenceVariantPartitionWriter(
+              annotationDatasetEncoder, partitionWriter)) {
+        new AnnotatedSequenceVariantDbWriter<>(
+                fathmmMklPartitionWriter,
+                new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
+                SequenceVariantEncoderDispatcherFactory.create())
+            .write(sequenceVariantIterator);
+      }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

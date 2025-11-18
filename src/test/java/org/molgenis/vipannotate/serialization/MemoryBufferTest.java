@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.UncheckedIOException;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -530,18 +532,38 @@ class MemoryBufferTest {
   @Test
   void copyFrom() {
     try (MemoryBuffer srcBuffer = MemoryBuffer.allocate(5);
-        MemoryBuffer dstBuffer = MemoryBuffer.allocate(3)) {
+        MemoryBuffer dstBuffer = MemoryBuffer.allocate(6)) {
+      dstBuffer.putByte((byte) -1);
+
       for (int i = 0; i < 3; i++) {
         srcBuffer.putByte((byte) i);
       }
       srcBuffer.flip();
 
       dstBuffer.copyFrom(srcBuffer);
+      dstBuffer.flip();
+
       assertAll(
+          () -> assertEquals(-1, dstBuffer.getByte()),
           () -> assertEquals(0, dstBuffer.getByte()),
           () -> assertEquals(1, dstBuffer.getByte()),
           () -> assertEquals(2, dstBuffer.getByte()),
-          () -> assertEquals(3, dstBuffer.getPosition()));
+          () -> assertEquals(4, dstBuffer.getPosition()),
+          () -> assertEquals(4, dstBuffer.getLimit()));
+    }
+  }
+
+  @Test
+  void getByteBuffer() {
+    try (MemoryBuffer srcBuffer = MemoryBuffer.wrap(new byte[] {0, 1, 2, 3, 4})) {
+      srcBuffer.setPosition(1);
+      srcBuffer.setLimit(4);
+
+      ByteBuffer byteBuffer = srcBuffer.getByteBuffer();
+      assertEquals(1, byteBuffer.get());
+      assertEquals(2, byteBuffer.get());
+      assertEquals(3, byteBuffer.get());
+      assertThrows(BufferUnderflowException.class, byteBuffer::get);
     }
   }
 }

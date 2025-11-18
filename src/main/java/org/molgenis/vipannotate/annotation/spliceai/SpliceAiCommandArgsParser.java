@@ -53,7 +53,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
     }
     if (ncbiGeneFile == null) {
       throw new ArgValidationException(
-          "missing required option '%s' or '%s'".formatted("-n", "--ncbi_gene_index"));
+          "missing required option '%s' or '%s'".formatted("-n", "--ncbi-gene-index"));
     }
     if (output == null) {
       throw new ArgValidationException(
@@ -61,7 +61,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
     }
     if (faiFile == null) {
       throw new ArgValidationException(
-          "missing required option '%s' or '%s'".formatted("-x", "--reference_index"));
+          "missing required option '%s' or '%s'".formatted("-x", "--reference-index"));
     }
     if (force == null && Files.exists(output)) {
       throw new ArgValidationException(
@@ -84,8 +84,8 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
 
               usage: %s [arguments]
                 -i, --input           FILE                input file, e.g. spliceai_scores.masked.*.hg38.vcf.gz¹  (required                 )
-                -n, --ncbi_gene_index FILE                tab-separated NCBI gene index file²                     (required                 )
-                -x, --reference_index FILE                reference sequence index .fai file                      (required                 )
+                -n, --ncbi-gene-index FILE                tab-separated NCBI gene index file²                     (required                 )
+                -x, --reference-index FILE                reference sequence index .fai file                      (required                 )
                 -o, --output          FILE                output annotation database .zip file                    (optional, default: stdout)
                 -r, --regions         chr|chr:beg-end[,…] comma-separated list of regions (inclusive, 1-based)    (optional                 )
                 -f, --force                               overwrite existing output file                          (optional                 )

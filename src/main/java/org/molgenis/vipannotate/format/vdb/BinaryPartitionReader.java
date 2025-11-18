@@ -1,6 +1,7 @@
-package org.molgenis.vipannotate.annotation;
+package org.molgenis.vipannotate.format.vdb;
 
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.annotation.PartitionKey;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
 public interface BinaryPartitionReader extends AutoCloseable {
@@ -18,8 +19,10 @@ public interface BinaryPartitionReader extends AutoCloseable {
    *
    * @param key partition key
    * @param annId annotation id
-   * @return the given memory buffer or {@code null} if the entry does not exist
+   * @return whether data was read into the given memory buffer
    */
-  // TODO return boolean
-  @Nullable MemoryBuffer readInto(PartitionKey key, String annId, MemoryBuffer memBuffer);
+  boolean readInto(PartitionKey key, String annId, MemoryBuffer memBuffer);
+
+  @Override
+  void close();
 }

@@ -17,6 +17,18 @@ public final class Info extends Field {
     super(fieldRaw);
   }
 
+  /**
+   * Returns raw info value
+   *
+   * @throws IllegalArgumentException if info field could have been modified
+   */
+  // TODO remove temporary method that improves performance of read-only info single token gets
+  @Deprecated
+  public CharSequence getRaw(int fromIndex) {
+    if (parsed) throw new IllegalArgumentException();
+    return fieldRawView.subSequence(fromIndex);
+  }
+
   @SuppressWarnings({"DataFlowIssue", "NullAway"})
   public @Nullable CharSequence get(String key) {
     parseIfNeeded();

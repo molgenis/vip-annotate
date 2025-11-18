@@ -7,6 +7,7 @@ import java.lang.invoke.MethodHandle;
 import java.nio.file.Paths;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class Zstd implements AutoCloseable {
@@ -190,6 +191,6 @@ public class Zstd implements AutoCloseable {
 
   @Override
   public void close() {
-    arena.close();
+    ClosableUtils.close(arena);
   }
 }

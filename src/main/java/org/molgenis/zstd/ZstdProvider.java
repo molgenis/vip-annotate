@@ -1,6 +1,7 @@
 package org.molgenis.zstd;
 
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 public enum ZstdProvider implements AutoCloseable {
   INSTANCE;
@@ -16,9 +17,7 @@ public enum ZstdProvider implements AutoCloseable {
 
   @Override
   public void close() {
-    if (zstd != null) {
-      zstd.close();
-      zstd = null;
-    }
+    ClosableUtils.close(zstd);
+    zstd = null;
   }
 }

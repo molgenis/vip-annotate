@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class PositionScoreAnnotationDatasetReader
@@ -24,6 +25,6 @@ public class PositionScoreAnnotationDatasetReader
 
   @Override
   public void close() {
-    scoresAnnotationBlobReader.close();
+    ClosableUtils.close(scoresAnnotationBlobReader);
   }
 }

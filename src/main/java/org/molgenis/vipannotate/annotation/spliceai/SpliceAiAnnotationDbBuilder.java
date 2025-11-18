@@ -7,6 +7,7 @@ import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.VcfParser;
 import org.molgenis.vipannotate.format.vcf.VcfParserFactory;
+import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
 import org.molgenis.vipannotate.util.*;
@@ -44,12 +45,15 @@ public class SpliceAiAnnotationDbBuilder {
           SequenceVariantAnnotationIndexDispatcherWriterFactory.create(memBufferFactory)
               .createWriter();
 
-      new AnnotatedSequenceVariantDbWriter<>(
-              new SpliceAiAnnotatedSequenceVariantPartitionWriter(
-                  spliceAiAnnotationDatasetEncoder, partitionWriter),
-              new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
-              SequenceVariantEncoderDispatcherFactory.create())
-          .write(spliceAiIt);
+      try (SpliceAiAnnotatedSequenceVariantPartitionWriter spliceAiPartitionWriter =
+          new SpliceAiAnnotatedSequenceVariantPartitionWriter(
+              spliceAiAnnotationDatasetEncoder, partitionWriter)) {
+        new AnnotatedSequenceVariantDbWriter<>(
+                spliceAiPartitionWriter,
+                new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
+                SequenceVariantEncoderDispatcherFactory.create())
+            .write(spliceAiIt);
+      }
     }
   }
 

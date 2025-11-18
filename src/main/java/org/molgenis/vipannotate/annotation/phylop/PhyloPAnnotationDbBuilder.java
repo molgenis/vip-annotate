@@ -8,7 +8,7 @@ import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.Position;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
-import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
+import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.util.*;
 import org.molgenis.vipannotate.util.Gzip;
 
@@ -19,8 +19,7 @@ public class PhyloPAnnotationDbBuilder {
       Input phyloPInput,
       @Nullable List<Region> regions,
       FastaIndex fastaIndex,
-      BinaryPartitionWriter partitionWriter,
-      MemoryBufferFactory memBufferFactory) {
+      BinaryPartitionWriter partitionWriter) {
 
     try (BufferedReader reader = Gzip.createBufferedReaderUtf8FromGzip(phyloPInput)) {
       Iterator<PhyloPAnnotatedPosition> iterator = create(reader, regions, fastaIndex);
@@ -29,17 +28,19 @@ public class PhyloPAnnotationDbBuilder {
       PhyloPAnnotationEncoder annotationEncoder = new PhyloPAnnotationEncoder(new DoubleCodec());
 
       // annotation dataset writer
-      AnnotatedPositionPartitionWriter<Position, DoubleValueAnnotation, PhyloPAnnotatedPosition>
-          annotationDatasetWriter =
+      try (AnnotatedPositionPartitionWriter<
+              Position, DoubleValueAnnotation, PhyloPAnnotatedPosition>
+          posPartitionWriter =
               new AnnotatedPositionPartitionWriter<>(
                   "score",
-                  new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder, memBufferFactory),
-                  partitionWriter);
+                  new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder),
+                  partitionWriter)) {
 
-      AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, PhyloPAnnotatedPosition>
-          annotationDbWriter = new AnnotatedIntervalDbWriter<>(annotationDatasetWriter);
+        AnnotatedIntervalDbWriter<Position, DoubleValueAnnotation, PhyloPAnnotatedPosition>
+            annotationDbWriter = new AnnotatedIntervalDbWriter<>(posPartitionWriter);
 
-      annotationDbWriter.write(iterator);
+        annotationDbWriter.write(iterator);
+      }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

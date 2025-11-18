@@ -82,10 +82,6 @@ public class ZeroCopyBufferedWriter extends Writer {
 
   @Override
   public void close() {
-    try {
-      writer.close();
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    ClosableUtils.close(writer);
   }
 }

@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.vcf.*;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.Logger;
 
 @RequiredArgsConstructor
@@ -53,8 +54,6 @@ public class VcfAnnotator implements AutoCloseable {
 
   @Override
   public void close() {
-    vcfWriter.close();
-    vcfRecordAnnotator.close();
-    vcfParser.close();
+    ClosableUtils.closeAll(vcfWriter, vcfRecordAnnotator, vcfParser);
   }
 }

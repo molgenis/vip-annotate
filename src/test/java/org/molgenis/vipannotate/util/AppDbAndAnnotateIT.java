@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
@@ -65,8 +66,24 @@ public class AppDbAndAnnotateIT {
   }
 
   @Test
-  public void createDbsAndAnnotate() throws URISyntaxException {
-    // create db: fathmm_mkl
+  public void createDbsAndAnnotate() {
+    createDbs();
+    String vcf = annotateVcf("annotate/chr1_1048426-1048726/input_annotate.vcf");
+
+    // one of the goals of vip-annotate is compact annotation archives, so check size
+    // update thresholds in case index got smaller
+    assertAll(
+        () -> assertEquals(12613L, Files.size(dbDir.resolve("fathmmmkl.zip"))),
+        () -> assertEquals(61967L, Files.size(dbDir.resolve("gnomad.zip"))),
+        () -> assertEquals(8336L, Files.size(dbDir.resolve("ncer.zip"))),
+        () -> assertEquals(8337L, Files.size(dbDir.resolve("phylop.zip"))),
+        () -> assertEquals(8338L, Files.size(dbDir.resolve("remm.zip"))),
+        () -> assertEquals(71848L, Files.size(dbDir.resolve("spliceai.zip"))),
+        () -> assertEquals(EXPECTED_VCF_OUTPUT, vcf));
+  }
+
+  private void createDbs() {
+    // fathmm_mkl
     AppDb.main(
         new String[] {
           "fathmm_mkl",
@@ -78,7 +95,7 @@ public class AppDbAndAnnotateIT {
           dbDir.resolve("fathmmmkl.zip").toString()
         });
 
-    // create db: gnomad
+    // gnomad
     AppDb.main(
         new String[] {
           "gnomad",
@@ -91,7 +108,7 @@ public class AppDbAndAnnotateIT {
           dbDir.resolve("gnomad.zip").toString()
         });
 
-    // create db: ncer
+    // ncer
     AppDb.main(
         new String[] {
           "ncer",
@@ -103,7 +120,7 @@ public class AppDbAndAnnotateIT {
           dbDir.resolve("ncer.zip").toString()
         });
 
-    // create db: phylop
+    // phylop
     AppDb.main(
         new String[] {
           "phylop",
@@ -115,7 +132,7 @@ public class AppDbAndAnnotateIT {
           dbDir.resolve("phylop.zip").toString()
         });
 
-    // create db: remm
+    // remm
     AppDb.main(
         new String[] {
           "remm",
@@ -127,7 +144,7 @@ public class AppDbAndAnnotateIT {
           dbDir.resolve("remm.zip").toString()
         });
 
-    // create db: spliceai
+    // spliceai
     AppDb.main(
         new String[] {
           "spliceai",
@@ -140,13 +157,16 @@ public class AppDbAndAnnotateIT {
           "--output",
           dbDir.resolve("spliceai.zip").toString()
         });
+  }
 
-    // annotate
+  private String annotateVcf(String vcfResourceName) {
     ClassLoader classLoader = getClass().getClassLoader();
-
-    Path inputVcfFile =
-        Paths.get(
-            classLoader.getResource("annotate/chr1_1048426-1048726/input_annotate.vcf").toURI());
+    Path inputVcfFile;
+    try {
+      inputVcfFile = Paths.get(classLoader.getResource(vcfResourceName).toURI());
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException(e);
+    }
 
     String[] args = {
       "--annotations", dbDir.toString(), "--input", inputVcfFile.toString(), "--output", "-"
@@ -164,8 +184,7 @@ public class AppDbAndAnnotateIT {
       }
       output = byteArrayOutputStream.toString(UTF_8);
     }
-
-    assertEquals(EXPECTED_VCF_OUTPUT, output);
+    return output;
   }
 
   private Path getResource(String name) {

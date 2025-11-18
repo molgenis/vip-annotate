@@ -2,8 +2,12 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
+import org.molgenis.vipannotate.format.vdb.Compression;
+import org.molgenis.vipannotate.format.vdb.IoMode;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexWriter<T extends SequenceVariant>
@@ -17,18 +21,15 @@ public class SequenceVariantAnnotationIndexWriter<T extends SequenceVariant>
       reusableMemBuffer = indexWriter.writeTo(annotationIndex);
     } else {
       reusableMemBuffer.clear();
+      indexWriter.writeInto(annotationIndex, reusableMemBuffer);
     }
 
-    indexWriter.writeInto(annotationIndex, reusableMemBuffer);
-    reusableMemBuffer.flip();
-
-    binaryPartitionWriter.write(partitionKey, "idx", reusableMemBuffer);
+    binaryPartitionWriter.write(
+        partitionKey, "idx", Compression.ZSTD, IoMode.BUFFERED, reusableMemBuffer);
   }
 
   @Override
   public void close() {
-    if (reusableMemBuffer != null) {
-      reusableMemBuffer.close();
-    }
+    ClosableUtils.close(reusableMemBuffer);
   }
 }

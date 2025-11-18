@@ -76,10 +76,6 @@ public final class BufferedLineReader implements AutoCloseable {
 
   @Override
   public void close() {
-    try {
-      reader.close();
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    ClosableUtils.close(reader);
   }
 }

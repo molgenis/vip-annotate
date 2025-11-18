@@ -11,10 +11,10 @@ public class SequenceVariantAnnotationIndexBigReader<T extends SequenceVariant>
   private final SequenceVariantEncoder<T> encoder;
 
   @Override
-  public SequenceVariantAnnotationIndexBig<T> readFrom(MemoryBuffer memoryBuffer) {
-    int length = memoryBuffer.getVarUnsignedInt();
+  public SequenceVariantAnnotationIndexBig<T> readFrom(MemoryBuffer memBuffer) {
+    int length = memBuffer.getVarUnsignedInt();
     BigInteger[] encodedVariants = new BigInteger[length];
-    readIntoEncodedVariantsArray(memoryBuffer, encodedVariants, length);
+    readIntoEncodedVariantsArray(memBuffer, encodedVariants, length);
     return new SequenceVariantAnnotationIndexBig<>(encoder, encodedVariants);
   }
 

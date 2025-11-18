@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.format.vcf;
 
 import java.io.*;
 import java.util.List;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.ZeroCopyBufferedWriter;
 
 public class VcfWriter implements AutoCloseable {
@@ -34,6 +35,6 @@ public class VcfWriter implements AutoCloseable {
 
   @Override
   public void close() {
-    writer.close();
+    ClosableUtils.close(writer);
   }
 }

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class VcfParser implements Iterator<List<VcfRecord>>, AutoCloseable {
@@ -22,6 +23,6 @@ public class VcfParser implements Iterator<List<VcfRecord>>, AutoCloseable {
 
   @Override
   public void close() {
-    this.vcfRecordBatchIterator.close();
+    ClosableUtils.closeAll(vcfRecordBatchIterator);
   }
 }

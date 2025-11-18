@@ -6,17 +6,20 @@ import static org.molgenis.vipannotate.annotation.SequenceVariantType.STRUCTURAL
 import java.nio.file.Path;
 import java.util.EnumSet;
 import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.util.DoubleCodec;
 
 public class NcERAnnotatorFactory extends PositionAnnotatorFactory<DoubleValueAnnotation> {
   public NcERAnnotatorFactory(
-      AnnotationVdbArchiveReaderFactory archiveReaderFactory, PartitionResolver partitionResolver) {
+      PartitionedVdbArchiveReaderFactory archiveReaderFactory,
+      PartitionResolver partitionResolver) {
     super(archiveReaderFactory, partitionResolver);
   }
 
   @Override
   public VcfRecordAnnotator create(Path annotationsDir) {
-    AnnotationVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "ncer.zip");
+    PartitionedVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "ncer.zip");
 
     AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
         new PositionScoreAnnotationDatasetReader(

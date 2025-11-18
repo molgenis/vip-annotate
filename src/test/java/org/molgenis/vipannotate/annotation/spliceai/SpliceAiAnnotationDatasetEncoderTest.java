@@ -32,13 +32,13 @@ class SpliceAiAnnotationDatasetEncoderTest {
     doReturn((byte) 3).when(doubleCodec).encodeDoublePrimitiveUnitIntervalAsByte(1d);
 
     List<Double> scores = List.of(0d, 0.5d, 1d);
-    try (MemoryBuffer memoryBuffer =
-        spliceAiAnnotationDatasetEncoder.encodeScore(
-            new SizedIterator<>(scores.iterator(), scores.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[3])) {
+      spliceAiAnnotationDatasetEncoder.encodeScore(
+          new SizedIterator<>(scores.iterator(), scores.size()), memBuffer);
       assertAll(
-          () -> assertEquals((byte) 1, memoryBuffer.getByteAtIndex(0)),
-          () -> assertEquals((byte) 2, memoryBuffer.getByteAtIndex(1)),
-          () -> assertEquals((byte) 3, memoryBuffer.getByteAtIndex(2)));
+          () -> assertEquals((byte) 1, memBuffer.getByteAtIndex(0)),
+          () -> assertEquals((byte) 2, memBuffer.getByteAtIndex(1)),
+          () -> assertEquals((byte) 3, memBuffer.getByteAtIndex(2)));
     }
   }
 
@@ -50,14 +50,14 @@ class SpliceAiAnnotationDatasetEncoderTest {
     positions.add((byte) 0);
     positions.add((byte) 25);
 
-    try (MemoryBuffer memoryBuffer =
-        spliceAiAnnotationDatasetEncoder.encodePos(
-            new SizedIterator<>(positions.iterator(), positions.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[4])) {
+      spliceAiAnnotationDatasetEncoder.encodePos(
+          new SizedIterator<>(positions.iterator(), positions.size()), memBuffer);
       assertAll(
-          () -> assertEquals((byte) 0, memoryBuffer.getByteAtIndex(0)),
-          () -> assertEquals((byte) 26, memoryBuffer.getByteAtIndex(1)),
-          () -> assertEquals((byte) 51, memoryBuffer.getByteAtIndex(2)),
-          () -> assertEquals((byte) 76, memoryBuffer.getByteAtIndex(3)));
+          () -> assertEquals((byte) 0, memBuffer.getByteAtIndex(0)),
+          () -> assertEquals((byte) 26, memBuffer.getByteAtIndex(1)),
+          () -> assertEquals((byte) 51, memBuffer.getByteAtIndex(2)),
+          () -> assertEquals((byte) 76, memBuffer.getByteAtIndex(3)));
     }
   }
 }

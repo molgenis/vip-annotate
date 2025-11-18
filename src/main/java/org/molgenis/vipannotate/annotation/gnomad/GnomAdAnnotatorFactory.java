@@ -6,12 +6,14 @@ import static org.molgenis.vipannotate.annotation.SequenceVariantType.STRUCTURAL
 import java.nio.file.Path;
 import java.util.EnumSet;
 import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 public class GnomAdAnnotatorFactory
     extends SequenceVariantAnnotatorFactory<SequenceVariant, GnomAdAnnotation> {
   public GnomAdAnnotatorFactory(
-      AnnotationVdbArchiveReaderFactory archiveReaderFactory,
+      PartitionedVdbArchiveReaderFactory archiveReaderFactory,
       PartitionResolver partitionResolver,
       MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader) {
     super(archiveReaderFactory, partitionResolver, indexReader);
@@ -19,7 +21,7 @@ public class GnomAdAnnotatorFactory
 
   @Override
   public VcfRecordAnnotator create(Path annotationsDir) {
-    AnnotationVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "gnomad.zip");
+    PartitionedVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "gnomad.zip");
 
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
         createIndexReader(archiveReader);

@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotationDatasetReader implements AnnotationDatasetReader<GnomAdAnnotation> {
@@ -50,12 +51,13 @@ public class GnomAdAnnotationDatasetReader implements AnnotationDatasetReader<Gn
 
   @Override
   public void close() {
-    sourceAnnotationBlobReader.close();
-    afAnnotationBlobReader.close();
-    faf95AnnotationBlobReader.close();
-    faf99AnnotationBlobReader.close();
-    hnAnnotationBlobReader.close();
-    filtersAnnotationBlobReader.close();
-    covAnnotationBlobReader.close();
+    ClosableUtils.closeAll(
+        sourceAnnotationBlobReader,
+        afAnnotationBlobReader,
+        faf95AnnotationBlobReader,
+        faf99AnnotationBlobReader,
+        hnAnnotationBlobReader,
+        filtersAnnotationBlobReader,
+        covAnnotationBlobReader);
   }
 }

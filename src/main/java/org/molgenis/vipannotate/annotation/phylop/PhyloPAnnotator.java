@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.*;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.NumberCollections;
 
 // TODO refactor: deduplicate ncer,phylop,remm annotator
@@ -81,6 +82,6 @@ public class PhyloPAnnotator extends BaseVcfRecordAnnotator<DoubleValueAnnotatio
 
   @Override
   public void close() {
-    annotationDb.close();
+    ClosableUtils.close(annotationDb);
   }
 }

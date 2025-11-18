@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 /**
  * <a href="https://github.com/fast-pack/streamvbyte/tree/v2.0.0">streamvbyte v2.0.0</a> native
@@ -225,6 +226,6 @@ public class StreamVByte implements AutoCloseable {
 
   @Override
   public void close() {
-    arena.close();
+    ClosableUtils.close(arena);
   }
 }

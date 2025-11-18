@@ -1,10 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.EnumSet;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 
 public abstract class PositionAnnotatorFactory<U extends Annotation> extends AnnotatorFactory {
   public PositionAnnotatorFactory(
-      AnnotationVdbArchiveReaderFactory archiveReaderFactory, PartitionResolver partitionResolver) {
+      PartitionedVdbArchiveReaderFactory archiveReaderFactory,
+      PartitionResolver partitionResolver) {
     super(archiveReaderFactory, partitionResolver);
   }
 

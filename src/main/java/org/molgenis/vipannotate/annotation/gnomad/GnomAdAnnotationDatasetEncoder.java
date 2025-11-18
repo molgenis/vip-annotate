@@ -23,10 +23,7 @@ public class GnomAdAnnotationDatasetEncoder {
     this.doubleCodec = doubleCodec;
   }
 
-  public MemoryBuffer encodeSources(SizedIterator<Source> sourceIt) {
-    int nrAnnotationBytes = Math.ceilDivExact(sourceIt.getSize(), NR_SOURCE_ANNOTATIONS_PER_BYTE);
-
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[nrAnnotationBytes]);
+  public void encodeSources(SizedIterator<Source> sourceIt, MemoryBuffer memBuffer) {
     List<Source> reusableSourceList = new ArrayList<>(NR_SOURCE_ANNOTATIONS_PER_BYTE);
     PredicateBatchIterator<Source> sourceBatchIt =
         new PredicateBatchIterator<>(
@@ -36,10 +33,13 @@ public class GnomAdAnnotationDatasetEncoder {
     sourceBatchIt.forEachRemaining(
         sourceBatch -> {
           int encodedSourceBatch = encodeSourceBatch(sourceBatch);
-          memoryBuffer.putByteUnchecked((byte) encodedSourceBatch);
+          memBuffer.putByteUnchecked((byte) encodedSourceBatch);
         });
+  }
 
-    return memoryBuffer;
+  public long calcEncodedSourcesSize(SizedIterator<Source> sourceIt) {
+    int nrAnnotationBytes = Math.ceilDivExact(sourceIt.getSize(), NR_SOURCE_ANNOTATIONS_PER_BYTE);
+    return nrAnnotationBytes * Byte.BYTES;
   }
 
   private int encodeSourceBatch(List<Source> annotationList) {
@@ -64,8 +64,12 @@ public class GnomAdAnnotationDatasetEncoder {
    *
    * @param afIt iterator element can be <code>null</code>
    */
-  public MemoryBuffer encodeAf(SizedIterator<@Nullable Double> afIt) {
-    return encodeQuantized16UnitIntervalDouble(afIt);
+  public void encodeAf(SizedIterator<@Nullable Double> afIt, MemoryBuffer memBuffer) {
+    encodeQuantized16UnitIntervalDouble(afIt, memBuffer);
+  }
+
+  public long calcEncodedAfSize(SizedIterator<Double> afIt) {
+    return (long) afIt.getSize() * Short.BYTES;
   }
 
   /**
@@ -73,8 +77,12 @@ public class GnomAdAnnotationDatasetEncoder {
    *
    * @param faf95It iterator element must not be <code>null</code>
    */
-  public MemoryBuffer encodeFaf95(SizedIterator<Double> faf95It) {
-    return encodeQuantized16UnitIntervalDoublePrimitive(faf95It);
+  public void encodeFaf95(SizedIterator<Double> faf95It, MemoryBuffer memBuffer) {
+    encodeQuantized16UnitIntervalDoublePrimitive(faf95It, memBuffer);
+  }
+
+  public long calcEncodedFaf95Size(SizedIterator<Double> faf95It) {
+    return (long) faf95It.getSize() * Short.BYTES;
   }
 
   /**
@@ -82,8 +90,12 @@ public class GnomAdAnnotationDatasetEncoder {
    *
    * @param faf99It iterator element must not be <code>null</code>
    */
-  public MemoryBuffer encodeFaf99(SizedIterator<Double> faf99It) {
-    return encodeQuantized16UnitIntervalDoublePrimitive(faf99It);
+  public void encodeFaf99(SizedIterator<Double> faf99It, MemoryBuffer memBuffer) {
+    encodeQuantized16UnitIntervalDoublePrimitive(faf99It, memBuffer);
+  }
+
+  public long calcEncodedFaf99Size(SizedIterator<Double> faf99It) {
+    return (long) faf99It.getSize() * Short.BYTES;
   }
 
   /**
@@ -91,17 +103,18 @@ public class GnomAdAnnotationDatasetEncoder {
    *
    * @param hnIt iterator element must not be <code>null</code>
    */
-  public MemoryBuffer encodeHn(SizedIterator<Integer> hnIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new int[hnIt.getSize()]);
-    hnIt.forEachRemaining(memoryBuffer::putInt);
-    return memoryBuffer;
+  public void encodeHn(SizedIterator<Integer> hnIt, MemoryBuffer memBuffer) {
+    hnIt.forEachRemaining(memBuffer::putInt);
   }
 
-  public MemoryBuffer encodeFilters(SizedIterator<EnumSet<GnomAdAnnotation.Filter>> filtersIt) {
-    int nrAnnotationsPerByte = 2;
-    int nrAnnotationBytes = Math.ceilDivExact(filtersIt.getSize(), nrAnnotationsPerByte);
+  public long calcEncodedHnSize(SizedIterator<Integer> hnIt) {
+    return (long) hnIt.getSize() * Integer.BYTES;
+  }
 
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[nrAnnotationBytes]);
+  public void encodeFilters(
+      SizedIterator<EnumSet<GnomAdAnnotation.Filter>> filtersIt, MemoryBuffer memBuffer) {
+    int nrAnnotationsPerByte = 2;
+
     List<EnumSet<GnomAdAnnotation.Filter>> reusableSourceList =
         new ArrayList<>(nrAnnotationsPerByte);
     PredicateBatchIterator<EnumSet<GnomAdAnnotation.Filter>> filtersBatchIt =
@@ -110,9 +123,14 @@ public class GnomAdAnnotationDatasetEncoder {
     filtersBatchIt.forEachRemaining(
         filtersBatch -> {
           int encodedFiltersBatch = encodeFiltersBatch(filtersBatch);
-          memoryBuffer.putByteUnchecked(safeIntToByte(encodedFiltersBatch));
+          memBuffer.putByteUnchecked(safeIntToByte(encodedFiltersBatch));
         });
-    return memoryBuffer;
+  }
+
+  public long calcEncodedFiltersSize(SizedIterator<EnumSet<GnomAdAnnotation.Filter>> filtersIt) {
+    int nrAnnotationsPerByte = 2;
+    int nrAnnotationBytes = Math.ceilDivExact(filtersIt.getSize(), nrAnnotationsPerByte);
+    return (long) nrAnnotationBytes * Byte.BYTES;
   }
 
   private int encodeFiltersBatch(List<EnumSet<GnomAdAnnotation.Filter>> annotationList) {
@@ -141,29 +159,29 @@ public class GnomAdAnnotationDatasetEncoder {
    *
    * @param covIt iterator element must not be <code>null</code>
    */
-  public MemoryBuffer encodeCov(SizedIterator<Double> covIt) {
-    return encodeQuantized16UnitIntervalDoublePrimitive(covIt);
+  public void encodeCov(SizedIterator<Double> covIt, MemoryBuffer memBuffer) {
+    encodeQuantized16UnitIntervalDoublePrimitive(covIt, memBuffer);
   }
 
-  private MemoryBuffer encodeQuantized16UnitIntervalDoublePrimitive(
-      SizedIterator<Double> doubleIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new short[doubleIt.getSize()]);
+  public long calcEncodedCovSize(SizedIterator<Double> covIt) {
+    return (long) covIt.getSize() * Short.BYTES;
+  }
+
+  private void encodeQuantized16UnitIntervalDoublePrimitive(
+      SizedIterator<Double> doubleIt, MemoryBuffer memBuffer) {
     doubleIt.forEachRemaining(
         doubleValue -> {
           short encodedValue = doubleCodec.encodeDoubleUnitIntervalPrimitiveAsShort(doubleValue);
-          memoryBuffer.putShort(encodedValue);
+          memBuffer.putShort(encodedValue);
         });
-    return memoryBuffer;
   }
 
-  private MemoryBuffer encodeQuantized16UnitIntervalDouble(
-      SizedIterator<@Nullable Double> doubleIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new short[doubleIt.getSize()]);
+  private void encodeQuantized16UnitIntervalDouble(
+      SizedIterator<@Nullable Double> doubleIt, MemoryBuffer memBuffer) {
     doubleIt.forEachRemaining(
         doubleValue -> {
           short encodedValue = doubleCodec.encodeDoubleUnitIntervalAsShort(doubleValue);
-          memoryBuffer.putShort(encodedValue);
+          memBuffer.putShort(encodedValue);
         });
-    return memoryBuffer;
   }
 }

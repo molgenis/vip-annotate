@@ -40,6 +40,25 @@ class AltTest {
     assertEquals(List.of(new AltAllele("C")), alt.getAlleles());
   }
 
+  private static Stream<Arguments> getFirstAlleleProvider() {
+    return Stream.of(
+        Arguments.of("A", "A"),
+        Arguments.of("ACTG", "ACTG"),
+        Arguments.of("A,C", "A"),
+        Arguments.of("ACTG,CT", "ACTG"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("getFirstAlleleProvider")
+  void getFirstAllele(String altStr, String firstAlt) {
+    assertEquals(firstAlt, Alt.wrap(altStr).getFirstAllele().toString());
+  }
+
+  @Test
+  void getFirstAlleleNoAlleles() {
+    assertThrows(IllegalArgumentException.class, () -> Alt.wrap(".").getFirstAllele());
+  }
+
   @Test
   void testToString() {
     assertEquals("ALT=A,C", Alt.wrap("A,C").toString());
