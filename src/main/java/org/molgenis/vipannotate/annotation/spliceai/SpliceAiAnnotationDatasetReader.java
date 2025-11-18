@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation.spliceai;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class SpliceAiAnnotationDatasetReader
@@ -63,15 +64,16 @@ public class SpliceAiAnnotationDatasetReader
 
   @Override
   public void close() {
-    geneIdxAnnotationBlobReader.close();
-    geneRefAnnotationBlobReader.close();
-    dsagAnnotationBlobReader.close();
-    dsalAnnotationBlobReader.close();
-    dsdgAnnotationBlobReader.close();
-    dsdlAnnotationBlobReader.close();
-    dpagAnnotationBlobReader.close();
-    dpalAnnotationBlobReader.close();
-    dpdgAnnotationBlobReader.close();
-    dpdlAnnotationBlobReader.close();
+    ClosableUtils.closeAll(
+        geneIdxAnnotationBlobReader,
+        geneRefAnnotationBlobReader,
+        dsagAnnotationBlobReader,
+        dsalAnnotationBlobReader,
+        dsdgAnnotationBlobReader,
+        dsdlAnnotationBlobReader,
+        dpagAnnotationBlobReader,
+        dpalAnnotationBlobReader,
+        dpdgAnnotationBlobReader,
+        dpdlAnnotationBlobReader);
   }
 }

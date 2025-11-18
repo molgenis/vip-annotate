@@ -11,13 +11,14 @@ import org.molgenis.vipannotate.annotation.phylop.PhyloPAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.remm.RemmAnnotatorFactory;
 import org.molgenis.vipannotate.annotation.spliceai.SpliceAiAnnotatorFactory;
 import org.molgenis.vipannotate.format.vcf.*;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Output;
 
 @RequiredArgsConstructor
 public class VcfAnnotatorFactory {
-  private final AnnotationVdbArchiveReaderFactory archiveReaderFactory;
+  private final PartitionedVdbArchiveReaderFactory archiveReaderFactory;
 
   public VcfAnnotator create(
       Input inputVcf, Path annotationsZip, Output outputVcf, @Nullable VcfType outputVcfType) {
@@ -61,6 +62,6 @@ public class VcfAnnotatorFactory {
   }
 
   public static VcfAnnotatorFactory create() {
-    return new VcfAnnotatorFactory(AnnotationVdbArchiveReaderFactory.create());
+    return new VcfAnnotatorFactory(PartitionedVdbArchiveReaderFactory.create());
   }
 }

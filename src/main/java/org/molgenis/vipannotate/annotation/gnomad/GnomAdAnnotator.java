@@ -6,6 +6,7 @@ import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.format.vcf.*;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class GnomAdAnnotator extends BaseVcfRecordAnnotator<GnomAdAnnotation> {
@@ -135,6 +136,6 @@ public class GnomAdAnnotator extends BaseVcfRecordAnnotator<GnomAdAnnotation> {
 
   @Override
   public void close() {
-    annotationDb.close();
+    ClosableUtils.close(annotationDb);
   }
 }

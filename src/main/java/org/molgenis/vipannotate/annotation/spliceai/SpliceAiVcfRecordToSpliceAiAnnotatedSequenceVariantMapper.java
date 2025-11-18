@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
-import org.molgenis.vipannotate.format.vcf.AltAlleleRegistry;
+import org.molgenis.vipannotate.format.vcf.Ref;
+import org.molgenis.vipannotate.util.AlleleUtils;
 import org.molgenis.vipannotate.util.HgncToNcbiGeneIdMapper;
 
 @RequiredArgsConstructor
@@ -22,28 +23,28 @@ public class SpliceAiVcfRecordToSpliceAiAnnotatedSequenceVariantMapper {
 
   @Nullable
   private SequenceVariant createVariant(SpliceAiVcfRecord spliceAiVcfRecord) {
-    String chromStr = "chr" + spliceAiVcfRecord.chr();
+    String chromStr = "chr" + spliceAiVcfRecord.chr().getIdentifier();
 
     Contig contig = contigRegistry.getContig(chromStr);
     if (contig == null) {
       return null; // skip contigs such as chr1_KI270766v1_alt
     }
 
-    String ref = spliceAiVcfRecord.ref();
-    String alt = spliceAiVcfRecord.alt();
-    if (alt.indexOf('N') != -1) {
-      return null; // FIXME see VariantEncoder.encodeAltBase
+    Ref ref = spliceAiVcfRecord.ref();
+    AltAllele alt = spliceAiVcfRecord.alt();
+    if (!AlleleUtils.isActg(alt.get())) {
+      return null; // TODO support variants with 'N'
     }
-    int start = spliceAiVcfRecord.pos();
-    int end = start + ref.length() - 1;
-    AltAllele altAllele = AltAlleleRegistry.INSTANCE.get(alt);
-    SequenceVariantType type = SequenceVariantTypeDetector.determineType(ref.length(), altAllele);
-    return new SequenceVariant(contig, start, end, altAllele, type);
+    int start = spliceAiVcfRecord.pos().get();
+    int refLength = ref.getBaseCount();
+    int end = start + refLength - 1;
+    SequenceVariantType type = SequenceVariantTypeDetector.determineType(refLength, alt);
+    return new SequenceVariant(contig, start, end, alt, type);
   }
 
   @Nullable
   private SpliceAiAnnotation createAnnotation(SpliceAiVcfRecord spliceAiVcfRecord) {
-    String hgncGeneSymbol = spliceAiVcfRecord.hgncGeneSymbol();
+    String hgncGeneSymbol = spliceAiVcfRecord.hgncGeneSymbol().toString();
     Integer ncbiGeneId = geneIdMapper.map(hgncGeneSymbol);
     if (ncbiGeneId == null) {
       return null;

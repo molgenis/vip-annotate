@@ -199,4 +199,17 @@ class InfoTest {
       assertEquals(".", writer.toString());
     }
   }
+
+  @Test
+  void getRaw() {
+    Info info = Info.wrap("KEY=VALUE");
+    assertEquals("VALUE", info.getRaw(4).toString());
+  }
+
+  @Test
+  void getRawThrowsOnModifiedInfo() {
+    Info info = Info.wrap("KEY=VALUE");
+    info.put("KEY2", "VALUE2");
+    assertThrows(IllegalArgumentException.class, () -> info.getRaw(4).toString());
+  }
 }

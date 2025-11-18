@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.IndexRange;
 
 @RequiredArgsConstructor
@@ -61,7 +62,6 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
 
   @Override
   public void close() {
-    annotationIndexReader.close();
-    annotationDatasetReader.close();
+    ClosableUtils.closeAll(annotationIndexReader, annotationDatasetReader);
   }
 }

@@ -1,6 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.EnumSet;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 public abstract class SequenceVariantAnnotatorFactory<
@@ -9,7 +11,7 @@ public abstract class SequenceVariantAnnotatorFactory<
   private final MemoryBufferReader<AnnotationIndex<T>> indexReader;
 
   public SequenceVariantAnnotatorFactory(
-      AnnotationVdbArchiveReaderFactory archiveReaderFactory,
+      PartitionedVdbArchiveReaderFactory archiveReaderFactory,
       PartitionResolver partitionResolver,
       MemoryBufferReader<AnnotationIndex<T>> indexReader) {
     super(archiveReaderFactory, partitionResolver);
@@ -17,7 +19,7 @@ public abstract class SequenceVariantAnnotatorFactory<
   }
 
   protected SequenceVariantAnnotationIndexReader<T> createIndexReader(
-      AnnotationVdbArchiveReader archiveReader) {
+      PartitionedVdbArchiveReader archiveReader) {
     return new SequenceVariantAnnotationIndexReader<>(
         new AnnotationBlobReader("idx", archiveReader), indexReader);
   }

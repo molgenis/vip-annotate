@@ -1,14 +1,18 @@
 package org.molgenis.vipannotate.serialization;
 
+import static org.molgenis.vipannotate.util.Numbers.nextPowerOf2;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.lang.invoke.VarHandle;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.Numbers;
 
 /** Memory buffer with little endian byte order. */
@@ -44,6 +48,9 @@ public final class MemoryBuffer implements AutoCloseable {
   /** Underlying native or heap-based memory segment */
   private MemorySegment memSegment;
 
+  /** {@link #memSegment} wrapped in a {@link ByteBuffer} */
+  @Nullable private ByteBuffer byteBufferWrapper;
+
   /**
    * {@link Arena} that was used to allocate {@link #memSegment}.
    *
@@ -56,7 +63,7 @@ public final class MemoryBuffer implements AutoCloseable {
    *
    * <p>always one for heap-based segments
    */
-  private final long alignment;
+  @Getter private final long alignment;
 
   /**
    * index of the next element to read or write. automatically updated on get/put operations.
@@ -121,21 +128,16 @@ public final class MemoryBuffer implements AutoCloseable {
       throw new UncheckedIOException(new IOException("cannot resize heap-based memory buffer"));
     }
 
-    // find next power of two for requested capacity
-    long nextPow2 =
-        (minCapacity & (minCapacity - 1)) == 0
-            ? minCapacity
-            : Long.highestOneBit(minCapacity - 1) << 1;
-
     // create new memory segment
     Arena newArena = Arena.ofConfined();
-    long newCapacity = Math.max(alignment, nextPow2);
+    long newCapacity = Math.max(alignment, nextPowerOf2(minCapacity));
     MemorySegment newMemorySegment = newArena.allocate(newCapacity, alignment);
     newMemorySegment.copyFrom(memSegment);
 
     // replace old memory segment
     close();
     memSegment = newMemorySegment;
+    byteBufferWrapper = null;
     arena = newArena;
   }
 
@@ -505,9 +507,21 @@ public final class MemoryBuffer implements AutoCloseable {
   }
 
   /**
-   * Reads a {@link MemorySegment} from {@code position} to {@code limit}. The memory segment has
-   * the same aligned as this memory buffer only if the position and limit are compatible, otherwise
-   * the default alignment (one byte) is applied.
+   * Reads a {@link ByteBuffer} with position set to {@link #position} and limit set to {@link
+   * #limit}. Returned object is invalid after a call to {@link #ensureCapacity(long)} increased the
+   * capacity.
+   */
+  @SuppressWarnings("DataFlowIssue")
+  public ByteBuffer getByteBuffer() {
+    if (byteBufferWrapper == null) {
+      byteBufferWrapper = memSegment.asByteBuffer();
+    }
+    return byteBufferWrapper.position(Math.toIntExact(position)).limit(Math.toIntExact(limit));
+  }
+
+  /**
+   * Reads a {@link MemorySegment} from {@code position} to {@code limit}. Returned object is
+   * invalid after a call to {@link #ensureCapacity(long)} increased the capacity.
    */
   @SuppressWarnings("DataFlowIssue")
   public MemorySegment getMemSegment() {
@@ -522,9 +536,20 @@ public final class MemoryBuffer implements AutoCloseable {
     return dstSegment;
   }
 
+  /**
+   * Copies memory buffer from {@code position} into {@code limit} into this memory buffer starting
+   * at {@code position}.
+   */
   public void copyFrom(MemoryBuffer memBuffer) {
-    MemorySegment.copy(memBuffer.memSegment, 0, memSegment, 0, memBuffer.getLimit());
-    memBuffer.setPosition(memBuffer.getLimit());
+    long nrBytes = memBuffer.getLimit() - memBuffer.getPosition();
+    if (nrBytes > 0) {
+      ensureCapacity(getCapacity() + nrBytes);
+
+      MemorySegment.copy(
+          memBuffer.memSegment, memBuffer.getPosition(), memSegment, getPosition(), nrBytes);
+      memBuffer.setPosition(memBuffer.getPosition() + nrBytes);
+      setPosition(getPosition() + nrBytes);
+    }
   }
 
   /**
@@ -579,8 +604,6 @@ public final class MemoryBuffer implements AutoCloseable {
 
   @Override
   public void close() {
-    if (arena != null) {
-      arena.close();
-    }
+    ClosableUtils.close(arena);
   }
 }

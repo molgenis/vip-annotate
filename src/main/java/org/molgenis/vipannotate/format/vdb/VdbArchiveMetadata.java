@@ -16,7 +16,7 @@ public class VdbArchiveMetadata {
     return entries.get(id);
   }
 
-  public record Entry(long offset, long length, CompressionMethod compressionMethod) {}
+  public record Entry(long offset, long length, Compression compression, IoMode ioMode) {}
 
   public static class VdbArchiveMetadataBuilder {
     private final List<Entry> entries;
@@ -30,8 +30,8 @@ public class VdbArchiveMetadata {
     }
 
     /** Returns generated entry metadata id */
-    public int addEntry(long offset, long length, CompressionMethod compressionMethod) {
-      entries.add(new Entry(offset, length, compressionMethod));
+    public int addEntry(long offset, long length, Compression compression, IoMode ioMode) {
+      entries.add(new Entry(offset, length, compression, ioMode));
       return entries.size() - 1;
     }
 

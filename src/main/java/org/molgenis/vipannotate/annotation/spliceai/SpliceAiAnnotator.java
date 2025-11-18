@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.App;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.*;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class SpliceAiAnnotator extends BaseVcfRecordAnnotator<SpliceAiAnnotation> {
@@ -102,6 +103,6 @@ public class SpliceAiAnnotator extends BaseVcfRecordAnnotator<SpliceAiAnnotation
 
   @Override
   public void close() {
-    annotationDb.close();
+    ClosableUtils.close(annotationDb);
   }
 }

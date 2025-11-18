@@ -15,6 +15,30 @@ public final class Alt extends Field {
     super(fieldRaw);
   }
 
+  /**
+   * Returns the first alternate allele.
+   *
+   * @throws IllegalArgumentException in case of no alt alleles
+   */
+  @Deprecated
+  public AltAllele getFirstAllele() {
+    // TODO update getAlleles() to return new 'AltAlleles' with getCount/getByIndex to delay parsing
+    AltAllele altAllele;
+    if (fieldRawView.length() == 1) {
+      if (fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE) {
+        throw new IllegalArgumentException("no alt allele");
+      }
+      // fast path: prevent parsing
+      altAllele = AltAlleleRegistry.INSTANCE.get(fieldRawView);
+    } else if (fieldRawView.length() == 2) {
+      // fast path: prevent parsing
+      altAllele = AltAlleleRegistry.INSTANCE.get(fieldRawView);
+    } else {
+      altAllele = getAlleles().getFirst();
+    }
+    return altAllele;
+  }
+
   @SuppressWarnings({"DataFlowIssue", "NullAway"})
   public List<AltAllele> getAlleles() {
     parseIfNeeded();

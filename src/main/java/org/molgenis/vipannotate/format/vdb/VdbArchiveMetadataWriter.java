@@ -1,22 +1,16 @@
 package org.molgenis.vipannotate.format.vdb;
 
-import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
 
 @RequiredArgsConstructor
-public class VdbArchiveMetadataWriter implements MemoryBufferWriter<VdbArchiveMetadata> {
+public class VdbArchiveMetadataWriter {
 
-  @Override
-  public MemoryBuffer writeTo(VdbArchiveMetadata archiveMetadata) {
-    MemoryBuffer memBuffer = MemoryBuffer.allocate(calcSerializedSize(archiveMetadata));
-    writeInto(archiveMetadata, memBuffer);
-    return memBuffer;
-  }
-
-  @Override
+  /**
+   * write archive metadata to the given memory buffer that must have a capacity >= {@link
+   * #calcSerializedSize(VdbArchiveMetadata)}.
+   */
   public void writeInto(VdbArchiveMetadata archiveMetadata, MemoryBuffer memBuffer) {
     List<VdbArchiveMetadata.Entry> entryMetadataList = archiveMetadata.getEntries();
     memBuffer.putIntUnchecked(entryMetadataList.size());
@@ -28,14 +22,14 @@ public class VdbArchiveMetadataWriter implements MemoryBufferWriter<VdbArchiveMe
       memBuffer.putLongUnchecked(deltaOffset);
 
       memBuffer.putLongUnchecked(entry.length());
-      memBuffer.putByteUnchecked((byte) entry.compressionMethod().getValue());
+      memBuffer.putByteUnchecked((byte) entry.compression().getValue());
+      memBuffer.putByteUnchecked((byte) entry.ioMode().getValue());
     }
   }
 
-  private static long calcSerializedSize(VdbArchiveMetadata archiveMetadata) {
-    Collection<VdbArchiveMetadata.Entry> vdbArchiveEntryMetadata = archiveMetadata.getEntries();
-    // offset + length + compression_method
-    long recordSize = Long.BYTES + Long.BYTES + Byte.BYTES;
-    return Integer.BYTES + (vdbArchiveEntryMetadata.size() * recordSize);
+  public static long calcSerializedSize(VdbArchiveMetadata archiveMetadata) {
+    // offset + length + compression method + io mode
+    long recordSize = Long.BYTES + Long.BYTES + Byte.BYTES + Byte.BYTES;
+    return Integer.BYTES + (archiveMetadata.getEntries().size() * recordSize);
   }
 }

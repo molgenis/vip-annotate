@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation.fathmmmkl;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class FathmmMklAnnotationDatasetReader
@@ -26,6 +27,6 @@ public class FathmmMklAnnotationDatasetReader
 
   @Override
   public void close() {
-    scoreAnnotationBlobReader.close();
+    ClosableUtils.close(scoreAnnotationBlobReader);
   }
 }

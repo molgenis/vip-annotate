@@ -88,7 +88,7 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
             .toList()
             .toArray(new BigInteger[0]);
 
-    // write index
+    // prepare index writing
     SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher =
         new SequenceVariantAnnotationIndexDispatcher<>();
     indexDispatcher.register(
@@ -99,9 +99,7 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
         Type.BIG,
         new SequenceVariantAnnotationIndexBig<>(encoderDispatcher.getEncoder(Type.BIG), bigIndex));
 
-    annotationIndexWriter.write(partition.key(), indexDispatcher);
-
-    // combine item data
+    // prepare data writing
     List<AnnotatedSequenceVariant<U>> allList =
         new ArrayList<>(
             intEncodedAnnotatedSequenceVariants.size()
@@ -115,6 +113,9 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
 
     Partition<SequenceVariant, U, AnnotatedSequenceVariant<U>> allPartition =
         new Partition<>(partition.key(), allList);
+
+    // write data and index
     annotatedIntervalPartitionWriter.write(allPartition);
+    annotationIndexWriter.write(partition.key(), indexDispatcher);
   }
 }

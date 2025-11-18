@@ -44,7 +44,7 @@ public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
     }
     if (faiFile == null) {
       throw new ArgValidationException(
-          "missing required option '%s' or '%s'".formatted("-x", "--reference_index"));
+          "missing required option '%s' or '%s'".formatted("-x", "--reference-index"));
     }
     if (output == null) {
       throw new ArgValidationException(
@@ -72,7 +72,7 @@ public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
 
               usage: %s [arguments]
                 -i, --input           FILE                input file, e.g. GRCh38_ncER_perc.bed.gz             (required                 )
-                -x, --reference_index FILE                reference sequence index .fai file                   (required                 )
+                -x, --reference-index FILE                reference sequence index .fai file                   (required                 )
                 -o, --output          FILE                output annotation database .zip file                 (optional, default: stdout)
                 -r, --regions         chr|chr:beg-end[,…] comma-separated list of regions (inclusive, 1-based) (optional                 )
                 -f, --force                               overwrite existing output file                       (optional                 )

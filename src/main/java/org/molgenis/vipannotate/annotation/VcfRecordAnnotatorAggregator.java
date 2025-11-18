@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotator {
@@ -32,8 +33,6 @@ public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotator {
 
   @Override
   public void close() {
-    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
-      vcfRecordAnnotator.close();
-    }
+    ClosableUtils.closeAll(vcfRecordAnnotators);
   }
 }

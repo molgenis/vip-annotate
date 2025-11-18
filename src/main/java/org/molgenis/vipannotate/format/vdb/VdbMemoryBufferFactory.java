@@ -1,11 +1,15 @@
 package org.molgenis.vipannotate.format.vdb;
 
-import static org.molgenis.vipannotate.format.vdb.VdbArchive.VDB_BYTE_ALIGNMENT;
-
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
 
 public class VdbMemoryBufferFactory implements MemoryBufferFactory {
+  /**
+   * archive data is aligned to 4096 to allow for {@link
+   * com.sun.nio.file.ExtendedOpenOption#DIRECT}.
+   */
+  private static final int VDB_BYTE_ALIGNMENT = 4096;
+
   private static final long DEFAULT_MIN_CAPACITY = 1 << 20; // 1 MB
 
   @Override
@@ -24,7 +28,14 @@ public class VdbMemoryBufferFactory implements MemoryBufferFactory {
   }
 
   /** find next alignment multiple */
-  private static long alignedLength(long length) {
+  static long alignedLength(long length) {
     return (length + (VDB_BYTE_ALIGNMENT - 1)) & -VDB_BYTE_ALIGNMENT;
+  }
+
+  /** check whether the given memory buffer meets vdb alignment requirements */
+  static boolean isAligned(MemoryBuffer memBuffer) {
+    return memBuffer.getAlignment() == VDB_BYTE_ALIGNMENT
+        && memBuffer.getPosition() % VDB_BYTE_ALIGNMENT == 0
+        && memBuffer.getLimit() % VDB_BYTE_ALIGNMENT == 0;
   }
 }

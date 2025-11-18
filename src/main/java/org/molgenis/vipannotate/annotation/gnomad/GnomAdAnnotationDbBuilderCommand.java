@@ -8,10 +8,10 @@ import org.molgenis.vipannotate.AppDbCommandArgsParser;
 import org.molgenis.vipannotate.Command;
 import org.molgenis.vipannotate.Region;
 import org.molgenis.vipannotate.RegionParser;
-import org.molgenis.vipannotate.annotation.AnnotationVdbArchiveWriter;
 import org.molgenis.vipannotate.annotation.ContigRegistry;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveWriter;
 import org.molgenis.vipannotate.format.vdb.VdbArchiveWriter;
 import org.molgenis.vipannotate.format.vdb.VdbArchiveWriterFactory;
 import org.molgenis.vipannotate.format.vdb.VdbMemoryBufferFactory;
@@ -43,8 +43,8 @@ public class GnomAdAnnotationDbBuilderCommand implements Command {
     VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
     VdbArchiveWriter vdbArchiveWriter =
         VdbArchiveWriterFactory.create(memBufferFactory).create(dbOutput, force);
-    try (AnnotationVdbArchiveWriter archiveWriter =
-        AnnotationVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
+    try (PartitionedVdbArchiveWriter archiveWriter =
+        PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
       new GnomAdAnnotationDbBuilder()
           .create(gnomAdInput, regions, fastaIndex, archiveWriter, memBufferFactory);
     }

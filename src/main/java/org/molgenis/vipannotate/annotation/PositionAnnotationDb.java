@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 /**
  * Annotation database containing annotations for genome positions used to annotate sequence
@@ -64,6 +65,6 @@ public class PositionAnnotationDb<T extends Annotation>
 
   @Override
   public void close() {
-    annotationDatasetReader.close();
+    ClosableUtils.close(annotationDatasetReader);
   }
 }

@@ -19,6 +19,8 @@ public class SequenceVariantAnnotationIndexDispatcherReader<T extends SequenceVa
 
   @Override
   public SequenceVariantAnnotationIndexDispatcher<T> readFrom(MemoryBuffer memoryBuffer) {
+    memoryBuffer.flip();
+
     EnumMap<Type, AnnotationIndex<T>> indexMap = new EnumMap<>(Type.class);
     for (Type type : Type.values()) {
       MemoryBufferReader<AnnotationIndex<T>> reader = serializerMap.get(type);
@@ -31,6 +33,8 @@ public class SequenceVariantAnnotationIndexDispatcherReader<T extends SequenceVa
 
   @Override
   public void readInto(MemoryBuffer memoryBuffer, AnnotationIndex<T> index) {
+    memoryBuffer.flip();
+
     SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher = getTyped(index);
 
     for (Type type : Type.values()) {

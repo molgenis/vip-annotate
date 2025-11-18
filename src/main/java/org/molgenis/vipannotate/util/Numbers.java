@@ -97,4 +97,13 @@ public class Numbers {
     }
     return (byte) value;
   }
+
+  public static long nextPowerOf2(long value) {
+    requireNonNegative(value);
+    if (value == 0) {
+      return 1;
+    }
+
+    return (value & (value - 1)) == 0 ? value : Long.highestOneBit(value - 1) << 1;
+  }
 }

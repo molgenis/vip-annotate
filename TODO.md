@@ -1,32 +1,13 @@
 # todo
 
-## 0.0.1-alpha.1
-
-- [ ] benchmark with spliceai db
-- [ ] benchmark jar-in-sif on nibbler ssd and compare with native-image-in-sif
-- [ ] decide whether the added complexity and chance on issues is worth using native-image
-
-## 0.0.1-alpha.2
-
-- [ ] perf(build): zstd multi-threaded compression
-- [ ] perf(annotate): write 'read hint': direct or normal
-- [ ] perf(annotate): write metadata index per chromosome
-- [ ] perf(annotate): unaligned no-direct metadata reading and writing to allow OS caching
-- [ ] fix: AppAnnotateIT
-    - [ ] fix: error: java.util.zip.ZipException: Corrupt GZIP trailer (or remove native image?)
-        - [ ] fix: native image on windows (with canonical layouts?)
-            - [ ] refactor: use canonical
-              layouts https://www.graalvm.org/latest/reference-manual/native-image/native-code-interoperability/ffm-api/
-
-## 0.0.1-alpha.3
+## 0.0.1-alpha.4
 
 - [ ] feat(annotate): write bgzip instead of gzip for compressed VCF,
   see https://github.com/samtools/htsjdk/blob/master/src/main/java/htsjdk/samtools/util/BlockCompressedOutputStream.java
   and https://github.com/browning-lab/hap-ibd/blob/master/src/blbutil/BGZIPOutputStream.java. or use native lib?
     - [ ] feat(db): byte reproducible database zips
-    - [ ] perf: use own archive format instead of zip for efficient dict reading or write own dic reader
 
-## 0.0.1-alpha.4
+## 0.0.1-alpha.5
 
 - [ ] feat: config to build/use new annotation dbs without exe change (see draft_db_annotation_schema.json)
     - [ ] fix(annotations): fathmm annotation resource can contain multiple chr-pos-ref_len-alt annotations -->
@@ -38,16 +19,18 @@
 
 ## 0.0.1-beta
 
+- [ ] feat: resource versioning
+- [ ] refactor: rename .zip to .vdb
 - [ ] fix: resolve reported nullability issues (fix or suppress)
 - [ ] fix: resolve FIXME and TODO in code
 - [ ] docs: update
 - [ ] test: with different real datasets
 
-## 0.0.1
+## 1.0.0
 
 - [ ] feat: install.sh script that downloads resources and container + put data on download server
 
-### after 0.0.1
+### after 1.0.0
 
 - [ ] feat(annotate): how to annotate PositionAnnotationDb for SV? SVLEN could be too long (chr2-166299171-A-<DEL>)
 - [ ] feat(db): validate that annotation reference is normalized

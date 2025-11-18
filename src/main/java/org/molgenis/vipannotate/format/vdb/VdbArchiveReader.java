@@ -1,36 +1,36 @@
 package org.molgenis.vipannotate.format.vdb;
 
-import static org.molgenis.vipannotate.format.vdb.VdbArchive.VDB_BYTE_ALIGNMENT;
-
 import com.sun.nio.file.ExtendedOpenOption;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.zstd.ZstdDecompressionContext;
 
 public class VdbArchiveReader implements AutoCloseable {
-  private final FileChannel fileChannel;
+  private final FileChannel alignedChannel;
+  private final FileChannel unalignedChannel;
   private final ZstdDecompressionContext zstdContext;
   private final VdbArchiveMetadata archiveMetadata;
   private final VdbMemoryBufferFactory memBufferFactory;
 
-  // one reusable aligned scratch buffer for zstd reads
+  // one reusable aligned scratch buffer
   @Nullable private MemoryBuffer scratchBuffer;
 
   VdbArchiveReader(
-      FileChannel fileChannel,
+      FileChannel alignedChannel,
+      FileChannel unalignedChannel,
       ZstdDecompressionContext zstdContext,
       VdbMemoryBufferFactory memBufferFactory,
       VdbArchiveMetadataReader metadataReader) {
-    this.fileChannel = fileChannel;
+    this.alignedChannel = alignedChannel;
+    this.unalignedChannel = unalignedChannel;
     this.zstdContext = zstdContext;
     this.memBufferFactory = memBufferFactory;
 
-    // TODO move to create
     // init
     try (MemoryBuffer memBuffer = readMetadata()) {
       memBuffer.flip();
@@ -47,6 +47,7 @@ public class VdbArchiveReader implements AutoCloseable {
     try {
       return new VdbArchiveReader(
           FileChannel.open(vdbPath, StandardOpenOption.READ, ExtendedOpenOption.DIRECT),
+          FileChannel.open(vdbPath, StandardOpenOption.READ),
           zstdContext,
           vdbMemBufferFactory,
           metadataReader);
@@ -65,11 +66,10 @@ public class VdbArchiveReader implements AutoCloseable {
    *
    * @param id entry identifier
    * @param memBuffer memory buffer that originates from a call to {@link #readEntry}.
-   * @return the given memory buffer
    */
-  public MemoryBuffer readEntryInto(int id, MemoryBuffer memBuffer) {
+  public void readEntryInto(int id, MemoryBuffer memBuffer) {
     VdbArchiveMetadata.Entry entry = archiveMetadata.getEntry(id);
-    return read(entry, memBuffer);
+    read(entry, memBuffer);
   }
 
   public MemoryBuffer readLastEntry() {
@@ -81,69 +81,68 @@ public class VdbArchiveReader implements AutoCloseable {
    * Read the last entry into the given memory buffer
    *
    * @param memBuffer memory buffer originating from {@link VdbMemoryBufferFactory}
-   * @return the given memory buffer
    */
-  public MemoryBuffer readLastEntryInto(MemoryBuffer memBuffer) {
+  public void readLastEntryInto(MemoryBuffer memBuffer) {
     VdbArchiveMetadata.Entry entry = archiveMetadata.getEntries().getLast();
-    return read(entry, memBuffer);
+    read(entry, memBuffer);
   }
 
   private MemoryBuffer read(VdbArchiveMetadata.Entry entry, @Nullable MemoryBuffer memBuffer) {
-    return switch (entry.compressionMethod()) {
-      case PLAIN -> readPlain(entry.offset(), entry.length(), memBuffer);
-      case ZSTD -> readZstd(entry.offset(), entry.length(), memBuffer);
+    return switch (entry.compression()) {
+      case PLAIN -> readPlain(entry.offset(), entry.length(), memBuffer, entry.ioMode());
+      case ZSTD -> readZstd(entry.offset(), entry.length(), memBuffer, entry.ioMode());
     };
   }
 
-  // TODO perf: read metadata without direct io to allow page caching?
   private MemoryBuffer readMetadata() {
     // get file size
     long size;
     try {
-      size = fileChannel.size();
+      size = unalignedChannel.size();
     } catch (IOException e) {
       throw new VdbException(e);
     }
-    if (size == 0) {
-      throw new VdbException("invalid vdb file: file is empty");
-    }
-    if (size < VDB_BYTE_ALIGNMENT) {
-      throw new VdbException(
-          "invalid vdb file: file is less than %d bytes".formatted(VDB_BYTE_ALIGNMENT));
-    }
-    if (size % VDB_BYTE_ALIGNMENT != 0) {
+
+    // read footer
+    long footerLength = Long.BYTES + Long.BYTES + Integer.BYTES;
+    if (size < footerLength) {
       throw new VdbException("invalid vdb file");
     }
 
-    // TODO reuse buffer
-    // read last block
+    long footerOffset = size - footerLength;
     long metadataOffset, metadataLength;
-    try (MemoryBuffer memBuffer = readPlain(size - VDB_BYTE_ALIGNMENT, VDB_BYTE_ALIGNMENT, null)) {
-      // verify signature
-      long pos = VDB_BYTE_ALIGNMENT - Integer.BYTES;
-      int signature = memBuffer.getInt(pos);
-      if (signature != VdbArchive.VDB_SIGNATURE) {
-        throw new VdbException("invalid vdb file: signature mismatch");
-      }
-
-      // get offset and length of vdb metadata
-      pos -= Long.BYTES;
-      metadataLength = memBuffer.getLong(pos);
-      pos -= Long.BYTES;
-      metadataOffset = memBuffer.getLong(pos);
+    MemoryBuffer memBuffer =
+        readPlain(footerOffset, footerLength, getScratchBuffer(footerLength), IoMode.BUFFERED);
+    // verify signature
+    long pos = footerLength - Integer.BYTES;
+    int signature = memBuffer.getInt(pos);
+    if (signature != VdbArchive.VDB_SIGNATURE) {
+      throw new VdbException("invalid vdb file: signature mismatch");
     }
 
+    // get offset and length of vdb metadata
+    pos -= Long.BYTES;
+    metadataLength = memBuffer.getLong(pos);
+    pos -= Long.BYTES;
+    metadataOffset = memBuffer.getLong(pos);
+
     // decompress metadata
-    return readZstd(metadataOffset, metadataLength, null);
+    return readZstd(metadataOffset, metadataLength, null, IoMode.BUFFERED);
   }
 
-  private MemoryBuffer readPlain(long offset, long length, @Nullable MemoryBuffer memBuffer) {
+  private MemoryBuffer readPlain(
+      long offset, long length, @Nullable MemoryBuffer memBuffer, IoMode ioMode) {
     // create or reuse aligned buffer
     MemoryBuffer dstBuffer = prepareWriteBuffer(memBuffer, length);
 
     // read aligned data
+    FileChannel fileChannel =
+        switch (ioMode) {
+          case DIRECT -> alignedChannel;
+          case BUFFERED -> unalignedChannel;
+        };
     try {
-      if (fileChannel.read(dstBuffer.getMemSegment().asByteBuffer(), offset) == -1) {
+      if (fileChannel.read(dstBuffer.getByteBuffer(), offset) == -1) {
         throw new VdbException("error reading vdb data");
       }
     } catch (IOException e) {
@@ -156,8 +155,9 @@ public class VdbArchiveReader implements AutoCloseable {
     return dstBuffer;
   }
 
-  private MemoryBuffer readZstd(long offset, long length, @Nullable MemoryBuffer memBuffer) {
-    MemoryBuffer srcBuffer = readPlain(offset, length, getScratchBuffer(length));
+  private MemoryBuffer readZstd(
+      long offset, long length, @Nullable MemoryBuffer memBuffer, IoMode ioMode) {
+    MemoryBuffer srcBuffer = readPlain(offset, length, getScratchBuffer(length), ioMode);
     srcBuffer.flip();
 
     long uncompressedLength = srcBuffer.getLong();
@@ -172,7 +172,7 @@ public class VdbArchiveReader implements AutoCloseable {
 
   private MemoryBuffer getScratchBuffer(long minCapacity) {
     if (scratchBuffer == null) {
-      scratchBuffer = memBufferFactory.newMemoryBuffer();
+      scratchBuffer = memBufferFactory.newMemoryBuffer(minCapacity);
     } else {
       scratchBuffer.ensureCapacity(minCapacity);
       scratchBuffer.clear();
@@ -194,10 +194,6 @@ public class VdbArchiveReader implements AutoCloseable {
 
   @Override
   public void close() {
-    try {
-      fileChannel.close();
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    ClosableUtils.closeAll(alignedChannel, unalignedChannel);
   }
 }

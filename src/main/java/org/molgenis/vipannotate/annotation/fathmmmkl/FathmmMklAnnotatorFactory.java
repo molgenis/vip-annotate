@@ -5,12 +5,14 @@ import static org.molgenis.vipannotate.annotation.SequenceVariantType.SNV;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
+import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 public class FathmmMklAnnotatorFactory
     extends SequenceVariantAnnotatorFactory<SequenceVariant, FathmmMklAnnotation> {
   public FathmmMklAnnotatorFactory(
-      AnnotationVdbArchiveReaderFactory archiveReaderFactory,
+      PartitionedVdbArchiveReaderFactory archiveReaderFactory,
       PartitionResolver partitionResolver,
       MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader) {
     super(archiveReaderFactory, partitionResolver, indexReader);
@@ -18,7 +20,8 @@ public class FathmmMklAnnotatorFactory
 
   @Override
   public VcfRecordAnnotator create(Path annotationsDir) {
-    AnnotationVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "fathmmmkl.zip");
+    PartitionedVdbArchiveReader archiveReader =
+        createArchiveReader(annotationsDir, "fathmmmkl.zip");
 
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
         createIndexReader(archiveReader);

@@ -29,14 +29,15 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
   @Test
   void encodeDecodeSources() {
     List<Source> sources = List.of(GENOMES, EXOMES, TOTAL, GENOMES, EXOMES, TOTAL);
-    try (MemoryBuffer blob =
-        encoder.encodeSources(new SizedIterator<>(sources.iterator(), sources.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[100])) {
+      encoder.encodeSources(new SizedIterator<>(sources.iterator(), sources.size()), memBuffer);
+      memBuffer.clear();
 
       Executable[] executables = new Executable[sources.size()];
       for (int i = 0, size = sources.size(); i < size; i++) {
         int finalI = i;
         executables[i] =
-            () -> assertEquals(sources.get(finalI), decoder.decodeSource(blob, finalI));
+            () -> assertEquals(sources.get(finalI), decoder.decodeSource(memBuffer, finalI));
       }
       assertAll(executables);
     }
@@ -45,15 +46,16 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
   @Test
   void encodeDecodeAf() {
     List<Double> afList = List.of(1d, 0.1, 0.01, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001);
-    try (MemoryBuffer blob =
-        encoder.encodeAf(new SizedIterator<>(afList.iterator(), afList.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[100])) {
+      encoder.encodeAf(new SizedIterator<>(afList.iterator(), afList.size()), memBuffer);
+      memBuffer.clear();
 
       double maxError = 1 / 131068d;
       Executable[] executables = new Executable[afList.size()];
       for (int i = 0, size = afList.size(); i < size; i++) {
         int finalI = i;
         executables[i] =
-            () -> assertEquals(afList.get(finalI), decoder.decodeAf(blob, finalI), maxError);
+            () -> assertEquals(afList.get(finalI), decoder.decodeAf(memBuffer, finalI), maxError);
       }
       assertAll(executables);
     }
@@ -62,15 +64,16 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
   @Test
   void encodeDecodeFaf95() {
     List<Double> afList = List.of(1d, 0.1, 0.01, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001);
-    try (MemoryBuffer blob =
-        encoder.encodeFaf95(new SizedIterator<>(afList.iterator(), afList.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[100])) {
+      encoder.encodeFaf95(new SizedIterator<>(afList.iterator(), afList.size()), memBuffer);
 
       double maxError = 1 / 131070d;
       Executable[] executables = new Executable[afList.size()];
       for (int i = 0, size = afList.size(); i < size; i++) {
         int finalI = i;
         executables[i] =
-            () -> assertEquals(afList.get(finalI), decoder.decodeFaf95(blob, finalI), maxError);
+            () ->
+                assertEquals(afList.get(finalI), decoder.decodeFaf95(memBuffer, finalI), maxError);
       }
       assertAll(executables);
     }
@@ -79,15 +82,16 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
   @Test
   void encodeDecodeFaf99() {
     List<Double> afList = List.of(1d, 0.1, 0.01, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001);
-    try (MemoryBuffer blob =
-        encoder.encodeFaf99(new SizedIterator<>(afList.iterator(), afList.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[100])) {
+      encoder.encodeFaf99(new SizedIterator<>(afList.iterator(), afList.size()), memBuffer);
 
       double maxError = 1 / 131070d;
       Executable[] executables = new Executable[afList.size()];
       for (int i = 0, size = afList.size(); i < size; i++) {
         int finalI = i;
         executables[i] =
-            () -> assertEquals(afList.get(finalI), decoder.decodeFaf99(blob, finalI), maxError);
+            () ->
+                assertEquals(afList.get(finalI), decoder.decodeFaf99(memBuffer, finalI), maxError);
       }
       assertAll(executables);
     }
@@ -96,13 +100,14 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
   @Test
   void encodeDecodeHn() {
     List<Integer> hnList = List.of(0, 1, 10, 100, 1000, 10000, 100000);
-    try (MemoryBuffer blob =
-        encoder.encodeHn(new SizedIterator<>(hnList.iterator(), hnList.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[100])) {
+      encoder.encodeHn(new SizedIterator<>(hnList.iterator(), hnList.size()), memBuffer);
 
       Executable[] executables = new Executable[hnList.size()];
       for (int i = 0, size = hnList.size(); i < size; i++) {
         int finalI = i;
-        executables[i] = () -> assertEquals(hnList.get(finalI), decoder.decodeHn(blob, finalI));
+        executables[i] =
+            () -> assertEquals(hnList.get(finalI), decoder.decodeHn(memBuffer, finalI));
       }
       assertAll(executables);
     }
@@ -121,14 +126,14 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
             EnumSet.of(AS_VQSR, INBREEDING_COEFF),
             EnumSet.of(AC0, AS_VQSR, INBREEDING_COEFF));
 
-    try (MemoryBuffer blob =
-        encoder.encodeFilters(new SizedIterator<>(filters.iterator(), filters.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[100])) {
+      encoder.encodeFilters(new SizedIterator<>(filters.iterator(), filters.size()), memBuffer);
 
       Executable[] executables = new Executable[filters.size()];
       for (int i = 0, size = filters.size(); i < size; i++) {
         int finalI = i;
         executables[i] =
-            () -> assertEquals(filters.get(finalI), decoder.decodeFilters(blob, finalI));
+            () -> assertEquals(filters.get(finalI), decoder.decodeFilters(memBuffer, finalI));
       }
       assertAll(executables);
     }
@@ -137,15 +142,15 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
   @Test
   void encodeDecodeCov() {
     List<Double> afList = List.of(1d, 0.1, 0.01, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001);
-    try (MemoryBuffer blob =
-        encoder.encodeCov(new SizedIterator<>(afList.iterator(), afList.size()))) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[100])) {
+      encoder.encodeCov(new SizedIterator<>(afList.iterator(), afList.size()), memBuffer);
 
       double maxError = 1 / 131070d;
       Executable[] executables = new Executable[afList.size()];
       for (int i = 0, size = afList.size(); i < size; i++) {
         int finalI = i;
         executables[i] =
-            () -> assertEquals(afList.get(finalI), decoder.decodeCov(blob, finalI), maxError);
+            () -> assertEquals(afList.get(finalI), decoder.decodeCov(memBuffer, finalI), maxError);
       }
       assertAll(executables);
     }

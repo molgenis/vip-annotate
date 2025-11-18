@@ -18,39 +18,57 @@ public class SpliceAiAnnotationDatasetEncoder {
     this.doubleCodec = doubleCodec;
   }
 
-  public MemoryBuffer encodeGeneId(SizedIterator<@Nullable Integer> geneIdIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[geneIdIt.getSize()]);
+  /**
+   * encode gene identifiers into the given memory buffer
+   *
+   * @param geneIdIt scores
+   * @param memBuffer memory buffer with capacity >= {@link #calcEncodedScoreSize(SizedIterator)}
+   */
+  public void encodeGeneId(SizedIterator<@Nullable Integer> geneIdIt, MemoryBuffer memBuffer) {
     geneIdIt.forEachRemaining(
         geneId -> {
           byte encodedGeneId = geneId != null ? safeIntToByte(geneId) : (byte) -1;
-          memoryBuffer.putByteUnchecked(encodedGeneId);
+          memBuffer.putByteUnchecked(encodedGeneId);
         });
-    return memoryBuffer;
   }
 
-  public MemoryBuffer encodeScore(SizedIterator<Double> doubleIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[doubleIt.getSize()]);
-    doubleIt.forEachRemaining(
-        doubleValue -> {
-          byte encodedScore = doubleCodec.encodeDoublePrimitiveUnitIntervalAsByte(doubleValue);
-          memoryBuffer.putByteUnchecked(encodedScore);
-        });
-    return memoryBuffer;
+  public long calcEncodedGeneIdSize(SizedIterator<@Nullable Integer> geneIdIt) {
+    return geneIdIt.getSize() * Byte.BYTES;
   }
 
   /**
-   * encode positions and write to a memory buffer
+   * encode scores into the given memory buffer
+   *
+   * @param scoreIt scores
+   * @param memBuffer memory buffer with capacity >= {@link #calcEncodedScoreSize(SizedIterator)}
+   */
+  public void encodeScore(SizedIterator<Double> scoreIt, MemoryBuffer memBuffer) {
+    scoreIt.forEachRemaining(
+        doubleValue -> {
+          byte encodedScore = doubleCodec.encodeDoublePrimitiveUnitIntervalAsByte(doubleValue);
+          memBuffer.putByteUnchecked(encodedScore);
+        });
+  }
+
+  public long calcEncodedScoreSize(SizedIterator<Double> doubleIt) {
+    return doubleIt.getSize() * Byte.BYTES;
+  }
+
+  /**
+   * encode positions into the given memory buffer
    *
    * @param posIt positions in the range [-50, 50]
-   * @return memory buffer with encoded positions
+   * @param memBuffer memory buffer with capacity >= {@link #calcEncodedPosSize(SizedIterator)}
    */
-  public MemoryBuffer encodePos(SizedIterator<@Nullable Byte> posIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[posIt.getSize()]);
+  public void encodePos(SizedIterator<@Nullable Byte> posIt, MemoryBuffer memBuffer) {
     posIt.forEachRemaining(
         byteValue -> {
           byte encodedPos = (byte) (byteValue != null ? byteValue + 51 : 0);
-          memoryBuffer.putByteUnchecked(encodedPos);
+          memBuffer.putByteUnchecked(encodedPos);
         });
-    return memoryBuffer;
+  }
+
+  public long calcEncodedPosSize(SizedIterator<@Nullable Byte> posIt) {
+    return posIt.getSize() * Byte.BYTES;
   }
 }

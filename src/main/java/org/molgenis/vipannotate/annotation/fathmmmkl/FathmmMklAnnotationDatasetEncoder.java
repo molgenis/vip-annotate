@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.annotation.fathmmmkl;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.*;
 
-// TODO rename to Writer?
 public class FathmmMklAnnotationDatasetEncoder {
   private final DoubleCodec doubleCodec;
 
@@ -15,13 +14,15 @@ public class FathmmMklAnnotationDatasetEncoder {
     this.doubleCodec = doubleCodec;
   }
 
-  public MemoryBuffer encodeScores(SizedIterator<Double> scoreIt) {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[scoreIt.getSize()]);
+  public void encodeScores(SizedIterator<Double> scoreIt, MemoryBuffer memBuffer) {
     scoreIt.forEachRemaining(
         value -> {
           byte encodedValue = doubleCodec.encodeDoublePrimitiveUnitIntervalAsByte(value);
-          memoryBuffer.putByteUnchecked(encodedValue);
+          memBuffer.putByteUnchecked(encodedValue);
         });
-    return memoryBuffer;
+  }
+
+  public long calcEncodedGeneIdSize(SizedIterator<Double> scoreIt) {
+    return scoreIt.getSize() * Byte.BYTES;
   }
 }

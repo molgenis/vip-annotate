@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.molgenis.vipannotate.util.BufferedLineReader;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 public class VcfRecordBatchIterator implements Iterator<List<VcfRecord>>, AutoCloseable {
   private static final int BUFFER_SIZE_STRING_BUILDER = 256;
@@ -57,6 +58,6 @@ public class VcfRecordBatchIterator implements Iterator<List<VcfRecord>>, AutoCl
 
   @Override
   public void close() {
-    reader.close();
+    ClosableUtils.close(reader);
   }
 }

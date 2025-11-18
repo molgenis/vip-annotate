@@ -1,6 +1,7 @@
 package org.molgenis.streamvbyte;
 
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 public enum StreamVByteProvider implements AutoCloseable {
   INSTANCE;
@@ -16,9 +17,7 @@ public enum StreamVByteProvider implements AutoCloseable {
 
   @Override
   public void close() {
-    if (streamVByte != null) {
-      streamVByte.close();
-      streamVByte = null;
-    }
+    ClosableUtils.close(streamVByte);
+    streamVByte = null;
   }
 }

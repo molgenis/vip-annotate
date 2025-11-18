@@ -22,6 +22,10 @@ public class VdbArchiveWriterFactory {
         new VdbArchiveMetadataWriter());
   }
 
+  public VdbArchiveWriter create(Path archivePath) {
+    return create(archivePath, false);
+  }
+
   public VdbArchiveWriter create(Path archivePath, boolean force) {
     return VdbArchiveWriter.create(
         archivePath, force, compressionContext, memBufferFactory, metadataWriter);

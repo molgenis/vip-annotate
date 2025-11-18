@@ -11,13 +11,13 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
           "void*",
           "void*",
-          "long",
+          "size_t",
           "void*",
-          "long",
+          "size_t",
           "int"
         ],
         "options": {
@@ -27,7 +27,7 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
           "void*",
           "int",
@@ -40,7 +40,7 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
           "void*",
           "void*",
@@ -53,7 +53,7 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
           "void*",
           "int",
@@ -67,7 +67,7 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
           "void*",
           "void*",
@@ -81,7 +81,7 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [],
         "options": {
           "critical": {
@@ -90,10 +90,10 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
-          "long",
-          "long"
+          "size_t",
+          "size_t"
         ],
         "options": {
           "critical": {
@@ -102,7 +102,7 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
           "void*"
         ],
@@ -113,13 +113,13 @@
         }
       },
       {
-        "returnType": "long",
+        "returnType": "size_t",
         "parameterTypes": [
           "void*",
           "void*",
-          "long",
+          "size_t",
           "void*",
-          "long"
+          "size_t"
         ],
         "options": {
           "critical": {
