@@ -16,6 +16,7 @@ main() {
   sudo apptainer build "${args[@]}" streamvbyte-2.0.0.sif streamvbyte-2.0.0.def
   sudo apptainer build "${args[@]}" zstd-1.5.7.sif zstd-1.5.7.def
   sudo apptainer build "${args[@]}" native-image-builder.sif native-image-builder.def
+  sudo apptainer build "${args[@]}" busybox-1.37.0-musl.sif busybox-1.37.0-musl.def
 }
 
 main "${@}"
