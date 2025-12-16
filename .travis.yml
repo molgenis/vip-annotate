@@ -1,0 +1,52 @@
+arch: amd64
+os: linux
+dist: noble
+language: minimal
+cache:
+  directories:
+    - "$HOME/.m2"
+    - "$HOME/.sif"
+branches:
+  only:
+    - main
+    - /^\d+\.\d+(\.\d+)?(-\S*)?$/
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get -qq -y install software-properties-common
+  - sudo add-apt-repository -y ppa:apptainer/ppa
+  - sudo apt-get -qq update
+  - sudo apt-get -qq -y install apptainer
+script:
+  - |
+    APPTAINER_DEF_HASH="$(sha256sum src/main/apptainer/*.def | sha256sum | cut -d' ' -f1)"
+    if [ ! -d "$HOME/.sif/$APPTAINER_DEF_HASH" ]; then
+      cd src/main/apptainer
+      bash build.sh
+      cd -
+      rm -rf "$HOME/.sif"
+      mkdir -p "$HOME/.sif/$APPTAINER_DEF_HASH"
+      ln src/main/apptainer/*.sif "$HOME/.sif/$APPTAINER_DEF_HASH"
+    else
+      ln $HOME/.sif/$APPTAINER_DEF_HASH/*.sif src/main/apptainer  
+    fi
+  - |
+    if [ -n "$TRAVIS_TAG" ]; then
+      apptainer exec "$HOME/.sif/$APPTAINER_DEF_HASH/native-image-builder.sif" mvn verify
+      cd src/main/apptainer
+      bash create.sh
+      cd -
+    else
+      apptainer exec "$HOME/.sif/$APPTAINER_DEF_HASH/native-image-builder.sif" mvn verify -Dnative.image.skip=true
+    fi
+deploy:
+  provider: releases
+  api_key:
+    secure: JuohV8JnEzGa/E5nsOU5FKvtPIn8CUpo7GEnbMg1+cDudEDe1u0Zx1FYrziD7Lhr+XhB8rahXWZpVUxuW0jhifgYjw0K3yJrkeXm5bXJa82eFhnqKka62N1mu+0wn/eO/85R41R7B8ZUMU3cAQg0T3ydnxFR1Qe+Gg8P5MvH3dUJLoaV7DYucqP1w3TWK9NWzVg/LMOrpfZGV+XetKiFypPwm6lB5y3A2KrrxFvb67mIsYcbHscEUIiV/TGc3bN3S3oNi8szcHr99AEjwV5OM28bRmrCf+3HjMmNXRezfBBtIz3MUiOeRQAsce6wrr5nUfrtfmgyZ0bcjMNc4ID/sNNLXtQtygIntgUjJbFNg4xHBJheSZLVQb0eTPMxN1Km7os6AIZ8fGOWt1U4rShn7tZSmsWNZ2KZNcx33dsLEJh57XqSQGRTEC3Rj7987iHSSzFAGceVYQgV0thmwcBvG+AV2WB64ICgdZY9gDo7fCuvIuiJxz9N398dMU7lyeVJ5Eq/LBGw9w7iCEYWDd1vTr1OfaYxQiF9n85HVJ2BaIklyP6WDpzUjX7P+qiGw+JziOiDp3gkgY64QMzdLQxlxMlfJxf0+1b1am7DyhA4CKup+506m2B0GnyPly79SzLula5bbInfjjXiNXMir2+R+PK1i4bnDhhSk+UFnOYOwZw=
+  file:
+    - src/main/apptainer/vip-annotate.sif
+    - src/main/apptainer/vip-annotate-db.sif
+  draft: true
+  on:
+    # deploy test
+    branch: /^0\.0\.1-alpha(\.\d+)?$/
+    tags: true

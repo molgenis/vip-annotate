@@ -1,0 +1,18 @@
+Bootstrap: localimage
+From: ubuntu-24.04.sif
+
+%post
+    apt-get -y update
+    apt-get -y install build-essential wget
+
+    wget https://github.com/fast-pack/streamvbyte/archive/refs/tags/v2.0.0.tar.gz
+    echo "51ca1c3b02648ea4b965d65b0e586891981f2e8184b056520e38ad70bcc43dd8  v2.0.0.tar.gz" | sha256sum -c
+    tar xzf v2.0.0.tar.gz
+    rm v2.0.0.tar.gz
+    cd streamvbyte-2.0.0
+    make
+
+    apt-get clean
+
+%help
+		streamvbyte build container

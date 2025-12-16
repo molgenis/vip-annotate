@@ -1,0 +1,18 @@
+Bootstrap: localimage
+From: ubuntu-24.04.sif
+
+%post
+    apt-get -y update
+    apt-get -y install build-essential wget
+
+    wget https://github.com/facebook/zstd/archive/refs/tags/v1.5.7.tar.gz
+    echo "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3  v1.5.7.tar.gz" | sha256sum -c
+    tar xzf v1.5.7.tar.gz
+    rm v1.5.7.tar.gz
+    cd zstd-1.5.7
+    ZSTD_LIB_DEPRECATED=0 ZSTD_LEGACY_SUPPORT=0 make lib MOREFLAGS="-march=x86-64-v3"
+
+    apt-get clean
+
+%help
+		zstd build container

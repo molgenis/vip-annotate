@@ -1,0 +1,38 @@
+package org.molgenis.vipannotate.annotation;
+
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.format.vcf.VcfHeader;
+import org.molgenis.vipannotate.format.vcf.VcfRecord;
+import org.molgenis.vipannotate.util.ClosableUtils;
+
+@RequiredArgsConstructor
+public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotator {
+  private final List<VcfRecordAnnotator> vcfRecordAnnotators;
+
+  @Override
+  public void updateHeader(VcfHeader vcfHeader) {
+    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
+      vcfRecordAnnotator.updateHeader(vcfHeader);
+    }
+  }
+
+  @Override
+  public void annotate(VcfRecord vcfRecord) {
+    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
+      vcfRecordAnnotator.annotate(vcfRecord);
+    }
+  }
+
+  @Override
+  public void annotate(List<VcfRecord> vcfRecord) {
+    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
+      vcfRecordAnnotator.annotate(vcfRecord);
+    }
+  }
+
+  @Override
+  public void close() {
+    ClosableUtils.closeAll(vcfRecordAnnotators);
+  }
+}

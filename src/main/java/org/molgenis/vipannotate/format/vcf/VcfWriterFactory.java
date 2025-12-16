@@ -1,0 +1,99 @@
+package org.molgenis.vipannotate.format.vcf;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.zip.Deflater;
+import java.util.zip.GZIPOutputStream;
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.CloseIgnoringOutputStream;
+import org.molgenis.vipannotate.util.Output;
+
+public class VcfWriterFactory {
+  private static final int GZIP_OUTPUT_STREAM_BUFFER_SIZE = 32768;
+
+  private VcfWriterFactory() {}
+
+  public static VcfWriter create(Output outputVcf) {
+    return create(outputVcf, null);
+  }
+
+  public static VcfWriter create(Output outputVcf, @Nullable VcfType outputVcfType) {
+    Path outputVcfPath = outputVcf.path();
+    OutputStream outputStream;
+    if (outputVcfPath != null) {
+      try {
+        Path outputVcfPathParent = outputVcfPath.getParent();
+        if (outputVcfPathParent != null) {
+          Files.createDirectories(outputVcfPathParent);
+        }
+        outputStream = Files.newOutputStream(outputVcfPath);
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+    } else {
+      outputStream = new CloseIgnoringOutputStream(System.out);
+    }
+
+    if (outputVcfType == null) {
+      if (outputVcfPath != null) {
+        Path pathFileName = outputVcfPath.getFileName();
+        if (pathFileName == null) {
+          throw new IllegalArgumentException(
+              "Output VCF file path '%s' must not have zero elements".formatted(outputVcfPath));
+        }
+        String outputVcfFilename = pathFileName.toString();
+        outputVcfType =
+            outputVcfFilename.endsWith(".gz") || outputVcfFilename.endsWith(".bgz")
+                ? VcfType.COMPRESSED
+                : VcfType.UNCOMPRESSED;
+      } else {
+        outputVcfType = VcfType.UNCOMPRESSED;
+      }
+    }
+
+    VcfWriter vcfWriter;
+    if (outputVcfType != VcfType.UNCOMPRESSED) {
+      Integer compressionLevel = outputVcfType.getCompressionLevel();
+      if (compressionLevel != null) {
+        //noinspection DataFlowIssue
+        vcfWriter = createGzip(outputStream, compressionLevel);
+      } else {
+        //noinspection DataFlowIssue
+        vcfWriter = createGzip(outputStream);
+      }
+    } else {
+      //noinspection DataFlowIssue
+      vcfWriter = create(outputStream);
+    }
+    return vcfWriter;
+  }
+
+  public static VcfWriter create(OutputStream outputStream) {
+    Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+    return VcfWriter.create(writer);
+  }
+
+  public static VcfWriter createGzip(OutputStream outputStream) {
+    return createGzip(outputStream, 6);
+  }
+
+  public static VcfWriter createGzip(OutputStream outputStream, int level) {
+    if (level < 0 || level > 9) throw new IllegalArgumentException("level must be between 0 and 9");
+
+    GZIPOutputStream gzipOutputStream;
+    try {
+      gzipOutputStream =
+          new GZIPOutputStream(outputStream, GZIP_OUTPUT_STREAM_BUFFER_SIZE) {
+            {
+              def = new Deflater(level, true); // hack: set protected 'def' field
+            }
+          };
+
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    return create(gzipOutputStream);
+  }
+}
