@@ -10,11 +10,12 @@ Bootstrap: localimage
 From: zstd-1.5.7.sif
 Stage: build-zstd
 
-Bootstrap: scratch
+Bootstrap: localimage
+From: busybox-1.37.0-musl.sif
 Stage: final
 
 %files
-    ./vip-annotate /usr/local/bin/vip-annotate
+    ./vip-annotate /opt/vip-annotate/bin/vip-annotate
 
 %files from build-ubuntu
     /lib/x86_64-linux-gnu/libc.so.6
@@ -22,15 +23,15 @@ Stage: final
     /lib64/ld-linux-x86-64.so.2
 
 %files from build-streamvbyte
-    /streamvbyte-2.0.0/libstreamvbyte.so.0.0.1 /libstreamvbyte.so.0.0.1
+    /streamvbyte-2.0.0/libstreamvbyte.so.0.0.1 /opt/vip-annotate/lib/libstreamvbyte.so.0.0.1
 
 %files from build-zstd
-    /zstd-1.5.7/lib/libzstd.so.1.5.7 /libzstd.so.1.5.7
+    /zstd-1.5.7/lib/libzstd.so.1.5.7 /opt/vip-annotate/lib/libzstd.so.1.5.7
 
 %environment
-    export PATH=/usr/local/bin:${PATH}
-    export STREAMVBYTE_LIB_PATH="/libstreamvbyte.so.0.0.1"
-    export ZSTD_LIB_PATH="/libzstd.so.1.5.7"
+    export PATH=/opt/vip-annotate/bin/vip-annotate:${PATH}
+    export STREAMVBYTE_LIB_PATH="/opt/vip-annotate/lib/libstreamvbyte.so.0.0.1"
+    export ZSTD_LIB_PATH="/opt/vip-annotate/lib/libzstd.so.1.5.7"
 
 %runscript
     exec vip-annotate "$@"

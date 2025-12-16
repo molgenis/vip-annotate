@@ -1,18 +1,19 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.cli;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
 
 @RequiredArgsConstructor
-public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
+public class DbBuildSubCommandArgsParser extends ArgsParser<DbBuildSubCommandArgs> {
   private final String command;
 
   @Override
-  public AppDbCommandArgs parse(String[] args) {
+  public DbBuildSubCommandArgs parse(String[] args) {
     super.validate(args);
 
     Input input = null;
@@ -56,7 +57,7 @@ public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
           "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output));
     }
 
-    return new AppDbCommandArgs(input, faiFile, output, regionsStr, force);
+    return new DbBuildSubCommandArgs(input, faiFile, output, regionsStr, force);
   }
 
   @Override
@@ -83,6 +84,6 @@ public class AppDbCommandArgsParser extends ArgsParser<AppDbCommandArgs> {
               usage: %s [arguments]
                 -v, --version                  print version
               """,
-        App.getVersion(), usage, usage, usage);
+        AppMetadata.getVersion(), usage, usage, usage);
   }
 }

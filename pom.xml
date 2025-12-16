@@ -8,6 +8,8 @@
 
     <properties>
         <maven.compiler.release>25</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
         <native.image.optimization.level>-O3</native.image.optimization.level>
         <native.image.skip>false</native.image.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -250,8 +252,8 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.9.9,3.9.9]</version>
-                                    <message>You must use Maven 3.9.9 to build this project.</message>
+                                    <version>[3.9.11,3.9.11]</version>
+                                    <message>You must use Maven 3.9.11 to build this project.</message>
                                 </requireMavenVersion>
                             </rules>
                             <fail>true</fail>

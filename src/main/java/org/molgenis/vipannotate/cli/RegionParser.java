@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.cli;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.Contig;
 import org.molgenis.vipannotate.annotation.ContigRegistry;
+import org.molgenis.vipannotate.annotation.Region;
 
 /** genomic region parser */
 @RequiredArgsConstructor

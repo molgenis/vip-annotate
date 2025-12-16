@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation.gnomad;
 
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.App;
+import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.format.vcf.*;
@@ -25,8 +25,8 @@ public class GnomAdAnnotator extends BaseVcfRecordAnnotator<GnomAdAnnotation> {
             "A",
             "String",
             "gnomAD v4.1.0 annotation formatted as 'SRC|AF|FAF95|FAF99|HN|QC|COV'; SRC=source (E=exomes, G=genomes, T=total), AF=allele frequency, FAF95=filtering allele frequency (95% confidence), FAF99=filtering allele frequency (99% confidence), HN=number of homozygotes, QC=quality control filters that failed, COV=coverage (percent of individuals in gnomAD source)",
-            App.getName(),
-            App.getVersion());
+            AppMetadata.getName(),
+            AppMetadata.getVersion());
   }
 
   @Override

@@ -1,24 +1,37 @@
 package org.molgenis.vipannotate;
 
+import org.jspecify.annotations.Nullable;
+import org.molgenis.streamvbyte.StreamVByteProvider;
+import org.molgenis.vipannotate.cli.*;
 import org.molgenis.vipannotate.util.Logger;
+import org.molgenis.zstd.ZstdProvider;
 
 public class App {
-  private static final String NAME = "vip-annotate";
-  private static final String VERSION;
-
-  static {
-    Package appAnnotatePackage = AppAnnotate.class.getPackage();
-    String implementationVersion =
-        appAnnotatePackage != null ? appAnnotatePackage.getImplementationVersion() : null;
-    VERSION = implementationVersion != null ? implementationVersion : "0.0.0-dev";
+  static void main(String[] args) {
+    try {
+      AppArgs appArgs = new AppArgsParser().parse(args);
+      configureLogger(appArgs.debugMode());
+      getCommand(appArgs).run(appArgs.args());
+    } catch (RuntimeException e) {
+      handleException(e);
+    } finally {
+      StreamVByteProvider.INSTANCE.close();
+      ZstdProvider.INSTANCE.close();
+    }
   }
 
-  public static String getName() {
-    return NAME;
+  private static void configureLogger(@Nullable Boolean debugMode) {
+    if (debugMode != null && debugMode) {
+      Logger.ENABLE_DEBUG_LOGGING = true;
+    }
   }
 
-  public static String getVersion() {
-    return VERSION;
+  private static Command getCommand(AppArgs appArgs) {
+    return switch (appArgs.command()) {
+      case ANNOTATE -> new AnnotateCommand();
+      case DATABASE_BUILD -> new DbBuildCommand();
+      case DATABASE_DOWNLOAD -> new DbDownloadCommand();
+    };
   }
 
   protected static void handleException(Exception e) {

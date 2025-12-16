@@ -27,16 +27,16 @@ Stage: final
     tar -xzf graalvm-community-jdk-25.0.1_linux-x64_bin.tar.gz -C /opt
     rm graalvm-community-jdk-25.0.1_linux-x64_bin.tar.gz
 
-    wget https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
-    tar xzf apache-maven-3.9.9-bin.tar.gz -C /opt
-    rm apache-maven-3.9.9-bin.tar.gz
+    wget https://archive.apache.org/dist/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.tar.gz
+    tar xzf apache-maven-3.9.11-bin.tar.gz -C /opt
+    rm apache-maven-3.9.11-bin.tar.gz
 
     apt-get -y purge --auto-remove wget
     apt-get clean
 
 %environment
     export JAVA_HOME=/opt/graalvm-community-openjdk-25.0.1+8.1
-    export PATH=/opt/graalvm-community-openjdk-25.0.1+8.1/bin:/opt/apache-maven-3.9.9/bin:$PATH
+    export PATH=/opt/graalvm-community-openjdk-25.0.1+8.1/bin:/opt/apache-maven-3.9.11/bin:$PATH
     export MAVEN_OPTS="-Dstreamvbyte.lib.path=/opt/vip-annotate/lib/libstreamvbyte.so.0.0.1 -Dzstd.lib.path=/opt/vip-annotate/lib/libzstd.so.1.5.7"
 
 %help
