@@ -285,14 +285,14 @@
                 <extensions>true</extensions>
                 <executions>
                     <execution>
-                        <id>build-native-annotate</id>
+                        <id>build-native</id>
                         <goals>
                             <goal>compile-no-fork</goal>
                         </goals>
                         <phase>package</phase>
                         <configuration>
                             <imageName>vip-annotate</imageName>
-                            <mainClass>org.molgenis.vipannotate.AppAnnotate</mainClass>
+                            <mainClass>org.molgenis.vipannotate.App</mainClass>
                             <skip>${native.image.skip}</skip>
                             <buildArgs>
                                 <buildArg>--silent</buildArg>
@@ -301,49 +301,13 @@
                                 <buildArg>--no-fallback</buildArg>
                                 <!-- ignore the 'use G1 GC for improved latency and throughput' recommendation -->
                                 <buildArg>--gc=serial</buildArg>
-                                <!-- keep in sync with MemorySizeValidator.java -->
                                 <buildArg>-R:MinHeapSize=480m</buildArg>
-                                <buildArg>-R:MaxHeapSize=480m</buildArg>
                                 <buildArg>-R:MaxDirectMemorySize=512m</buildArg>
-                                <!-- prepare for future releases -->
-                                <!-- future-defaults=all errors runtime: java.lang.UnsupportedOperationException: DIRECT not supported -->
-                                <buildArg>
-                                    --future-defaults=run-time-initialize-security-providers,complete-reflection-types
-                                </buildArg>
-                                <buildArg>--static-nolibc</buildArg>
-                                <!-- enable more CPU features for improved performance. -->
-                                <buildArg>-march=x86-64-v3</buildArg>
-                            </buildArgs>
-                            <jvmArgs>
-                                <jvmArg>--enable-native-access=ALL-UNNAMED</jvmArg>
-                            </jvmArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>build-native-db</id>
-                        <goals>
-                            <goal>compile-no-fork</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <imageName>vip-annotate-db</imageName>
-                            <mainClass>org.molgenis.vipannotate.AppDb</mainClass>
-                            <skip>${native.image.skip}</skip>
-                            <buildArgs>
-                                <buildArg>--silent</buildArg>
-                                <buildArg>${native.image.optimization.level}</buildArg>
-                                <buildArg>--exact-reachability-metadata</buildArg>
-                                <buildArg>--no-fallback</buildArg>
-                                <!-- ignore the 'use G1 GC for improved latency and throughput' recommendation -->
-                                <buildArg>--gc=serial</buildArg>
-                                <buildArg>-R:MinHeapSize=15g</buildArg>
-                                <buildArg>-R:MaxHeapSize=15g</buildArg>
-                                <buildArg>-R:MaxDirectMemorySize=512m</buildArg>
-                                <!-- prepare for future releases -->
-                                <!-- workaround for https://github.com/oracle/graal/issues/12567 -->
+                                <!-- prepare for future releases, workaround for https://github.com/oracle/graal/issues/12567 -->
                                 <buildArg>--initialize-at-run-time=com.sun.nio.file
                                     --initialize-at-run-time=jdk.internal.misc.FileSystemOption --future-defaults=all
                                 </buildArg>
+                                <buildArg>--static-nolibc</buildArg>
                                 <!-- enable more CPU features for improved performance. -->
                                 <buildArg>-march=x86-64-v3</buildArg>
                             </buildArgs>
