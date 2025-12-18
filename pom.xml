@@ -14,12 +14,13 @@
         <native.image.skip>false</native.image.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <version.errorprone>2.44.0</version.errorprone>
-        <version.graalvm.native.maven.plugin>0.11.3</version.graalvm.native.maven.plugin>
-        <version.jacoco.maven.plugin>0.8.14</version.jacoco.maven.plugin>
-        <version.jspecify>1.0.0</version.jspecify>
-        <version.junit.bom>6.0.1</version.junit.bom>
-        <version.lombok>1.18.42</version.lombok>
+        <version.errorprone>2.50.0</version.errorprone>
+        <version.graalvm.native.maven.plugin>1.1.11</version.graalvm.native.maven.plugin>
+        <version.jacoco.maven.plugin>0.8.15</version.jacoco.maven.plugin>
+        <version.jackson>3.1.6</version.jackson><!-- 3.1.x is latest LTS -->
+        <version.jspecify>1.0.1</version.jspecify>
+        <version.junit.bom>6.1.3</version.junit.bom>
+        <version.lombok>1.18.46</version.lombok>
         <version.maven.assembly.plugin>3.7.1</version.maven.assembly.plugin>
         <version.maven.clean.plugin>3.5.0</version.maven.clean.plugin>
         <version.maven.compiler.plugin>3.14.1</version.maven.compiler.plugin>
@@ -29,9 +30,9 @@
         <version.maven.failsafe.plugin>3.5.4</version.maven.failsafe.plugin>
         <version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
         <version.maven.surefire.plugin>3.5.4</version.maven.surefire.plugin>
-        <version.mockito>5.21.0</version.mockito>
-        <version.nullaway>0.12.15</version.nullaway>
-        <version.spotless.maven.plugin>3.0.0</version.spotless.maven.plugin>
+        <version.mockito>5.23.0</version.mockito>
+        <version.nullaway>0.14.1</version.nullaway>
+        <version.spotless.maven.plugin>3.10.1</version.spotless.maven.plugin>
     </properties>
 
     <profiles>
@@ -254,8 +255,8 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.9.11,3.9.11]</version>
-                                    <message>You must use Maven 3.9.11 to build this project.</message>
+                                    <version>[3.9.16,3.9.16]</version>
+                                    <message>You must use Maven 3.9.16 to build this project.</message>
                                 </requireMavenVersion>
                             </rules>
                             <fail>true</fail>
@@ -300,20 +301,14 @@
                                 <buildArg>--silent</buildArg>
                                 <buildArg>${native.image.optimization.level}</buildArg>
                                 <buildArg>--exact-reachability-metadata</buildArg>
-                                <buildArg>--no-fallback</buildArg>
                                 <!-- ignore the 'use G1 GC for improved latency and throughput' recommendation -->
                                 <buildArg>--gc=serial</buildArg>
                                 <buildArg>-R:MinHeapSize=480m</buildArg>
                                 <buildArg>-R:MaxDirectMemorySize=512m</buildArg>
-                                <!-- prepare for future releases, workaround for https://github.com/oracle/graal/issues/12567 -->
-                                <buildArg>--initialize-at-run-time=com.sun.nio.file
-                                    --initialize-at-run-time=jdk.internal.misc.FileSystemOption --future-defaults=all
-                                </buildArg>
+                                <buildArg>--future-defaults=all</buildArg>
                                 <buildArg>--static-nolibc</buildArg>
                                 <!-- enable more CPU features for improved performance. -->
                                 <buildArg>-march=x86-64-v3</buildArg>
-                                <buildArg>--enable-http</buildArg>
-                                <buildArg>--enable-https</buildArg>
                             </buildArgs>
                             <jvmArgs>
                                 <jvmArg>--enable-native-access=ALL-UNNAMED</jvmArg>
@@ -426,6 +421,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -433,6 +433,10 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

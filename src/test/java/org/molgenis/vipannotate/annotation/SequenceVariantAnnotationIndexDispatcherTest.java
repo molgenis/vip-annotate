@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.molgenis.vipannotate.annotation.spec.SequenceVariantType;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
 import org.molgenis.vipannotate.util.IndexRange;
 

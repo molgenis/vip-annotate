@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -18,14 +17,14 @@ import org.molgenis.vipannotate.util.IndexRange;
 class SequenceVariantAnnotationDbTest {
   @Mock private PartitionResolver partitionResolver;
   @Mock private AnnotationIndexReader<SequenceVariant> annotationIndexReader;
-  @Mock private AnnotationDatasetReader<Annotation> annotationDatasetReader;
+  @Mock private AnnotationDatasetDecoder<Annotation> annotationDatasetReader;
   private SequenceVariantAnnotationDb<SequenceVariant, Annotation> sequenceVariantAnnotationDb;
 
   @BeforeEach
   void setUp() {
     sequenceVariantAnnotationDb =
         new SequenceVariantAnnotationDb<>(
-            partitionResolver, annotationIndexReader, annotationDatasetReader, _ -> true);
+            partitionResolver, annotationIndexReader, annotationDatasetReader);
   }
 
   @AfterEach
@@ -56,7 +55,7 @@ class SequenceVariantAnnotationDbTest {
         .findByIndexes(indexRange0, annotations);
     when(partitionResolver.resolvePartitionKey(sequenceVariant0)).thenReturn(partitionKey0);
     when(annotationIndexReader.read(partitionKey0)).thenReturn(annotationIndex0);
-    when(annotationDatasetReader.read(partitionKey0)).thenReturn(annotationDataset0);
+    when(annotationDatasetReader.decode(partitionKey0)).thenReturn(annotationDataset0);
 
     sequenceVariantAnnotationDb.findAnnotations(sequenceVariant0, annotations);
     assertEquals(List.of(annotation0), annotations);
@@ -99,7 +98,7 @@ class SequenceVariantAnnotationDbTest {
     when(partitionResolver.resolvePartitionKey(sequenceVariant0)).thenReturn(partitionKey0);
     when(partitionResolver.resolvePartitionKey(sequenceVariant1)).thenReturn(partitionKey0);
     when(annotationIndexReader.read(partitionKey0)).thenReturn(annotationIndex);
-    when(annotationDatasetReader.read(partitionKey0)).thenReturn(annotationDataset);
+    when(annotationDatasetReader.decode(partitionKey0)).thenReturn(annotationDataset);
 
     sequenceVariantAnnotationDb.findAnnotations(sequenceVariant0, annotationList0);
     sequenceVariantAnnotationDb.findAnnotations(sequenceVariant1, annotationList1);
@@ -108,7 +107,7 @@ class SequenceVariantAnnotationDbTest {
         () -> verify(annotationDataset).findByIndexes(indexRange0, annotationList0),
         () -> verify(annotationDataset).findByIndexes(indexRange1, annotationList1),
         () -> verify(annotationIndexReader, times(1)).read(partitionKey0),
-        () -> verify(annotationDatasetReader, times(1)).read(partitionKey0));
+        () -> verify(annotationDatasetReader, times(1)).decode(partitionKey0));
   }
 
   @Test
@@ -130,15 +129,5 @@ class SequenceVariantAnnotationDbTest {
     assertAll(
         () -> verify(annotationIndexReader, times(1)).read(partitionKey0),
         () -> verify(annotationIndexReader, times(1)).readInto(partitionKey1, annotationIndex));
-  }
-
-  @Test
-  void findAnnotationsCanNotAnnotate() {
-    SequenceVariant sequenceVariant = mock(SequenceVariant.class);
-    assertEquals(
-        emptyList(),
-        new SequenceVariantAnnotationDb<>(
-                partitionResolver, annotationIndexReader, annotationDatasetReader, _ -> false)
-            .findAnnotations(sequenceVariant));
   }
 }

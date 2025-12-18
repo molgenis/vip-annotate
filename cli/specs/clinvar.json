@@ -1,0 +1,101 @@
+{
+  "id": "clinvar",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "file": "preprocess/clinvar_20260822_stripped.preprocessed.tsv.gz",
+    "coordinate_system": "1-based",
+    "contig": 0,
+    "start": 1,
+    "ref": 3,
+    "alt": 4,
+    "annotations": [
+      2,
+      5,
+      7
+    ]
+  },
+  "schema": {
+    "annotation_type": "sequence_variant",
+    "supported_variant_types": [
+      "snv",
+      "mnv",
+      "indel",
+      "insertion",
+      "deletion"
+    ],
+    "annotation_datasets": [
+      {
+        "id": "id",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i32"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i32",
+            "nullable": false
+          }
+        }
+      },
+      {
+        "id": "clnsig",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "enum_set",
+            "values": [
+              "Uncertain_significance",
+              "Likely_benign",
+              "Other",
+              "Benign",
+              "Pathogenic",
+              "Conflicting_classifications_of_pathogenicity",
+              "Likely_pathogenic"
+            ]
+          },
+          "encoding": {
+            "type": "enum"
+          }
+        }
+      },
+      {
+        "id": "clnrevstat",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "enum",
+            "values": [
+              "criteria_provided,_single_submitter",
+              "criteria_provided,_multiple_submitters,_no_conflicts",
+              "criteria_provided,_conflicting_classifications",
+              "no_assertion_criteria_provided",
+              "reviewed_by_expert_panel",
+              "no_classification_provided",
+              "no_classification_for_the_single_variant",
+              "no_classifications_from_unflagged_records",
+              "practice_guideline"
+            ],
+            "nullable": true
+          },
+          "encoding": {
+            "type": "enum"
+          }
+        }
+      }
+    ],
+    "annotation_selector": "max_value"
+  },
+  "output": {
+    "type": "vcf",
+    "infoId": "ClinVar",
+    "infoNumber": "A",
+    "infoType": "String",
+    "infoDescription": "ClinVar annotation formatted as 'ID|CLNSIG|CLNSIGREVSTAT'",
+    "infoVersion": "1.0.0"
+  }
+}

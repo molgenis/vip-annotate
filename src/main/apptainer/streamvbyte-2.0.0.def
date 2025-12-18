@@ -1,5 +1,5 @@
 Bootstrap: localimage
-From: ubuntu-24.04.sif
+From: ubuntu-26.04.sif
 
 %post
     apt-get -y update

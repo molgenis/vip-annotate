@@ -79,8 +79,8 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
     Logger.info(
 """
 Usage:
-  apptainer run vip-annotate.sif annotate --annotations DIR --input FILE --output FILE [OPTIONS]
-  apptainer run vip-annotate.sif annotate --help
+  vip-annotate annotate --annotations DIR --input FILE --output FILE [OPTIONS]
+  vip-annotate annotate --help
 
 Options:
   -a, --annotations DIR       Directory containing annotation database  (required)

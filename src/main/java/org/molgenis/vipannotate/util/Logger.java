@@ -36,6 +36,7 @@ public class Logger {
     log(System.err, format, args);
   }
 
+  @SuppressWarnings("AnnotateFormatMethod")
   private static void log(PrintStream printStream, String format, Object... args) {
     printStream.printf(format, args);
     printStream.print('\n');

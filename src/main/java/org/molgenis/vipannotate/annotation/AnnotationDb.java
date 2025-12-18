@@ -2,8 +2,10 @@ package org.molgenis.vipannotate.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 
-public interface AnnotationDb<T extends Feature, U extends Annotation> extends AutoCloseable {
+public interface AnnotationDb<T extends Feature, U extends Annotation>
+    extends AutoCloseableNoThrow {
   /** find and return annotations for the given feature. */
   default List<U> findAnnotations(T feature) {
     ArrayList<U> annotations = new ArrayList<>();
@@ -18,7 +20,4 @@ public interface AnnotationDb<T extends Feature, U extends Annotation> extends A
    * pressure.
    */
   void findAnnotations(T feature, List<U> annotations);
-
-  @Override
-  void close();
 }

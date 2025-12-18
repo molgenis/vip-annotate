@@ -1,0 +1,5 @@
+Bootstrap: docker
+From: ubuntu:26.04
+
+%help
+  ubuntu 26.04 container

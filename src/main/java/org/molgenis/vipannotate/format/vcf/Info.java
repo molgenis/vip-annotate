@@ -5,6 +5,8 @@ import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.format.Field;
+import org.molgenis.vipannotate.format.StringView;
 
 /// Mutable representation of a VCF INFO field.
 public final class Info extends Field {

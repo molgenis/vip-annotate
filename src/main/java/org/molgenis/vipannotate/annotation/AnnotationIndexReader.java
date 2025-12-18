@@ -1,8 +1,9 @@
 package org.molgenis.vipannotate.annotation;
 
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 
-public interface AnnotationIndexReader<T extends Feature> extends AutoCloseable {
+public interface AnnotationIndexReader<T extends Feature> extends AutoCloseableNoThrow {
   /**
    * Returns the index associated with the given {@link PartitionKey}.
    *
@@ -16,7 +17,4 @@ public interface AnnotationIndexReader<T extends Feature> extends AutoCloseable 
    * @return {@code true} if index exists, {@code true} false otherwise.
    */
   boolean readInto(PartitionKey partitionKey, AnnotationIndex<T> annotationIndex);
-
-  @Override
-  void close();
 }

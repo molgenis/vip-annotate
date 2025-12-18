@@ -37,9 +37,9 @@ public class AppArgsParser extends ArgsParser<AppArgs> {
     Logger.info(
 """
 Usage:
-  apptainer run vip-annotate.sif [OPTIONS] <command> [ARGS...]
-  apptainer run vip-annotate.sif --version
-  apptainer run vip-annotate.sif --help
+  vip-annotate [OPTIONS] <command> [ARGS...]
+  vip-annotate --version
+  vip-annotate --help
 
 Options:
   -d, --debug       Enable debug logging

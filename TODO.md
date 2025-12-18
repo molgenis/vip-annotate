@@ -1,27 +1,38 @@
 # todo
 
-## 0.0.1-alpha.4
+## 0.0.1-alpha.6
+
+- [ ] fix (annotate): SpliceAI can produce multiple annotations for same sequence variant
+- [ ] fix (db): build_annotation_databases.sh
+- [ ] fix (db): reintroduce xref support (e.g. SpliceAI ncbiGeneId)
+- [ ] feat (spec): automatically determine encoding and storage from logical type
+- [ ] feat (spec): only store relevant spec part in db (e.g. do not store input info)
+- [ ] feat (spec): do not put file paths in spec (e.g. allow using on chr21 and all)
+- [ ] feat (spec): support non-nullable enum_set?
+- [ ] feat (db): validate contigs in all preprocessing scripts
+- [ ] feat (db): support bit-level packing for ranged values
+- [ ] feat (db): determine encoding per-partition (e.g. sharper min-max, enum subsets)
+- [ ] feat (db): support ClinVar CLINSIGINCL (e.g. 431417:Pathogenic|585009:Likely_pathogenic)
+- [ ] perf (db): improve database building performance (e.g. SpliceAI takes > 24 hours to build)
+- [ ] perf (db): ClinVar vdb 135M > source data 43M. why?
+- [ ] refactor: switch to https://github.com/palantir/palantir-java-format#motivation--examples
+- [ ] refactor: bump streamvbyte to v3.0.0
+- [ ] refactor: make Annotation a sealed interface
+
+## 0.0.1-alpha.7
 
 - [ ] feat: write max error in output vcf header
-- [ ] feat: config to build/use new annotation dbs without exe change (see draft_db_annotation_schema.json)
-    - [ ] fix(annotations): fathmm annotation resource can contain multiple chr-pos-ref_len-alt annotations -->
-      preprocessing script to remove duplicates and invalid -99 scores
-    - [ ] fix(annotations): investigate af-is-null-for-source issue in gnomAD, e.g., 21-5029882-CAA-A and
-      21-5087539-G-A -->
-      preprocessing script to remove these cases
-    - [ ] refactor(db): create gnomad db from source files instead of derived files on next gnomAD release
-
-## 0.0.1-alpha.5
-
-- [ ] feat(annotate): write bgzip instead of gzip for compressed VCF,
+- [ ] feat (annotate): write bgzip instead of gzip for compressed VCF,
   see https://github.com/samtools/htsjdk/blob/master/src/main/java/htsjdk/samtools/util/BlockCompressedOutputStream.java
   and https://github.com/browning-lab/hap-ibd/blob/master/src/blbutil/BGZIPOutputStream.java. or use native lib?
+- [ ] refactor (db): create gnomad db from source files instead of derived files on next gnomAD release
+- [ ] fix (db): fathmm annotation resource can contain multiple chr-pos-ref_len-alt annotations
+- [ ] refactor (db): create fathmm db from source files instead of derived GREENDB files
 
 ## 0.0.1-beta
 
 - [ ] feat: check if output extension is in line with output mode
 - [ ] feat: resource versioning
-- [ ] refactor: rename .zip to .vdb
 - [ ] fix: resolve reported nullability issues (fix or suppress)
 - [ ] fix: resolve FIXME and TODO in code
 - [ ] docs: update
@@ -33,11 +44,11 @@
 
 ### after 1.0.0
 
-- [ ] feat(annotate): how to annotate PositionAnnotationDb for SV? SVLEN could be too long (chr2-166299171-A-<DEL>)
-- [ ] feat(db): validate that annotation reference is normalized
-- [ ] feat(annotate): write gene index to header e.g. ##GENEIDX=<ID=0,SRCID=672,SYMBOL=BRCA1>
+- [ ] feat (annotate): how to annotate PositionAnnotationDb for SV? SVLEN could be too long (chr2-166299171-A-<DEL>)
+- [ ] feat (db): validate that annotation reference is normalized
+- [ ] feat (annotate): write gene index to header e.g. ##GENEIDX=<ID=0,SRCID=672,SYMBOL=BRCA1>
 - [ ] perf: native-image profile guided optimization
-- [ ] feat(annotate): write vcf header with structured metadata (e.g. FORMAT=X|Y TYPE_X=.. NUMBER_X=..)
+- [ ] feat (annotate): write vcf header with structured metadata (e.g. FORMAT=X|Y TYPE_X=.. NUMBER_X=..)
 - [ ] perf: medium 64-bit sequence variant index
 - [ ] refactor: move zstd-ffm to separate repository
 - [ ] refactor: move streamvbyte-ffm to separate repository

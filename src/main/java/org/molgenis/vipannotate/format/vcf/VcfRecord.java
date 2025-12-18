@@ -6,6 +6,8 @@ import java.io.Writer;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.format.Field;
+import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
 @ToString(includeFieldNames = false)

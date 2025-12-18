@@ -1,0 +1,123 @@
+package org.molgenis.vipannotate.annotation;
+
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
+import org.molgenis.vipannotate.format.vcf.Info;
+import org.molgenis.vipannotate.format.vcf.VcfInfoSubfieldValueBuilder;
+import org.molgenis.vipannotate.format.vcf.VcfRecord;
+
+@RequiredArgsConstructor
+public class VcfRecordAnnotationWriter<T extends Annotation> {
+  private final String infoId;
+  private final VcfInfoSubfieldValueBuilder reusableVcfInfoBuilder;
+
+  public VcfRecordAnnotationWriter(String infoId) {
+    this(infoId, new VcfInfoSubfieldValueBuilder());
+  }
+
+  public void appendAltAnnotation(@Nullable T altAnnotation) {
+    if (altAnnotation == null) {
+      reusableVcfInfoBuilder.appendValueMissing();
+    } else {
+      appendAnnotation(altAnnotation);
+    }
+  }
+
+  private void appendAnnotation(Annotation annotation) {
+    switch (annotation) {
+      case ScalarAnnotation scalarAnnotation -> appendScalarAnnotation(scalarAnnotation, true);
+      case CompositeAnnotation compositeAnnotation ->
+          appendCompositeAnnotation(compositeAnnotation);
+      default ->
+          throw new IllegalArgumentException(
+              "Unsupported annotation type: " + annotation.getClass());
+    }
+  }
+
+  private void appendScalarAnnotation(ScalarAnnotation annotation, boolean writeMissing) {
+    reusableVcfInfoBuilder.startRawValue();
+    appendRawAnnotation(annotation, writeMissing);
+    reusableVcfInfoBuilder.endRawValue();
+  }
+
+  private void appendRawAnnotation(Annotation annotation, boolean writeMissing) {
+    switch (annotation) {
+      case DoubleAnnotation doubleAnnotation ->
+          reusableVcfInfoBuilder.appendRaw(doubleAnnotation.getValue(), 3);
+      case IntAnnotation intAnnotation ->
+          reusableVcfInfoBuilder.appendRaw(intAnnotation.getValue());
+      case NullableDoubleAnnotation nullableDoubleAnnotation -> {
+        if (nullableDoubleAnnotation.isNull()) {
+          if (writeMissing) {
+            reusableVcfInfoBuilder.appendRawMissing();
+          }
+        } else {
+          reusableVcfInfoBuilder.appendRaw(nullableDoubleAnnotation.getValue(), 3);
+        }
+      }
+      case NullableIntAnnotation nullableIntAnnotation -> {
+        if (nullableIntAnnotation.isNull()) {
+          if (writeMissing) {
+            reusableVcfInfoBuilder.appendRawMissing();
+          }
+        } else {
+          reusableVcfInfoBuilder.appendRaw(nullableIntAnnotation.getValue());
+        }
+      }
+      case StringAnnotation stringAnnotation -> {
+        String value = stringAnnotation.value();
+        if (value != null) {
+          reusableVcfInfoBuilder.appendRaw(value);
+        }
+      }
+      case StringListAnnotation stringListAnnotation -> {
+        // TODO improve perf
+        reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.values()));
+      }
+
+      default ->
+          throw new UnsupportedOperationException(
+              "Unsupported scalar annotation type: " + annotation.getClass());
+    }
+  }
+
+  private void appendCompositeAnnotation(CompositeAnnotation compositeAnnotation) {
+    reusableVcfInfoBuilder.startRawValue();
+
+    Annotation[] annotations = compositeAnnotation.annotations();
+    for (int i = 0; i < annotations.length; i++) {
+      if (i > 0) {
+        reusableVcfInfoBuilder.appendCompositeValueSeparator();
+      }
+
+      appendRawAnnotation(annotations[i], false);
+    }
+
+    reusableVcfInfoBuilder.endRawValue();
+  }
+
+  public void writeInfoSubField(VcfRecord vcfRecord, AnnotationMode annotationMode) {
+    Info info = vcfRecord.getInfo();
+
+    switch (annotationMode) {
+      case ADD -> {
+        if (!reusableVcfInfoBuilder.isEmptyValue()) {
+          info.append(infoId, reusableVcfInfoBuilder.build());
+        }
+      }
+      case UPDATE -> {
+        if (!reusableVcfInfoBuilder.isEmptyValue()) {
+          info.put(infoId, reusableVcfInfoBuilder.build());
+        } else {
+          info.remove(infoId);
+        }
+      }
+    }
+
+    reusableVcfInfoBuilder.reset();
+  }
+}

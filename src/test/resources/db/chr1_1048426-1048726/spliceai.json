@@ -1,0 +1,223 @@
+{
+  "id": "spliceai",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "file": "spliceai.tsv.gz",
+    "coordinate_system": "1-based",
+    "contig": 0,
+    "start": 1,
+    "ref": 2,
+    "alt": 3,
+    "annotations": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "schema": {
+    "annotation_type": "sequence_variant",
+    "supported_variant_types": [
+      "snv",
+      "mnv",
+      "indel",
+      "insertion",
+      "deletion"
+    ],
+    "annotation_datasets": [
+      {
+        "id": "ncbi_gene_id",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i32"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i32",
+            "nullable": false
+          }
+        }
+      },
+      {
+        "id": "ds_ag",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "ds_al",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "ds_dg",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "ds_dl",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "dp_ag",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i8",
+            "nullable": true,
+            "range": {
+              "type": "integer",
+              "min": -50,
+              "max": 50
+            }
+          }
+        }
+      },
+      {
+        "id": "dp_al",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i8",
+            "nullable": true,
+            "range": {
+              "type": "integer",
+              "min": -50,
+              "max": 50
+            }
+          }
+        }
+      },
+      {
+        "id": "dp_dg",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i8",
+            "nullable": true,
+            "range": {
+              "type": "integer",
+              "min": -50,
+              "max": 50
+            }
+          }
+        }
+      },
+      {
+        "id": "dp_dl",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i8",
+            "nullable": true,
+            "range": {
+              "type": "integer",
+              "min": -50,
+              "max": 50
+            }
+          }
+        }
+      }
+    ],
+    "annotation_selector": "max_value"
+  },
+  "output": {
+    "type": "vcf",
+    "infoId": "SpliceAI",
+    "infoNumber": "A",
+    "infoType": "String",
+    "infoDescription": "SpliceAI v1.3 annotation formatted as 'NCBI_GENE_ID|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL'; NCBI_GENE_ID=NCBI gene identifier, DS_AG=delta score acceptor gain, DS_AL=delta score acceptor loss, DS_DG=delta score donor gain, DP_DL=delta score donor loss, DP_AG=delta position acceptor gain, DP_AL=delta position acceptor loss, DP_DG=delta position donor gain, DP_DL=delta position donor loss",
+    "infoVersion": "1.0.0"
+  }
+}
