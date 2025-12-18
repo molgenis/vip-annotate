@@ -147,7 +147,7 @@
                             <arg>-Xlint:-restricted</arg>
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
-                            <arg>-Xplugin:ErrorProne -XepOpt:NullAway:OnlyNullMarked=true</arg>
+                            <arg>-Xplugin:ErrorProne -XepOpt:NullAway:AnnotatedPackages=org.molgenis</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>
