@@ -1,4 +1,9 @@
 {
+  "resources": [
+    {
+      "glob": "META-INF/services/java.net.spi.InetAddressResolverProvider"
+    }
+  ],
   "foreign": {
     "downcalls": [
       {
