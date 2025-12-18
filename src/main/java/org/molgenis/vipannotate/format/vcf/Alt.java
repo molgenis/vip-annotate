@@ -39,7 +39,7 @@ public final class Alt extends Field {
     return altAllele;
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public List<AltAllele> getAlleles() {
     parseIfNeeded();
     return parsedField;

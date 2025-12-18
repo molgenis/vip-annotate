@@ -38,7 +38,6 @@ public class VdbArchiveReader implements AutoCloseable {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   public static VdbArchiveReader create(
       Path vdbPath,
       ZstdDecompressionContext zstdContext,

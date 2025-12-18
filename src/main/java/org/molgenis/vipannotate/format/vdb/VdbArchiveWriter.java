@@ -43,7 +43,6 @@ public class VdbArchiveWriter implements AutoCloseable {
     this.metadataBuilder = new VdbArchiveMetadataBuilder();
   }
 
-  @SuppressWarnings("DataFlowIssue")
   public static VdbArchiveWriter create(
       Path vdbPath,
       boolean force,

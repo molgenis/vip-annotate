@@ -48,7 +48,7 @@ public class EncodedSequenceVariant {
     return small;
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public byte[] getBigBytes() {
     if (type != Type.BIG) {
       throw new IllegalStateException("variant is not big");

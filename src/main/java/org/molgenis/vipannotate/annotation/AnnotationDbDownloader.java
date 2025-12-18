@@ -49,7 +49,6 @@ public class AnnotationDbDownloader implements AutoCloseable {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   private String downloadManifest() {
     HttpRequest request =
         HttpRequest.newBuilder().uri(URI.create(BASE_URL + "SHA256SUMS")).GET().build();
@@ -78,7 +77,6 @@ public class AnnotationDbDownloader implements AutoCloseable {
         .toList();
   }
 
-  @SuppressWarnings("DataFlowIssue")
   private void downloadAndVerify(ManifestEntry manifestEntry, Path outputFile) {
     URL url;
     try {
@@ -112,7 +110,6 @@ public class AnnotationDbDownloader implements AutoCloseable {
     ClosableUtils.close(httpClient);
   }
 
-  @SuppressWarnings("DataFlowIssue")
   public static AnnotationDbDownloader create() {
     HttpClient httpClient =
         HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();

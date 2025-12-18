@@ -177,7 +177,6 @@ public class Zstd implements AutoCloseable {
               FunctionDescriptor.of(ValueLayout.JAVA_INT),
               Linker.Option.critical(false));
 
-      @SuppressWarnings("DataFlowIssue")
       int version = (int) versionHandle.invokeExact();
       if (version < 10507 || version >= 20000) {
         throw new IllegalStateException(

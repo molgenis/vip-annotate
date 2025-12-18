@@ -39,10 +39,11 @@ class PartitionResolverTest {
     Contig contig = mock(Contig.class);
     requireNonNull(contig);
     Interval interval = new Interval(contig, 123, 456);
-    AnnotatedInterval<Interval, @Nullable Annotation> annotatedInterval = new AnnotatedInterval<>(interval, null);
+    @SuppressWarnings("NullAway") // false positive?
+    AnnotatedInterval<Interval, @Nullable Annotation> annotatedInterval =
+        new AnnotatedInterval<>(interval, null);
     assertEquals(
-        new PartitionKey(contig, 0),
-        partitionResolver.resolvePartitionKey(annotatedInterval));
+        new PartitionKey(contig, 0), partitionResolver.resolvePartitionKey(annotatedInterval));
   }
 
   @Test

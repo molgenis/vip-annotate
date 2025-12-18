@@ -22,7 +22,6 @@ public class PositionAnnotationDb<T extends Annotation>
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationDataset<@Nullable T> activeAnnotationDataset;
 
-  @SuppressWarnings("NullAway")
   @Override
   public void findAnnotations(SequenceVariant feature, List<T> annotations) {
     if (!canAnnotate.test(feature)) {
@@ -48,9 +47,8 @@ public class PositionAnnotationDb<T extends Annotation>
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
-  @Nullable
-  private T findAnnotations(Contig contig, int pos) {
+  @SuppressWarnings("NullAway")
+  private @Nullable T findAnnotations(Contig contig, int pos) {
     PartitionKey partitionKey = partitionResolver.resolvePartitionKey(contig, pos);
 
     // handle partition changes

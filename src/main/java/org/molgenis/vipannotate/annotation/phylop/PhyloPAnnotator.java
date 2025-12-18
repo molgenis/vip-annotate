@@ -57,7 +57,6 @@ public class PhyloPAnnotator extends BaseVcfRecordAnnotator<DoubleValueAnnotatio
     writeInfoSubField(vcfRecord, INFO_ID_PHYLOP, infoSubfieldBuilder, isNewAnnotation);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
   private static void appendAltAnnotations(
       List<DoubleValueAnnotation> altAnnotations, VcfInfoSubfieldValueBuilder infoSubFieldBuilder) {
     if (altAnnotations.isEmpty()) {

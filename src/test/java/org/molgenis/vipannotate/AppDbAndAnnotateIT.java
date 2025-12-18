@@ -18,7 +18,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("DataFlowIssue")
 public class AppDbAndAnnotateIT {
   private static final String EXPECTED_VCF_OUTPUT =
       """

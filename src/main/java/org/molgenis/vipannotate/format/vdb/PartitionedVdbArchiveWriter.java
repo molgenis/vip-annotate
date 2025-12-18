@@ -28,7 +28,8 @@ public class PartitionedVdbArchiveWriter implements BinaryPartitionWriter {
     return new PartitionedVdbArchiveWriter(archiveWriter, indexWriter);
   }
 
-  @SuppressWarnings("DataFlowIssue")
+  @SuppressWarnings("NullAway")
+  @Override
   public void write(
       PartitionKey partitionKey,
       String dataId,
@@ -55,7 +56,7 @@ public class PartitionedVdbArchiveWriter implements BinaryPartitionWriter {
     activePartitionIndex.addEntry(entryName, entryId);
   }
 
-  @SuppressWarnings("DataFlowIssue")
+  @SuppressWarnings("NullAway")
   private void writeActivePartitionIndex() {
     if (activePartitionIndex != null && !activePartitionIndex.isEmpty()) {
       int entryId = writeIndex(activePartitionIndex);

@@ -27,7 +27,6 @@ public class PhyloPAnnotatorFactory extends PositionAnnotatorFactory<DoubleValue
                 new PhyloPAnnotationDecoder(new DoubleCodec())),
             new AnnotationBlobReader("score", archiveReader));
 
-    @SuppressWarnings("DataFlowIssue")
     PositionAnnotationDb<DoubleValueAnnotation> annotationDb =
         buildAnnotationDb(
             annotationDatasetReader, EnumSet.complementOf(EnumSet.of(STRUCTURAL, OTHER)));

@@ -57,7 +57,6 @@ public class RemmAnnotator extends BaseVcfRecordAnnotator<DoubleValueAnnotation>
     writeInfoSubField(vcfRecord, INFO_ID_REMM, infoSubfieldBuilder, isNewAnnotation);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
   private static void appendAltAnnotations(
       List<DoubleValueAnnotation> altAnnotations, VcfInfoSubfieldValueBuilder infoSubFieldBuilder) {
     if (altAnnotations.isEmpty()) {
