@@ -29,7 +29,7 @@ Stage: final
     /zstd-1.5.7/lib/libzstd.so.1.5.7 /opt/vip-annotate/lib/libzstd.so.1.5.7
 
 %environment
-    export PATH=/opt/vip-annotate/bin/vip-annotate:${PATH}
+    export PATH=/opt/vip-annotate/bin:${PATH}
     export STREAMVBYTE_LIB_PATH="/opt/vip-annotate/lib/libstreamvbyte.so.0.0.1"
     export ZSTD_LIB_PATH="/opt/vip-annotate/lib/libzstd.so.1.5.7"
 
