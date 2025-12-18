@@ -310,8 +310,8 @@
                                 <buildArg>--static-nolibc</buildArg>
                                 <!-- enable more CPU features for improved performance. -->
                                 <buildArg>-march=x86-64-v3</buildArg>
-                                <buildArg>-enable-http</buildArg>
-                                <buildArg>-enable-https</buildArg>
+                                <buildArg>--enable-http</buildArg>
+                                <buildArg>--enable-https</buildArg>
                             </buildArgs>
                             <jvmArgs>
                                 <jvmArg>--enable-native-access=ALL-UNNAMED</jvmArg>
