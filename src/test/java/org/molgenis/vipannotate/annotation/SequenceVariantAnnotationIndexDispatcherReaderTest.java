@@ -10,11 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
-@SuppressWarnings({"DataFlowIssue", "NullableProblems", "NullAway", "unchecked"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexDispatcherReaderTest {
   @Mock private MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexSmallReader;
@@ -24,36 +22,41 @@ class SequenceVariantAnnotationIndexDispatcherReaderTest {
   @BeforeEach
   void setUp() {
     indexReader = new SequenceVariantAnnotationIndexDispatcherReader<>();
-    indexReader.register(Type.SMALL, indexSmallReader);
-    indexReader.register(Type.BIG, indexBigReader);
+    indexReader.register(EncodedSequenceVariant.Type.SMALL, indexSmallReader);
+    indexReader.register(EncodedSequenceVariant.Type.BIG, indexBigReader);
   }
 
   @Test
   void readFrom() {
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
+    @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> indexSmall = mock(AnnotationIndex.class);
     when(indexSmallReader.readFrom(memoryBuffer)).thenReturn(indexSmall);
+    @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> indexBig = mock(SequenceVariantAnnotationIndexBig.class);
     when(indexBigReader.readFrom(memoryBuffer)).thenReturn(indexBig);
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         indexReader.readFrom(memoryBuffer);
     assertAll(
-        () -> assertEquals(indexSmall, index.getAnnotationIndex(Type.SMALL)),
-        () -> assertEquals(indexBig, index.getAnnotationIndex(Type.BIG)));
+        () -> assertEquals(indexSmall, index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)),
+        () -> assertEquals(indexBig, index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)));
   }
 
   @Test
   void readInto() {
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
+    @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
+    @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall =
         mock(SequenceVariantAnnotationIndexSmall.class);
+    @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
         mock(SequenceVariantAnnotationIndexBig.class);
 
-    when(index.getAnnotationIndex(Type.SMALL)).thenReturn(indexSmall);
-    when(index.getAnnotationIndex(Type.BIG)).thenReturn(indexBig);
+    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)).thenReturn(indexSmall);
+    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)).thenReturn(indexBig);
 
     indexReader.readInto(memoryBuffer, index);
     InOrder inOrder = inOrder(indexSmallReader, indexBigReader);

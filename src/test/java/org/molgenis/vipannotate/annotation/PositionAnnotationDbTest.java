@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@SuppressWarnings({"DataFlowIssue", "unchecked", "NullableProblems", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class PositionAnnotationDbTest {
   @Mock private PartitionResolver partitionResolver;
@@ -39,6 +38,7 @@ class PositionAnnotationDbTest {
     when(sequenceVariant.getStart()).thenReturn(123);
     when(sequenceVariant.getRefLength()).thenReturn(3);
     PartitionKey partitionKey = mock(PartitionKey.class);
+    @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
     Annotation annotation0 = mock(Annotation.class);
     Annotation annotation1 = mock(Annotation.class);
@@ -71,6 +71,7 @@ class PositionAnnotationDbTest {
     when(sequenceVariant.getStart()).thenReturn(123);
     when(sequenceVariant.getRefLength()).thenReturn(1);
     PartitionKey partitionKey = mock(PartitionKey.class);
+    @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
     Annotation annotation = mock(Annotation.class);
 
@@ -93,6 +94,7 @@ class PositionAnnotationDbTest {
     when(sequenceVariant.getStart()).thenReturn(123);
     when(sequenceVariant.getRefLength()).thenReturn(1);
     PartitionKey partitionKey = mock(PartitionKey.class);
+    @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);

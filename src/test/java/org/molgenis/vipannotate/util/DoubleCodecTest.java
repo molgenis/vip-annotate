@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class DoubleCodecTest {
   private DoubleCodec doubleCodec;
   private Quantizer quantizer;

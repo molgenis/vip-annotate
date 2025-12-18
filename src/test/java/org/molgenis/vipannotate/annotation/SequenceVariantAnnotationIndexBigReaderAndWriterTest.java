@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway", "NullableProblems"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
   @Mock MemoryBufferFactory memoryBufferFactory;

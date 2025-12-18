@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class IntervalTest {
   @Test
   void create() {

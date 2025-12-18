@@ -16,7 +16,6 @@ import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.fasta.FastaIndexRecord;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class GnomAdTsvRecordToGnomAdAnnotatedSequenceVariantMapperTest {
   @Mock FastaIndex fastaIndex;

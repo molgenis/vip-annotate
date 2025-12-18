@@ -12,9 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.util.ZeroCopyBufferedWriter;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class VcfWriterTest {
+
   @Mock private ZeroCopyBufferedWriter zeroCopyBufferedWriter;
   private VcfWriter vcfWriter;
 

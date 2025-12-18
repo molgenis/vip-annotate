@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.util.IndexRange;
 
-@SuppressWarnings({"DataFlowIssue", "unchecked", "NullableProblems", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationDbTest {
   @Mock private PartitionResolver partitionResolver;
@@ -38,8 +37,10 @@ class SequenceVariantAnnotationDbTest {
   void findAnnotations() {
     SequenceVariant sequenceVariant0 = mock(SequenceVariant.class);
     PartitionKey partitionKey0 = mock(PartitionKey.class);
+    @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> annotationIndex0 = mock(AnnotationIndex.class);
     IndexRange indexRange0 = mock(IndexRange.class);
+    @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset0 = mock(AnnotationDataset.class);
 
     Annotation annotation0 = mock(Annotation.class);
@@ -65,6 +66,7 @@ class SequenceVariantAnnotationDbTest {
   void findAnnotationsIndexMiss() {
     SequenceVariant sequenceVariant0 = mock(SequenceVariant.class);
     PartitionKey partitionKey0 = mock(PartitionKey.class);
+    @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> annotationIndex0 = mock(AnnotationIndex.class);
 
     when(partitionResolver.resolvePartitionKey(sequenceVariant0)).thenReturn(partitionKey0);
@@ -80,11 +82,15 @@ class SequenceVariantAnnotationDbTest {
     SequenceVariant sequenceVariant0 = mock(SequenceVariant.class);
     SequenceVariant sequenceVariant1 = mock(SequenceVariant.class);
     PartitionKey partitionKey0 = mock(PartitionKey.class);
+    @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> annotationIndex = mock(AnnotationIndex.class);
     IndexRange indexRange0 = mock(IndexRange.class);
     IndexRange indexRange1 = mock(IndexRange.class);
+    @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
+    @SuppressWarnings("unchecked")
     List<Annotation> annotationList0 = mock(List.class);
+    @SuppressWarnings("unchecked")
     List<Annotation> annotationList1 = mock(List.class);
 
     when(annotationIndex.findIndexes(sequenceVariant0)).thenReturn(indexRange0);
@@ -111,6 +117,7 @@ class SequenceVariantAnnotationDbTest {
     SequenceVariant sequenceVariant1 = mock(SequenceVariant.class);
     PartitionKey partitionKey0 = mock(PartitionKey.class);
     PartitionKey partitionKey1 = mock(PartitionKey.class);
+    @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> annotationIndex = mock(AnnotationIndex.class);
 
     when(partitionResolver.resolvePartitionKey(sequenceVariant0)).thenReturn(partitionKey0);

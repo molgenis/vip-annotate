@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.molgenis.vipannotate.util.Input;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class VcfParserFactoryTest {
   private static final String VCF_STR =
       """

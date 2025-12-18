@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class ChromTest {
   private static Stream<Arguments> getIdentifierArgsProvider() {
     return Stream.of(

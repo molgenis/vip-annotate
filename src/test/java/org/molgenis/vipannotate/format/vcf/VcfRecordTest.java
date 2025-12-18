@@ -7,7 +7,6 @@ import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class VcfRecordTest {
   private Chrom chrom;
   private Pos pos;

@@ -18,7 +18,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.molgenis.vipannotate.util.Output;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class VcfWriterFactoryTest {
   private static Stream<Arguments> createOutputCompressedProvider() {
     return Stream.of(Arguments.of(".gz"), Arguments.of(".bgz"));

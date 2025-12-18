@@ -75,7 +75,6 @@ class FixedDecimalFormatterTest {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   private DecimalFormat createDecimalFormat(String pattern) {
     DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ROOT);
     decimalFormat.setStrict(true);

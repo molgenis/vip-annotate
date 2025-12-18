@@ -13,7 +13,6 @@ class CloseIgnoringOutputStreamTest {
     CloseIgnoringOutputStream closeIgnoringOutputStream =
         new CloseIgnoringOutputStream(outputStream);
     closeIgnoringOutputStream.close();
-    //noinspection DataFlowIssue
     verify(outputStream, never()).close();
   }
 }

@@ -29,7 +29,6 @@ class SequenceVariantTypeDetectorTest {
   @ParameterizedTest
   @MethodSource("insertionProvider")
   void determineTypeInsertion(String altAlleleFieldRaw) {
-    //noinspection DataFlowIssue
     assertEquals(
         SequenceVariantType.INSERTION,
         SequenceVariantTypeDetector.determineType(1, new AltAllele(altAlleleFieldRaw)));
@@ -61,7 +60,6 @@ class SequenceVariantTypeDetectorTest {
   @ParameterizedTest
   @MethodSource("structuralProvider")
   void determineTypeStructural(String altAlleleFieldRaw) {
-    //noinspection DataFlowIssue
     assertEquals(
         SequenceVariantType.STRUCTURAL,
         SequenceVariantTypeDetector.determineType(1, new AltAllele(altAlleleFieldRaw)));
@@ -74,7 +72,6 @@ class SequenceVariantTypeDetectorTest {
   @ParameterizedTest
   @MethodSource("otherProvider")
   void determineTypeOther(String altAlleleFieldRaw) {
-    //noinspection DataFlowIssue
     assertEquals(
         SequenceVariantType.OTHER,
         SequenceVariantTypeDetector.determineType(1, new AltAllele(altAlleleFieldRaw)));

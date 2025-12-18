@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.util.BufferedLineReader;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class VcfHeaderParserTest {
   @Mock private VcfMetaInfoLineParser vcfMetaInfoLineParser;
