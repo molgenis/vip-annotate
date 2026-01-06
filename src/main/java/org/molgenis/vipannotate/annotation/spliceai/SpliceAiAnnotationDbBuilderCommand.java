@@ -1,12 +1,11 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
-import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
-import org.molgenis.vipannotate.Command;
-import org.molgenis.vipannotate.Region;
-import org.molgenis.vipannotate.RegionParser;
 import org.molgenis.vipannotate.annotation.ContigRegistry;
+import org.molgenis.vipannotate.annotation.Region;
+import org.molgenis.vipannotate.cli.Command;
+import org.molgenis.vipannotate.cli.RegionParser;
 import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveWriter;
 import org.molgenis.vipannotate.format.vdb.VdbArchiveWriter;

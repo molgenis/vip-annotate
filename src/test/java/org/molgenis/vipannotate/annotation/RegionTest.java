@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.annotation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,7 +7,6 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.molgenis.vipannotate.annotation.Contig;
 
 @SuppressWarnings({"DataFlowIssue", "NullAway"})
 class RegionTest {

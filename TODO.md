@@ -2,6 +2,7 @@
 
 ## 0.0.1-alpha.4
 
+- [ ] feat: write max error in output vcf header
 - [ ] feat: config to build/use new annotation dbs without exe change (see draft_db_annotation_schema.json)
     - [ ] fix(annotations): fathmm annotation resource can contain multiple chr-pos-ref_len-alt annotations -->
       preprocessing script to remove duplicates and invalid -99 scores
@@ -18,6 +19,7 @@
 
 ## 0.0.1-beta
 
+- [ ] feat: check if output extension is in line with output mode
 - [ ] feat: resource versioning
 - [ ] refactor: rename .zip to .vdb
 - [ ] fix: resolve reported nullability issues (fix or suppress)
@@ -40,6 +42,7 @@
 - [ ] refactor: move zstd-ffm to separate repository
 - [ ] refactor: move streamvbyte-ffm to separate repository
 - [ ] refactor: move vdb to separate repository
+- [ ] refactor: move vcf to separate repository
 - [ ] perf: replace streamvbyte with https://github.com/powturbo/TurboPFor-Integer-Compression which support 8/16/32/64
   bit packing (thought: how far can we get with bit packing only and no zstd?). quality seems low though.
 

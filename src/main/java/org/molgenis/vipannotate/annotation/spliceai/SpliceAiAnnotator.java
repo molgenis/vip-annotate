@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation.spliceai;
 
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.App;
+import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.*;
 import org.molgenis.vipannotate.util.ClosableUtils;
@@ -24,8 +24,8 @@ public class SpliceAiAnnotator extends BaseVcfRecordAnnotator<SpliceAiAnnotation
             "A",
             "String",
             "SpliceAI annotations per ALT allele. Multiple annotations per allele are separated by '&'. Each annotation is formatted as 'NCBI_GENE_ID|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL' where DS stands for delta scores, DP stands for delta positions, AG for acceptor gain, AL for acceptor loss, DG for donor gain and DL for donor loss.",
-            App.getName(),
-            App.getVersion());
+            AppMetadata.getName(),
+            AppMetadata.getVersion());
   }
 
   @Override

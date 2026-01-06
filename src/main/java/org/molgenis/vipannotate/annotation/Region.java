@@ -1,8 +1,6 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.annotation;
 
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.Contig;
-import org.molgenis.vipannotate.annotation.Feature;
 
 /**
  * Genomic interval [start, stop]

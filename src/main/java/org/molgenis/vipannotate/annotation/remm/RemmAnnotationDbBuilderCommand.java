@@ -2,12 +2,12 @@ package org.molgenis.vipannotate.annotation.remm;
 
 import java.nio.file.Path;
 import java.util.List;
-import org.molgenis.vipannotate.AppDbCommandArgs;
-import org.molgenis.vipannotate.AppDbCommandArgsParser;
-import org.molgenis.vipannotate.Command;
-import org.molgenis.vipannotate.Region;
-import org.molgenis.vipannotate.RegionParser;
 import org.molgenis.vipannotate.annotation.ContigRegistry;
+import org.molgenis.vipannotate.annotation.Region;
+import org.molgenis.vipannotate.cli.Command;
+import org.molgenis.vipannotate.cli.DbBuildSubCommandArgs;
+import org.molgenis.vipannotate.cli.DbBuildSubCommandArgsParser;
+import org.molgenis.vipannotate.cli.RegionParser;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.fasta.FastaIndexParser;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveWriter;
@@ -23,7 +23,7 @@ public class RemmAnnotationDbBuilderCommand implements Command {
 
   @Override
   public void run(String[] args) {
-    AppDbCommandArgs commandArgs = new AppDbCommandArgsParser(COMMAND).parse(args);
+    DbBuildSubCommandArgs commandArgs = new DbBuildSubCommandArgsParser(COMMAND).parse(args);
 
     Input remmInput = commandArgs.input();
     Path faiFile = commandArgs.faiFile();

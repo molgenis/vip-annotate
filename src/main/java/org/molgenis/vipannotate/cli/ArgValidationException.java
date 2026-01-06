@@ -1,6 +1,7 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.cli;
 
 import java.io.Serial;
+import org.molgenis.vipannotate.AppException;
 import org.molgenis.vipannotate.util.ErrorCode;
 
 public class ArgValidationException extends AppException {

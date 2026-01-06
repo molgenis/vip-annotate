@@ -2,9 +2,9 @@ package org.molgenis.vipannotate.annotation.spliceai;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.molgenis.vipannotate.App;
-import org.molgenis.vipannotate.ArgValidationException;
-import org.molgenis.vipannotate.ArgsParser;
+import org.molgenis.vipannotate.AppMetadata;
+import org.molgenis.vipannotate.cli.ArgValidationException;
+import org.molgenis.vipannotate.cli.ArgsParser;
 import org.molgenis.vipannotate.util.GraalVm;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
@@ -99,6 +99,6 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
               ¹ --input is required twice, once for snv.vcf.gz and once for indel.vcf.gz
               ² available from https://www.ncbi.nlm.nih.gov/datasets/gene/taxon/9606 with columns 'Gene ID' and 'Symbol'
               """,
-        App.getVersion(), usage, usage, usage);
+        AppMetadata.getVersion(), usage, usage, usage);
   }
 }

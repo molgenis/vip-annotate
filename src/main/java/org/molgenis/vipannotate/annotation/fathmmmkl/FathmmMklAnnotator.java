@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation.fathmmmkl;
 
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.App;
+import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.*;
 import org.molgenis.vipannotate.util.ClosableUtils;
@@ -20,7 +20,12 @@ public class FathmmMklAnnotator extends BaseVcfRecordAnnotator<FathmmMklAnnotati
 
     isNewAnnotation =
         vcfMetaInfo.addOrUpdateInfo(
-            INFO_ID_FATHMM_MKL, "A", "String", "FATHMM-MKL score", App.getName(), App.getVersion());
+            INFO_ID_FATHMM_MKL,
+            "A",
+            "String",
+            "FATHMM-MKL score",
+            AppMetadata.getName(),
+            AppMetadata.getVersion());
   }
 
   @Override

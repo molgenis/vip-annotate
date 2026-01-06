@@ -1,7 +1,8 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.cli;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.util.Output;
@@ -43,14 +44,10 @@ public abstract class ArgsParser<T> {
   protected abstract void printUsage();
 
   protected void printVersion() {
-    Logger.info("%s", App.getVersion());
+    Logger.info("%s", AppMetadata.getVersion());
   }
 
   protected void validate(String[] args) {
-    if (args.length == 0) {
-      printUsage();
-      System.exit(1);
-    }
     if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
       printUsage();
       System.exit(0);

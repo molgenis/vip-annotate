@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.cli;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,15 +7,15 @@ import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.util.Output;
 
-public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
+public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
   @Override
-  public AppAnnotateArgs parse(String[] args) {
+  public AnnotateArgs parse(String[] args) {
     super.validate(args);
 
     Input input = null;
     Path annotationsDir = null;
     Output output = null;
-    Boolean force = null, debug = null;
+    Boolean force = null;
     VcfType outputVcfType = null;
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
@@ -50,7 +50,6 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
           }
         }
         case "-f", "--force" -> force = Boolean.TRUE;
-        case "-d", "--debug" -> debug = Boolean.TRUE;
         default -> throw new ArgValidationException("unknown option '%s'".formatted(arg));
       }
     }
@@ -72,7 +71,7 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
       throw new ArgValidationException(
           "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output.path()));
     }
-    return new AppAnnotateArgs(input, annotationsDir, output, force, debug, outputVcfType);
+    return new AnnotateArgs(input, annotationsDir, output, force, outputVcfType);
   }
 
   @Override
@@ -80,7 +79,8 @@ public class AppAnnotateArgsParser extends ArgsParser<AppAnnotateArgs> {
     Logger.info(
 """
 Usage:
-  vip-annotate [OPTIONS] --annotations DIR --input FILE --output FILE
+  apptainer run vip-annotate.sif annotate --annotations DIR --input FILE --output FILE [OPTIONS]
+  apptainer run vip-annotate.sif annotate --help
 
 Options:
   -a, --annotations DIR       Directory containing annotation database  (required)
@@ -93,9 +93,6 @@ Options:
                                   z      Compressed VCF (default compression)
                                   z0-z9  Compressed VCF with compression levels 0-9
 
-  -f, --force                 Overwrite existing output file if it exists
-  -d, --debug                 Enable debug logging
-  -v, --version               Show version information and exit
-  -h, --help                  Show this help message and exit""");
+  -f, --force                 Overwrite existing output file if it exists""");
   }
 }

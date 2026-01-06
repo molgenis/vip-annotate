@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.util;
+package org.molgenis.vipannotate;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -17,8 +17,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.molgenis.vipannotate.AppAnnotate;
-import org.molgenis.vipannotate.AppDb;
 
 @SuppressWarnings("DataFlowIssue")
 public class AppDbAndAnnotateIT {
@@ -84,8 +82,9 @@ public class AppDbAndAnnotateIT {
 
   private void createDbs() {
     // fathmm_mkl
-    AppDb.main(
+    App.main(
         new String[] {
+          "database-build",
           "fathmm_mkl",
           "--input",
           getResource("db/chr1_1048426-1048726/GRCh38_FATHMM-MKL_NC.tsv.gz").toString(),
@@ -96,8 +95,9 @@ public class AppDbAndAnnotateIT {
         });
 
     // gnomad
-    AppDb.main(
+    App.main(
         new String[] {
+          "database-build",
           "gnomad",
           "--input",
           getResource("db/chr1_1048426-1048726/gnomad.total.v4.1.sites.stripped-v3.tsv.gz")
@@ -109,8 +109,9 @@ public class AppDbAndAnnotateIT {
         });
 
     // ncer
-    AppDb.main(
+    App.main(
         new String[] {
+          "database-build",
           "ncer",
           "--input",
           getResource("db/chr1_1048426-1048726/GRCh38_ncER_perc.bed.gz").toString(),
@@ -121,8 +122,9 @@ public class AppDbAndAnnotateIT {
         });
 
     // phylop
-    AppDb.main(
+    App.main(
         new String[] {
+          "database-build",
           "phylop",
           "--input",
           getResource("db/chr1_1048426-1048726/hg38.phyloP100way.bed.gz").toString(),
@@ -133,8 +135,9 @@ public class AppDbAndAnnotateIT {
         });
 
     // remm
-    AppDb.main(
+    App.main(
         new String[] {
+          "database-build",
           "remm",
           "--input",
           getResource("db/chr1_1048426-1048726/ReMM.v0.4.hg38.tsv.gz").toString(),
@@ -145,8 +148,9 @@ public class AppDbAndAnnotateIT {
         });
 
     // spliceai
-    AppDb.main(
+    App.main(
         new String[] {
+          "database-build",
           "spliceai",
           "--input",
           getResource("db/chr1_1048426-1048726/spliceai_scores.masked.hg38.vcf.gz").toString(),
@@ -169,7 +173,13 @@ public class AppDbAndAnnotateIT {
     }
 
     String[] args = {
-      "--annotations", dbDir.toString(), "--input", inputVcfFile.toString(), "--output", "-"
+      "annotate",
+      "--annotations",
+      dbDir.toString(),
+      "--input",
+      inputVcfFile.toString(),
+      "--output",
+      "-"
     };
 
     PrintStream originalOutputStream = System.out;
@@ -178,7 +188,7 @@ public class AppDbAndAnnotateIT {
     try (PrintStream outputStream = new PrintStream(byteArrayOutputStream, true, UTF_8)) {
       System.setOut(outputStream);
       try {
-        AppAnnotate.main(args);
+        App.main(args);
       } finally {
         System.setOut(originalOutputStream);
       }

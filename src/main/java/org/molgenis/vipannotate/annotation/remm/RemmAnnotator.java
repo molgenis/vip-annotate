@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation.remm;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.App;
+import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.format.vcf.*;
 import org.molgenis.vipannotate.util.ClosableUtils;
@@ -22,7 +22,12 @@ public class RemmAnnotator extends BaseVcfRecordAnnotator<DoubleValueAnnotation>
         vcfHeader
             .vcfMetaInfo()
             .addOrUpdateInfo(
-                INFO_ID_REMM, "A", "Float", "REMM score", App.getName(), App.getVersion());
+                INFO_ID_REMM,
+                "A",
+                "Float",
+                "REMM score",
+                AppMetadata.getName(),
+                AppMetadata.getVersion());
   }
 
   @Override

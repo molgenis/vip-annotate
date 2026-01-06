@@ -50,6 +50,7 @@ public class AppAnnotateIT {
         Paths.get(classLoader.getResource("annotate/chr2_166195185-166375987/annotations").toURI());
 
     String[] args = {
+      "annotate",
       "--annotations",
       annotationsDir.toString(),
       "--input",
@@ -64,7 +65,7 @@ public class AppAnnotateIT {
     try (PrintStream outputStream = new PrintStream(byteArrayOutputStream, true, UTF_8)) {
       System.setOut(outputStream);
       try {
-        AppAnnotate.main(args);
+        App.main(args);
       } finally {
         System.setOut(originalOutputStream);
       }
@@ -88,6 +89,7 @@ public class AppAnnotateIT {
         Paths.get(classLoader.getResource("annotate/chr2_166195185-166375987/annotations").toURI());
 
     String[] args = {
+      "annotate",
       "--annotations",
       annotationsDir.toString(),
       "--input",
@@ -102,7 +104,7 @@ public class AppAnnotateIT {
     try (PrintStream outputStream = new PrintStream(byteArrayOutputStream, true, UTF_8)) {
       System.setOut(outputStream);
       try {
-        AppAnnotate.main(args);
+        App.main(args);
       } finally {
         System.setOut(originalOutputStream);
       }
