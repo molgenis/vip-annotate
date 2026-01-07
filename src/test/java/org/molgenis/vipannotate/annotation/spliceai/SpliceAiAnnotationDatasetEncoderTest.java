@@ -13,7 +13,6 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.DoubleCodec;
 import org.molgenis.vipannotate.util.SizedIterator;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class SpliceAiAnnotationDatasetEncoderTest {
   private DoubleCodec doubleCodec;
   private SpliceAiAnnotationDatasetEncoder spliceAiAnnotationDatasetEncoder;
@@ -24,7 +23,6 @@ class SpliceAiAnnotationDatasetEncoderTest {
     spliceAiAnnotationDatasetEncoder = new SpliceAiAnnotationDatasetEncoder(doubleCodec);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
   @Test
   void encodeScore() {
     doReturn((byte) 1).when(doubleCodec).encodeDoublePrimitiveUnitIntervalAsByte(0d);

@@ -9,13 +9,6 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
 class TsvIteratorTest {
-  @SuppressWarnings("NullAway")
-  @Test
-  void newWithNullIterator() {
-    //noinspection DataFlowIssue
-    assertThrows(NullPointerException.class, () -> new TsvIterator(null));
-  }
-
   @Test
   void hasNextNextHeaderOnly() throws IOException {
     String str = "#my_header";

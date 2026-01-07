@@ -13,7 +13,7 @@ public class PartitionResolver {
     return resolvePartitionKey(interval.getContig(), interval.getStart());
   }
 
-  public <T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
+  public <T extends Interval, U extends @Nullable Annotation, V extends AnnotatedInterval<T, U>>
       PartitionKey resolvePartitionKey(V annotatedInterval) {
     return resolvePartitionKey(annotatedInterval.getFeature());
   }

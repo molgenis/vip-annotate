@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation.gnomad;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter.*;
 import static org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source.*;
 
@@ -15,7 +14,6 @@ import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.SizedIterator;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class GnomAdAnnotationDatasetEncoderDecoderIT {
   private GnomAdAnnotationDatasetEncoder encoder;
   private GnomAdAnnotationDatasetDecoder decoder;
@@ -55,7 +53,11 @@ class GnomAdAnnotationDatasetEncoderDecoderIT {
       for (int i = 0, size = afList.size(); i < size; i++) {
         int finalI = i;
         executables[i] =
-            () -> assertEquals(afList.get(finalI), decoder.decodeAf(memBuffer, finalI), maxError);
+            () -> {
+              Double af = decoder.decodeAf(memBuffer, finalI);
+              assertNotNull(af);
+              assertEquals(afList.get(finalI), af, maxError);
+            };
       }
       assertAll(executables);
     }

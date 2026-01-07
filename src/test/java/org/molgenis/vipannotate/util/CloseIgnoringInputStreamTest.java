@@ -12,7 +12,6 @@ class CloseIgnoringInputStreamTest {
     InputStream inputStream = mock(InputStream.class);
     CloseIgnoringInputStream closeIgnoringInputStream = new CloseIgnoringInputStream(inputStream);
     closeIgnoringInputStream.close();
-    //noinspection DataFlowIssue
     verify(inputStream, never()).close();
   }
 }

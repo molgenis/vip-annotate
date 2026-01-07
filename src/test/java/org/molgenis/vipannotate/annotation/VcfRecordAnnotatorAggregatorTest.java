@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class VcfRecordAnnotatorAggregatorTest {
   @Mock private VcfRecordAnnotator vcfRecordAnnotator0;

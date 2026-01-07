@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway", "NullableProblems", "unchecked"})
+@SuppressWarnings({"unchecked"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexReaderTest {
   @Mock private AnnotationBlobReader annotationBlobReader;

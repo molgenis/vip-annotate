@@ -29,19 +29,19 @@ public final class Info extends Field {
     return fieldRawView.subSequence(fromIndex);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public @Nullable CharSequence get(String key) {
     parseIfNeeded();
     return parsedField.get(key);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public void append(String key) {
     prepareAppend();
     fieldRawAppendBuilder.append(key);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public void append(String key, CharSequence subfieldRawValue) {
     prepareAppend();
     fieldRawAppendBuilder.append(key).append('=').append(subfieldRawValue);
@@ -55,19 +55,19 @@ public final class Info extends Field {
     }
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public void put(String key) {
     parseIfNeeded();
     this.parsedField.put(key, null);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public void put(String key, CharSequence subfieldRawValue) {
     parseIfNeeded();
     this.parsedField.put(key, subfieldRawValue.toString());
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   public void remove(String key) {
     parseIfNeeded();
     this.parsedField.remove(key);
@@ -82,7 +82,7 @@ public final class Info extends Field {
     }
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   private void writeParsed(Writer writer) throws IOException {
     if (!parsedField.isEmpty()) {
       boolean writeSeparator = false;

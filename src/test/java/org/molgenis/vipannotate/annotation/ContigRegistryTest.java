@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.fasta.FastaIndexRecord;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class ContigRegistryTest {
   @Test
   void create() {

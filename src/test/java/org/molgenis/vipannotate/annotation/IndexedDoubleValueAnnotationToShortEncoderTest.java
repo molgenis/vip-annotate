@@ -13,7 +13,6 @@ import org.molgenis.vipannotate.util.DoubleCodec;
 import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IndexRange;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class IndexedDoubleValueAnnotationToShortEncoderTest {
   @Mock private DoubleCodec doubleCodec;

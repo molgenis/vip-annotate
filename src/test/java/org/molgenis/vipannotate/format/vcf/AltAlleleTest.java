@@ -40,7 +40,6 @@ class AltAlleleTest {
   @ParameterizedTest
   @MethodSource("basesArgsProvider")
   void typeBases(String bases) {
-    @SuppressWarnings({"DataFlowIssue", "NullAway"})
     AltAllele allele = new AltAllele(bases);
     assertEquals(AltAlleleType.BASES, allele.getType());
   }

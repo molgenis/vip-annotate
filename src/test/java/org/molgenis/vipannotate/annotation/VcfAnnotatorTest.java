@@ -15,7 +15,6 @@ import org.molgenis.vipannotate.format.vcf.VcfRecord;
 import org.molgenis.vipannotate.format.vcf.VcfWriter;
 import org.molgenis.vipannotate.util.Logger;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class VcfAnnotatorTest {
   private static boolean LOGGER_IS_DEBUG_ENABLED_PREVIOUS_STATE;

@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
-// false positive: [NullAway] initializer method does not guarantee @NonNull field nextElement
 @SuppressWarnings("NullAway")
 @RequiredArgsConstructor
 public class FilteringIterator<T extends @Nullable Object> implements Iterator<T> {

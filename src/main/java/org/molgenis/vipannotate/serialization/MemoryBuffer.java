@@ -118,7 +118,6 @@ public final class MemoryBuffer implements AutoCloseable {
    *
    * @throws UncheckedIOException if attempting to resize a heap-based memory buffer
    */
-  @SuppressWarnings("DataFlowIssue")
   public void ensureCapacity(long minCapacity) {
     if (minCapacity <= getCapacity()) {
       return;
@@ -239,7 +238,6 @@ public final class MemoryBuffer implements AutoCloseable {
   /**
    * same as {@link #putByteUnchecked(byte)} but writes a <code>byte</code> a given number of times.
    */
-  @SuppressWarnings("DataFlowIssue")
   public void putByteUnchecked(byte value, long count) {
     memSegment.asSlice(position, count).fill(value);
     position += LAYOUT_BYTE.byteSize() * count;
@@ -442,7 +440,6 @@ public final class MemoryBuffer implements AutoCloseable {
    *
    * @return decoded integer
    */
-  @SuppressWarnings("DataFlowIssue")
   public int getVarUnsignedInt() {
     long index = position;
     int b0 = (byte) LAYOUT_BYTE_VAR_HANDLE.get(memSegment, index++) & 0xFF;
@@ -511,7 +508,6 @@ public final class MemoryBuffer implements AutoCloseable {
    * #limit}. Returned object is invalid after a call to {@link #ensureCapacity(long)} increased the
    * capacity.
    */
-  @SuppressWarnings("DataFlowIssue")
   public ByteBuffer getByteBuffer() {
     if (byteBufferWrapper == null) {
       byteBufferWrapper = memSegment.asByteBuffer();
@@ -523,7 +519,6 @@ public final class MemoryBuffer implements AutoCloseable {
    * Reads a {@link MemorySegment} from {@code position} to {@code limit}. Returned object is
    * invalid after a call to {@link #ensureCapacity(long)} increased the capacity.
    */
-  @SuppressWarnings("DataFlowIssue")
   public MemorySegment getMemSegment() {
     MemorySegment dstSegment;
     if (position == 0 && limit == getCapacity()) {
@@ -569,7 +564,6 @@ public final class MemoryBuffer implements AutoCloseable {
    * @param byteAlignment buffer alignment, must be a power of two
    * @return native memory buffer that can be grown with {@link #ensureCapacity(long)}}
    */
-  @SuppressWarnings("DataFlowIssue")
   public static MemoryBuffer allocate(long byteSize, long byteAlignment) {
     Arena arena = Arena.ofConfined();
     MemorySegment memSegment = arena.allocate(byteSize, byteAlignment);

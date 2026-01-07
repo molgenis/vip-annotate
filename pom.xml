@@ -29,8 +29,8 @@
         <version.maven.failsafe.plugin>3.5.4</version.maven.failsafe.plugin>
         <version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
         <version.maven.surefire.plugin>3.5.4</version.maven.surefire.plugin>
-        <version.mockito>5.20.0</version.mockito>
-        <version.nullaway>0.12.12</version.nullaway>
+        <version.mockito>5.21.0</version.mockito>
+        <version.nullaway>0.12.15</version.nullaway>
         <version.spotless.maven.plugin>3.0.0</version.spotless.maven.plugin>
     </properties>
 
@@ -147,7 +147,9 @@
                             <arg>-Xlint:-restricted</arg>
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
-                            <arg>-Xplugin:ErrorProne -XepOpt:NullAway:OnlyNullMarked=true</arg>
+                            <arg>-Xplugin:ErrorProne -XepOpt:NullAway:AnnotatedPackages=org.molgenis
+                                -XepOpt:NullAway:ExcludedFieldAnnotations=org.mockito.Mock -Xep:NullAway:ERROR
+                            </arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>

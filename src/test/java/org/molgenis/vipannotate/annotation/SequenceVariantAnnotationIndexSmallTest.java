@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.util.IndexRange;
 
-@SuppressWarnings({"NullableProblems", "DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexSmallTest {
   @Mock SequenceVariantEncoder<SequenceVariant> encoder;

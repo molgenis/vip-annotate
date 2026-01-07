@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.molgenis.vipannotate.util.BufferedLineReader;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class VcfRecordBatchIteratorTest {
   private VcfRecord vcfRecord0;
   private VcfRecord vcfRecord1;

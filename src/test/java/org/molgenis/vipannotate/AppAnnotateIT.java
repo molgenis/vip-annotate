@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("DataFlowIssue")
 public class AppAnnotateIT {
   // vcf starts and ends with a telomeric variant
   private static final String EXPECTED_VCF_OUTPUT =

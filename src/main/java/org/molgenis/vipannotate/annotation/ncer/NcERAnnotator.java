@@ -58,7 +58,6 @@ public class NcERAnnotator extends BaseVcfRecordAnnotator<DoubleValueAnnotation>
     writeInfoSubField(vcfRecord, INFO_ID_NCER, infoSubfieldBuilder, isNewAnnotation);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
   private static void appendAltAnnotations(
       List<DoubleValueAnnotation> altAnnotations, VcfInfoSubfieldValueBuilder infoSubFieldBuilder) {
     if (altAnnotations.isEmpty()) {

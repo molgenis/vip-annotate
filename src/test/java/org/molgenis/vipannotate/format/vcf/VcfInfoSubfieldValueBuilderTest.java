@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("DataFlowIssue")
 class VcfInfoSubfieldValueBuilderTest {
   private VcfInfoSubfieldValueBuilder vcfInfoSubfieldValueBuilder;
 

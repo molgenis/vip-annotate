@@ -26,7 +26,6 @@ public class RemmAnnotatorFactory extends PositionAnnotatorFactory<DoubleValueAn
             new PositionScoreAnnotationDatasetFactory(new RemmAnnotationDecoder(new DoubleCodec())),
             new AnnotationBlobReader("score", archiveReader));
 
-    @SuppressWarnings("DataFlowIssue")
     PositionAnnotationDb<DoubleValueAnnotation> annotationDb =
         buildAnnotationDb(
             annotationDatasetReader, EnumSet.complementOf(EnumSet.of(STRUCTURAL, OTHER)));

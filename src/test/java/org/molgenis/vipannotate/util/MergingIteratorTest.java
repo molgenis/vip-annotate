@@ -11,7 +11,6 @@ class MergingIteratorTest {
   void hasNextAndNextUnique() {
     Iterator<Integer> sourceIt1 = List.of(1, 3, 5).iterator();
     Iterator<Integer> sourceIt2 = List.of(2, 4, 6).iterator();
-    @SuppressWarnings({"NullAway"})
     MergingIterator<Integer> it = new MergingIterator<>(sourceIt1, sourceIt2, Integer::compare);
     assertTrue(it.hasNext());
     assertEquals(1, it.next());
@@ -32,7 +31,6 @@ class MergingIteratorTest {
   void hasNextAndNextDuplicates() {
     Iterator<Integer> sourceIt1 = List.of(1, 3, 5).iterator();
     Iterator<Integer> sourceIt2 = List.of(1, 3).iterator();
-    @SuppressWarnings({"NullAway"})
     MergingIterator<Integer> it = new MergingIterator<>(sourceIt1, sourceIt2, Integer::compare);
     assertTrue(it.hasNext());
     assertEquals(1, it.next());

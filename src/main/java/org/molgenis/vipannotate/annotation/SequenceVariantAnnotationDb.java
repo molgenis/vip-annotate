@@ -20,7 +20,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
   private boolean activeAnnotationIndexValid = false;
   @Nullable private AnnotationDataset<U> activeAnnotationDataset;
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
+  @SuppressWarnings("NullAway")
   @Override
   public void findAnnotations(T feature, List<U> annotations) {
     if (!canAnnotate.test(feature)) {

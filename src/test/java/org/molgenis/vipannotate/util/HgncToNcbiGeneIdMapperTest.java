@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class HgncToNcbiGeneIdMapperTest {
 
   @Test

@@ -13,12 +13,12 @@ class QualTest {
     return Stream.of(Arguments.of("1", 1d), Arguments.of("1.23", 1.23d));
   }
 
-  @SuppressWarnings("NullAway")
   @ParameterizedTest
   @MethodSource("getArgsProvider")
   void get(String fieldRaw, double doubleValue) {
-    //noinspection DataFlowIssue
-    assertEquals(doubleValue, Qual.wrap(fieldRaw).get(), 1E-6);
+    Double qualValue = Qual.wrap(fieldRaw).get();
+    assertNotNull(qualValue);
+    assertEquals(doubleValue, qualValue, 1E-6);
   }
 
   @Test

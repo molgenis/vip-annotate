@@ -9,7 +9,6 @@ import org.molgenis.vipannotate.annotation.IndexedAnnotation;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.DoubleCodec;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class PhyloPAnnotationEncoderDecoderIT {
   private PhyloPAnnotationEncoder phyloPAnnotationEncoder;
   private PhyloPAnnotationDecoder phyloPAnnotationDecoder;
@@ -35,13 +34,14 @@ class PhyloPAnnotationEncoderDecoderIT {
           new IndexedAnnotation<>(i, new DoubleValueAnnotation(randomScore)), memoryBuffer);
       DoubleValueAnnotation doubleValueAnnotation = phyloPAnnotationDecoder.decode(memoryBuffer, i);
 
+      Double score = doubleValueAnnotation.score();
+      assertNotNull(score);
       assertEquals(
           randomScore,
-          doubleValueAnnotation.score(),
+          score,
           maxQuantizationError,
           "score: %.10f error: %.10f max_error: %.10f"
-              .formatted(
-                  randomScore, randomScore - doubleValueAnnotation.score(), maxQuantizationError));
+              .formatted(randomScore, randomScore - score, maxQuantizationError));
     }
   }
 }

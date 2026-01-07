@@ -13,7 +13,6 @@ import org.molgenis.vipannotate.annotation.Contig;
 import org.molgenis.vipannotate.annotation.ContigRegistry;
 import org.molgenis.vipannotate.annotation.Region;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 @ExtendWith(MockitoExtension.class)
 class RegionParserTest {
   @Mock private ContigRegistry contigRegistry;

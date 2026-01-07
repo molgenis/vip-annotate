@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
-@SuppressWarnings("DataFlowIssue")
 class VdbArchiveReaderAndWriterTest {
   private static VdbArchiveWriterFactory archiveWriterFactory;
   private static VdbArchiveReaderFactory archiveReaderFactory;

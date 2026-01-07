@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
+@SuppressWarnings("NullAway")
 @RequiredArgsConstructor
 public class FlatteningIterator<T extends @Nullable Object> implements Iterator<T> {
   private final Iterator<List<T>> outerIterator;
@@ -19,7 +20,6 @@ public class FlatteningIterator<T extends @Nullable Object> implements Iterator<
     return innerIterator != null && innerIterator.hasNext();
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
   @Override
   public T next() {
     if (!hasNext()) {

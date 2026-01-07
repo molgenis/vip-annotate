@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class RegionTest {
   private static Stream<Arguments> validRegionArgsProvider() {
     return Stream.of(

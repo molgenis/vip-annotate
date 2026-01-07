@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
 import org.molgenis.vipannotate.util.IndexRange;
 
-@SuppressWarnings({"DataFlowIssue", "NullableProblems"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexDispatcherTest {
   @Mock private SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall;

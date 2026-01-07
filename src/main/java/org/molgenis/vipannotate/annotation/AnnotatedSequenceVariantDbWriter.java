@@ -35,7 +35,6 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   private void write(Partition<SequenceVariant, U, AnnotatedSequenceVariant<U>> partition) {
     if (Logger.isDebugEnabled()) {
       Logger.debug(

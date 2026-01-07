@@ -13,7 +13,6 @@ import org.molgenis.streamvbyte.StreamVByte;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway", "NullableProblems"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexSmallReaderAndWriterTest {
   private static StreamVByte STREAM_V_BYTE = StreamVByte.create();
@@ -39,7 +38,6 @@ class SequenceVariantAnnotationIndexSmallReaderAndWriterTest {
     indexWriter = new SequenceVariantAnnotationIndexSmallWriter<>(memBufferFactory, STREAM_V_BYTE);
   }
 
-  @SuppressWarnings({"DataFlowIssue", "NullAway"})
   @Test
   void testWriteIntoAndReadFrom() {
     MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[100]);

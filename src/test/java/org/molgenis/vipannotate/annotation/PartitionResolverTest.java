@@ -1,17 +1,18 @@
 package org.molgenis.vipannotate.annotation;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@SuppressWarnings({"DataFlowIssue", "NullAway"})
 class PartitionResolverTest {
   private PartitionResolver partitionResolver;
 
@@ -29,18 +30,20 @@ class PartitionResolverTest {
   @Test
   void resolvePartitionKeyFromInterval() {
     Contig contig = mock(Contig.class);
-    assertEquals(
-        new PartitionKey(contig, 0),
-        partitionResolver.resolvePartitionKey(new Interval(contig, 123, 456)));
+    Interval interval = new Interval(contig, 123, 456);
+    assertEquals(new PartitionKey(contig, 0), partitionResolver.resolvePartitionKey(interval));
   }
 
   @Test
   void resolvePartitionKeyFromAnnotatedInterval() {
     Contig contig = mock(Contig.class);
+    requireNonNull(contig);
+    Interval interval = new Interval(contig, 123, 456);
+    @SuppressWarnings("NullAway") // false positive?
+    AnnotatedInterval<Interval, @Nullable Annotation> annotatedInterval =
+        new AnnotatedInterval<>(interval, null);
     assertEquals(
-        new PartitionKey(contig, 0),
-        partitionResolver.resolvePartitionKey(
-            new AnnotatedInterval<>(new Interval(contig, 123, 456), null)));
+        new PartitionKey(contig, 0), partitionResolver.resolvePartitionKey(annotatedInterval));
   }
 
   @Test

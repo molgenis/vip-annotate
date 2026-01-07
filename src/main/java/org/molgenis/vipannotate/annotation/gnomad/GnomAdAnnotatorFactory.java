@@ -37,7 +37,6 @@ public class GnomAdAnnotatorFactory
             new AnnotationBlobReader("filters", archiveReader),
             new AnnotationBlobReader("cov", archiveReader));
 
-    @SuppressWarnings("DataFlowIssue")
     SequenceVariantAnnotationDb<SequenceVariant, GnomAdAnnotation> annotationDb =
         buildAnnotationDb(
             annotationIndexReader,
