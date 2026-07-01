@@ -10,7 +10,7 @@ main() {
   ln --force "../../../target/vip-annotate" .
 
   local args=()
-  args+=("--mksquashfs-args" "-comp zstd -Xcompression-level 19")
+  args+=("--mksquashfs-args" "-quiet -reproducible -no-xattrs -comp zstd -Xcompression-level 19")
 
   sudo apptainer build "${args[@]}" vip-annotate.sif vip-annotate.def
 
