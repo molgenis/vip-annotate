@@ -54,7 +54,7 @@ public class AppAnnotateIT {
       annotationsDir.toString(),
       "--input",
       inputVcfFile.toString(),
-      "--output",
+      "--outputFormat",
       "-"
     };
 
@@ -93,7 +93,7 @@ public class AppAnnotateIT {
       annotationsDir.toString(),
       "--input",
       inputVcfFile.toString(),
-      "--output",
+      "--outputFormat",
       "-"
     };
 

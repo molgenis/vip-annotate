@@ -1,0 +1,54 @@
+{
+  "id": "fathmm",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "file": "GRCh38_FATHMM-MKL_NC.tsv.gz",
+    "coordinate_system": "1-based",
+    "contig": 0,
+    "start": 1,
+    "ref": 2,
+    "alt": 3,
+    "annotation": 4
+  },
+  "schema": {
+    "annotation_type": "sequence_variant",
+    "supported_variant_types": [
+      "snv"
+    ],
+    "annotation_datasets": [
+      {
+        "id": "score",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      }
+    ],
+    "annotation_selector": "max_value"
+  },
+  "output": {
+    "type": "vcf",
+    "infoId": "FATHMM_MKL",
+    "infoNumber": "A",
+    "infoType": "Float",
+    "infoDescription": "FATHMM-MKL score",
+    "infoVersion": "1.0.0"
+  }
+}

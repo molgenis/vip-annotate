@@ -15,8 +15,8 @@ import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 @ExtendWith(MockitoExtension.class)
 class VcfRecordAnnotatorAggregatorTest {
-  @Mock private VcfRecordAnnotator vcfRecordAnnotator0;
-  @Mock private VcfRecordAnnotator vcfRecordAnnotator1;
+  @Mock private VcfRecordAnnotatorOld vcfRecordAnnotator0;
+  @Mock private VcfRecordAnnotatorOld vcfRecordAnnotator1;
   private VcfRecordAnnotatorAggregator vcfRecordAnnotatorAggregator;
 
   @BeforeEach

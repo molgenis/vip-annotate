@@ -12,9 +12,15 @@ public class IndexedDoubleValueAnnotationFromShortDecoder
   private final DoubleInterval valueInterval;
 
   @Override
-  public DoubleValueAnnotation decode(MemoryBuffer memoryBuffer, int index) {
-    short encodedScore = memoryBuffer.getShortAtIndex(index);
+  public DoubleValueAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
+    short encodedScore = memBuffer.getShortAtIndex(annotationIndex);
     Double decodedScore = doubleCodec.decodeDoubleFromShort(encodedScore, valueInterval);
     return new DoubleValueAnnotation(decodedScore);
+  }
+
+  @Override
+  public void decodeInto(
+      MemoryBuffer memBuffer, int annotationIndex, DoubleValueAnnotation annotation) {
+    throw new RuntimeException("not implemented"); // FIXME
   }
 }

@@ -12,7 +12,7 @@ public abstract class AnnotatorFactory {
   protected final PartitionedVdbArchiveReaderFactory archiveReaderFactory;
   protected final PartitionResolver partitionResolver;
 
-  public abstract VcfRecordAnnotator create(Path annotationsDir);
+  public abstract VcfRecordAnnotatorOld create(Path annotationsDir);
 
   protected PartitionedVdbArchiveReader createArchiveReader(Path annotationsDir, String filename) {
     Path file = annotationsDir.resolve(filename);

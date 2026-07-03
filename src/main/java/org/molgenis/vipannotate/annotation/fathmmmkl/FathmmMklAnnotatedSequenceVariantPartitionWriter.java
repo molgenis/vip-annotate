@@ -48,7 +48,7 @@ public class FathmmMklAnnotatedSequenceVariantPartitionWriter
     annotationDatasetEncoder.encodeScores(scoreIt, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, "score", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write("score", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private MemoryBuffer getHeapBackedScratchBuffer(long minCapacity) {

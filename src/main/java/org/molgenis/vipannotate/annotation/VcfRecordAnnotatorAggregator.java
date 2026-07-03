@@ -7,26 +7,26 @@ import org.molgenis.vipannotate.format.vcf.VcfRecord;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotator {
-  private final List<VcfRecordAnnotator> vcfRecordAnnotators;
+public class VcfRecordAnnotatorAggregator implements VcfRecordAnnotatorOld {
+  private final List<VcfRecordAnnotatorOld> vcfRecordAnnotators;
 
   @Override
   public void updateHeader(VcfHeader vcfHeader) {
-    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
+    for (VcfRecordAnnotatorOld vcfRecordAnnotator : vcfRecordAnnotators) {
       vcfRecordAnnotator.updateHeader(vcfHeader);
     }
   }
 
   @Override
   public void annotate(VcfRecord vcfRecord) {
-    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
+    for (VcfRecordAnnotatorOld vcfRecordAnnotator : vcfRecordAnnotators) {
       vcfRecordAnnotator.annotate(vcfRecord);
     }
   }
 
   @Override
   public void annotate(List<VcfRecord> vcfRecord) {
-    for (VcfRecordAnnotator vcfRecordAnnotator : vcfRecordAnnotators) {
+    for (VcfRecordAnnotatorOld vcfRecordAnnotator : vcfRecordAnnotators) {
       vcfRecordAnnotator.annotate(vcfRecord);
     }
   }

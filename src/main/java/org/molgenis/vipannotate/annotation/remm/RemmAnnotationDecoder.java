@@ -11,9 +11,15 @@ public class RemmAnnotationDecoder implements AnnotationDecoder<DoubleValueAnnot
   private final DoubleCodec doubleCodec;
 
   @Override
-  public DoubleValueAnnotation decode(MemoryBuffer memoryBuffer, int index) {
-    byte encodedScore = memoryBuffer.getByteAtIndex(index);
+  public DoubleValueAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
+    byte encodedScore = memBuffer.getByteAtIndex(annotationIndex);
     Double decodedScore = doubleCodec.decodeDoubleUnitIntervalFromByte(encodedScore);
     return new DoubleValueAnnotation(decodedScore);
+  }
+
+  @Override
+  public void decodeInto(
+      MemoryBuffer memBuffer, int annotationIndex, DoubleValueAnnotation annotation) {
+    throw new RuntimeException("not implemented"); // FIXME
   }
 }

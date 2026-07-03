@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 
-class CloseIgnoringInputStreamTest {
+class CloseIgnoringInputFormatStreamTest {
   @Test
   void close() throws IOException {
     InputStream inputStream = mock(InputStream.class);

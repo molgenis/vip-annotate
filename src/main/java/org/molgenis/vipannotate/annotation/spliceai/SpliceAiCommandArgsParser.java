@@ -40,7 +40,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
                 "'%s' value '%s' does not exist".formatted(arg, faiFile));
           }
         }
-        case "-o", "--output" -> output = Path.of(parseArgValue(args, i++, arg));
+        case "-o", "--outputFormat" -> output = Path.of(parseArgValue(args, i++, arg));
         case "-r", "--regions" -> regionsStr = parseArgValue(args, i++, arg);
         case "-f", "--force" -> force = Boolean.TRUE;
         default -> throw new ArgValidationException("unknown option '%s'".formatted(arg));
@@ -57,7 +57,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
     }
     if (output == null) {
       throw new ArgValidationException(
-          "missing required option '%s' or '%s'".formatted("-o", "--output"));
+          "missing required option '%s' or '%s'".formatted("-o", "--outputFormat"));
     }
     if (faiFile == null) {
       throw new ArgValidationException(
@@ -65,7 +65,7 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
     }
     if (force == null && Files.exists(output)) {
       throw new ArgValidationException(
-          "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output));
+          "'%s' or '%s' value '%s' already exists".formatted("-o", "--outputFormat", output));
     }
 
     return new SpliceAiCommandArgs(input, ncbiGeneFile, faiFile, output, regionsStr, force);
@@ -86,9 +86,9 @@ public class SpliceAiCommandArgsParser extends ArgsParser<SpliceAiCommandArgs> {
                 -i, --input           FILE                input file, e.g. spliceai_scores.masked.*.hg38.vcf.gz¹  (required                 )
                 -n, --ncbi-gene-index FILE                tab-separated NCBI gene index file²                     (required                 )
                 -x, --reference-index FILE                reference sequence index .fai file                      (required                 )
-                -o, --output          FILE                output annotation database .zip file                    (optional, default: stdout)
+                -o, --outputFormat          FILE                outputFormat annotation database .zip file                    (optional, default: stdout)
                 -r, --regions         chr|chr:beg-end[,…] comma-separated list of regions (inclusive, 1-based)    (optional                 )
-                -f, --force                               overwrite existing output file                          (optional                 )
+                -f, --force                               overwrite existing outputFormat file                          (optional                 )
 
               usage: %s [arguments]
                 -h, --help                     print this message

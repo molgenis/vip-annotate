@@ -1,5 +1,8 @@
 package org.molgenis.vipannotate.format.vcf;
 
+import org.molgenis.vipannotate.format.Field;
+import org.molgenis.vipannotate.format.StringView;
+
 /** low memory, high performance, reusable, lazy parsing */
 public final class Ref extends Field {
   private Ref(StringView fieldRawView) {

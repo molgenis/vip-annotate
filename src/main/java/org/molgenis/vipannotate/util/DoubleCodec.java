@@ -9,13 +9,13 @@ public class DoubleCodec {
   private static final IntInterval QUANTIZATION_LEVELS_0_65535 = new IntInterval(0, 65535);
   private static final IntInterval QUANTIZATION_LEVELS_1_65535 = new IntInterval(1, 65535);
 
-  private final Quantizer quantizer;
+  private final QuantizerOld quantizer;
 
   public DoubleCodec() {
-    this(new Quantizer());
+    this(new QuantizerOld());
   }
 
-  DoubleCodec(Quantizer quantizer) {
+  DoubleCodec(QuantizerOld quantizer) {
     this.quantizer = quantizer;
   }
 

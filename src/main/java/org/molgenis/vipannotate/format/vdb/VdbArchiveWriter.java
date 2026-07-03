@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.format.vdb;
 
 import static org.molgenis.vipannotate.format.vdb.VdbMemoryBufferFactory.alignedLength;
 
-import com.sun.nio.file.ExtendedOpenOption;
 import java.io.IOException;
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
@@ -15,6 +14,7 @@ import org.molgenis.vipannotate.format.vdb.VdbArchiveMetadata.VdbArchiveMetadata
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.FileChannelUtils;
+import org.molgenis.vipannotate.util.OpenOptions;
 import org.molgenis.zstd.ZstdCompressionContext;
 
 public class VdbArchiveWriter implements AutoCloseable {
@@ -56,10 +56,7 @@ public class VdbArchiveWriter implements AutoCloseable {
 
       FileChannel alignedFileChannel =
           FileChannel.open(
-              vdbPath,
-              StandardOpenOption.CREATE_NEW,
-              StandardOpenOption.WRITE,
-              ExtendedOpenOption.DIRECT);
+              vdbPath, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, OpenOptions.DIRECT);
 
       // improve read performance by starting of with a 8GB file
       alignedFileChannel.truncate(1L << 33); // 8 GB

@@ -10,7 +10,7 @@ import org.molgenis.vipannotate.util.NumberCollections;
 
 // TODO refactor: deduplicate ncer,phylop,remm annotator
 @RequiredArgsConstructor
-public class RemmAnnotator extends BaseVcfRecordAnnotator<DoubleValueAnnotation> {
+public class RemmAnnotator extends BaseVcfRecordAnnotatorOld<DoubleValueAnnotation> {
   public static final String INFO_ID_REMM = "REMM";
 
   private final PositionAnnotationDb<DoubleValueAnnotation> annotationDb;

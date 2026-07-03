@@ -6,6 +6,7 @@ import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Filter;
 import org.molgenis.vipannotate.annotation.gnomad.GnomAdAnnotation.Source;
+import org.molgenis.vipannotate.annotation.spec.SequenceVariantType;
 import org.molgenis.vipannotate.format.fasta.FastaIndex;
 import org.molgenis.vipannotate.format.fasta.FastaIndexRecord;
 import org.molgenis.vipannotate.format.vcf.AltAllele;

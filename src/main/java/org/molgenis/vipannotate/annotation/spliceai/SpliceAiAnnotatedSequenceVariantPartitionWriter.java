@@ -69,7 +69,7 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
       memBuffer.putInt(geneIndex);
     }
     binaryPartitionWriter.write(
-        partitionKey, "gene_idx", Compression.PLAIN, IoMode.BUFFERED, memBuffer);
+        "gene_idx", Compression.PLAIN, IoMode.BUFFERED, memBuffer, partitionKey);
   }
 
   private void writeGene(
@@ -94,7 +94,7 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
 
     // write
     binaryPartitionWriter.write(
-        partitionKey, "gene_ref", Compression.PLAIN, IoMode.BUFFERED, memBuffer);
+        "gene_ref", Compression.PLAIN, IoMode.BUFFERED, memBuffer, partitionKey);
   }
 
   private void writeScore(
@@ -116,7 +116,7 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
     spliceAiAnnotationDatasetEncoder.encodeScore(scoreIt, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, dataId, Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write(dataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private void writePos(
@@ -138,7 +138,7 @@ public class SpliceAiAnnotatedSequenceVariantPartitionWriter
     spliceAiAnnotationDatasetEncoder.encodePos(posIt, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, dataId, Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write(dataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private MemoryBuffer getHeapBackedScratchBuffer(long minCapacity) {

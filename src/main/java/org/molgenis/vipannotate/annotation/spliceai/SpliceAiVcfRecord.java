@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
+import org.molgenis.vipannotate.format.StringView;
 import org.molgenis.vipannotate.format.vcf.*;
 
 public record SpliceAiVcfRecord(

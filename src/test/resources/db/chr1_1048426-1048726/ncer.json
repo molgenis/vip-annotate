@@ -1,0 +1,54 @@
+{
+  "id": "ncer",
+  "version": "1.0.0",
+  "input": {
+    "type": "bed",
+    "file": "GRCh38_ncER_perc.bed.gz",
+    "from": "name"
+  },
+  "schema": {
+    "annotation_type": "position",
+    "supported_variant_types": [
+      "snv",
+      "mnv",
+      "indel",
+      "insertion",
+      "deletion"
+    ],
+    "annotation_datasets": [
+      {
+        "id": "score",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u16"
+          },
+          "logical_type": {
+            "scalar_type": "f64",
+            "nullable": true
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 100
+            },
+            "levels": {
+              "min": 1,
+              "max": 65535
+            },
+            "null_code": 0
+          }
+        }
+      }
+    ],
+    "annotation_selector": "max_value"
+  },
+  "output": {
+    "type": "vcf",
+    "infoId": "ncER",
+    "infoNumber": "A",
+    "infoType": "Float",
+    "infoDescription": "ncER score",
+    "infoVersion": "1.0.0"
+  }
+}

@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.EnumSet;
+import org.molgenis.vipannotate.annotation.spec.SequenceVariantType;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 
 public abstract class PositionAnnotatorFactory<U extends Annotation> extends AnnotatorFactory {

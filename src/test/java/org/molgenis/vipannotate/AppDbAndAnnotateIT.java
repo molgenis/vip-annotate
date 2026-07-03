@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,19 +25,17 @@ public class AppDbAndAnnotateIT {
               ##fileformat=VCFv4.5
               ##reference=file:///references/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
               ##contig=<ID=chr1,length=248956422>
-              ##INFO=<ID=FATHMM_MKL,NUMBER=A,TYPE=String,DESCRIPTION="FATHMM-MKL score",SOURCE="vip-annotate",VERSION="0.0.0-dev">
-              ##INFO=<ID=gnomAD,NUMBER=A,TYPE=String,DESCRIPTION="gnomAD v4.1.0 annotation formatted as 'SRC|AF|FAF95|FAF99|HN|QC|COV'; SRC=source (E=exomes, G=genomes, T=total), AF=allele frequency, FAF95=filtering allele frequency (95% confidence), FAF99=filtering allele frequency (99% confidence), HN=number of homozygotes, QC=quality control filters that failed, COV=coverage (percent of individuals in gnomAD source)",SOURCE="vip-annotate",VERSION="0.0.0-dev">
-              ##INFO=<ID=ncER,NUMBER=A,TYPE=Float,DESCRIPTION="ncER score",SOURCE="vip-annotate",VERSION="0.0.0-dev">
-              ##INFO=<ID=phyloP,NUMBER=A,TYPE=Float,DESCRIPTION="phyloP score",SOURCE="vip-annotate",VERSION="0.0.0-dev">
-              ##INFO=<ID=REMM,NUMBER=A,TYPE=Float,DESCRIPTION="REMM score",SOURCE="vip-annotate",VERSION="0.0.0-dev">
-              ##INFO=<ID=SpliceAI,NUMBER=A,TYPE=String,DESCRIPTION="SpliceAI annotations per ALT allele. Multiple annotations per allele are separated by '&'. Each annotation is formatted as 'NCBI_GENE_ID|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL' where DS stands for delta scores, DP stands for delta positions, AG for acceptor gain, AL for acceptor loss, DG for donor gain and DL for donor loss.",SOURCE="vip-annotate",VERSION="0.0.0-dev">
+              ##INFO=<ID=FATHMM_MKL,NUMBER=A,TYPE=Float,DESCRIPTION="FATHMM-MKL score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
+              ##INFO=<ID=ncER,NUMBER=A,TYPE=Float,DESCRIPTION="ncER score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
+              ##INFO=<ID=phyloP,NUMBER=A,TYPE=Float,DESCRIPTION="phyloP score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
+              ##INFO=<ID=REMM,NUMBER=A,TYPE=Float,DESCRIPTION="REMM score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
               #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-              chr1	1048426	.	G	A	.	.	FATHMM_MKL=0.133;gnomAD=T|0|0|0|0||0.7699;ncER=95.642;phyloP=-0.288;REMM=0.024;SpliceAI=375790|0|0|0|0||||
-              chr1	1048426	.	G	GT	.	.	ncER=95.642;phyloP=-0.288;REMM=0.024;SpliceAI=375790|0|0|0|0||||
-              chr1	1048426	.	GT	G	.	.	ncER=95.8983;phyloP=-0.288;REMM=0.043;SpliceAI=375790|0|0|0|0||||
-              chr1	1048426	.	GTG	G	.	.	ncER=96.7879;phyloP=-0.288;REMM=0.402;SpliceAI=375790|0|0|0|0||||
-              chr1	1048426	.	GTGG	G	.	.	ncER=98.2421;phyloP=-0.288;REMM=0.402;SpliceAI=375790|0|0|0|0||||
-              chr1	1048426	.	GTGGG	G	.	.	ncER=98.2421;phyloP=-0.288;REMM=0.402;SpliceAI=375790|0|0|0|0||||
+              chr1	1048426	.	G	A	.	.	FATHMM_MKL=0.133;ncER=95.642;phyloP=-0.288;REMM=0.024
+              chr1	1048426	.	G	GT	.	.	ncER=95.642;phyloP=-0.288;REMM=0.024
+              chr1	1048426	.	GT	G	.	.	ncER=95.898;phyloP=-0.288;REMM=0.043
+              chr1	1048426	.	GTG	G	.	.	ncER=96.788;phyloP=-0.288;REMM=0.402
+              chr1	1048426	.	GTGG	G	.	.	ncER=98.242;phyloP=-0.288;REMM=0.402
+              chr1	1048426	.	GTGGG	G	.	.	ncER=98.242;phyloP=-0.288;REMM=0.402
               """;
 
   private Path dbDir;
@@ -70,95 +69,26 @@ public class AppDbAndAnnotateIT {
     // one of the goals of vip-annotate is compact annotation archives, so check size
     // update thresholds in case index got smaller
     assertAll(
-        () -> assertEquals(12613L, Files.size(dbDir.resolve("fathmmmkl.zip"))),
-        () -> assertEquals(61967L, Files.size(dbDir.resolve("gnomad.zip"))),
-        () -> assertEquals(8336L, Files.size(dbDir.resolve("ncer.zip"))),
-        () -> assertEquals(8337L, Files.size(dbDir.resolve("phylop.zip"))),
-        () -> assertEquals(8338L, Files.size(dbDir.resolve("remm.zip"))),
-        () -> assertEquals(71848L, Files.size(dbDir.resolve("spliceai.zip"))),
+        () -> assertEquals(16723L, Files.size(dbDir.resolve("fathmm.vdb"))),
+        () -> assertEquals(12451L, Files.size(dbDir.resolve("ncer.vdb"))),
+        () -> assertEquals(12451L, Files.size(dbDir.resolve("phylop.vdb"))),
+        () -> assertEquals(12448L, Files.size(dbDir.resolve("remm.vdb"))),
         () -> assertEquals(EXPECTED_VCF_OUTPUT, vcf));
   }
 
   private void createDbs() {
-    // fathmm_mkl
-    App.main(
-        new String[] {
-          "database-build",
-          "fathmm_mkl",
-          "--input",
-          getResource("db/chr1_1048426-1048726/GRCh38_FATHMM-MKL_NC.tsv.gz").toString(),
-          "--reference-index",
-          getResource("db/chr1_1048426-1048726/GCA_000001405.15_chr1.fai").toString(),
-          "--output",
-          dbDir.resolve("fathmmmkl.zip").toString()
-        });
-
-    // gnomad
-    App.main(
-        new String[] {
-          "database-build",
-          "gnomad",
-          "--input",
-          getResource("db/chr1_1048426-1048726/gnomad.total.v4.1.sites.stripped-v3.tsv.gz")
-              .toString(),
-          "--reference-index",
-          getResource("db/chr1_1048426-1048726/GCA_000001405.15_chr1.fai").toString(),
-          "--output",
-          dbDir.resolve("gnomad.zip").toString()
-        });
-
-    // ncer
-    App.main(
-        new String[] {
-          "database-build",
-          "ncer",
-          "--input",
-          getResource("db/chr1_1048426-1048726/GRCh38_ncER_perc.bed.gz").toString(),
-          "--reference-index",
-          getResource("db/chr1_1048426-1048726/GCA_000001405.15_chr1.fai").toString(),
-          "--output",
-          dbDir.resolve("ncer.zip").toString()
-        });
-
-    // phylop
-    App.main(
-        new String[] {
-          "database-build",
-          "phylop",
-          "--input",
-          getResource("db/chr1_1048426-1048726/hg38.phyloP100way.bed.gz").toString(),
-          "--reference-index",
-          getResource("db/chr1_1048426-1048726/GCA_000001405.15_chr1.fai").toString(),
-          "--output",
-          dbDir.resolve("phylop.zip").toString()
-        });
-
-    // remm
-    App.main(
-        new String[] {
-          "database-build",
-          "remm",
-          "--input",
-          getResource("db/chr1_1048426-1048726/ReMM.v0.4.hg38.tsv.gz").toString(),
-          "--reference-index",
-          getResource("db/chr1_1048426-1048726/GCA_000001405.15_chr1.fai").toString(),
-          "--output",
-          dbDir.resolve("remm.zip").toString()
-        });
-
-    // spliceai
-    App.main(
-        new String[] {
-          "database-build",
-          "spliceai",
-          "--input",
-          getResource("db/chr1_1048426-1048726/spliceai_scores.masked.hg38.vcf.gz").toString(),
-          "--reference-index",
-          getResource("db/chr1_1048426-1048726/GCA_000001405.15_chr1.fai").toString(),
-          "--ncbi-gene-index",
-          getResource("db/chr1_1048426-1048726/ncbi_gene.tsv").toString(),
-          "--output",
-          dbDir.resolve("spliceai.zip").toString()
+    List<String> recipeList = List.of("fathmm.json", "ncer.json", "phylop.json", "remm.json");
+    recipeList.forEach(
+        recipeFilename -> {
+          App.main(
+              new String[] {
+                "--debug",
+                "database-build",
+                "--recipe",
+                getResource("db/chr1_1048426-1048726/%s".formatted(recipeFilename)).toString(),
+                "--output-dir",
+                dbDir.toString()
+              });
         });
   }
 
@@ -177,7 +107,7 @@ public class AppDbAndAnnotateIT {
       dbDir.toString(),
       "--input",
       inputVcfFile.toString(),
-      "--output",
+      "--outputFormat",
       "-"
     };
 

@@ -9,7 +9,7 @@ import org.molgenis.vipannotate.format.vcf.*;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class GnomAdAnnotator extends BaseVcfRecordAnnotator<GnomAdAnnotation> {
+public class GnomAdAnnotator extends BaseVcfRecordAnnotatorOld<GnomAdAnnotation> {
   private static final String INFO_ID_GNOMAD = "gnomAD";
 
   private final SequenceVariantAnnotationDb<SequenceVariant, GnomAdAnnotation> annotationDb;

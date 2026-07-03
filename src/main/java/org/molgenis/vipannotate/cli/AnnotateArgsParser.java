@@ -32,8 +32,8 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
           }
         }
         case "-i", "--input" -> input = parseArgInputValue(args, i++, arg);
-        case "-o", "--output" -> output = parseArgOutputValue(args, i++, arg);
-        case "-O", "--output-type" -> {
+        case "-o", "--outputFormat" -> output = parseArgOutputValue(args, i++, arg);
+        case "-O", "--outputFormat-type" -> {
           String outputType = parseArgValue(args, i++, arg);
           if (outputType.equals("v")) {
             outputVcfType = VcfType.UNCOMPRESSED;
@@ -45,7 +45,7 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
               outputVcfType = VcfType.fromCompressionLevel(compressionLevel);
             } else {
               throw new ArgValidationException(
-                  "'%s' value '%s' is not a valid output type".formatted(arg, outputType));
+                  "'%s' value '%s' is not a valid outputFormat type".formatted(arg, outputType));
             }
           }
         }
@@ -64,12 +64,13 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
     }
     if (output == null) {
       throw new ArgValidationException(
-          "missing required option '%s' or '%s'".formatted("-o", "--output"));
+          "missing required option '%s' or '%s'".formatted("-o", "--outputFormat"));
     }
 
     if (output.path() != null && force == null && Files.exists(output.path())) {
       throw new ArgValidationException(
-          "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output.path()));
+          "'%s' or '%s' value '%s' already exists"
+              .formatted("-o", "--outputFormat", output.path()));
     }
     return new AnnotateArgs(input, annotationsDir, output, force, outputVcfType);
   }
@@ -79,20 +80,20 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
     Logger.info(
 """
 Usage:
-  apptainer run vip-annotate.sif annotate --annotations DIR --input FILE --output FILE [OPTIONS]
+  apptainer run vip-annotate.sif annotate --annotations DIR --input FILE --outputFormat FILE [OPTIONS]
   apptainer run vip-annotate.sif annotate --help
 
 Options:
   -a, --annotations DIR       Directory containing annotation database  (required)
   -i, --input       FILE      Input VCF file path; use '-' for stdin    (required)
-  -o, --output      FILE      Output VCF file path; use '-' for stdout  (required)
+  -o, --outputFormat      FILE      Output VCF file path; use '-' for stdout  (required)
 
-  -O, --output-type v|z[0-9]  Output format                             (default: z)
+  -O, --outputFormat-type v|z[0-9]  Output format                             (default: z)
                                 Options:
                                   v      Uncompressed VCF
                                   z      Compressed VCF (default compression)
                                   z0-z9  Compressed VCF with compression levels 0-9
 
-  -f, --force                 Overwrite existing output file if it exists""");
+  -f, --force                 Overwrite existing outputFormat file if it exists""");
   }
 }

@@ -47,7 +47,7 @@ public class AnnotatedPositionPartitionWriter<
 
     // write
     binaryPartitionWriter.write(
-        partition.key(), annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer);
+        annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partition.key());
   }
 
   private SizedIterator<IndexedAnnotation<U>> createIndexedAnnotatedIntervalIterator(

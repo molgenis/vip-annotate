@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 
 class DoubleCodecTest {
   private DoubleCodec doubleCodec;
-  private Quantizer quantizer;
+  private QuantizerOld quantizer;
 
   @BeforeEach
   void setUp() {
-    quantizer = mock(Quantizer.class);
+    quantizer = mock(QuantizerOld.class);
     doubleCodec = new DoubleCodec(quantizer);
   }
 

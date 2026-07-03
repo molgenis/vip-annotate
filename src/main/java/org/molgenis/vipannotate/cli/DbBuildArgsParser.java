@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.cli;
 
-import java.util.Arrays;
+import java.nio.file.Path;
 import org.molgenis.vipannotate.util.Logger;
 
 public class DbBuildArgsParser extends ArgsParser<DbBuildArgs> {
@@ -8,25 +8,29 @@ public class DbBuildArgsParser extends ArgsParser<DbBuildArgs> {
   public DbBuildArgs parse(String[] args) {
     super.validate(args);
 
-    int i = 0;
-    DbBuildArgs.Command command = parseArgCommandValue(args[i++]);
-    String[] commandArgs = Arrays.copyOfRange(args, i, args.length);
-    return new DbBuildArgs(command, commandArgs);
-  }
+    Path inputRecipe = null;
+    Path outputDir = null;
+    Boolean force = null;
 
-  private DbBuildArgs.Command parseArgCommandValue(String arg) {
-    return switch (arg) {
-      case "fathmm_mkl" -> DbBuildArgs.Command.FATHMM_MKL;
-      case "gnomad" -> DbBuildArgs.Command.GNOMAD_SHORT_VARIANT;
-      case "ncer" -> DbBuildArgs.Command.NCER;
-      case "phylop" -> DbBuildArgs.Command.PHYLOP;
-      case "remm" -> DbBuildArgs.Command.REMM;
-      case "spliceai" -> DbBuildArgs.Command.SPLICEAI;
-      default ->
-          throw new ArgValidationException(
-              "command '%s' unknown, valid values are [fathmm_mkl, gnomad, ncer, phylop, remm, spliceai]"
-                  .formatted(arg));
-    };
+    for (int i = 0; i < args.length; i++) {
+      String arg = args[i];
+      switch (arg) {
+        case "-r", "--recipe" -> inputRecipe = Path.of(parseArgValue(args, i++, arg));
+        case "-o", "--output-dir" -> outputDir = Path.of(parseArgValue(args, i++, arg));
+        case "-f", "--force" -> force = Boolean.TRUE;
+        default -> throw new ArgValidationException("unknown option '%s'".formatted(arg));
+      }
+    }
+
+    if (inputRecipe == null) {
+      throw new ArgValidationException(
+          "missing required option '%s' or '%s'".formatted("-r", "--recipe"));
+    }
+    if (!inputRecipe.getFileName().toString().endsWith(".json")) {
+      throw new ArgValidationException("invalid .json recipe file '%s'".formatted(inputRecipe));
+    }
+
+    return new DbBuildArgs(inputRecipe, outputDir, force);
   }
 
   @Override
@@ -34,15 +38,12 @@ public class DbBuildArgsParser extends ArgsParser<DbBuildArgs> {
     Logger.info(
 """
 Usage:
-  apptainer run vip-annotate.sif database-build <command> [ARGS...]
-  apptainer run vip-annotate.sif database-build --help
+  vip-annotate database-build --recipe <FILE> [OPTIONS]
+  vip-annotate database-build --help
 
-Commands:
-  fathmm_mkl        Build FATHMM-MKL database
-  gnomad            Build gnomAD database
-  ncer              Build NCER database
-  phylop            Build PhyloP database
-  remm              Build ReMM database
-  spliceai          Build SpliceAI database""");
+Options:
+  -r, --recipe        FILE  Database build recipe (.json) (required)
+  -o, --outputDir     DIR   Output directory
+  -f, --force         Overwrite existing output file if it exists""");
   }
 }

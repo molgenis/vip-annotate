@@ -2,6 +2,9 @@ package org.molgenis.vipannotate.format.vcf;
 
 import static org.molgenis.vipannotate.format.vcf.VcfRecord.*;
 
+import org.molgenis.vipannotate.format.Field;
+import org.molgenis.vipannotate.format.StringView;
+
 public enum VcfRecordDummyFactory {
   INSTANCE;
 

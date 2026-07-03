@@ -55,7 +55,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
     gnomAdAnnotationDataSetEncoder.encodeSources(sourceIt, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, "src", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write("src", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private void writeAf(
@@ -75,7 +75,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
     gnomAdAnnotationDataSetEncoder.encodeAf(afIt, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, "af", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write("af", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private void writeFaf95(
@@ -95,7 +95,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
     gnomAdAnnotationDataSetEncoder.encodeFaf95(faf95It, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, "faf95", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write("faf95", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private void writeFaf99(
@@ -115,7 +115,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
     gnomAdAnnotationDataSetEncoder.encodeFaf99(faf99It, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, "faf99", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write("faf99", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private void writeHn(
@@ -135,7 +135,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
     gnomAdAnnotationDataSetEncoder.encodeHn(hnIt, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, "hn", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write("hn", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private void writeFilters(
@@ -156,7 +156,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
 
     // write
     binaryPartitionWriter.write(
-        partitionKey, "filters", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+        "filters", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private void writeCov(
@@ -176,7 +176,7 @@ public class GnomAdAnnotatedSequenceVariantPartitionWriter
     gnomAdAnnotationDataSetEncoder.encodeCov(covIt, memBuffer);
 
     // write
-    binaryPartitionWriter.write(partitionKey, "cov", Compression.ZSTD, IoMode.DIRECT, memBuffer);
+    binaryPartitionWriter.write("cov", Compression.ZSTD, IoMode.DIRECT, memBuffer, partitionKey);
   }
 
   private MemoryBuffer getHeapBackedScratchBuffer(long minCapacity) {

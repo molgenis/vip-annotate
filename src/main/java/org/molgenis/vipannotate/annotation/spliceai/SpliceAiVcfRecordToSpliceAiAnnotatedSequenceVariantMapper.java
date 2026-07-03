@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation.spliceai;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.annotation.spec.SequenceVariantType;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
 import org.molgenis.vipannotate.format.vcf.Ref;
 import org.molgenis.vipannotate.util.AlleleUtils;

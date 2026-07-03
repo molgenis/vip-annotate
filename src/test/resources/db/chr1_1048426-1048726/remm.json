@@ -1,0 +1,57 @@
+{
+  "id": "phylop",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "file": "ReMM.v0.4.hg38.tsv.gz",
+    "coordinate_system": "1-based",
+    "contig": 0,
+    "start": 1,
+    "annotation": 2
+  },
+  "schema": {
+    "annotation_type": "position",
+    "supported_variant_types": [
+      "snv",
+      "mnv",
+      "indel",
+      "insertion",
+      "deletion"
+    ],
+    "annotation_datasets": [
+      {
+        "id": "score",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "scalar_type": "f64",
+            "nullable": true
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 1,
+              "max": 255
+            },
+            "null_code": 0
+          }
+        }
+      }
+    ],
+    "annotation_selector": "max_value"
+  },
+  "output": {
+    "type": "vcf",
+    "infoId": "REMM",
+    "infoNumber": "A",
+    "infoType": "Float",
+    "infoDescription": "REMM score",
+    "infoVersion": "1.0.0"
+  }
+}

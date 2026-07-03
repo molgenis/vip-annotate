@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation.spliceai;
 
 import static org.molgenis.vipannotate.util.Numbers.safeIntToByte;
 
-import org.molgenis.vipannotate.format.vcf.StringView;
+import org.molgenis.vipannotate.format.StringView;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 public class SpliceAiParser {

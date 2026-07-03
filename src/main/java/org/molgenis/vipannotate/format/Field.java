@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.format.vcf;
+package org.molgenis.vipannotate.format;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -16,13 +16,13 @@ public abstract class Field {
 
   /// Resets the field view to point to a new field. Will clear parsed state and
   /// reset internal structures (if any).
-  final void reset(String fieldRaw) {
+  public final void reset(String fieldRaw) {
     reset(fieldRaw, 0, fieldRaw.length());
   }
 
   /// Resets the field to point to a new range in the input string. Will clear parsed state and
   /// reset internal structures (if any).
-  final void reset(CharSequence dataLine, int from, int to) {
+  public final void reset(CharSequence dataLine, int from, int to) {
     fieldRawView.reset(dataLine, from, to);
     if (parsed) {
       parsed = false;
@@ -49,7 +49,7 @@ public abstract class Field {
     // default: no-op
   }
 
-  /// Writes the raw unparsed view. Subclasses may override for custom output behavior.
+  /// Writes the raw unparsed view. Subclasses may override for custom outputFormat behavior.
   public void write(Writer writer) throws IOException {
     writer.append(fieldRawView);
   }

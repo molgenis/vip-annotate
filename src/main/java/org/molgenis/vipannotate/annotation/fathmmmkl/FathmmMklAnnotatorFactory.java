@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation.fathmmmkl;
 
-import static org.molgenis.vipannotate.annotation.SequenceVariantType.SNV;
+import static org.molgenis.vipannotate.annotation.spec.SequenceVariantType.SNV;
 
 import java.nio.file.Path;
 import java.util.EnumSet;
@@ -19,7 +19,7 @@ public class FathmmMklAnnotatorFactory
   }
 
   @Override
-  public VcfRecordAnnotator create(Path annotationsDir) {
+  public VcfRecordAnnotatorOld create(Path annotationsDir) {
     PartitionedVdbArchiveReader archiveReader =
         createArchiveReader(annotationsDir, "fathmmmkl.zip");
 

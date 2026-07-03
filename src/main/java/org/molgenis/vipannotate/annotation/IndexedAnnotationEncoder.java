@@ -4,6 +4,6 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.IndexRange;
 
 public interface IndexedAnnotationEncoder<T extends Annotation>
-    extends AnnotationEncoder<IndexedAnnotation<T>> {
+    extends AnnotationEncoderOld<IndexedAnnotation<T>> {
   void clear(IndexRange indexRange, MemoryBuffer memoryBuffer);
 }

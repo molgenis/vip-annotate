@@ -4,11 +4,12 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.annotation.spec.SequenceVariantType;
 import org.molgenis.vipannotate.format.vcf.*;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class SpliceAiAnnotator extends BaseVcfRecordAnnotator<SpliceAiAnnotation> {
+public class SpliceAiAnnotator extends BaseVcfRecordAnnotatorOld<SpliceAiAnnotation> {
   private static final String INFO_ID_SPLICEAI = "SpliceAI";
 
   private final SequenceVariantAnnotationDb<SequenceVariant, SpliceAiAnnotation> annotationDb;

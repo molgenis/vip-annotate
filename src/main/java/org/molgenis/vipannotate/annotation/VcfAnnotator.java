@@ -11,13 +11,13 @@ public class VcfAnnotator implements AutoCloseable {
   private static final int LOG_EVERY_N = 100000;
 
   private final VcfParser vcfParser;
-  private final VcfRecordAnnotator vcfRecordAnnotator;
+  private final VcfAnnotationEngine vcfAnnotationEngine;
   private final VcfWriter vcfWriter;
 
   public void annotate() {
     // update header
     VcfHeader vcfHeader = vcfParser.getHeader();
-    vcfRecordAnnotator.updateHeader(vcfHeader);
+    vcfAnnotationEngine.updateHeader(vcfHeader);
     vcfWriter.writeHeader(vcfHeader);
 
     // update records
@@ -28,7 +28,7 @@ public class VcfAnnotator implements AutoCloseable {
     int nextLogThreshold = LOG_EVERY_N;
     while (vcfParser.hasNext()) {
       List<VcfRecord> batch = vcfParser.next();
-      vcfRecordAnnotator.annotate(batch);
+      vcfAnnotationEngine.annotate(batch);
       vcfWriter.write(batch);
 
       // log progress
@@ -54,6 +54,6 @@ public class VcfAnnotator implements AutoCloseable {
 
   @Override
   public void close() {
-    ClosableUtils.closeAll(vcfWriter, vcfRecordAnnotator, vcfParser);
+    ClosableUtils.closeAll(vcfWriter, vcfAnnotationEngine, vcfParser);
   }
 }

@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation.phylop;
 
-import static org.molgenis.vipannotate.annotation.SequenceVariantType.OTHER;
-import static org.molgenis.vipannotate.annotation.SequenceVariantType.STRUCTURAL;
+import static org.molgenis.vipannotate.annotation.spec.SequenceVariantType.OTHER;
+import static org.molgenis.vipannotate.annotation.spec.SequenceVariantType.STRUCTURAL;
 
 import java.nio.file.Path;
 import java.util.EnumSet;
@@ -18,7 +18,7 @@ public class PhyloPAnnotatorFactory extends PositionAnnotatorFactory<DoubleValue
   }
 
   @Override
-  public VcfRecordAnnotator create(Path annotationsDir) {
+  public VcfRecordAnnotatorOld create(Path annotationsDir) {
     PartitionedVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "phylop.zip");
 
     AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =

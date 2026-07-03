@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
-import static org.molgenis.vipannotate.annotation.SequenceVariantType.*;
+import static org.molgenis.vipannotate.annotation.spec.SequenceVariantType.*;
 
 import java.nio.file.Path;
 import java.util.EnumSet;
@@ -19,7 +19,7 @@ public class SpliceAiAnnotatorFactory
   }
 
   @Override
-  public VcfRecordAnnotator create(Path annotationsDir) {
+  public VcfRecordAnnotatorOld create(Path annotationsDir) {
     PartitionedVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "spliceai.zip");
 
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =

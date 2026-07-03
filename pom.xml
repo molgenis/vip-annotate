@@ -17,6 +17,7 @@
         <version.errorprone>2.44.0</version.errorprone>
         <version.graalvm.native.maven.plugin>0.11.3</version.graalvm.native.maven.plugin>
         <version.jacoco.maven.plugin>0.8.14</version.jacoco.maven.plugin>
+        <version.jackson>3.1.4</version.jackson><!-- 3.1.x is latest LTS -->
         <version.jspecify>1.0.0</version.jspecify>
         <version.junit.bom>6.0.1</version.junit.bom>
         <version.lombok>1.18.42</version.lombok>
@@ -426,6 +427,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -433,6 +439,10 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

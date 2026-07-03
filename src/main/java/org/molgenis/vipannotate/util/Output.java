@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Output file
  *
- * @param path file path or <code>null</code> for stdout output
+ * @param path file path or <code>null</code> for stdout outputFormat
  */
 public record Output(@Nullable Path path) {
   public Output {

@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate.format.vcf;
+package org.molgenis.vipannotate.format;
 
 public final class StringView implements CharSequence {
   private CharSequence str;

@@ -19,7 +19,7 @@ public class AnnotateCommand implements Command {
     VcfType outputVcfType = annotateArgs.vcfType();
 
     if (outputVcf.path() == null) {
-      // output vcf is written to System.out, redirect logs to System.err
+      // outputFormat vcf is written to System.out, redirect logs to System.err
       Logger.REDIRECT_STDOUT_TO_STDERR = true;
     }
 

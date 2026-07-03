@@ -8,7 +8,7 @@ import org.molgenis.vipannotate.format.vcf.*;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class FathmmMklAnnotator extends BaseVcfRecordAnnotator<FathmmMklAnnotation> {
+public class FathmmMklAnnotator extends BaseVcfRecordAnnotatorOld<FathmmMklAnnotation> {
   private static final String INFO_ID_FATHMM_MKL = "FATHMM_MKL";
 
   private final SequenceVariantAnnotationDb<SequenceVariant, FathmmMklAnnotation> annotationDb;

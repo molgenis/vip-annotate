@@ -1,20 +1,15 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
-import org.molgenis.vipannotate.format.vcf.VcfHeader;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 
-public interface VcfRecordAnnotator extends AutoCloseable {
-  void updateHeader(VcfHeader vcfHeader);
+public interface VcfRecordAnnotator extends AutoCloseableNoThrow {
+  void annotate(VcfRecord vcfRecord, AnnotationMode annotationMode);
 
-  void annotate(VcfRecord vcfRecord);
-
-  default void annotate(List<VcfRecord> vcfRecords) {
+  default void annotate(List<VcfRecord> vcfRecords, AnnotationMode annotationMode) {
     for (VcfRecord vcfRecord : vcfRecords) {
-      annotate(vcfRecord);
+      annotate(vcfRecord, annotationMode);
     }
   }
-
-  @Override
-  void close();
 }

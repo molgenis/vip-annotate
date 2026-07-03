@@ -7,7 +7,8 @@ import org.molgenis.vipannotate.format.vcf.Info;
 import org.molgenis.vipannotate.format.vcf.VcfInfoSubfieldValueBuilder;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
-public abstract class BaseVcfRecordAnnotator<T extends Annotation> implements VcfRecordAnnotator {
+public abstract class BaseVcfRecordAnnotatorOld<T extends Annotation>
+    implements VcfRecordAnnotatorOld {
   // perf: reduce allocations and garbage collect pressure
   @Nullable private List<T> reusableAltAnnotations;
   @Nullable private VcfInfoSubfieldValueBuilder reusableVcfInfoBuilder;
