@@ -10,7 +10,7 @@ import org.molgenis.vipannotate.util.Quantizer;
 @RequiredArgsConstructor
 public class QuantizedAnnotationEncoder implements AnnotationEncoderTmp<ScalarAnnotation> {
   private final Quantizer quantizer;
-  private final WriteValueFunction writeValueFunction;
+  private final ValueWriter valueWriter;
   @Nullable private final Integer nullValue;
 
   @Override
@@ -28,9 +28,14 @@ public class QuantizedAnnotationEncoder implements AnnotationEncoderTmp<ScalarAn
     }
   }
 
+  @Override
+  public long getEncodedSizeInBytes() {
+    return valueWriter.getValueSizeInBytes();
+  }
+
   private void encodeInto(DoubleAnnotation annotation, MemoryBuffer memBuffer, int index) {
     int quantizedValue = quantizer.quantize(annotation.getValue());
-    writeValueFunction.apply(quantizedValue, memBuffer, index);
+    valueWriter.write(quantizedValue, memBuffer, index);
   }
 
   private void encodeInto(NullableDoubleAnnotation annotation, MemoryBuffer memBuffer, int index) {
@@ -43,6 +48,6 @@ public class QuantizedAnnotationEncoder implements AnnotationEncoderTmp<ScalarAn
     } else {
       quantizedValue = quantizer.quantize(annotation.getValue());
     }
-    writeValueFunction.apply(quantizedValue, memBuffer, index);
+    valueWriter.write(quantizedValue, memBuffer, index);
   }
 }

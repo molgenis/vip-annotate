@@ -103,11 +103,20 @@ public class AnnotationDbBuilder {
         createEncoder(annotationDataset.annotationValue(), false);
 
     AnnotationDatasetEncoder<T> annotationDatasetEncoder =
-        (annotationIt, _, memBuffer) ->
+        new AnnotationDatasetEncoder<>() {
+
+          @Override
+          public long getEncodedSizeInBytes(int annotationCount) {
+            return Math.multiplyExact(annotationCount, annotationEncoder.getEncodedSizeInBytes());
+          }
+
+          @Override
+          public void encode(
+              SizedIterator<T> annotationIt, int maxAnnotations, MemoryBuffer memBuffer) {
             annotationIt.forEachRemaining(
-                value -> {
-                  annotationEncoder.encodeInto(value, memBuffer, -1); // FIXME
-                });
+                value -> annotationEncoder.encodeInto(value, memBuffer, -1)); // FIXME
+          }
+        };
 
     // TODO check if only needs to be created once
     VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
@@ -209,36 +218,40 @@ public class AnnotationDbBuilder {
 
         // create value writer
         // FIXME use storage and logical type
-        WriteValueFunction writeValueFunction = createWriteValueFunction(storageType, writeAtIndex);
+        ValueWriter valueWriter = createValueWriter(storageType, writeAtIndex);
 
         yield (AnnotationEncoderTmp<T>)
-            new QuantizedAnnotationEncoder(
-                quantizer, writeValueFunction, quantizedEncoding.nullCode());
+            new QuantizedAnnotationEncoder(quantizer, valueWriter, quantizedEncoding.nullCode());
       }
     };
   }
 
-  private static WriteValueFunction createWriteValueFunction(
-      StorageType storageType, boolean writeAtIndex) {
+  private static ValueWriter createValueWriter(StorageType storageType, boolean writeAtIndex) {
     return switch (storageType.scalarType()) {
       case I8, U8 ->
-          writeAtIndex
-              ? (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setByteAtIndexUnchecked(index, (byte) value)
-              : (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putByteUnchecked((byte) value);
+          new ValueWriter(
+              writeAtIndex
+                  ? (int value, MemoryBuffer memoryBuffer, int index) ->
+                      memoryBuffer.setByteAtIndexUnchecked(index, (byte) value)
+                  : (int value, MemoryBuffer memoryBuffer, int _) ->
+                      memoryBuffer.putByteUnchecked((byte) value),
+              Byte.BYTES);
       case I16, U16 ->
-          writeAtIndex
-              ? (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setShortAtIndexUnchecked(index, (short) value)
-              : (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putShortUnchecked((short) value);
+          new ValueWriter(
+              writeAtIndex
+                  ? (int value, MemoryBuffer memoryBuffer, int index) ->
+                      memoryBuffer.setShortAtIndexUnchecked(index, (short) value)
+                  : (int value, MemoryBuffer memoryBuffer, int _) ->
+                      memoryBuffer.putShortUnchecked((short) value),
+              Short.BYTES);
       case I32, U32 ->
-          writeAtIndex
-              ? (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setIntAtIndexUnchecked(index, value)
-              : (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putIntUnchecked(value);
+          new ValueWriter(
+              writeAtIndex
+                  ? (int value, MemoryBuffer memoryBuffer, int index) ->
+                      memoryBuffer.setIntAtIndexUnchecked(index, value)
+                  : (int value, MemoryBuffer memoryBuffer, int _) ->
+                      memoryBuffer.putIntUnchecked(value),
+              Integer.BYTES);
       default ->
           throw new UnsupportedOperationException(
               "Unsupported storage type: %s"

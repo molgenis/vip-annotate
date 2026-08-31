@@ -41,7 +41,7 @@ public class AnnotatedPositionPartitionWriter<
     int maxAnnotations = partition.calcMaxPos();
 
     // encode
-    long encodedSize = annotationDatasetEncoder.calcEncodedSize(maxAnnotations);
+    long encodedSize = annotationDatasetEncoder.getEncodedSizeInBytes(maxAnnotations);
     MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedSize);
     annotationDatasetEncoder.encode(intervalIt, maxAnnotations, memBuffer);
 

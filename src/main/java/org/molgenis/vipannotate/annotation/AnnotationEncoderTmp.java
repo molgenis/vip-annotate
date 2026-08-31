@@ -8,4 +8,6 @@ public interface AnnotationEncoderTmp<T extends Annotation> {
 
   /** Encode an annotation into the given {@link MemoryBuffer}. */
   void encodeInto(T annotation, MemoryBuffer memoryBuffer, int index);
+
+  long getEncodedSizeInBytes();
 }

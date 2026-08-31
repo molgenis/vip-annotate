@@ -37,8 +37,9 @@ public class AnnotatedSequenceVariantPartitionWriter<
             annotatedVariants.size());
 
     // encode
-    long encodedSize = annotationIt.getSize() * Byte.BYTES; // FIXME hardcoded
-    MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedSize);
+    long encodedAnnotationByteSize =
+        annotationDatasetEncoder.getEncodedSizeInBytes(annotationIt.getSize());
+    MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedAnnotationByteSize);
     annotationDatasetEncoder.encode(annotationIt, -1, memBuffer); // FIXME remove maxAnnotations
 
     // write
