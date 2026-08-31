@@ -14,7 +14,7 @@
         <native.image.skip>false</native.image.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <version.errorprone>2.44.0</version.errorprone>
+        <version.errorprone>2.50.0</version.errorprone>
         <version.graalvm.native.maven.plugin>0.11.3</version.graalvm.native.maven.plugin>
         <version.jacoco.maven.plugin>0.8.14</version.jacoco.maven.plugin>
         <version.jackson>3.1.4</version.jackson><!-- 3.1.x is latest LTS -->
@@ -31,7 +31,7 @@
         <version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
         <version.maven.surefire.plugin>3.5.4</version.maven.surefire.plugin>
         <version.mockito>5.21.0</version.mockito>
-        <version.nullaway>0.12.15</version.nullaway>
+        <version.nullaway>0.14.1</version.nullaway>
         <version.spotless.maven.plugin>3.0.0</version.spotless.maven.plugin>
     </properties>
 
