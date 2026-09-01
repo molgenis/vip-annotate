@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.util.Logger;
 
 /**
  * Writes annotated genomic intervals to a partitioned database
@@ -24,7 +25,13 @@ public class AnnotatedIntervalDbWriter<
     for (PartitionIterator<T, U, V> partitionIt =
             new PartitionIterator<>(annotatedFeatureIt, reusableAnnotatedIntervals);
         partitionIt.hasNext(); ) {
-      annotatedIntervalPartitionWriter.write(partitionIt.next());
+      Partition<T, U, V> partition = partitionIt.next();
+      if (Logger.isDebugEnabled()) {
+        Logger.debug(
+            "processing partition %s/%d",
+            partition.key().contig().getName(), partition.key().bin());
+      }
+      annotatedIntervalPartitionWriter.write(partition);
     }
   }
 }

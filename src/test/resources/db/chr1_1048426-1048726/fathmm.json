@@ -9,7 +9,9 @@
     "start": 1,
     "ref": 2,
     "alt": 3,
-    "annotation": 4
+    "annotations": [
+      4
+    ]
   },
   "schema": {
     "annotation_type": "sequence_variant",

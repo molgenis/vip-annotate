@@ -1,39 +1,38 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.format.vdb.Compression;
 import org.molgenis.vipannotate.format.vdb.IoMode;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.util.Numbers;
 import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 
 @RequiredArgsConstructor
 public class AnnotatedSequenceVariantPartitionWriter<
-        T extends SequenceVariant, U extends Annotation, V extends AnnotatedInterval<T, U>>
-    implements AnnotatedIntervalPartitionWriter<T, U, V> {
+        T extends SequenceVariant,
+        U extends Annotation, // type of sequence variant annotation
+        V extends Annotation, // type of sequence variant annotation part to write to partition
+        W extends AnnotatedInterval<T, U>>
+    implements AnnotatedIntervalPartitionWriter<T, U, W> {
   private final String annotationDataId;
-  private final AnnotationDatasetEncoder<U> annotationDatasetEncoder;
+  private final AnnotationDatasetEncoder<V> annotationDatasetEncoder;
   private final BinaryPartitionWriter binaryPartitionWriter;
+  private final Function<W, V> annotationExtractor;
+
   @Nullable private MemoryBuffer scratchBuffer;
 
   @Override
-  public void write(Partition<T, U, V> partition) {
-    if (Logger.isDebugEnabled()) {
-      Logger.debug(
-          "processing partition %s/%d", partition.key().contig().getName(), partition.key().bin());
-    }
-
+  public void write(Partition<T, U, W> partition) {
     // prepare
-    List<V> annotatedVariants = partition.annotatedIntervals();
-    SizedIterator<U> annotationIt =
+    List<W> annotatedVariants = partition.annotatedIntervals();
+    SizedIterator<V> annotationIt =
         new SizedIterator<>(
-            new TransformingIterator<>(
-                annotatedVariants.iterator(), AnnotatedInterval::getAnnotation),
+            new TransformingIterator<>(annotatedVariants.iterator(), annotationExtractor),
             annotatedVariants.size());
 
     // encode

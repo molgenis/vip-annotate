@@ -13,6 +13,7 @@ import org.molgenis.vipannotate.annotation.spec.AnnotationSpec;
 import org.molgenis.vipannotate.format.vdb.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Logger;
+import tools.jackson.databind.DatabindException;
 
 public class DbBuildCommand implements Command {
   @Override
@@ -51,7 +52,13 @@ public class DbBuildCommand implements Command {
         MemoryBuffer.wrap(new byte[bytes.length + MemoryBuffer.VAR_INT_MAX_BYTE_SIZE])) {
       memBuffer.putByteArray(bytes);
       memBuffer.flip();
-      AnnotationSpec annotationSpec = AnnotationSpecReader.create().readSpec(memBuffer);
+
+      AnnotationSpec annotationSpec;
+      try {
+        annotationSpec = AnnotationSpecReader.create().readSpec(memBuffer);
+      } catch (DatabindException e) {
+        throw new IllegalStateException("error parsing %s".formatted(inputRecipe), e);
+      }
 
       VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
       VdbArchiveWriter vdbArchiveWriter =

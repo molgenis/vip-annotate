@@ -12,7 +12,7 @@ public record TsvInputFormat(
     @JsonProperty(value = "end") Integer end,
     @JsonProperty(value = "ref") Integer ref,
     @JsonProperty(value = "alt") Integer alt,
-    @JsonProperty(value = "annotation", required = true) int annotation)
+    @JsonProperty(value = "annotations", required = true) int[] annotations)
     implements InputFormat {
   @Override
   public InputFormatType type() {

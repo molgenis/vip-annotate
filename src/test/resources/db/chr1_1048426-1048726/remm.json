@@ -7,7 +7,9 @@
     "coordinate_system": "1-based",
     "contig": 0,
     "start": 1,
-    "annotation": 2
+    "annotations": [
+      2
+    ]
   },
   "schema": {
     "annotation_type": "position",

@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
@@ -54,11 +55,11 @@ public class AnnotationDbBuilder {
         try (TsvParser tsvParser = TsvParserFactory.create(tsvInput)) {
           switch (annotationSpec.annotationSchema().annotationType()) {
             case SEQUENCE_VARIANT -> {
-              Iterator<AnnotatedSequenceVariant<Annotation>> annotatedIterator =
+              Iterator<AnnotatedSequenceVariant<CompositeAnnotation>> annotatedIterator =
                   Iterators.map(
                       tsvParser, tsvFeature -> createSeqVarFromTsv(tsvFeature, tsvInputFormat));
 
-              createAnnotatedSequenceVariantDb(
+              createCompositeAnnotatedSequenceVariantDb(
                   annotatedIterator,
                   annotationSpec.annotationSchema().annotationDatasets(),
                   partitionWriter);
@@ -88,35 +89,32 @@ public class AnnotationDbBuilder {
         GenomicIterators.iteratePositions());
   }
 
-  private <T extends Annotation> void createAnnotatedSequenceVariantDb(
-      Iterator<AnnotatedSequenceVariant<T>> annotatedIterator,
+  private void createCompositeAnnotatedSequenceVariantDb(
+      Iterator<AnnotatedSequenceVariant<CompositeAnnotation>> annotatedIterator,
       List<AnnotationDataset> annotationDatasets,
       BinaryPartitionWriter partitionWriter) {
+    List<
+            AnnotatedSequenceVariantPartitionWriter<
+                SequenceVariant,
+                CompositeAnnotation,
+                ScalarAnnotation,
+                AnnotatedSequenceVariant<CompositeAnnotation>>>
+        partitionWriters = new ArrayList<>(annotationDatasets.size());
 
-    // get annotation dataset definition
-    if (annotationDatasets.size() != 1) {
-      throw new IllegalArgumentException(); // FIXME handle other sizes
+    for (int i = 0; i < annotationDatasets.size(); i++) {
+      AnnotationDataset annotationDataset = annotationDatasets.get(i);
+      int annotationIndex = i;
+
+      AnnotationDatasetEncoder<ScalarAnnotation> annotationDatasetEncoder =
+          createAnnotationDatasetEncoder(annotationDataset);
+
+      partitionWriters.add(
+          new AnnotatedSequenceVariantPartitionWriter<>(
+              annotationDataset.id(),
+              annotationDatasetEncoder,
+              partitionWriter,
+              variant -> variant.getAnnotation().annotations()[annotationIndex]));
     }
-    AnnotationDataset annotationDataset = annotationDatasets.getFirst();
-
-    AnnotationEncoderTmp<T> annotationEncoder =
-        createEncoder(annotationDataset.annotationValue(), false);
-
-    AnnotationDatasetEncoder<T> annotationDatasetEncoder =
-        new AnnotationDatasetEncoder<>() {
-
-          @Override
-          public long getEncodedSizeInBytes(int annotationCount) {
-            return Math.multiplyExact(annotationCount, annotationEncoder.getEncodedSizeInBytes());
-          }
-
-          @Override
-          public void encode(
-              SizedIterator<T> annotationIt, int maxAnnotations, MemoryBuffer memBuffer) {
-            annotationIt.forEachRemaining(
-                value -> annotationEncoder.encodeInto(value, memBuffer, -1)); // FIXME
-          }
-        };
 
     // TODO check if only needs to be created once
     VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
@@ -124,16 +122,39 @@ public class AnnotationDbBuilder {
         SequenceVariantAnnotationIndexDispatcherWriterFactory.create(memBufferFactory)
             .createWriter();
 
-    try (AnnotatedSequenceVariantPartitionWriter<SequenceVariant, T, AnnotatedSequenceVariant<T>>
+    try (CompositeAnnotatedSequenceVariantPartitionWriter<
+            SequenceVariant, AnnotatedSequenceVariant<CompositeAnnotation>>
         variantPartitionWriter =
-            new AnnotatedSequenceVariantPartitionWriter<>(
-                annotationDataset.id(), annotationDatasetEncoder, partitionWriter)) {
+            new CompositeAnnotatedSequenceVariantPartitionWriter<>(partitionWriters)) {
+
       new AnnotatedSequenceVariantDbWriter<>(
               variantPartitionWriter,
               new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
               SequenceVariantEncoderDispatcherFactory.create())
           .write(annotatedIterator);
     }
+  }
+
+  private static <T extends Annotation>
+      @NonNull AnnotationDatasetEncoder<T> createAnnotationDatasetEncoder(
+          AnnotationDataset annotationDataset) {
+    AnnotationEncoderTmp<T> annotationEncoder =
+        createEncoder(annotationDataset.annotationValue(), false);
+
+    return new AnnotationDatasetEncoder<>() {
+
+      @Override
+      public long getEncodedSizeInBytes(int annotationCount) {
+        return Math.multiplyExact(annotationCount, annotationEncoder.getEncodedSizeInBytes());
+      }
+
+      @Override
+      public void encode(
+          SizedIterator<T> annotationIt, int maxAnnotations, MemoryBuffer memBuffer) {
+        annotationIt.forEachRemaining(
+            value -> annotationEncoder.encodeInto(value, memBuffer, -1)); // FIXME
+      }
+    };
   }
 
   private void createAnnotatedIntervalDb(
@@ -294,7 +315,11 @@ public class AnnotationDbBuilder {
       String[] tsvFeature, TsvInputFormat tsvInputFormat) {
     int idxContig = tsvInputFormat.contig();
     int idxStart = tsvInputFormat.start();
-    int idxAnnotation = tsvInputFormat.annotation();
+    int[] idxAnnotations = tsvInputFormat.annotations();
+    if (idxAnnotations.length != 1) {
+      throw new UnsupportedOperationException("not implemented"); // FIXME
+    }
+    int idxAnnotation = idxAnnotations[0];
 
     Contig contig = new Contig(tsvFeature[idxContig], 9); // FIXME
     int start = Integer.parseInt(tsvFeature[idxStart]);
@@ -339,7 +364,20 @@ public class AnnotationDbBuilder {
 
   private <T extends Annotation> T createAnnotationFromTsvFeature(
       String[] tsvFeature, TsvInputFormat tsvInputFormat) {
-    int idxAnnotation = tsvInputFormat.annotation();
-    return (T) new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
+    int[] idxAnnotations = tsvInputFormat.annotations();
+    if (idxAnnotations.length == 0) {
+      throw new IllegalArgumentException();
+      //    }
+      //    else if (idxAnnotations.length == 1) {
+      //      int idxAnnotation = idxAnnotations[0];
+      //      return (T) new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
+    } else {
+      ScalarAnnotation[] scalarAnnotations = new ScalarAnnotation[idxAnnotations.length];
+      for (int i = 0; i < idxAnnotations.length; i++) {
+        int idxAnnotation = idxAnnotations[i];
+        scalarAnnotations[i] = new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
+      }
+      return (T) new CompositeAnnotation(scalarAnnotations);
+    }
   }
 }

@@ -26,11 +26,12 @@ public class AppDbAndAnnotateIT {
               ##reference=file:///references/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
               ##contig=<ID=chr1,length=248956422>
               ##INFO=<ID=FATHMM_MKL,NUMBER=A,TYPE=Float,DESCRIPTION="FATHMM-MKL score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
+              ##INFO=<ID=gnomAD,NUMBER=A,TYPE=String,DESCRIPTION="gnomAD v4.1.0 annotation formatted as 'SRC|AF|FAF95|FAF99|HN|QC|COV'; SRC=source (E=exomes, G=genomes, T=total), AF=allele frequency, FAF95=filtering allele frequency (95% confidence), FAF99=filtering allele frequency (99% confidence), HN=number of homozygotes, QC=quality control filters that failed, COV=coverage (percent of individuals in gnomAD source)",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
               ##INFO=<ID=ncER,NUMBER=A,TYPE=Float,DESCRIPTION="ncER score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
               ##INFO=<ID=phyloP,NUMBER=A,TYPE=Float,DESCRIPTION="phyloP score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
               ##INFO=<ID=REMM,NUMBER=A,TYPE=Float,DESCRIPTION="REMM score",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
               #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-              chr1	1048426	.	G	A	.	.	FATHMM_MKL=0.133;ncER=95.642;phyloP=-0.288;REMM=0.024
+              chr1	1048426	.	G	A	.	.	FATHMM_MKL=0.133;gnomAD=T|0|0|0|0||0.7699;ncER=95.642;phyloP=-0.288;REMM=0.024
               chr1	1048426	.	G	GT	.	.	ncER=95.642;phyloP=-0.288;REMM=0.024
               chr1	1048426	.	GT	G	.	.	ncER=95.898;phyloP=-0.288;REMM=0.043
               chr1	1048426	.	GTG	G	.	.	ncER=96.788;phyloP=-0.288;REMM=0.402
@@ -70,6 +71,7 @@ public class AppDbAndAnnotateIT {
     // update thresholds in case index got smaller
     assertAll(
         () -> assertEquals(16723L, Files.size(dbDir.resolve("fathmm.vdb"))),
+        () -> assertEquals(16856L, Files.size(dbDir.resolve("gnomad.vdb"))),
         () -> assertEquals(12451L, Files.size(dbDir.resolve("ncer.vdb"))),
         () -> assertEquals(12451L, Files.size(dbDir.resolve("phylop.vdb"))),
         () -> assertEquals(12448L, Files.size(dbDir.resolve("remm.vdb"))),
@@ -77,19 +79,19 @@ public class AppDbAndAnnotateIT {
   }
 
   private void createDbs() {
-    List<String> recipeList = List.of("fathmm.json", "ncer.json", "phylop.json", "remm.json");
+    List<String> recipeList =
+        List.of("fathmm.json", "gnomad.json", "ncer.json", "phylop.json", "remm.json");
     recipeList.forEach(
-        recipeFilename -> {
-          App.main(
-              new String[] {
-                "--debug",
-                "database-build",
-                "--recipe",
-                getResource("db/chr1_1048426-1048726/%s".formatted(recipeFilename)).toString(),
-                "--output-dir",
-                dbDir.toString()
-              });
-        });
+        recipeFilename ->
+            App.main(
+                new String[] {
+                  "--debug",
+                  "database-build",
+                  "--recipe",
+                  getResource("db/chr1_1048426-1048726/%s".formatted(recipeFilename)).toString(),
+                  "--output-dir",
+                  dbDir.toString()
+                }));
   }
 
   private String annotateVcf(String vcfResourceName) {
