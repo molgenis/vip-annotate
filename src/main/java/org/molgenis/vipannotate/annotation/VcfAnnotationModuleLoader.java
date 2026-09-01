@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.annotation.spec.AnnotationDataset;
@@ -28,7 +29,7 @@ public class VcfAnnotationModuleLoader {
     AnnotationSpec annotationSpec = schemaLoader.load(archiveReader);
 
     VcfHeaderAnnotator headerAnnotator = createHeaderAnnotator(annotationSpec);
-    VcfRecordAnnotator recordAnnotator = createRecordAnnotator(annotationSpec, archiveReader);
+    VcfRecordAnnotator<?> recordAnnotator = createRecordAnnotator(annotationSpec, archiveReader);
     return new VcfAnnotationModule(headerAnnotator, recordAnnotator);
   }
 
@@ -43,7 +44,7 @@ public class VcfAnnotationModuleLoader {
         "%s+db%s".formatted(AppMetadata.getVersion(), output.infoVersion()));
   }
 
-  private AnnotationDatasetReader<ScalarAnnotation> createScalarAnnotationDatasetReader(
+  private ScalarAnnotationDatasetReader createScalarAnnotationDatasetReader(
       AnnotationDataset annotationDataset, PartitionedVdbArchiveReader archiveReader) {
     AnnotationDecoder<ScalarAnnotation> annotationDecoder =
         createAnnotationDecoder(annotationDataset.annotationValue());
@@ -94,74 +95,82 @@ public class VcfAnnotationModuleLoader {
         new DoubleInterval(range.min(), range.max()), new IntInterval(levels.min(), levels.max()));
   }
 
-  private AnnotationDatasetReader<?> createCompositeAnnotationDatasetReader(
-      List<AnnotationDataset> annotationDataset, PartitionedVdbArchiveReader archiveReader) {
-    throw new RuntimeException("Not implemented");
+  private AnnotationDatasetReader<CompositeAnnotation> createCompositeAnnotationDatasetReader(
+      List<AnnotationDataset> annotationDatasets, PartitionedVdbArchiveReader archiveReader) {
+    ScalarAnnotationDatasetReader[] annotationDatasetReaders =
+        new ScalarAnnotationDatasetReader[annotationDatasets.size()];
+    for (int i = 0; i < annotationDatasets.size(); i++) {
+      annotationDatasetReaders[i] =
+          createScalarAnnotationDatasetReader(annotationDatasets.get(i), archiveReader);
+    }
+    return new CompositeAnnotationDatasetReader(annotationDatasetReaders);
   }
 
-  private VcfRecordAnnotator createRecordAnnotator(
+  private VcfRecordAnnotator<?> createRecordAnnotator(
       AnnotationSpec annotationSpec, PartitionedVdbArchiveReader archiveReader) {
     AnnotationSchema annotationSchema = annotationSpec.annotationSchema();
+
+    Predicate<SequenceVariant> canAnnotate =
+        sequenceVariant ->
+            annotationSchema.supportedVariantTypes().contains(sequenceVariant.getType());
+
     return switch (annotationSchema.annotationType()) {
       case SEQUENCE_VARIANT -> {
         List<AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
+
+        SequenceVariantAnnotationIndexDispatcherReaderFactory<SequenceVariant>
+            indexDispatcherReaderFactory =
+                SequenceVariantAnnotationIndexDispatcherReaderFactory.create();
+        MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader =
+            indexDispatcherReaderFactory.createReader();
+
+        AnnotationIndexReader<SequenceVariant> annotationIndexReader =
+            new SequenceVariantAnnotationIndexReader<>(
+                new AnnotationBlobReader("idx", archiveReader), indexReader);
+
+        PartitionResolver partitionResolver = new PartitionResolver();
+
         yield switch (annotationDatasets.size()) {
           case 0 -> throw new IllegalStateException();
           case 1 -> {
-            SequenceVariantAnnotationIndexDispatcherReaderFactory<SequenceVariant>
-                indexDispatcherReaderFactory =
-                    SequenceVariantAnnotationIndexDispatcherReaderFactory.create();
-            MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader =
-                indexDispatcherReaderFactory.createReader();
-
-            AnnotationIndexReader<SequenceVariant> annotationIndexReader =
-                new SequenceVariantAnnotationIndexReader<>(
-                    new AnnotationBlobReader("idx", archiveReader), indexReader);
             AnnotationDatasetReader<ScalarAnnotation> annotationDatasetReader =
                 createScalarAnnotationDatasetReader(annotationDatasets.getFirst(), archiveReader);
+
             SequenceVariantAnnotationDb<SequenceVariant, ScalarAnnotation> annotationDb =
                 new SequenceVariantAnnotationDb<>(
-                    new PartitionResolver(),
-                    annotationIndexReader,
-                    annotationDatasetReader,
-                    (_) -> true); // FIXME hardcoded predicate
+                    partitionResolver, annotationIndexReader, annotationDatasetReader);
 
-            ScalarAnnotationSelector annotationSelector =
-                candidateAnnotations ->
-                    switch (candidateAnnotations.size()) {
-                      case 0 -> null;
-                      case 1 -> candidateAnnotations.getFirst();
-                      default ->
-                          NumberCollections.findMax(
-                              candidateAnnotations,
-                              scalarAnnotation ->
-                                  switch (scalarAnnotation) {
-                                    case ScalarAnnotation.DoubleAnnotation doubleAnnotation ->
-                                        doubleAnnotation.getValue();
-                                    case ScalarAnnotation.NullableDoubleAnnotation
-                                            nullableDoubleAnnotation ->
-                                        nullableDoubleAnnotation.isNull()
-                                            ? null
-                                            : nullableDoubleAnnotation.getValue();
-                                    default ->
-                                        throw new IllegalStateException(
-                                            "Unexpected value: " + scalarAnnotation); // FIXME
-                                  });
-                    };
+            ScalarAnnotationSelector annotationSelector = createScalarAnnotationSelector();
 
-            Predicate<SequenceVariant> canAnnotate =
-                sequenceVariant ->
-                    annotationSchema.supportedVariantTypes().contains(sequenceVariant.getType());
-
-            yield new ScalarIntervalVcfRecordAnnotator(
-                canAnnotate,
-                annotationDb,
-                annotationSelector,
-                new VcfRecordAnnotationWriter(
+            yield new VcfRecordAnnotator<>(
+                new SequenceVariantAnnotator<>(canAnnotate, annotationDb, annotationSelector),
+                new VcfRecordAnnotationWriter<>(
                     ((VcfOutputFormat) annotationSpec.outputFormat()).infoId()), // FIXME hardcoded
                 new VcfContigResolver()); // FIXME annotationId != infoId
           }
-          default -> throw new RuntimeException("Not implemented");
+          default -> {
+            AnnotationDatasetReader<CompositeAnnotation> annotationDatasetReader =
+                createCompositeAnnotationDatasetReader(annotationDatasets, archiveReader);
+
+            SequenceVariantAnnotationDb<SequenceVariant, CompositeAnnotation> annotationDb =
+                new SequenceVariantAnnotationDb<>(
+                    partitionResolver, annotationIndexReader, annotationDatasetReader);
+
+            yield new VcfRecordAnnotator<>(
+                new SequenceVariantAnnotator<>(
+                    canAnnotate,
+                    annotationDb,
+                    (annotationList) -> {
+                      if (annotationList.size() != 1) {
+                        // FIXME implement annotation selector for composite annotations
+                        throw new UnsupportedOperationException();
+                      }
+                      return annotationList.getFirst();
+                    }),
+                new VcfRecordAnnotationWriter<>(
+                    ((VcfOutputFormat) annotationSpec.outputFormat()).infoId()), // FIXME hardcoded
+                new VcfContigResolver()); // FIXME annotationId != infoId
+          }
         };
       }
       case POSITION -> {
@@ -174,38 +183,11 @@ public class VcfAnnotationModuleLoader {
             IntervalAnnotationDb<SequenceVariant, ScalarAnnotation> annotationDb =
                 new IntervalAnnotationDb<>(new PartitionResolver(), annotationDatasetReader);
 
-            ScalarAnnotationSelector annotationSelector =
-                candidateAnnotations ->
-                    switch (candidateAnnotations.size()) {
-                      case 0 -> null;
-                      case 1 -> candidateAnnotations.getFirst();
-                      default ->
-                          NumberCollections.findMax(
-                              candidateAnnotations,
-                              scalarAnnotation ->
-                                  switch (scalarAnnotation) {
-                                    case ScalarAnnotation.DoubleAnnotation doubleAnnotation ->
-                                        doubleAnnotation.getValue();
-                                    case ScalarAnnotation.NullableDoubleAnnotation
-                                            nullableDoubleAnnotation ->
-                                        nullableDoubleAnnotation.isNull()
-                                            ? null
-                                            : nullableDoubleAnnotation.getValue();
-                                    default ->
-                                        throw new IllegalStateException(
-                                            "Unexpected value: " + scalarAnnotation); // FIXME
-                                  });
-                    };
+            ScalarAnnotationSelector annotationSelector = createScalarAnnotationSelector();
 
-            Predicate<SequenceVariant> canAnnotate =
-                sequenceVariant ->
-                    annotationSchema.supportedVariantTypes().contains(sequenceVariant.getType());
-
-            yield new ScalarIntervalVcfRecordAnnotator<>(
-                canAnnotate,
-                annotationDb,
-                annotationSelector,
-                new VcfRecordAnnotationWriter(
+            yield new VcfRecordAnnotator<>(
+                new SequenceVariantAnnotator<>(canAnnotate, annotationDb, annotationSelector),
+                new VcfRecordAnnotationWriter<>(
                     ((VcfOutputFormat) annotationSpec.outputFormat()).infoId()), // FIXME hardcoded
                 new VcfContigResolver()); // FIXME annotationId != infoId
           }
@@ -213,6 +195,32 @@ public class VcfAnnotationModuleLoader {
         };
       }
     };
+  }
+
+  private static @NonNull ScalarAnnotationSelector createScalarAnnotationSelector() {
+    ScalarAnnotationSelector annotationSelector =
+        candidateAnnotations ->
+            switch (candidateAnnotations.size()) {
+              case 0 -> null;
+              case 1 -> candidateAnnotations.getFirst();
+              default ->
+                  NumberCollections.findMax(
+                      candidateAnnotations,
+                      scalarAnnotation ->
+                          switch (scalarAnnotation) {
+                            case ScalarAnnotation.DoubleAnnotation doubleAnnotation ->
+                                doubleAnnotation.getValue();
+                            case ScalarAnnotation.NullableDoubleAnnotation
+                                    nullableDoubleAnnotation ->
+                                nullableDoubleAnnotation.isNull()
+                                    ? null
+                                    : nullableDoubleAnnotation.getValue();
+                            default ->
+                                throw new IllegalStateException(
+                                    "Unexpected value: " + scalarAnnotation); // FIXME
+                          });
+            };
+    return annotationSelector;
   }
 
   public static VcfAnnotationModuleLoader create() {

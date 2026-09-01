@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -25,7 +24,7 @@ class SequenceVariantAnnotationDbTest {
   void setUp() {
     sequenceVariantAnnotationDb =
         new SequenceVariantAnnotationDb<>(
-            partitionResolver, annotationIndexReader, annotationDatasetReader, _ -> true);
+            partitionResolver, annotationIndexReader, annotationDatasetReader);
   }
 
   @AfterEach
@@ -130,15 +129,5 @@ class SequenceVariantAnnotationDbTest {
     assertAll(
         () -> verify(annotationIndexReader, times(1)).read(partitionKey0),
         () -> verify(annotationIndexReader, times(1)).readInto(partitionKey1, annotationIndex));
-  }
-
-  @Test
-  void findAnnotationsCanNotAnnotate() {
-    SequenceVariant sequenceVariant = mock(SequenceVariant.class);
-    assertEquals(
-        emptyList(),
-        new SequenceVariantAnnotationDb<>(
-                partitionResolver, annotationIndexReader, annotationDatasetReader, _ -> false)
-            .findAnnotations(sequenceVariant));
   }
 }

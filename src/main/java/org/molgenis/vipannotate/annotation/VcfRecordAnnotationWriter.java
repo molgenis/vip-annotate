@@ -7,7 +7,7 @@ import org.molgenis.vipannotate.format.vcf.VcfInfoSubfieldValueBuilder;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
 
 @RequiredArgsConstructor
-public class VcfRecordAnnotationWriter<T extends ScalarAnnotation> {
+public class VcfRecordAnnotationWriter<T extends Annotation> {
   private final String infoId;
   private final VcfInfoSubfieldValueBuilder reusableVcfInfoBuilder;
 
@@ -18,34 +18,65 @@ public class VcfRecordAnnotationWriter<T extends ScalarAnnotation> {
   public void appendAltAnnotation(@Nullable T altAnnotation) {
     if (altAnnotation == null) {
       reusableVcfInfoBuilder.appendValueMissing();
-      return;
-    }
-
-    switch (altAnnotation) {
-      case ScalarAnnotation.DoubleAnnotation doubleAnnotation ->
-          appendDoubleAnnotation(doubleAnnotation);
-      case ScalarAnnotation.NullableDoubleAnnotation nullableDoubleAnnotation ->
-          appendNullableDoubleAnnotation(nullableDoubleAnnotation);
-      default -> throw new RuntimeException(); // FIXME
-    }
-  }
-
-  private void appendNullableDoubleAnnotation(
-      ScalarAnnotation.NullableDoubleAnnotation nullableDoubleAnnotation) {
-    if (nullableDoubleAnnotation.isNull()) {
-      reusableVcfInfoBuilder.appendValueMissing();
     } else {
-      reusableVcfInfoBuilder.appendValue(
-          nullableDoubleAnnotation.getValue(), 3); // FIXME make configurable
+      appendAnnotation(altAnnotation);
     }
   }
 
-  private void appendDoubleAnnotation(ScalarAnnotation.DoubleAnnotation doubleAnnotation) {
-    reusableVcfInfoBuilder.appendValue(doubleAnnotation.getValue(), 3); // FIXME make configurable
+  private void appendAnnotation(Annotation annotation) {
+    switch (annotation) {
+      case ScalarAnnotation scalarAnnotation -> appendScalarAnnotation(scalarAnnotation);
+      case CompositeAnnotation compositeAnnotation ->
+          appendCompositeAnnotation(compositeAnnotation);
+      default ->
+          throw new IllegalArgumentException(
+              "Unsupported annotation type: " + annotation.getClass());
+    }
+  }
+
+  private void appendScalarAnnotation(ScalarAnnotation annotation) {
+    reusableVcfInfoBuilder.startRawValue();
+    appendRawScalarAnnotation(annotation);
+    reusableVcfInfoBuilder.endRawValue();
+  }
+
+  private void appendRawScalarAnnotation(ScalarAnnotation annotation) {
+    switch (annotation) {
+      case ScalarAnnotation.DoubleAnnotation doubleAnnotation ->
+          reusableVcfInfoBuilder.appendRaw(doubleAnnotation.getValue(), 3);
+
+      case ScalarAnnotation.NullableDoubleAnnotation nullableDoubleAnnotation -> {
+        if (nullableDoubleAnnotation.isNull()) {
+          reusableVcfInfoBuilder.appendRawMissing();
+        } else {
+          reusableVcfInfoBuilder.appendRaw(nullableDoubleAnnotation.getValue(), 3);
+        }
+      }
+
+      default ->
+          throw new UnsupportedOperationException(
+              "Unsupported scalar annotation type: " + annotation.getClass());
+    }
+  }
+
+  private void appendCompositeAnnotation(CompositeAnnotation compositeAnnotation) {
+    reusableVcfInfoBuilder.startRawValue();
+
+    ScalarAnnotation[] annotations = compositeAnnotation.annotations();
+    for (int i = 0; i < annotations.length; i++) {
+      if (i > 0) {
+        reusableVcfInfoBuilder.appendCompositeValueSeparator();
+      }
+
+      appendRawScalarAnnotation(annotations[i]);
+    }
+
+    reusableVcfInfoBuilder.endRawValue();
   }
 
   public void writeInfoSubField(VcfRecord vcfRecord, AnnotationMode annotationMode) {
     Info info = vcfRecord.getInfo();
+
     switch (annotationMode) {
       case ADD -> {
         if (!reusableVcfInfoBuilder.isEmptyValue()) {
@@ -60,6 +91,7 @@ public class VcfRecordAnnotationWriter<T extends ScalarAnnotation> {
         }
       }
     }
+
     reusableVcfInfoBuilder.reset();
   }
 }

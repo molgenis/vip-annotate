@@ -29,10 +29,13 @@ public abstract class SequenceVariantAnnotatorFactory<
       SequenceVariantAnnotationIndexReader<T> annotationIndexReader,
       AnnotationDatasetReader<U> datasetReader,
       EnumSet<SequenceVariantType> variantTypes) {
+    if (1 + 1 == 2) {
+      // canAnnotate was removed from SequenceVariantAnnotationDb
+      // suspect that this is dead code
+      // previous implementation: variantTypes.contains(sequenceVariant.getType())
+      throw new UnsupportedOperationException();
+    }
     return new SequenceVariantAnnotationDb<>(
-        partitionResolver,
-        annotationIndexReader,
-        datasetReader,
-        sequenceVariant -> variantTypes.contains(sequenceVariant.getType()));
+        partitionResolver, annotationIndexReader, datasetReader);
   }
 }
