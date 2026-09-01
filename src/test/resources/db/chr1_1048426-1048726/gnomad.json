@@ -10,6 +10,7 @@
     "ref": 2,
     "alt": 3,
     "annotations": [
+      15,
       21,
       22
     ]
@@ -20,6 +21,18 @@
       "snv"
     ],
     "annotation_datasets": [
+      {
+        "id": "nhomalt_joint",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i32"
+          },
+          "logical_type": {
+            "scalar_type": "i32",
+            "nullable": false
+          }
+        }
+      },
       {
         "id": "COV_genomes",
         "annotation_value": {

@@ -71,7 +71,7 @@ public class AppDbAndAnnotateIT {
     // update thresholds in case index got smaller
     assertAll(
         () -> assertEquals(16723L, Files.size(dbDir.resolve("fathmm.vdb"))),
-        () -> assertEquals(25068L, Files.size(dbDir.resolve("gnomad.vdb"))),
+        () -> assertEquals(33288L, Files.size(dbDir.resolve("gnomad.vdb"))),
         () -> assertEquals(12451L, Files.size(dbDir.resolve("ncer.vdb"))),
         () -> assertEquals(12451L, Files.size(dbDir.resolve("phylop.vdb"))),
         () -> assertEquals(12448L, Files.size(dbDir.resolve("remm.vdb"))),

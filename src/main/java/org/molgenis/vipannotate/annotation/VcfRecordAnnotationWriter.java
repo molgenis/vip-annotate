@@ -2,6 +2,8 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
 import org.molgenis.vipannotate.format.vcf.Info;
 import org.molgenis.vipannotate.format.vcf.VcfInfoSubfieldValueBuilder;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
@@ -42,10 +44,11 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
 
   private void appendRawScalarAnnotation(ScalarAnnotation annotation) {
     switch (annotation) {
-      case ScalarAnnotation.DoubleAnnotation doubleAnnotation ->
+      case DoubleAnnotation doubleAnnotation ->
           reusableVcfInfoBuilder.appendRaw(doubleAnnotation.getValue(), 3);
-
-      case ScalarAnnotation.NullableDoubleAnnotation nullableDoubleAnnotation -> {
+      case ScalarAnnotation.IntAnnotation intAnnotation ->
+          reusableVcfInfoBuilder.appendRaw(intAnnotation.getValue());
+      case NullableDoubleAnnotation nullableDoubleAnnotation -> {
         if (nullableDoubleAnnotation.isNull()) {
           reusableVcfInfoBuilder.appendRawMissing();
         } else {

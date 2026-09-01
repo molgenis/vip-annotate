@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.molgenis.vipannotate.AppMetadata;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.annotation.spec.AnnotationDataset;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
@@ -55,6 +56,40 @@ public class VcfAnnotationModuleLoader {
 
   private AnnotationDecoder<ScalarAnnotation> createAnnotationDecoder(
       AnnotationValue annotationValue) {
+    if (annotationValue.encoding() == null) {
+      LogicalType logicalType = annotationValue.logicalType();
+      if (logicalType.nullable()) {
+        // FIXME support  nullable logicalType encoding when encoding is null
+        throw new UnsupportedOperationException();
+      }
+
+      StorageType storageType = annotationValue.storageType();
+      ReadValueFunction readValueFunction = createReadValueFunction(storageType);
+
+      return switch (storageType.scalarType()) {
+        case I8, I16, I32, U8, U16 ->
+            new AnnotationDecoder<>() {
+              @Override
+              public IntAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
+                int value = readValueFunction.apply(memBuffer, annotationIndex);
+                return new IntAnnotation(value);
+              }
+
+              @Override
+              public void decodeInto(
+                  MemoryBuffer memBuffer, int annotationIndex, ScalarAnnotation annotation) {
+                // FIXME implement AnnotationDecoder.decodeInto
+                throw new UnsupportedOperationException();
+              }
+            };
+
+        case I64, U32, U64, F32, F64 -> {
+          // FIXME support null encoding for U64,F32,F64
+          throw new UnsupportedOperationException();
+        }
+      };
+    }
+
     return switch (annotationValue.encoding().encodingType()) {
       case QUANTIZED ->
           createQuantizedAnnotationDecoder(
@@ -64,18 +99,22 @@ public class VcfAnnotationModuleLoader {
     };
   }
 
+  private static ReadValueFunction createReadValueFunction(StorageType storageType) {
+    return switch (storageType.scalarType()) {
+      case I8 -> MemoryBuffer::getByteAtIndex;
+      case I16 -> MemoryBuffer::getShortAtIndex;
+      case I32 -> MemoryBuffer::getIntAtIndex;
+      case U8 -> MemoryBuffer::getUnsignedByteAtIndex;
+      case U16 -> MemoryBuffer::getUnsignedShortAtIndex;
+      default -> throw new IllegalArgumentException();
+    };
+  }
+
   private static QuantizedAnnotationDecoder createQuantizedAnnotationDecoder(
       StorageType storageType, LogicalType logicalType, QuantizedEncoding encoding) {
     Quantizer quantizer = createQuantizer(logicalType, encoding);
 
-    ReadValueFunction readValueFunction =
-        switch (storageType.scalarType()) {
-          case I8 -> MemoryBuffer::getByteAtIndex;
-          case I16 -> MemoryBuffer::getShortAtIndex;
-          case U8 -> MemoryBuffer::getUnsignedByteAtIndex;
-          case U16 -> MemoryBuffer::getUnsignedShortAtIndex;
-          default -> throw new IllegalArgumentException();
-        };
+    ReadValueFunction readValueFunction = createReadValueFunction(storageType);
     return new QuantizedAnnotationDecoder(quantizer, readValueFunction, encoding.nullCode());
   }
 

@@ -57,7 +57,12 @@ public class AnnotationDbBuilder {
             case SEQUENCE_VARIANT -> {
               Iterator<AnnotatedSequenceVariant<CompositeAnnotation>> annotatedIterator =
                   Iterators.map(
-                      tsvParser, tsvFeature -> createSeqVarFromTsv(tsvFeature, tsvInputFormat));
+                      tsvParser,
+                      tsvFeature ->
+                          createSeqVarFromTsv(
+                              tsvFeature,
+                              tsvInputFormat,
+                              annotationSpec.annotationSchema().annotationDatasets()));
 
               createCompositeAnnotatedSequenceVariantDb(
                   annotatedIterator,
@@ -151,8 +156,8 @@ public class AnnotationDbBuilder {
       @Override
       public void encode(
           SizedIterator<T> annotationIt, int maxAnnotations, MemoryBuffer memBuffer) {
-        annotationIt.forEachRemaining(
-            value -> annotationEncoder.encodeInto(value, memBuffer, -1)); // FIXME
+        // FIXME deal with -1 index
+        annotationIt.forEachRemaining(value -> annotationEncoder.encodeInto(value, memBuffer, -1));
       }
     };
   }
@@ -226,6 +231,45 @@ public class AnnotationDbBuilder {
     LogicalType logicalType = annotationValue.logicalType();
     Encoding encoding = annotationValue.encoding();
 
+    // create value writer
+    // FIXME use storage and logical type
+    ValueWriter valueWriter = createValueWriter(storageType, writeAtIndex);
+
+    if (encoding == null) {
+      if (logicalType.nullable()) {
+        // FIXME support  nullable logicalType encoding when encoding is null
+        throw new UnsupportedOperationException();
+      }
+      return switch (storageType.scalarType()) {
+        case I8, I16, I32, U8, U16 ->
+            (AnnotationEncoderTmp<T>)
+                new AnnotationEncoderTmp<ScalarAnnotation.IntAnnotation>() {
+                  @Override
+                  public void initialize(MemoryBuffer memoryBuffer) {
+                    // FIXME implement initialize(MemoryBuffer memBuffer)
+                    System.err.println("FIXME implement initialize(MemoryBuffer memBuffer)");
+                  }
+
+                  @Override
+                  public void encodeInto(
+                      ScalarAnnotation.IntAnnotation annotation,
+                      MemoryBuffer memBuffer,
+                      int index) {
+                    valueWriter.write(annotation.getValue(), memBuffer, index);
+                  }
+
+                  @Override
+                  public long getEncodedSizeInBytes() {
+                    return valueWriter.getValueSizeInBytes();
+                  }
+                };
+        case I64, U32, U64, F32, F64 -> {
+          // FIXME support null encoding for U64,F32,F64
+          throw new UnsupportedOperationException();
+        }
+      };
+    }
+
     return switch (encoding.encodingType()) {
       case QUANTIZED -> {
         // create quantizer
@@ -236,10 +280,6 @@ public class AnnotationDbBuilder {
             new Quantizer(
                 new DoubleInterval(range.min(), range.max()),
                 new IntInterval(levels.min(), levels.max()));
-
-        // create value writer
-        // FIXME use storage and logical type
-        ValueWriter valueWriter = createValueWriter(storageType, writeAtIndex);
 
         yield (AnnotationEncoderTmp<T>)
             new QuantizedAnnotationEncoder(quantizer, valueWriter, quantizedEncoding.nullCode());
@@ -333,7 +373,9 @@ public class AnnotationDbBuilder {
   }
 
   private <T extends Annotation> AnnotatedSequenceVariant<T> createSeqVarFromTsv(
-      String[] tsvFeature, TsvInputFormat tsvInputFormat) {
+      String[] tsvFeature,
+      TsvInputFormat tsvInputFormat,
+      List<AnnotationDataset> annotationDatasets) {
     int idxContig = tsvInputFormat.contig();
     int idxStart = tsvInputFormat.start();
     int idxRef = tsvInputFormat.ref();
@@ -351,7 +393,7 @@ public class AnnotationDbBuilder {
       case ONE_BASED -> {}
     }
 
-    T annotation = createAnnotationFromTsvFeature(tsvFeature, tsvInputFormat);
+    T annotation = createAnnotationFromTsvFeature(tsvFeature, tsvInputFormat, annotationDatasets);
     return new AnnotatedSequenceVariant<>(
         new SequenceVariant(
             contig,
@@ -363,7 +405,9 @@ public class AnnotationDbBuilder {
   }
 
   private <T extends Annotation> T createAnnotationFromTsvFeature(
-      String[] tsvFeature, TsvInputFormat tsvInputFormat) {
+      String[] tsvFeature,
+      TsvInputFormat tsvInputFormat,
+      List<AnnotationDataset> annotationDatasets) {
     int[] idxAnnotations = tsvInputFormat.annotations();
     if (idxAnnotations.length == 0) {
       throw new IllegalArgumentException();
@@ -375,7 +419,23 @@ public class AnnotationDbBuilder {
       ScalarAnnotation[] scalarAnnotations = new ScalarAnnotation[idxAnnotations.length];
       for (int i = 0; i < idxAnnotations.length; i++) {
         int idxAnnotation = idxAnnotations[i];
-        scalarAnnotations[i] = new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
+        AnnotationDataset annotationDataset = annotationDatasets.get(i);
+        scalarAnnotations[i] =
+            switch (annotationDataset.annotationValue().logicalType().scalarType()) {
+              case I8, I16, I32, U8, U16 ->
+                  new ScalarAnnotation.IntAnnotation(Integer.parseInt(tsvFeature[idxAnnotation]));
+              case F32, F64 -> new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
+              // FIXME createAnnotationFromTsvFeature support I64,U32,U64
+              case I64, U32, U64 -> throw new UnsupportedOperationException();
+            };
+        // FIXME remove hardcoded hack
+        if (idxAnnotation == 15) {
+          scalarAnnotations[i] =
+              new ScalarAnnotation.IntAnnotation(Integer.parseInt(tsvFeature[idxAnnotation]));
+        } else {
+          scalarAnnotations[i] =
+              new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
+        }
       }
       return (T) new CompositeAnnotation(scalarAnnotations);
     }

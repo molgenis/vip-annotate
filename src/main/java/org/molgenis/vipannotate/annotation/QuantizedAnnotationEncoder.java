@@ -15,6 +15,7 @@ public class QuantizedAnnotationEncoder implements AnnotationEncoderTmp<ScalarAn
 
   @Override
   public void initialize(MemoryBuffer memBuffer) {
+    // FIXME implement initialize(MemoryBuffer memBuffer)
     System.err.println("FIXME implement initialize(MemoryBuffer memBuffer)");
   }
 
