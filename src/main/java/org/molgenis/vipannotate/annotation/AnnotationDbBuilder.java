@@ -170,7 +170,7 @@ public class AnnotationDbBuilder {
   private static <T extends Annotation>
       AnnotationDatasetEncoder<T> createScalarAnnotationDatasetEncoder(
           ScalarLogicalType scalarLogicalType, AnnotationValue annotationValue) {
-    AnnotationEncoderTmp<T> annotationEncoder = createEncoder(annotationValue, false);
+    AnnotationEncoder<T> annotationEncoder = createEncoder(annotationValue, false);
 
     return new AnnotationDatasetEncoder<>() {
 
@@ -221,7 +221,7 @@ public class AnnotationDbBuilder {
 
   private static IndexedAnnotationEncoder<ScalarAnnotation> createIndexedEncoder(
       AnnotationValue annotationValue) {
-    AnnotationEncoderTmp<ScalarAnnotation> annotationEncoder = createEncoder(annotationValue, true);
+    AnnotationEncoder<ScalarAnnotation> annotationEncoder = createEncoder(annotationValue, true);
 
     return new IndexedAnnotationEncoder<>() {
       @Override
@@ -251,7 +251,7 @@ public class AnnotationDbBuilder {
     };
   }
 
-  private static <T extends Annotation> AnnotationEncoderTmp<T> createEncoder(
+  private static <T extends Annotation> AnnotationEncoder<T> createEncoder(
       AnnotationValue annotationValue, boolean writeAtIndex) {
     StorageType storageType = annotationValue.storageType();
     return switch (annotationValue.logicalType()) {
@@ -266,7 +266,7 @@ public class AnnotationDbBuilder {
     };
   }
 
-  private static <T extends Annotation> AnnotationEncoderTmp<T> createEnumEncoder(
+  private static <T extends Annotation> AnnotationEncoder<T> createEnumEncoder(
       EnumLogicalType logicalType,
       Encoding encoding,
       StorageType storageType,
@@ -275,7 +275,7 @@ public class AnnotationDbBuilder {
     throw new UnsupportedOperationException();
   }
 
-  private static <T extends Annotation> AnnotationEncoderTmp<T> createEnumSetEncoder(
+  private static <T extends Annotation> AnnotationEncoder<T> createEnumSetEncoder(
       EnumSetLogicalType logicalType,
       Encoding encoding,
       StorageType storageType,
@@ -288,7 +288,7 @@ public class AnnotationDbBuilder {
     throw new UnsupportedOperationException();
   }
 
-  private static <T extends Annotation> @NonNull AnnotationEncoderTmp<T> createScalarEncoder(
+  private static <T extends Annotation> @NonNull AnnotationEncoder<T> createScalarEncoder(
       ScalarLogicalType logicalType,
       Encoding encoding,
       StorageType storageType,
@@ -304,8 +304,8 @@ public class AnnotationDbBuilder {
       }
       return switch (storageType.scalarType()) {
         case I8, I16, I32, U8, U16 ->
-            (AnnotationEncoderTmp<T>)
-                new AnnotationEncoderTmp<ScalarAnnotation.IntAnnotation>() {
+            (AnnotationEncoder<T>)
+                new AnnotationEncoder<ScalarAnnotation.IntAnnotation>() {
                   @Override
                   public void initialize(MemoryBuffer memoryBuffer) {
                     // FIXME implement initialize(MemoryBuffer memBuffer)
@@ -346,7 +346,7 @@ public class AnnotationDbBuilder {
                 new DoubleInterval(range.min(), range.max()),
                 new IntInterval(levels.min(), levels.max()));
 
-        yield (AnnotationEncoderTmp<T>)
+        yield (AnnotationEncoder<T>)
             new QuantizedAnnotationEncoder(quantizer, valueWriter, quantizedEncoding.nullCode());
       }
     };

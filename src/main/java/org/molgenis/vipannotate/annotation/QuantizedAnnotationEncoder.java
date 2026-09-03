@@ -8,7 +8,7 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Quantizer;
 
 @RequiredArgsConstructor
-public class QuantizedAnnotationEncoder implements AnnotationEncoderTmp<ScalarAnnotation> {
+public class QuantizedAnnotationEncoder implements AnnotationEncoder<ScalarAnnotation> {
   private final Quantizer quantizer;
   private final ValueWriter valueWriter;
   @Nullable private final Integer nullValue;

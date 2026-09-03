@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
-public interface AnnotationEncoderTmp<T extends Annotation> {
+public interface AnnotationEncoder<T extends Annotation> {
   /** Initialize */
   void initialize(MemoryBuffer memoryBuffer);
 
