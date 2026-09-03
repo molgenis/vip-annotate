@@ -1,35 +1,79 @@
 package org.molgenis.vipannotate.annotation.spliceai;
 
-import org.jspecify.annotations.Nullable;
+import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.util.DoubleCodec;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
-public class SpliceAiAnnotationDatasetDecoder {
-  private final DoubleCodec doubleCodec;
+@RequiredArgsConstructor
+public class SpliceAiAnnotationDatasetDecoder
+    implements AnnotationDatasetDecoder<SpliceAiAnnotation> {
+  private final SpliceAiAnnotationDatasetFactory spliceAiAnnotationDatasetFactory;
+  private final AnnotationBlobReader geneIdxAnnotationBlobReader;
+  private final AnnotationBlobReader geneRefAnnotationBlobReader;
+  private final AnnotationBlobReader dsagAnnotationBlobReader;
+  private final AnnotationBlobReader dsalAnnotationBlobReader;
+  private final AnnotationBlobReader dsdgAnnotationBlobReader;
+  private final AnnotationBlobReader dsdlAnnotationBlobReader;
+  private final AnnotationBlobReader dpagAnnotationBlobReader;
+  private final AnnotationBlobReader dpalAnnotationBlobReader;
+  private final AnnotationBlobReader dpdgAnnotationBlobReader;
+  private final AnnotationBlobReader dpdlAnnotationBlobReader;
 
-  public SpliceAiAnnotationDatasetDecoder() {
-    this(new DoubleCodec());
+  @Override
+  public AnnotationDataset<SpliceAiAnnotation> decode(PartitionKey partitionKey) {
+    MemoryBuffer geneIdxMemoryBuffer = geneIdxAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer geneRefMemoryBuffer = geneRefAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dsagMemoryBuffer = dsagAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dsalMemoryBuffer = dsalAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dsdgMemoryBuffer = dsdgAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dsdlMemoryBuffer = dsdlAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dpagMemoryBuffer = dpagAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dpalMemoryBuffer = dpalAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dpdgMemoryBuffer = dpdgAnnotationBlobReader.read(partitionKey);
+    MemoryBuffer dpdlMemoryBuffer = dpdlAnnotationBlobReader.read(partitionKey);
+
+    AnnotationDataset<SpliceAiAnnotation> annotationDataset;
+    if (geneIdxMemoryBuffer != null
+        && geneRefMemoryBuffer != null
+        && dsagMemoryBuffer != null
+        && dsalMemoryBuffer != null
+        && dsdgMemoryBuffer != null
+        && dsdlMemoryBuffer != null
+        && dpagMemoryBuffer != null
+        && dpalMemoryBuffer != null
+        && dpdgMemoryBuffer != null
+        && dpdlMemoryBuffer != null) {
+      annotationDataset =
+          spliceAiAnnotationDatasetFactory.create(
+              geneIdxMemoryBuffer,
+              geneRefMemoryBuffer,
+              dsagMemoryBuffer,
+              dsalMemoryBuffer,
+              dsdgMemoryBuffer,
+              dsdlMemoryBuffer,
+              dpagMemoryBuffer,
+              dpalMemoryBuffer,
+              dpdgMemoryBuffer,
+              dpdlMemoryBuffer);
+    } else {
+      annotationDataset = EmptyAnnotationDataset.getInstance();
+    }
+    return annotationDataset;
   }
 
-  SpliceAiAnnotationDatasetDecoder(DoubleCodec doubleCodec) {
-    this.doubleCodec = doubleCodec;
-  }
-
-  public int decodeGeneIndex(MemoryBuffer memoryBuffer, int index) {
-    return memoryBuffer.getIntAtIndex(index);
-  }
-
-  public int decodeGeneRef(MemoryBuffer memoryBuffer, int index) {
-    return memoryBuffer.getByteAtIndex(index);
-  }
-
-  public double decodeScore(MemoryBuffer memoryBuffer, int index) {
-    byte value = memoryBuffer.getByteAtIndex(index);
-    return doubleCodec.decodeDoublePrimitiveUnitIntervalFromByte(value);
-  }
-
-  public @Nullable Byte decodePos(MemoryBuffer memoryBuffer, int index) {
-    byte b = memoryBuffer.getByteAtIndex(index);
-    return b != 0 ? (byte) (b - 51) : null;
+  @Override
+  public void close() {
+    ClosableUtils.closeAll(
+        geneIdxAnnotationBlobReader,
+        geneRefAnnotationBlobReader,
+        dsagAnnotationBlobReader,
+        dsalAnnotationBlobReader,
+        dsdgAnnotationBlobReader,
+        dsdlAnnotationBlobReader,
+        dpagAnnotationBlobReader,
+        dpalAnnotationBlobReader,
+        dpdgAnnotationBlobReader,
+        dpdlAnnotationBlobReader);
   }
 }

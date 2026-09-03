@@ -26,6 +26,7 @@
             "scalar_type": "u8"
           },
           "logical_type": {
+            "type": "scalar",
             "scalar_type": "f64",
             "nullable": false
           },

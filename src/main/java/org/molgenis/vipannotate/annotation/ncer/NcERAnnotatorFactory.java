@@ -21,7 +21,7 @@ public class NcERAnnotatorFactory extends PositionAnnotatorFactory<DoubleValueAn
   public VcfRecordAnnotatorOld create(Path annotationsDir) {
     PartitionedVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "ncer.zip");
 
-    AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
+    AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDatasetReader =
         new PositionScoreAnnotationDatasetReader(
             new PositionScoreAnnotationDatasetFactory(new NcERAnnotationDecoder(new DoubleCodec())),
             new AnnotationBlobReader("score", archiveReader));

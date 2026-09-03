@@ -14,7 +14,7 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
     implements AnnotationDb<T, U> {
   private final PartitionResolver partitionResolver;
-  private final AnnotationDatasetReader<U> annotationDatasetReader;
+  private final AnnotationDatasetDecoder<U> annotationDatasetReader;
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationDataset<@Nullable U> activeAnnotationDataset;
@@ -36,7 +36,7 @@ public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {
-      activeAnnotationDataset = annotationDatasetReader.read(partitionKey);
+      activeAnnotationDataset = annotationDatasetReader.decode(partitionKey);
       activePartitionKey = partitionKey;
     }
 

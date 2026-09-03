@@ -21,7 +21,7 @@ public class PhyloPAnnotatorFactory extends PositionAnnotatorFactory<DoubleValue
   public VcfRecordAnnotatorOld create(Path annotationsDir) {
     PartitionedVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "phylop.zip");
 
-    AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
+    AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDatasetReader =
         new PositionScoreAnnotationDatasetReader(
             new PositionScoreAnnotationDatasetFactory(
                 new PhyloPAnnotationDecoder(new DoubleCodec())),

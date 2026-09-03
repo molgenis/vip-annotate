@@ -8,13 +8,12 @@ public class CompositeAnnotatedSequenceVariantPartitionWriter<
         T extends SequenceVariant, V extends AnnotatedInterval<T, CompositeAnnotation>>
     implements AnnotatedIntervalPartitionWriter<T, CompositeAnnotation, V> {
 
-  private final List<
-          AnnotatedSequenceVariantPartitionWriter<T, CompositeAnnotation, ScalarAnnotation, V>>
+  private final List<AnnotatedSequenceVariantPartitionWriter<T, CompositeAnnotation, Annotation, V>>
       partitionWriters;
 
   @Override
   public void write(Partition<T, CompositeAnnotation, V> partition) {
-    for (AnnotatedSequenceVariantPartitionWriter<T, CompositeAnnotation, ScalarAnnotation, V>
+    for (AnnotatedSequenceVariantPartitionWriter<T, CompositeAnnotation, Annotation, V>
         partitionWriter : partitionWriters) {
       partitionWriter.write(partition);
     }
@@ -22,7 +21,7 @@ public class CompositeAnnotatedSequenceVariantPartitionWriter<
 
   @Override
   public void close() {
-    for (AnnotatedSequenceVariantPartitionWriter<T, CompositeAnnotation, ScalarAnnotation, V>
+    for (AnnotatedSequenceVariantPartitionWriter<T, CompositeAnnotation, Annotation, V>
         partitionWriter : partitionWriters) {
       partitionWriter.close();
     }

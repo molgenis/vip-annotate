@@ -26,7 +26,7 @@ public class FathmmMklAnnotatorFactory
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
         createIndexReader(archiveReader);
 
-    AnnotationDatasetReader<FathmmMklAnnotation> annotationDatasetReader =
+    AnnotationDatasetDecoder<FathmmMklAnnotation> annotationDatasetReader =
         new FathmmMklAnnotationDatasetReader(
             new FathmmMklAnnotationDatasetFactory(new FathmmMklAnnotationDatasetDecoder()),
             new AnnotationBlobReader("score", archiveReader));

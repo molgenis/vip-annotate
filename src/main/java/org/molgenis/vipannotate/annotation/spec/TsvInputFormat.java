@@ -13,9 +13,4 @@ public record TsvInputFormat(
     @JsonProperty(value = "ref") Integer ref,
     @JsonProperty(value = "alt") Integer alt,
     @JsonProperty(value = "annotations", required = true) int[] annotations)
-    implements InputFormat {
-  @Override
-  public InputFormatType type() {
-    return InputFormatType.TSV;
-  }
-}
+    implements InputFormat {}

@@ -21,7 +21,7 @@ public class RemmAnnotatorFactory extends PositionAnnotatorFactory<DoubleValueAn
   public VcfRecordAnnotatorOld create(Path annotationsDir) {
     PartitionedVdbArchiveReader archiveReader = createArchiveReader(annotationsDir, "remm.zip");
 
-    AnnotationDatasetReader<DoubleValueAnnotation> annotationDatasetReader =
+    AnnotationDatasetDecoder<DoubleValueAnnotation> annotationDatasetReader =
         new PositionScoreAnnotationDatasetReader(
             new PositionScoreAnnotationDatasetFactory(new RemmAnnotationDecoder(new DoubleCodec())),
             new AnnotationBlobReader("score", archiveReader));

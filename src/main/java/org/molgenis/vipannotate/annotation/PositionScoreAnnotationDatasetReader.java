@@ -6,12 +6,12 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class PositionScoreAnnotationDatasetReader
-    implements AnnotationDatasetReader<DoubleValueAnnotation> {
+    implements AnnotationDatasetDecoder<DoubleValueAnnotation> {
   private final PositionScoreAnnotationDatasetFactory positionScoreAnnotationDatasetFactory;
   private final AnnotationBlobReader scoresAnnotationBlobReader;
 
   @Override
-  public AnnotationDataset<DoubleValueAnnotation> read(PartitionKey partitionKey) {
+  public AnnotationDataset<DoubleValueAnnotation> decode(PartitionKey partitionKey) {
     MemoryBuffer scoresMemoryBuffer = scoresAnnotationBlobReader.read(partitionKey);
 
     AnnotationDataset<DoubleValueAnnotation> annotationDataset;

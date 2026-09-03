@@ -23,6 +23,7 @@
             "scalar_type": "u16"
           },
           "logical_type": {
+            "type": "scalar",
             "scalar_type": "f64",
             "nullable": true
           },

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.annotation.spec.AnnotationDataset;
 import org.molgenis.vipannotate.format.bed.BedFeature;
@@ -31,9 +32,8 @@ public class AnnotationDbBuilder {
       //      FastaIndex fastaIndex,
       BinaryPartitionWriter partitionWriter) {
     InputFormat inputFormat = annotationSpec.inputFormat();
-    switch (inputFormat.type()) {
-      case BED -> {
-        BedInputFormat bedInputFormat = (BedInputFormat) inputFormat;
+    switch (inputFormat) {
+      case BedInputFormat bedInputFormat -> {
         Input bedInput = new Input(resourceDir.resolve(bedInputFormat.file()));
         try (BedParser bedParser = BedParserFactory.create(bedInput)) {
           Iterator<AnnotatedInterval<Position, ScalarAnnotation>> annotatedPosIterator =
@@ -49,8 +49,7 @@ public class AnnotationDbBuilder {
               partitionWriter);
         }
       }
-      case TSV -> {
-        TsvInputFormat tsvInputFormat = (TsvInputFormat) inputFormat;
+      case TsvInputFormat tsvInputFormat -> {
         Input tsvInput = new Input(resourceDir.resolve(tsvInputFormat.file()));
         try (TsvParser tsvParser = TsvParserFactory.create(tsvInput)) {
           switch (annotationSpec.annotationSchema().annotationType()) {
@@ -82,7 +81,9 @@ public class AnnotationDbBuilder {
           }
         }
       }
-      case VCF -> throw new RuntimeException("implement vcf"); // FIXME
+      case VcfInputFormat vcfInputFormat -> {
+        throw new RuntimeException("implement vcf"); // FIXME
+      }
     }
   }
 
@@ -102,7 +103,7 @@ public class AnnotationDbBuilder {
             AnnotatedSequenceVariantPartitionWriter<
                 SequenceVariant,
                 CompositeAnnotation,
-                ScalarAnnotation,
+                Annotation,
                 AnnotatedSequenceVariant<CompositeAnnotation>>>
         partitionWriters = new ArrayList<>(annotationDatasets.size());
 
@@ -110,7 +111,7 @@ public class AnnotationDbBuilder {
       AnnotationDataset annotationDataset = annotationDatasets.get(i);
       int annotationIndex = i;
 
-      AnnotationDatasetEncoder<ScalarAnnotation> annotationDatasetEncoder =
+      AnnotationDatasetEncoder<Annotation> annotationDatasetEncoder =
           createAnnotationDatasetEncoder(annotationDataset);
 
       partitionWriters.add(
@@ -143,8 +144,33 @@ public class AnnotationDbBuilder {
   private static <T extends Annotation>
       @NonNull AnnotationDatasetEncoder<T> createAnnotationDatasetEncoder(
           AnnotationDataset annotationDataset) {
-    AnnotationEncoderTmp<T> annotationEncoder =
-        createEncoder(annotationDataset.annotationValue(), false);
+    AnnotationValue annotationValue = annotationDataset.annotationValue();
+    LogicalType logicalType = annotationValue.logicalType();
+    return (AnnotationDatasetEncoder<T>)
+        switch (logicalType) {
+          case EnumLogicalType enumLogicalType ->
+              createEnumAnnotationDatasetEncoder(enumLogicalType, annotationValue);
+          case EnumSetLogicalType enumSetLogicalType ->
+              createEnumSetAnnotationDatasetEncoder(enumSetLogicalType, annotationValue);
+          case ScalarLogicalType scalarLogicalType ->
+              createScalarAnnotationDatasetEncoder(scalarLogicalType, annotationValue);
+        };
+  }
+
+  private static EnumAnnotationDatasetEncoder createEnumAnnotationDatasetEncoder(
+      EnumLogicalType enumLogicalType, AnnotationValue annotationValue) {
+    return new EnumAnnotationDatasetEncoder(enumLogicalType);
+  }
+
+  private static EnumSetAnnotationDatasetEncoder createEnumSetAnnotationDatasetEncoder(
+      EnumSetLogicalType enumSetLogicalType, AnnotationValue annotationValue) {
+    return new EnumSetAnnotationDatasetEncoder(enumSetLogicalType);
+  }
+
+  private static <T extends Annotation>
+      AnnotationDatasetEncoder<T> createScalarAnnotationDatasetEncoder(
+          ScalarLogicalType scalarLogicalType, AnnotationValue annotationValue) {
+    AnnotationEncoderTmp<T> annotationEncoder = createEncoder(annotationValue, false);
 
     return new AnnotationDatasetEncoder<>() {
 
@@ -228,9 +254,45 @@ public class AnnotationDbBuilder {
   private static <T extends Annotation> AnnotationEncoderTmp<T> createEncoder(
       AnnotationValue annotationValue, boolean writeAtIndex) {
     StorageType storageType = annotationValue.storageType();
-    LogicalType logicalType = annotationValue.logicalType();
-    Encoding encoding = annotationValue.encoding();
+    return switch (annotationValue.logicalType()) {
+      case EnumLogicalType enumLogicalType ->
+          createEnumEncoder(enumLogicalType, annotationValue.encoding(), storageType, writeAtIndex);
+      case EnumSetLogicalType enumSetLogicalType ->
+          createEnumSetEncoder(
+              enumSetLogicalType, annotationValue.encoding(), storageType, writeAtIndex);
+      case ScalarLogicalType scalarLogicalType ->
+          createScalarEncoder(
+              scalarLogicalType, annotationValue.encoding(), storageType, writeAtIndex);
+    };
+  }
 
+  private static <T extends Annotation> AnnotationEncoderTmp<T> createEnumEncoder(
+      EnumLogicalType logicalType,
+      Encoding encoding,
+      StorageType storageType,
+      boolean writeAtIndex) {
+    // FIXME implement createEnumEncoder
+    throw new UnsupportedOperationException();
+  }
+
+  private static <T extends Annotation> AnnotationEncoderTmp<T> createEnumSetEncoder(
+      EnumSetLogicalType logicalType,
+      Encoding encoding,
+      StorageType storageType,
+      boolean writeAtIndex) {
+    // in GnomAdAnnotationDatasetEncoder we pack multiple enum set annotations in one byte
+    // do something like public sealed interface StorageType permits ScalarStorageType,
+    // BitSetStorageType {}?
+
+    // FIXME implement createEnumEncoder
+    throw new UnsupportedOperationException();
+  }
+
+  private static <T extends Annotation> @NonNull AnnotationEncoderTmp<T> createScalarEncoder(
+      ScalarLogicalType logicalType,
+      Encoding encoding,
+      StorageType storageType,
+      boolean writeAtIndex) {
     // create value writer
     // FIXME use storage and logical type
     ValueWriter valueWriter = createValueWriter(storageType, writeAtIndex);
@@ -270,10 +332,13 @@ public class AnnotationDbBuilder {
       };
     }
 
-    return switch (encoding.encodingType()) {
-      case QUANTIZED -> {
+    return switch (encoding) {
+      case EnumEncoding enumEncoding -> {
+        // FIXME implement
+        throw new UnsupportedOperationException();
+      }
+      case QuantizedEncoding quantizedEncoding -> {
         // create quantizer
-        QuantizedEncoding quantizedEncoding = (QuantizedEncoding) encoding;
         QuantizedEncoding.Range range = quantizedEncoding.range();
         QuantizedEncoding.Levels levels = quantizedEncoding.levels();
         Quantizer quantizer =
@@ -416,28 +481,51 @@ public class AnnotationDbBuilder {
       //      int idxAnnotation = idxAnnotations[0];
       //      return (T) new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
     } else {
-      ScalarAnnotation[] scalarAnnotations = new ScalarAnnotation[idxAnnotations.length];
+      Annotation[] annotations = new Annotation[idxAnnotations.length];
       for (int i = 0; i < idxAnnotations.length; i++) {
         int idxAnnotation = idxAnnotations[i];
-        AnnotationDataset annotationDataset = annotationDatasets.get(i);
-        scalarAnnotations[i] =
-            switch (annotationDataset.annotationValue().logicalType().scalarType()) {
-              case I8, I16, I32, U8, U16 ->
-                  new ScalarAnnotation.IntAnnotation(Integer.parseInt(tsvFeature[idxAnnotation]));
-              case F32, F64 -> new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
-              // FIXME createAnnotationFromTsvFeature support I64,U32,U64
-              case I64, U32, U64 -> throw new UnsupportedOperationException();
-            };
-        // FIXME remove hardcoded hack
-        if (idxAnnotation == 15) {
-          scalarAnnotations[i] =
-              new ScalarAnnotation.IntAnnotation(Integer.parseInt(tsvFeature[idxAnnotation]));
-        } else {
-          scalarAnnotations[i] =
-              new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
-        }
+        AnnotationValue annotationValue = annotationDatasets.get(i).annotationValue();
+        annotations[i] = createAnnotationFromTsvValue(tsvFeature[idxAnnotation], annotationValue);
       }
-      return (T) new CompositeAnnotation(scalarAnnotations);
+      return (T) new CompositeAnnotation(annotations);
     }
+  }
+
+  private <T extends Annotation> T createAnnotationFromTsvValue(
+      String tsvValue, AnnotationValue annotationValue) {
+    return (T)
+        switch (annotationValue.logicalType()) {
+          case EnumLogicalType enumLogicalType ->
+              createAnnotationFromTsvValue(tsvValue, enumLogicalType);
+          case EnumSetLogicalType enumSetLogicalType ->
+              createAnnotationFromTsvValue(tsvValue, enumSetLogicalType);
+          case ScalarLogicalType scalarLogicalType ->
+              createAnnotationFromTsvValue(tsvValue, scalarLogicalType);
+        };
+  }
+
+  private Annotation createAnnotationFromTsvValue(String tsvValue, ScalarLogicalType logicalType) {
+    return switch (logicalType.scalarType()) {
+      case I8, I16, I32, U8, U16 -> new ScalarAnnotation.IntAnnotation(Integer.parseInt(tsvValue));
+      case F32, F64 ->
+          logicalType.nullable()
+              ? (tsvValue.isEmpty()
+                  ? new NullableDoubleAnnotation()
+                  : new NullableDoubleAnnotation(Double.parseDouble(tsvValue)))
+              : new DoubleAnnotation(Double.parseDouble(tsvValue));
+      // FIXME createAnnotationFromTsvFeature support I64,U32,U64
+      case I64, U32, U64 -> throw new UnsupportedOperationException();
+    };
+  }
+
+  private Annotation createAnnotationFromTsvValue(
+      String tsvValue, EnumLogicalType enumLogicalType) {
+    return new StringAnnotation(!tsvValue.isEmpty() ? tsvValue : null);
+  }
+
+  private Annotation createAnnotationFromTsvValue(String tsvValue, EnumSetLogicalType logicalType) {
+    String[] tokens = !tsvValue.isEmpty() ? tsvValue.split(",", -1) : new String[0];
+    // FIXME map empty token to null
+    return new StringListAnnotation(tokens);
   }
 }

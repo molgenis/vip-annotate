@@ -25,9 +25,9 @@ public class SpliceAiAnnotatorFactory
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
         createIndexReader(archiveReader);
 
-    AnnotationDatasetReader<SpliceAiAnnotation> annotationDatasetReader =
-        new SpliceAiAnnotationDatasetReader(
-            new SpliceAiAnnotationDatasetFactory(new SpliceAiAnnotationDatasetDecoder()),
+    AnnotationDatasetDecoder<SpliceAiAnnotation> annotationDatasetReader =
+        new SpliceAiAnnotationDatasetDecoder(
+            new SpliceAiAnnotationDatasetFactory(new SpliceAiAnnotationDatasetDecoderOld()),
             new AnnotationBlobReader("gene_idx", archiveReader),
             new AnnotationBlobReader("gene_ref", archiveReader),
             new AnnotationBlobReader("ds_ag", archiveReader),

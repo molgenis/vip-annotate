@@ -6,7 +6,7 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class SpliceAiAnnotationDataset implements AnnotationDataset<SpliceAiAnnotation> {
-  private final SpliceAiAnnotationDatasetDecoder annotationDataDecoder;
+  private final SpliceAiAnnotationDatasetDecoderOld annotationDataDecoder;
   private final MemoryBuffer geneIdxMemoryBuffer;
   private final MemoryBuffer geneRefMemoryBuffer;
   private final MemoryBuffer dsagMemoryBuffer;

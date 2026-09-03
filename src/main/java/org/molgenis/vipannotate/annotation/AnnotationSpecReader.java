@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.spec.AnnotationSpec;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -17,7 +18,8 @@ public class AnnotationSpecReader {
   }
 
   public static AnnotationSpecReader create() {
-    JsonMapper jsonMapper = JsonMapper.builder().build();
+    JsonMapper jsonMapper =
+        JsonMapper.builder().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
     return new AnnotationSpecReader(jsonMapper);
   }
 }

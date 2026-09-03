@@ -1,0 +1,82 @@
+{
+  "id": "tsv_sequence_variant_all_types",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "file": "all_types_sequence_variant.tsv",
+    "coordinate_system": "1-based",
+    "contig": 0,
+    "start": 1,
+    "ref": 2,
+    "alt": 3,
+    "annotations": [
+      4,
+      5
+    ]
+  },
+  "schema": {
+    "annotation_type": "sequence_variant",
+    "supported_variant_types": [
+      "snv",
+      "mnv",
+      "indel",
+      "insertion",
+      "deletion"
+    ],
+    "annotation_datasets": [
+      {
+        "id": "my_enum",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "enum",
+            "values": [
+              "B",
+              "LB",
+              "VUS",
+              "LP",
+              "P"
+            ],
+            "nullable": false
+          },
+          "encoding": {
+            "type": "enum"
+          }
+        }
+      },
+      {
+        "id": "my_enum_nullable",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "enum",
+            "values": [
+              "B",
+              "LB",
+              "VUS",
+              "LP",
+              "P"
+            ],
+            "nullable": true
+          },
+          "encoding": {
+            "type": "enum"
+          }
+        }
+      }
+    ],
+    "annotation_selector": "max_value"
+  },
+  "output": {
+    "type": "vcf",
+    "infoId": "my",
+    "infoNumber": "A",
+    "infoType": "String",
+    "infoDescription": "my annotation formatted as 'my_enum'",
+    "infoVersion": "1.0.0"
+  }
+}

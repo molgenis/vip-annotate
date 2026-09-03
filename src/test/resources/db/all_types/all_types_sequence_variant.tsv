@@ -1,0 +1,6 @@
+#[0]contig	[1]start	[2]ref	[3]alt	[4]enum
+chr1	1	G	A	B	P
+chr1	2	G	A	LB	LP
+chr1	3	G	A	VUS	
+chr1	4	G	A	LP	LB
+chr1	5	G	A	P	B

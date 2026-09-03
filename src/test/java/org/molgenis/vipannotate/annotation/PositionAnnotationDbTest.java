@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class PositionAnnotationDbTest {
   @Mock private PartitionResolver partitionResolver;
-  @Mock private AnnotationDatasetReader<Annotation> annotationDatasetReader;
+  @Mock private AnnotationDatasetDecoder<Annotation> annotationDatasetReader;
   private PositionAnnotationDb<Annotation> positionAnnotationDb;
 
   @BeforeEach
@@ -49,7 +49,7 @@ class PositionAnnotationDbTest {
     when(partitionResolver.getPartitionPos(123)).thenReturn(456);
     when(partitionResolver.getPartitionPos(124)).thenReturn(457);
     when(partitionResolver.getPartitionPos(125)).thenReturn(458);
-    when(annotationDatasetReader.read(partitionKey)).thenReturn(annotationDataset);
+    when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
 
     when(annotationDataset.findByIndex(456)).thenReturn(annotation0);
     when(annotationDataset.findByIndex(457)).thenReturn(null);
@@ -60,7 +60,7 @@ class PositionAnnotationDbTest {
 
     assertAll(
         () -> assertEquals(List.of(annotation0, annotation1), annotationList),
-        () -> verify(annotationDatasetReader, times(1)).read(partitionKey));
+        () -> verify(annotationDatasetReader, times(1)).decode(partitionKey));
   }
 
   @Test
@@ -77,7 +77,7 @@ class PositionAnnotationDbTest {
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
     when(partitionResolver.getPartitionPos(123)).thenReturn(456);
-    when(annotationDatasetReader.read(partitionKey)).thenReturn(annotationDataset);
+    when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
     when(annotationDataset.findByIndex(456)).thenReturn(annotation);
 
     assertAll(
@@ -99,7 +99,7 @@ class PositionAnnotationDbTest {
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
     when(partitionResolver.getPartitionPos(123)).thenReturn(456);
-    when(annotationDatasetReader.read(partitionKey)).thenReturn(annotationDataset);
+    when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
     when(annotationDataset.findByIndex(456)).thenReturn(null);
 
     assertAll(

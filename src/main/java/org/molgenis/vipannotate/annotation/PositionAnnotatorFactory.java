@@ -12,7 +12,7 @@ public abstract class PositionAnnotatorFactory<U extends Annotation> extends Ann
   }
 
   protected PositionAnnotationDb<U> buildAnnotationDb(
-      AnnotationDatasetReader<U> annotationDatasetReader,
+      AnnotationDatasetDecoder<U> annotationDatasetReader,
       EnumSet<SequenceVariantType> variantTypes) {
     return new PositionAnnotationDb<>(
         partitionResolver,

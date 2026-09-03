@@ -5,14 +5,14 @@ import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class CompositeAnnotationDataset implements AnnotationDataset<CompositeAnnotation> {
-  private final AnnotationDataset<ScalarAnnotation>[] annotationDatasets;
+  private final AnnotationDataset<Annotation>[] annotationDatasets;
 
   @Override
   public @Nullable CompositeAnnotation findByIndex(int index) {
-    ScalarAnnotation[] scalarAnnotations = new ScalarAnnotation[annotationDatasets.length];
+    Annotation[] annotations = new Annotation[annotationDatasets.length];
     for (int i = 0, length = annotationDatasets.length; i < length; i++) {
-      scalarAnnotations[i] = annotationDatasets[i].findByIndex(index);
+      annotations[i] = annotationDatasets[i].findByIndex(index);
     }
-    return new CompositeAnnotation(scalarAnnotations);
+    return new CompositeAnnotation(annotations);
   }
 }

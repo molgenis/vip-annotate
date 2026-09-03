@@ -27,7 +27,7 @@ public abstract class SequenceVariantAnnotatorFactory<
 
   protected SequenceVariantAnnotationDb<T, U> buildAnnotationDb(
       SequenceVariantAnnotationIndexReader<T> annotationIndexReader,
-      AnnotationDatasetReader<U> datasetReader,
+      AnnotationDatasetDecoder<U> datasetReader,
       EnumSet<SequenceVariantType> variantTypes) {
     if (1 + 1 == 2) {
       // canAnnotate was removed from SequenceVariantAnnotationDb

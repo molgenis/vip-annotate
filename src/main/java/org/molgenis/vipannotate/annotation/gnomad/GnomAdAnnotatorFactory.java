@@ -26,7 +26,7 @@ public class GnomAdAnnotatorFactory
     SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
         createIndexReader(archiveReader);
 
-    AnnotationDatasetReader<GnomAdAnnotation> annotationDatasetReader =
+    AnnotationDatasetDecoder<GnomAdAnnotation> annotationDatasetReader =
         new GnomAdAnnotationDatasetReader(
             new GnomAdAnnotationDatasetFactory(new GnomAdAnnotationDatasetDecoder()),
             new AnnotationBlobReader("src", archiveReader),

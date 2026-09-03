@@ -11,7 +11,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
     implements AnnotationDb<T, U> {
   private final PartitionResolver partitionResolver;
   private final AnnotationIndexReader<T> annotationIndexReader;
-  private final AnnotationDatasetReader<U> annotationDatasetReader;
+  private final AnnotationDatasetDecoder<U> annotationDatasetReader;
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationIndex<T> activeAnnotationIndex;
@@ -36,7 +36,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
       if (indexRange != null) {
         if (activeAnnotationDataset == null) {
           // load annotation data on the first index hit
-          activeAnnotationDataset = annotationDatasetReader.read(activePartitionKey);
+          activeAnnotationDataset = annotationDatasetReader.decode(activePartitionKey);
         }
 
         activeAnnotationDataset.findByIndexes(indexRange, annotations);

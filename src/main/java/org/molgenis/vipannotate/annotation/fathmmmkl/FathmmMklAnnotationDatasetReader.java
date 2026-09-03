@@ -7,12 +7,12 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class FathmmMklAnnotationDatasetReader
-    implements AnnotationDatasetReader<FathmmMklAnnotation> {
+    implements AnnotationDatasetDecoder<FathmmMklAnnotation> {
   private final FathmmMklAnnotationDatasetFactory annotationDatasetFactory;
   private final AnnotationBlobReader scoreAnnotationBlobReader;
 
   @Override
-  public AnnotationDataset<FathmmMklAnnotation> read(PartitionKey partitionKey) {
+  public AnnotationDataset<FathmmMklAnnotation> decode(PartitionKey partitionKey) {
     MemoryBuffer scoreMemoryBuffer = scoreAnnotationBlobReader.read(partitionKey);
 
     AnnotationDataset<FathmmMklAnnotation> annotationDataset;

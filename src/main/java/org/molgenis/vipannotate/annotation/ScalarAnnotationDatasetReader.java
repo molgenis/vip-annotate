@@ -5,12 +5,12 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class ScalarAnnotationDatasetReader implements AnnotationDatasetReader<ScalarAnnotation> {
+public class ScalarAnnotationDatasetReader implements AnnotationDatasetDecoder<ScalarAnnotation> {
   private final AnnotationDecoder<ScalarAnnotation> annotationDecoder;
   private final AnnotationBlobReader blobReader;
 
   @Override
-  public AnnotationDataset<ScalarAnnotation> read(PartitionKey partitionKey) {
+  public AnnotationDataset<ScalarAnnotation> decode(PartitionKey partitionKey) {
     MemoryBuffer memoryBuffer = blobReader.read(partitionKey);
     return memoryBuffer != null
         ? new ScalarAnnotationDataset(annotationDecoder, memoryBuffer)

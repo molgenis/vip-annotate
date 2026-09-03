@@ -6,7 +6,7 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class GnomAdAnnotationDatasetReader implements AnnotationDatasetReader<GnomAdAnnotation> {
+public class GnomAdAnnotationDatasetReader implements AnnotationDatasetDecoder<GnomAdAnnotation> {
   private final GnomAdAnnotationDatasetFactory gnomAdAnnotationDatasetFactory;
   private final AnnotationBlobReader sourceAnnotationBlobReader;
   private final AnnotationBlobReader afAnnotationBlobReader;
@@ -17,7 +17,7 @@ public class GnomAdAnnotationDatasetReader implements AnnotationDatasetReader<Gn
   private final AnnotationBlobReader covAnnotationBlobReader;
 
   @Override
-  public AnnotationDataset<GnomAdAnnotation> read(PartitionKey partitionKey) {
+  public AnnotationDataset<GnomAdAnnotation> decode(PartitionKey partitionKey) {
     MemoryBuffer srcMemoryBuffer = sourceAnnotationBlobReader.read(partitionKey);
     MemoryBuffer afMemoryBuffer = afAnnotationBlobReader.read(partitionKey);
     MemoryBuffer faf95MemoryBuffer = faf95AnnotationBlobReader.read(partitionKey);

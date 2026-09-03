@@ -11,6 +11,7 @@
     "alt": 3,
     "annotations": [
       15,
+      16,
       21,
       22
     ]
@@ -18,7 +19,11 @@
   "schema": {
     "annotation_type": "sequence_variant",
     "supported_variant_types": [
-      "snv"
+      "snv",
+      "mnv",
+      "indel",
+      "insertion",
+      "deletion"
     ],
     "annotation_datasets": [
       {
@@ -28,8 +33,28 @@
             "scalar_type": "i32"
           },
           "logical_type": {
+            "type": "scalar",
             "scalar_type": "i32",
             "nullable": false
+          }
+        }
+      },
+      {
+        "id": "exomes_filters",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "enum_set",
+            "values": [
+              "AC0",
+              "AS_VQSR",
+              "InbreedingCoeff"
+            ]
+          },
+          "encoding": {
+            "type": "enum"
           }
         }
       },
@@ -40,6 +65,7 @@
             "scalar_type": "u16"
           },
           "logical_type": {
+            "type": "scalar",
             "scalar_type": "f64",
             "nullable": false
           },
@@ -63,6 +89,7 @@
             "scalar_type": "u16"
           },
           "logical_type": {
+            "type": "scalar",
             "scalar_type": "f64",
             "nullable": false
           },

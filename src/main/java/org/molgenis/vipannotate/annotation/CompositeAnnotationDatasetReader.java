@@ -4,15 +4,14 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CompositeAnnotationDatasetReader
-    implements AnnotationDatasetReader<CompositeAnnotation> {
-  private final ScalarAnnotationDatasetReader[] datasetReaders;
+    implements AnnotationDatasetDecoder<CompositeAnnotation> {
+  private final AnnotationDatasetDecoder<?>[] datasetReaders;
 
   @Override
-  public AnnotationDataset<CompositeAnnotation> read(PartitionKey partitionKey) {
-    AnnotationDataset<ScalarAnnotation>[] annotationDatasets =
-        new ScalarAnnotationDataset[datasetReaders.length];
+  public AnnotationDataset<CompositeAnnotation> decode(PartitionKey partitionKey) {
+    AnnotationDataset[] annotationDatasets = new AnnotationDataset[datasetReaders.length];
     for (int i = 0, length = datasetReaders.length; i < length; i++) {
-      annotationDatasets[i] = datasetReaders[i].read(partitionKey);
+      annotationDatasets[i] = datasetReaders[i].decode(partitionKey);
     }
     return new CompositeAnnotationDataset(annotationDatasets);
   }

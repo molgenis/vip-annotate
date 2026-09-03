@@ -38,11 +38,11 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
 
   private void appendScalarAnnotation(ScalarAnnotation annotation) {
     reusableVcfInfoBuilder.startRawValue();
-    appendRawScalarAnnotation(annotation);
+    appendRawAnnotation(annotation);
     reusableVcfInfoBuilder.endRawValue();
   }
 
-  private void appendRawScalarAnnotation(ScalarAnnotation annotation) {
+  private void appendRawAnnotation(Annotation annotation) {
     switch (annotation) {
       case DoubleAnnotation doubleAnnotation ->
           reusableVcfInfoBuilder.appendRaw(doubleAnnotation.getValue(), 3);
@@ -55,6 +55,15 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
           reusableVcfInfoBuilder.appendRaw(nullableDoubleAnnotation.getValue(), 3);
         }
       }
+      case StringAnnotation stringAnnotation -> {
+        String value = stringAnnotation.value();
+        if (value != null) {
+          reusableVcfInfoBuilder.appendRaw(value);
+        }
+      }
+      case StringListAnnotation stringListAnnotation -> {
+        reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.values()));
+      }
 
       default ->
           throw new UnsupportedOperationException(
@@ -65,13 +74,13 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
   private void appendCompositeAnnotation(CompositeAnnotation compositeAnnotation) {
     reusableVcfInfoBuilder.startRawValue();
 
-    ScalarAnnotation[] annotations = compositeAnnotation.annotations();
+    Annotation[] annotations = compositeAnnotation.annotations();
     for (int i = 0; i < annotations.length; i++) {
       if (i > 0) {
         reusableVcfInfoBuilder.appendCompositeValueSeparator();
       }
 
-      appendRawScalarAnnotation(annotations[i]);
+      appendRawAnnotation(annotations[i]);
     }
 
     reusableVcfInfoBuilder.endRawValue();

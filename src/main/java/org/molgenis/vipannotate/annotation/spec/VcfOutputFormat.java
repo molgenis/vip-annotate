@@ -10,9 +10,4 @@ public record VcfOutputFormat(
     @JsonProperty("infoType") String infoType,
     @JsonProperty("infoDescription") String infoDescription,
     @JsonProperty("infoVersion") String infoVersion)
-    implements OutputFormat {
-  @Override
-  public OutputFormatType type() {
-    return OutputFormatType.VCF;
-  }
-}
+    implements OutputFormat {}
