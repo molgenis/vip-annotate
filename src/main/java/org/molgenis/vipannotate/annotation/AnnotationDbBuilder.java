@@ -1,11 +1,14 @@
 package org.molgenis.vipannotate.annotation;
 
+import static org.molgenis.vipannotate.annotation.spec.ScalarType.*;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.annotation.spec.AnnotationDataset;
@@ -299,37 +302,42 @@ public class AnnotationDbBuilder {
 
     if (encoding == null) {
       if (logicalType.nullable()) {
+        if (logicalType.range() != null) {
+          return switch (storageType.scalarType()) {
+            case I8, I16, I32, U8, U16 -> {
+              Range range = logicalType.range();
+              yield switch (range) {
+                case Range.FloatingPointRange floatingPointRange -> {
+                  // FIXME implement
+                  throw new UnsupportedOperationException();
+                }
+                // FIXME offset encoding might not be possible: max<INT_MAX but offset+max > INT_MAX
+                // FIXME don't cast
+                case Range.IntegerRange integerRange ->
+                    (AnnotationEncoder<T>)
+                        new OffsetNullableIntAnnotationEncoder(
+                            valueWriter, (int) integerRange.min());
+              };
+            }
+            case I64, U32, U64, F32, F64 -> {
+              // FIXME support null encoding for U64,F32,F64
+              throw new UnsupportedOperationException();
+            }
+          };
+        }
+
         // FIXME support  nullable logicalType encoding when encoding is null
         throw new UnsupportedOperationException();
+      } else {
+        return switch (storageType.scalarType()) {
+          case I8, I16, I32, U8, U16 ->
+              (AnnotationEncoder<T>) new IntAnnotationEncoder(valueWriter);
+          case I64, U32, U64, F32, F64 -> {
+            // FIXME support null encoding for U64,F32,F64
+            throw new UnsupportedOperationException();
+          }
+        };
       }
-      return switch (storageType.scalarType()) {
-        case I8, I16, I32, U8, U16 ->
-            (AnnotationEncoder<T>)
-                new AnnotationEncoder<ScalarAnnotation.IntAnnotation>() {
-                  @Override
-                  public void initialize(MemoryBuffer memoryBuffer) {
-                    // FIXME implement initialize(MemoryBuffer memBuffer)
-                    System.err.println("FIXME implement initialize(MemoryBuffer memBuffer)");
-                  }
-
-                  @Override
-                  public void encodeInto(
-                      ScalarAnnotation.IntAnnotation annotation,
-                      MemoryBuffer memBuffer,
-                      int index) {
-                    valueWriter.write(annotation.getValue(), memBuffer, index);
-                  }
-
-                  @Override
-                  public long getEncodedSizeInBytes() {
-                    return valueWriter.getValueSizeInBytes();
-                  }
-                };
-        case I64, U32, U64, F32, F64 -> {
-          // FIXME support null encoding for U64,F32,F64
-          throw new UnsupportedOperationException();
-        }
-      };
     }
 
     return switch (encoding) {
@@ -506,7 +514,12 @@ public class AnnotationDbBuilder {
 
   private Annotation createAnnotationFromTsvValue(String tsvValue, ScalarLogicalType logicalType) {
     return switch (logicalType.scalarType()) {
-      case I8, I16, I32, U8, U16 -> new ScalarAnnotation.IntAnnotation(Integer.parseInt(tsvValue));
+      case I8, I16, I32, U8, U16 ->
+          logicalType.nullable()
+              ? (tsvValue.isEmpty()
+                  ? new ScalarAnnotation.NullableIntAnnotation()
+                  : new ScalarAnnotation.NullableIntAnnotation(Integer.parseInt(tsvValue)))
+              : new IntAnnotation(Integer.parseInt(tsvValue));
       case F32, F64 ->
           logicalType.nullable()
               ? (tsvValue.isEmpty()

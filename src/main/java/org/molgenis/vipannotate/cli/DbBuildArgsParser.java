@@ -43,7 +43,7 @@ Usage:
 
 Options:
   -r, --recipe        FILE  Database build recipe (.json) (required)
-  -o, --outputDir     DIR   Output directory
+  -o, --output-dir    DIR   Output directory
   -f, --force         Overwrite existing output file if it exists""");
   }
 }

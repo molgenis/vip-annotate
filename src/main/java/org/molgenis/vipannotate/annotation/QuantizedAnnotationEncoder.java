@@ -7,6 +7,7 @@ import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnota
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Quantizer;
 
+// TODO merge (Nullable)DoubleAnnotation and change to AnnotationEncoder<DoubleAnnotation>
 @RequiredArgsConstructor
 public class QuantizedAnnotationEncoder implements AnnotationEncoder<ScalarAnnotation> {
   private final Quantizer quantizer;

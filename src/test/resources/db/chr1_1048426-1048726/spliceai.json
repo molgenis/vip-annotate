@@ -1,9 +1,9 @@
 {
-  "id": "gnomad",
+  "id": "spliceai",
   "version": "1.0.0",
   "input": {
     "type": "tsv",
-    "file": "gnomad.tsv.gz",
+    "file": "spliceai.tsv.gz",
     "coordinate_system": "1-based",
     "contig": 0,
     "start": 1,
@@ -15,8 +15,7 @@
       6,
       7,
       8,
-      9,
-      10
+      9
     ]
   },
   "schema": {
@@ -30,100 +29,7 @@
     ],
     "annotation_datasets": [
       {
-        "id": "src",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u8"
-          },
-          "logical_type": {
-            "type": "enum",
-            "values": [
-              "G",
-              "E",
-              "T"
-            ],
-            "nullable": false
-          },
-          "encoding": {
-            "type": "enum"
-          }
-        }
-      },
-      {
-        "id": "af",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u16"
-          },
-          "logical_type": {
-            "type": "scalar",
-            "scalar_type": "f64",
-            "nullable": true
-          },
-          "encoding": {
-            "type": "quantized",
-            "range": {
-              "min": 0,
-              "max": 1
-            },
-            "levels": {
-              "min": 0,
-              "max": 65534
-            },
-            "null_code": 65535
-          }
-        }
-      },
-      {
-        "id": "faf95",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u16"
-          },
-          "logical_type": {
-            "type": "scalar",
-            "scalar_type": "f64",
-            "nullable": false
-          },
-          "encoding": {
-            "type": "quantized",
-            "range": {
-              "min": 0,
-              "max": 1
-            },
-            "levels": {
-              "min": 0,
-              "max": 65535
-            }
-          }
-        }
-      },
-      {
-        "id": "faf99",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u16"
-          },
-          "logical_type": {
-            "type": "scalar",
-            "scalar_type": "f64",
-            "nullable": false
-          },
-          "encoding": {
-            "type": "quantized",
-            "range": {
-              "min": 0,
-              "max": 1
-            },
-            "levels": {
-              "min": 0,
-              "max": 65535
-            }
-          }
-        }
-      },
-      {
-        "id": "nhomalt",
+        "id": "ncbi_gene_id",
         "annotation_value": {
           "storage_type": {
             "scalar_type": "i32"
@@ -136,29 +42,10 @@
         }
       },
       {
-        "id": "filters",
+        "id": "ds_ag",
         "annotation_value": {
           "storage_type": {
             "scalar_type": "u8"
-          },
-          "logical_type": {
-            "type": "enum_set",
-            "values": [
-              "AC0",
-              "AS_VQSR",
-              "InbreedingCoeff"
-            ]
-          },
-          "encoding": {
-            "type": "enum"
-          }
-        }
-      },
-      {
-        "id": "COV",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u16"
           },
           "logical_type": {
             "type": "scalar",
@@ -173,7 +60,96 @@
             },
             "levels": {
               "min": 0,
-              "max": 65535
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "ds_al",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "ds_dg",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "ds_dl",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "u8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          },
+          "encoding": {
+            "type": "quantized",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "levels": {
+              "min": 0,
+              "max": 255
+            }
+          }
+        }
+      },
+      {
+        "id": "dp_ag",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i8"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i8",
+            "nullable": true,
+            "range": {
+              "min": -50.3,
+              "max": 50
             }
           }
         }
@@ -183,10 +159,10 @@
   },
   "output": {
     "type": "vcf",
-    "infoId": "gnomAD",
+    "infoId": "SpliceAI",
     "infoNumber": "A",
     "infoType": "String",
-    "infoDescription": "gnomAD v4.1.0 annotation formatted as 'SRC|AF|FAF95|FAF99|HN|QC|COV'; SRC=source (E=exomes, G=genomes, T=total), AF=allele frequency, FAF95=filtering allele frequency (95% confidence), FAF99=filtering allele frequency (99% confidence), HN=number of homozygotes, QC=quality control filters that failed, COV=coverage (percent of individuals in gnomAD source)",
+    "infoDescription": "SpliceAI v1.3 annotation formatted as 'NCBI_GENE_ID|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL'; NCBI_GENE_ID=NCBI gene identifier, DS_AG=delta score acceptor gain, DS_AL=delta score acceptor loss, DS_DG=delta score donor gain, DP_DL=delta score donor loss, DP_AG=delta position acceptor gain, DP_AL=delta position acceptor loss, DP_DG=delta position donor gain, DP_DL=delta position donor loss",
     "infoVersion": "1.0.0"
   }
 }
