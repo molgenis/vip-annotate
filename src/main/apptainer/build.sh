@@ -12,11 +12,11 @@ main() {
   local args=()
   args+=("--mksquashfs-args" "-comp zstd -Xcompression-level 19")
 
-  sudo apptainer build "${args[@]}" ubuntu-24.04.sif ubuntu-24.04.def
+  sudo apptainer build "${args[@]}" ubuntu-26.04.sif ubuntu-26.04.def
   sudo apptainer build "${args[@]}" streamvbyte-2.0.0.sif streamvbyte-2.0.0.def
   sudo apptainer build "${args[@]}" zstd-1.5.7.sif zstd-1.5.7.def
   sudo apptainer build "${args[@]}" native-image-builder.sif native-image-builder.def
-  sudo apptainer build "${args[@]}" busybox-1.37.0-musl.sif busybox-1.37.0-musl.def
+  sudo apptainer build "${args[@]}" busybox-1.38.0-musl.sif busybox-1.38.0-musl.def
 }
 
 main "${@}"

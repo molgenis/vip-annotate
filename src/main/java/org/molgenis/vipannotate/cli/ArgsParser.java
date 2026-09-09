@@ -48,6 +48,10 @@ public abstract class ArgsParser<T> {
   }
 
   protected void validate(String[] args) {
+    if (args.length == 0) {
+      printUsage();
+      System.exit(1);
+    }
     if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))) {
       printUsage();
       System.exit(0);

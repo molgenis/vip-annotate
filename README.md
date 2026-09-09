@@ -7,39 +7,42 @@ Variant Call Format (VCF) file annotation
 ## Requirements
 
 - **Operating system:** Linux
-- **Container runtime:** [Apptainer ≥ 1.4.5](https://apptainer.org/)
 - **CPU:** x86-64-v3 compatible
+- **Container runtime:** [Apptainer ≥ 1.4.5](https://apptainer.org/)
 
 ## Usage
 
 ```bash
-apptainer run vip-annotate.sif --help
+vip-annotate --help
 ```
 
 ```
 Usage:
-  apptainer run vip-annotate.sif [OPTIONS] <command> [ARGS...]
-  apptainer run vip-annotate.sif --version
-  apptainer run vip-annotate.sif --help
+  vip-annotate [OPTIONS] <command> [ARGS...]
+  vip-annotate --version
+  vip-annotate --help
 
 Options:
   -d, --debug       Enable debug logging
 
 Commands:
   annotate          Annotate vcf using an annotation database
-  database-build    Build annotation database"""
+  database-build    Build annotation database
+  database-download Download annotation download
+
+Report bugs and questions at https://github.com/molgenis/vip-annotate/issues
 ```
 
 ### Command: annotate
 
 ```bash
-apptainer run vip-annotate.sif annotate--help
+vip-annotate annotate --help
 ```
 
 ```
 Usage:
-  apptainer run vip-annotate.sif annotate --annotations DIR --input FILE --output FILE [OPTIONS]
-  apptainer run vip-annotate.sif annotate --help
+  vip-annotate annotate --annotations DIR --input FILE --output FILE [OPTIONS]
+  vip-annotate annotate --help
 
 Options:
   -a, --annotations DIR       Directory containing annotation database  (required)
@@ -55,46 +58,48 @@ Options:
   -f, --force                 Overwrite existing output file if it exists
 ```
 
-### Command: download-database
+### Command: database-download
 
 ```bash
-apptainer run vip-annotate.sif database-download --help
+vip-annotate database-download --help
 ```
 
 ```
 Usage:
-  apptainer run vip-annotate.sif database-download --output DIR [OPTIONS]
-  apptainer run vip-annotate.sif database-download --help
+  vip-annotate database-download --output DIR [OPTIONS]
+  vip-annotate database-download --help
 
 Options:
   -o, --output      DIR      Output directory  (required)
   -f, --force                Overwrite existing output files if they exist
 ```
 
-### Command: build-database
+### Command: database-build
 
 ```bash
-apptainer run vip-annotate.sif database-build --help
+vip-annotate database-build --help
 ```
 
 ```
 Usage:
-  apptainer run vip-annotate.sif database-build <command> [ARGS...]
-  apptainer run vip-annotate.sif database-build --help
+  vip-annotate database-build --recipe <FILE> [OPTIONS]
+  vip-annotate database-build --help
 
-Commands:
-  fathmm_mkl        Build FATHMM-MKL database
-  gnomad            Build gnomAD database
-  ncer              Build NCER database
-  phylop            Build PhyloP database
-  remm              Build ReMM database
-  spliceai          Build SpliceAI database
+Options:
+  -r, --recipe        FILE  Database build recipe (.json) (required)
+  -o, --output-dir    DIR   Output directory
+  -f, --force         Overwrite existing output file if it exists
 ```
+
+#### Recipe
+
+TODO
 
 ## Development
 
 ### Requirements
 
+- **Container runtime:** [Apptainer ≥ 1.4.5](https://apptainer.org/)
 - [GraalVM 25](https://www.graalvm.org/)
-- [Maven 3.9.11](https://maven.apache.org/)
-- Set Maven property `env=dev` to activate `dev` and `dev-<os>` profiles. 
+- [Maven 3.9.16](https://maven.apache.org/)
+- Set Maven property `env=dev` to activate `dev` and `dev-<os>` profiles.

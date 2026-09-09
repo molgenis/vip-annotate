@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.format.Field;
+import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
 public final class Id extends Field {

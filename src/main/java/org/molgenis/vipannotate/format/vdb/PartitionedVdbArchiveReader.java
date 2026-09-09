@@ -20,6 +20,13 @@ public class PartitionedVdbArchiveReader implements BinaryPartitionReader {
   @Nullable private MemoryBuffer scratchBuffer;
 
   @Override
+  public @Nullable MemoryBuffer read(String entryName) {
+    VdbArchiveIndex rootIndex = getRootIndex();
+    Integer entryId = rootIndex.getEntryId(entryName);
+    return entryId != null ? archiveReader.readEntry(entryId) : null;
+  }
+
+  @Override
   public @Nullable MemoryBuffer read(PartitionKey partitionKey, String dataId) {
     updateActivePartitionIndex(partitionKey.getIndexPartitionKey());
 
@@ -57,16 +64,7 @@ public class PartitionedVdbArchiveReader implements BinaryPartitionReader {
     if (activePartitionIndexKey != null && activePartitionIndexKey.equals(indexKey)) {
       return;
     }
-
-    // lazy load root index
-    if (rootIndex == null) {
-      if (scratchBuffer == null) {
-        scratchBuffer = archiveReader.readLastEntry();
-      } else {
-        archiveReader.readLastEntryInto(scratchBuffer);
-      }
-      rootIndex = indexReader.readFrom(scratchBuffer);
-    }
+    VdbArchiveIndex rootIndex = getRootIndex();
 
     // load partition index
     String entryId = indexKey.getCanonicalName();
@@ -83,6 +81,19 @@ public class PartitionedVdbArchiveReader implements BinaryPartitionReader {
     }
 
     activePartitionIndexKey = indexKey;
+  }
+
+  private VdbArchiveIndex getRootIndex() {
+    // lazy load root index
+    if (rootIndex == null) {
+      if (scratchBuffer == null) {
+        scratchBuffer = archiveReader.readLastEntry();
+      } else {
+        archiveReader.readLastEntryInto(scratchBuffer);
+      }
+      rootIndex = indexReader.readFrom(scratchBuffer);
+    }
+    return rootIndex;
   }
 
   @Override

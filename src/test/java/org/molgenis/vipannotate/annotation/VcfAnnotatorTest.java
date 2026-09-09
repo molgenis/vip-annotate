@@ -20,7 +20,7 @@ class VcfAnnotatorTest {
   private static boolean LOGGER_IS_DEBUG_ENABLED_PREVIOUS_STATE;
 
   @Mock private VcfParser vcfParser;
-  @Mock private VcfRecordAnnotator vcfRecordAnnotator;
+  @Mock private VcfAnnotationEngine vcfAnnotationEngine;
   @Mock private VcfWriter vcfWriter;
   private VcfAnnotator vcfAnnotator;
 
@@ -37,7 +37,7 @@ class VcfAnnotatorTest {
 
   @BeforeEach
   void setUp() {
-    vcfAnnotator = new VcfAnnotator(vcfParser, vcfRecordAnnotator, vcfWriter);
+    vcfAnnotator = new VcfAnnotator(vcfParser, vcfAnnotationEngine, vcfWriter);
   }
 
   @AfterEach
@@ -60,12 +60,12 @@ class VcfAnnotatorTest {
 
     vcfAnnotator.annotate();
 
-    InOrder inOrder = inOrder(vcfRecordAnnotator, vcfWriter);
-    inOrder.verify(vcfRecordAnnotator).updateHeader(vcfHeader);
+    InOrder inOrder = inOrder(vcfAnnotationEngine, vcfWriter);
+    inOrder.verify(vcfAnnotationEngine).updateHeader(vcfHeader);
     inOrder.verify(vcfWriter).writeHeader(vcfHeader);
-    inOrder.verify(vcfRecordAnnotator).annotate(vcfRecordBatch0);
+    inOrder.verify(vcfAnnotationEngine).annotate(vcfRecordBatch0);
     inOrder.verify(vcfWriter).write(vcfRecordBatch0);
-    inOrder.verify(vcfRecordAnnotator).annotate(vcfRecordBatch1);
+    inOrder.verify(vcfAnnotationEngine).annotate(vcfRecordBatch1);
     inOrder.verify(vcfWriter).write(vcfRecordBatch1);
   }
 }

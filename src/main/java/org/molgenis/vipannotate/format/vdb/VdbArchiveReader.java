@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.format.vdb;
 
-import com.sun.nio.file.ExtendedOpenOption;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -8,6 +7,7 @@ import java.nio.file.StandardOpenOption;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.ClosableUtils;
+import org.molgenis.vipannotate.util.OpenOptions;
 import org.molgenis.zstd.ZstdDecompressionContext;
 
 public class VdbArchiveReader implements AutoCloseable {
@@ -45,7 +45,7 @@ public class VdbArchiveReader implements AutoCloseable {
       VdbArchiveMetadataReader metadataReader) {
     try {
       return new VdbArchiveReader(
-          FileChannel.open(vdbPath, StandardOpenOption.READ, ExtendedOpenOption.DIRECT),
+          FileChannel.open(vdbPath, StandardOpenOption.READ, OpenOptions.DIRECT),
           FileChannel.open(vdbPath, StandardOpenOption.READ),
           zstdContext,
           vdbMemBufferFactory,

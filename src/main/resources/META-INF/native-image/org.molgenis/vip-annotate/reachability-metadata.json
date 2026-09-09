@@ -1,4 +1,297 @@
 {
+  "reflection": [
+    {
+      "type": "java.lang.Record"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationDataset",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.molgenis.vipannotate.annotation.spec.AnnotationValue"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationSchema",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.molgenis.vipannotate.annotation.spec.AnnotationType",
+            "java.util.EnumSet",
+            "java.util.List",
+            "org.molgenis.vipannotate.annotation.spec.AnnotationSelector"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationSelector"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationSpec",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "org.molgenis.vipannotate.annotation.spec.InputFormat",
+            "org.molgenis.vipannotate.annotation.spec.AnnotationSchema",
+            "org.molgenis.vipannotate.annotation.spec.OutputFormat"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationType"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationValue",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.molgenis.vipannotate.annotation.spec.StorageType",
+            "org.molgenis.vipannotate.annotation.spec.LogicalType",
+            "org.molgenis.vipannotate.annotation.spec.Encoding"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.BedField"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.BedInputFormat",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.nio.file.Path",
+            "org.molgenis.vipannotate.annotation.spec.BedField"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.CoordinateSystem"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.Encoding"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.EnumEncoding",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.EnumLogicalType",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "[Ljava.lang.String;",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.EnumSetLogicalType",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "[Ljava.lang.String;"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.InputFormat"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.LogicalType"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.OutputFormat",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.QuantizedEncoding",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.molgenis.vipannotate.annotation.spec.QuantizedEncoding$Range",
+            "org.molgenis.vipannotate.annotation.spec.QuantizedEncoding$Levels",
+            "java.lang.Integer"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.QuantizedEncoding$Range",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "double",
+            "double"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.QuantizedEncoding$Levels",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.Range"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.Range$IntegerRange",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "long",
+            "long"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.Range$FloatingPointRange",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "double",
+            "double"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.ScalarLogicalType",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.molgenis.vipannotate.annotation.spec.ScalarType",
+            "boolean",
+            "org.molgenis.vipannotate.annotation.spec.Range"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.ScalarType"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.SequenceVariantType"
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.StorageType",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.molgenis.vipannotate.annotation.spec.ScalarType"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.TsvInputFormat",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.molgenis.vipannotate.annotation.spec.CoordinateSystem",
+            "int",
+            "int",
+            "java.lang.Integer",
+            "java.lang.Integer",
+            "java.lang.Integer",
+            "int[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.VcfInputFormat",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.molgenis.vipannotate.annotation.spec.VcfOutputFormat",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.net.www.protocol.http.Handler",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.net.www.protocol.https.Handler",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ],
   "resources": [
     {
       "glob": "META-INF/services/java.net.spi.InetAddressResolverProvider"

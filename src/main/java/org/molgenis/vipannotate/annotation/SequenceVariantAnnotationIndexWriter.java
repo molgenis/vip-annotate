@@ -25,7 +25,7 @@ public class SequenceVariantAnnotationIndexWriter<T extends SequenceVariant>
     }
 
     binaryPartitionWriter.write(
-        partitionKey, "idx", Compression.ZSTD, IoMode.BUFFERED, reusableMemBuffer);
+        "idx", Compression.ZSTD, IoMode.BUFFERED, reusableMemBuffer, partitionKey);
   }
 
   @Override

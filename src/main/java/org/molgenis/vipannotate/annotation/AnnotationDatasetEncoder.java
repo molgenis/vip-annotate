@@ -5,4 +5,6 @@ import org.molgenis.vipannotate.util.SizedIterator;
 
 public interface AnnotationDatasetEncoder<T extends Annotation> {
   void encode(SizedIterator<T> annotationIt, int maxAnnotations, MemoryBuffer memBuffer);
+
+  long getEncodedSizeInBytes(int annotationCount);
 }

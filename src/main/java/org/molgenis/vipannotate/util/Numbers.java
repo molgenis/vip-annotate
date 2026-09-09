@@ -98,6 +98,29 @@ public class Numbers {
     return (byte) value;
   }
 
+  public static byte safeIntToUnsignedByte(int value) {
+    if (value < 0 || value > 0xFF) {
+      throw new IllegalArgumentException(
+          "int '%d' cannot fit in an unsigned byte".formatted(value));
+    }
+    return (byte) value;
+  }
+
+  public static short safeIntToShort(int value) {
+    if (value < Short.MIN_VALUE || value > Short.MAX_VALUE) {
+      throw new IllegalArgumentException("int '%d' cannot fit in a short".formatted(value));
+    }
+    return (short) value;
+  }
+
+  public static short safeIntToUnsignedShort(int value) {
+    if (value < 0 || value > 0xFFFF) {
+      throw new IllegalArgumentException(
+          "int '%d' cannot fit in a unsigned short".formatted(value));
+    }
+    return (short) value;
+  }
+
   public static long nextPowerOf2(long value) {
     requireNonNegative(value);
     if (value == 0) {

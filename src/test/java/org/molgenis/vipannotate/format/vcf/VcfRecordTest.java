@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.molgenis.vipannotate.format.Field;
 
 class VcfRecordTest {
   private Chrom chrom;

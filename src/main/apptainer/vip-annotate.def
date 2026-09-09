@@ -1,5 +1,5 @@
 Bootstrap: localimage
-From: ubuntu-24.04.sif
+From: ubuntu-26.04.sif
 Stage: build-ubuntu
 
 Bootstrap: localimage
@@ -11,7 +11,7 @@ From: zstd-1.5.7.sif
 Stage: build-zstd
 
 Bootstrap: localimage
-From: busybox-1.37.0-musl.sif
+From: busybox-1.38.0-musl.sif
 Stage: final
 
 %files

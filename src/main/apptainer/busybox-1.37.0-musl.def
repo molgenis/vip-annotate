@@ -1,5 +1,0 @@
-Bootstrap: docker
-From: busybox:1.37.0-musl
-
-%help
-  busybox container

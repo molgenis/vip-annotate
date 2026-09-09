@@ -164,14 +164,29 @@ public final class MemoryBuffer implements AutoCloseable {
     return value;
   }
 
+  /** Returns the unsigned byte at the current position and increments the position */
+  public int getUnsignedByte() {
+    return Byte.toUnsignedInt(getByte());
+  }
+
   /** Returns the byte at the given position */
-  public int getByte(long pos) {
+  public byte getByte(long pos) {
     return memSegment.get(LAYOUT_BYTE, pos);
+  }
+
+  /** Returns the unsigned byte at the given position */
+  public int getUnsignedByte(long pos) {
+    return Byte.toUnsignedInt(getByte(pos));
   }
 
   /** Returns the byte at the given index */
   public byte getByteAtIndex(long index) {
     return memSegment.getAtIndex(LAYOUT_BYTE, index);
+  }
+
+  /** Returns the byte at the given index */
+  public int getUnsignedByteAtIndex(long index) {
+    return Byte.toUnsignedInt(getByteAtIndex(index));
   }
 
   /**
@@ -252,6 +267,16 @@ public final class MemoryBuffer implements AutoCloseable {
     return array;
   }
 
+  public int[] getUnsignedByteArray() {
+    int arrayLength = getVarUnsignedInt();
+    int[] array = new int[arrayLength];
+    for (int i = 0; i < arrayLength; i++) {
+      array[i] = getUnsignedByte(position + (i * LAYOUT_BYTE.byteSize()));
+    }
+    position += arrayLength * LAYOUT_BYTE.byteSize();
+    return array;
+  }
+
   /** same as {@link #putByte(byte)} put for <code>byte[]</code> */
   public void putByteArray(byte[] array) {
     ensureCapacity(position + VAR_INT_MAX_BYTE_SIZE + (array.length * LAYOUT_BYTE.byteSize()));
@@ -275,9 +300,19 @@ public final class MemoryBuffer implements AutoCloseable {
     return value;
   }
 
+  /** same as {@link #getUnsignedByte()} for <code>short</code>. */
+  public int getUnsignedShort() {
+    return Short.toUnsignedInt(getShort());
+  }
+
   /** see {@link #getByteAtIndex(long)} for <code>short</code>. */
   public short getShortAtIndex(long index) {
     return memSegment.getAtIndex(LAYOUT_SHORT, index);
+  }
+
+  /** see {@link #getUnsignedByteAtIndex(long)} for <code>short</code>. */
+  public int getUnsignedShortAtIndex(long index) {
+    return Short.toUnsignedInt(getShortAtIndex(index));
   }
 
   /** same as {@link #putByte(byte)} put for <code>short</code> */
@@ -317,14 +352,29 @@ public final class MemoryBuffer implements AutoCloseable {
     return value;
   }
 
+  /** same as {@link #getUnsignedByte()} for <code>int</code>. */
+  public long getUnsignedInt() {
+    return Integer.toUnsignedLong(getInt());
+  }
+
   /** same as {@link #getByte(long)} for <code>int</code>. */
   public int getInt(long pos) {
     return memSegment.get(LAYOUT_INT, pos);
   }
 
-  /** see {@link #getByteAtIndex(long)} for <code>int</code>. */
+  /** same as {@link #getUnsignedByte(long)} for <code>int</code>. */
+  public long getUnsignedInt(long pos) {
+    return Integer.toUnsignedLong(getInt(pos));
+  }
+
+  /** same as {@link #getByteAtIndex(long)} for <code>int</code>. */
   public int getIntAtIndex(long index) {
     return memSegment.getAtIndex(LAYOUT_INT, index);
+  }
+
+  /** same as {@link #getByteAtIndex(long)} for <code>int</code>. */
+  public long getUnsignedIntAtIndex(long index) {
+    return Integer.toUnsignedLong(getIntAtIndex(index));
   }
 
   /** same as {@link #putByte(byte)} put for <code>int</code> */

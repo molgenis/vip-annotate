@@ -15,8 +15,9 @@ public class IndexedAnnotatedFeatureDatasetEncoder<T extends Annotation>
     implements AnnotationDatasetEncoder<IndexedAnnotation<T>> {
   private final IndexedAnnotationEncoder<T> annotationEncoder;
 
-  public long calcEncodedSize(int maxAnnotations) {
-    return (long) maxAnnotations * annotationEncoder.getAnnotationSizeInBytes();
+  @Override
+  public long getEncodedSizeInBytes(int annotationCount) {
+    return Math.multiplyExact((long) annotationCount, annotationEncoder.getAnnotationSizeInBytes());
   }
 
   @Override

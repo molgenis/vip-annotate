@@ -31,8 +31,8 @@ public class DbDownloadArgsParser extends ArgsParser<DbDownloadArgs> {
     Logger.info(
 """
 Usage:
-  apptainer run vip-annotate.sif database-download --output DIR [OPTIONS]
-  apptainer run vip-annotate.sif database-download --help
+  vip-annotate database-download --output DIR [OPTIONS]
+  vip-annotate database-download --help
 
 Options:
   -o, --output      DIR      Output directory  (required)

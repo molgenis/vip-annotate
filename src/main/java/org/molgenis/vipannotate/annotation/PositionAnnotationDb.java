@@ -16,7 +16,7 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 public class PositionAnnotationDb<T extends Annotation>
     implements AnnotationDb<SequenceVariant, T> {
   private final PartitionResolver partitionResolver;
-  private final AnnotationDatasetReader<T> annotationDatasetReader;
+  private final AnnotationDatasetDecoder<T> annotationDatasetReader;
   private final Predicate<SequenceVariant> canAnnotate;
 
   @Nullable private PartitionKey activePartitionKey;
@@ -53,7 +53,7 @@ public class PositionAnnotationDb<T extends Annotation>
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {
-      activeAnnotationDataset = annotationDatasetReader.read(partitionKey);
+      activeAnnotationDataset = annotationDatasetReader.decode(partitionKey);
       activePartitionKey = partitionKey;
     }
 

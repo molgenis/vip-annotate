@@ -28,14 +28,20 @@ public class PartitionedVdbArchiveWriter implements BinaryPartitionWriter {
     return new PartitionedVdbArchiveWriter(archiveWriter, indexWriter);
   }
 
+  @Override
+  public void write(String dataId, Compression compression, IoMode ioMode, MemoryBuffer memBuffer) {
+    int entryId = archiveWriter.createEntry(memBuffer, compression, ioMode);
+    rootIndex.addEntry(dataId, entryId);
+  }
+
   @SuppressWarnings("NullAway")
   @Override
   public void write(
-      PartitionKey partitionKey,
       String dataId,
       Compression compression,
       IoMode ioMode,
-      MemoryBuffer memBuffer) {
+      MemoryBuffer memBuffer,
+      PartitionKey partitionKey) {
     // get index partition
     PartitionKey indexKey = partitionKey.getIndexPartitionKey();
 

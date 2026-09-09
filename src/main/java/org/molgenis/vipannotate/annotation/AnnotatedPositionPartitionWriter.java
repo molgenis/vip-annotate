@@ -41,13 +41,13 @@ public class AnnotatedPositionPartitionWriter<
     int maxAnnotations = partition.calcMaxPos();
 
     // encode
-    long encodedSize = annotationDatasetEncoder.calcEncodedSize(maxAnnotations);
+    long encodedSize = annotationDatasetEncoder.getEncodedSizeInBytes(maxAnnotations);
     MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedSize);
     annotationDatasetEncoder.encode(intervalIt, maxAnnotations, memBuffer);
 
     // write
     binaryPartitionWriter.write(
-        partition.key(), annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer);
+        annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partition.key());
   }
 
   private SizedIterator<IndexedAnnotation<U>> createIndexedAnnotatedIntervalIterator(

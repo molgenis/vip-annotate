@@ -1,5 +1,0 @@
-Bootstrap: docker
-From: ubuntu:24.04
-
-%help
-  ubuntu 24.04 container
