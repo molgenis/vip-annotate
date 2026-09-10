@@ -2,28 +2,22 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 
 @RequiredArgsConstructor
 public class OffsetNullableIntAnnotationEncoder
     implements AnnotationEncoder<NullableIntAnnotation> {
-  private final ValueWriter valueWriter;
+  private final IntValueWriter intValueWriter;
   private final int offset;
 
   @Override
-  public void initialize(MemoryBuffer memoryBuffer) {
-    // FIXME implement initialize(MemoryBuffer memBuffer)
-    System.err.println("FIXME implement initialize(MemoryBuffer memBuffer)");
-  }
-
-  @Override
-  public void encodeInto(NullableIntAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
-    int encodedValue = annotation.isNull() ? 0 : offset + annotation.getValue() + 1;
-    valueWriter.write(encodedValue, memoryBuffer, index);
+  public void encodeInto(NullableIntAnnotation annotation, BinaryWriter binaryWriter) {
+    long encodedValue = annotation.isNull() ? 0 : offset + annotation.getValue() + 1;
+    intValueWriter.write(encodedValue, binaryWriter);
   }
 
   @Override
   public long getEncodedSizeInBytes() {
-    return valueWriter.getValueSizeInBytes();
+    return intValueWriter.getValueSizeInBytes();
   }
 }

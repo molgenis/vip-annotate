@@ -1,26 +1,26 @@
 package org.molgenis.vipannotate.format.tsv;
 
-import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.format.RecordReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
-import org.molgenis.vipannotate.util.TsvIterator;
 
 @RequiredArgsConstructor
-public class TsvParser implements Iterator<String[]>, AutoCloseable {
-  private final TsvIterator tsvIterator;
+public class TsvParser implements RecordReader<TsvField, TsvRecord> {
+  private final TsvRecordReader recordReader;
 
   @Override
-  public boolean hasNext() {
-    return this.tsvIterator.hasNext();
+  public @Nullable TsvRecord read() {
+    return recordReader.read();
   }
 
   @Override
-  public String[] next() {
-    return this.tsvIterator.next();
+  public boolean readInto(TsvRecord record) {
+    return recordReader.readInto(record);
   }
 
   @Override
   public void close() {
-    ClosableUtils.close(tsvIterator);
+    ClosableUtils.close(recordReader);
   }
 }

@@ -6,8 +6,10 @@ import org.jspecify.annotations.Nullable;
 /**
  * parsed database-build command-line arguments
  *
- * @param inputRecipe input recipe.
- * @param outputDir output database directory.
+ * @param input input file path.
+ * @param inputDef input definition file path.
+ * @param output output file path.
  * @param force whether to overwrite the output database if it exists.
  */
-public record DbBuildArgs(Path inputRecipe, @Nullable Path outputDir, @Nullable Boolean force) {}
+public record DbBuildArgs(
+    Path input, Path inputDef, @Nullable Path output, @Nullable Boolean force) {}

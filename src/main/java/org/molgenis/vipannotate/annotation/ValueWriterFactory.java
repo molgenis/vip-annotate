@@ -1,85 +1,61 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.annotation.spec.ScalarType;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.annotation.resolved.FloatType;
+import org.molgenis.vipannotate.annotation.resolved.IntType;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 import org.molgenis.vipannotate.util.Numbers;
 
+@RequiredArgsConstructor
 public final class ValueWriterFactory {
-  private ValueWriterFactory() {}
-
-  public static ValueWriter createValueWriter(ScalarType scalarType, boolean writeAtIndex) {
-    if (writeAtIndex) {
-      return createIndexedValueWriter(scalarType);
-    } else {
-      return createUnindexedValueWriter(scalarType);
-    }
-  }
-
-  private static ValueWriter createIndexedValueWriter(ScalarType scalarType) {
-    return switch (scalarType) {
+  public IntValueWriter createIntValueWriter(IntType intType) {
+    return switch (intType) {
       case I8 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setByteAtIndexUnchecked(index, Numbers.safeIntToByte(value)),
+          new IntValueWriter(
+              (long value, BinaryWriter binaryWriter) ->
+                  binaryWriter.writeByte(Numbers.safeLongToByte(value)),
               Byte.BYTES);
       case U8 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setByteAtIndexUnchecked(index, Numbers.safeIntToUnsignedByte(value)),
+          new IntValueWriter(
+              (long value, BinaryWriter binaryWriter) ->
+                  binaryWriter.writeByte(Numbers.safeLongToUnsignedByte(value)),
               Byte.BYTES);
       case I16 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setShortAtIndexUnchecked(index, Numbers.safeIntToShort(value)),
+          new IntValueWriter(
+              (long value, BinaryWriter binaryWriter) ->
+                  binaryWriter.writeShort(Numbers.safeLongToShort(value)),
               Short.BYTES);
       case U16 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setShortAtIndexUnchecked(
-                      index, Numbers.safeIntToUnsignedShort(value)),
+          new IntValueWriter(
+              (long value, BinaryWriter binaryWriter) ->
+                  binaryWriter.writeShort(Numbers.safeLongToUnsignedShort(value)),
               Short.BYTES);
       case I32 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setIntAtIndexUnchecked(index, value),
+          new IntValueWriter(
+              (long value, BinaryWriter binaryWriter) ->
+                  binaryWriter.writeInt(Numbers.safeLongToInt(value)),
               Integer.BYTES);
-      default ->
-          throw new UnsupportedOperationException(
-              "Unsupported scalar type: %s"
-                  .formatted(scalarType)); // FIXME support U32, I64, U64, F32 and F64
+      case U32 ->
+          new IntValueWriter(
+              (long value, BinaryWriter binaryWriter) ->
+                  binaryWriter.writeInt(Numbers.safeLongToUnsignedInt(value)),
+              Integer.BYTES);
+      case I64, U64 ->
+          new IntValueWriter(
+              (long value, BinaryWriter binaryWriter) -> binaryWriter.writeLong(value), Long.BYTES);
     };
   }
 
-  private static ValueWriter createUnindexedValueWriter(ScalarType scalarType) {
-    return switch (scalarType) {
-      case I8 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putByteUnchecked(Numbers.safeIntToByte(value)),
-              Byte.BYTES);
-      case U8 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putByteUnchecked(Numbers.safeIntToUnsignedByte(value)),
-              Byte.BYTES);
-      case I16 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putShortUnchecked(Numbers.safeIntToShort(value)),
-              Short.BYTES);
-      case U16 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putShortUnchecked(Numbers.safeIntToUnsignedShort(value)),
-              Short.BYTES);
-      case I32, U32 ->
-          new ValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) -> memoryBuffer.putIntUnchecked(value),
-              Integer.BYTES);
-      default ->
-          throw new UnsupportedOperationException(
-              "Unsupported scalar type: %s"
-                  .formatted(scalarType)); // FIXME support I64, U64, F32 and F64
+  public FloatValueWriter createFloatValueWriter(FloatType floatType) {
+    return switch (floatType) {
+      case F32 ->
+          new FloatValueWriter(
+              (double value, BinaryWriter binaryWriter) -> binaryWriter.writeFloat((float) value),
+              Float.BYTES);
+      case F64 ->
+          new FloatValueWriter(
+              (double value, BinaryWriter binaryWriter) -> binaryWriter.writeDouble(value),
+              Double.BYTES);
     };
   }
 }

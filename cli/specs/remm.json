@@ -1,60 +1,23 @@
 {
-  "id": "remm",
+  "id": "REMM",
+  "description": "REMM (Regulatory Mendelian Mutation) score, see https://doi.org/10.1093/gigascience/giad024",
   "version": "1.0.0",
   "input": {
     "type": "tsv",
-    "file": "ReMM.v0.4.hg38.tsv.gz",
     "coordinate_system": "1-based",
-    "contig": 0,
-    "start": 1,
-    "annotations": [
-      2
-    ]
+    "contig": 1,
+    "start": 2,
+    "annotation_columns": {
+      "score": 3
+    }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "position",
-    "supported_variant_types": [
-      "snv",
-      "mnv",
-      "indel",
-      "insertion",
-      "deletion"
-    ],
-    "annotation_datasets": [
-      {
-        "id": "score",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u8"
-          },
-          "logical_type": {
-            "type": "scalar",
-            "scalar_type": "f64",
-            "nullable": true
-          },
-          "encoding": {
-            "type": "quantized",
-            "range": {
-              "min": 0,
-              "max": 1
-            },
-            "levels": {
-              "min": 1,
-              "max": 255
-            },
-            "null_code": 0
-          }
-        }
+    "annotations": {
+      "score": {
+        "type": "floating_point",
+        "description": "score prediction of the potential pathogenicity of noncoding variants"
       }
-    ],
-    "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "REMM",
-    "infoNumber": "A",
-    "infoType": "Float",
-    "infoDescription": "REMM score",
-    "infoVersion": "1.0.0"
+    }
   }
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
@@ -36,10 +37,12 @@ class SequenceVariantAnnotationIndexReaderTest {
   void read() {
     PartitionKey partitionKey = mock(PartitionKey.class);
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
+    BinaryReader binaryReader = mock(BinaryReader.class);
+    when(binaryReader.unwrap()).thenReturn(memoryBuffer);
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> indexDispatcher =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
 
-    when(annotationBlobReader.read(partitionKey)).thenReturn(memoryBuffer);
+    when(annotationBlobReader.read(partitionKey)).thenReturn(binaryReader);
     when(indexReader.readFrom(memoryBuffer)).thenReturn(indexDispatcher);
 
     assertEquals(indexDispatcher, sequenceVariantAnnotationIndexReader.read(partitionKey));
@@ -55,7 +58,9 @@ class SequenceVariantAnnotationIndexReaderTest {
   void readInto() {
     PartitionKey partitionKey = mock(PartitionKey.class);
     MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
-    when(annotationBlobReader.read(partitionKey)).thenReturn(memoryBuffer);
+    BinaryReader binaryReader = mock(BinaryReader.class);
+    when(binaryReader.unwrap()).thenReturn(memoryBuffer);
+    when(annotationBlobReader.read(partitionKey)).thenReturn(binaryReader);
 
     @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =

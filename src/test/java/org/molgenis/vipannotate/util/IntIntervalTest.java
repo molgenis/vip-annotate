@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 class IntIntervalTest {
   @Test
   void intervalValid() {
-    IntInterval interval = new IntInterval(-1, 1);
-    assertAll(() -> assertEquals(-1d, interval.min()), () -> assertEquals(1d, interval.max()));
+    IntInterval interval = new IntInterval(-1L, 1L);
+    assertAll(() -> assertEquals(-1L, interval.min()), () -> assertEquals(1L, interval.max()));
   }
 
   @Test
   void intervalValidMinIsMax() {
-    IntInterval interval = new IntInterval(1, 1);
-    assertAll(() -> assertEquals(1, interval.min()), () -> assertEquals(1, interval.max()));
+    IntInterval interval = new IntInterval(1L, 1L);
+    assertAll(() -> assertEquals(1L, interval.min()), () -> assertEquals(1L, interval.max()));
   }
 
   @Test
@@ -24,7 +24,7 @@ class IntIntervalTest {
 
   @Test
   void contains() {
-    IntInterval interval = new IntInterval(-1, 1);
+    IntInterval interval = new IntInterval(-1L, 1L);
     assertAll(
         () -> assertFalse(interval.contains(-2)),
         () -> assertTrue(interval.contains(-1)),

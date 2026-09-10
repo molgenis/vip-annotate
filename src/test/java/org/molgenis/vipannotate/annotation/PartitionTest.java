@@ -21,21 +21,14 @@ class PartitionTest {
   }
 
   @Test
-  void calcMaxPosNoLength() {
-    Contig contig = new Contig("chrZ");
-    Partition<?, ?, ?> partition = new Partition<>(new PartitionKey(contig, 3), List.of());
-    assertThrows(IllegalArgumentException.class, partition::calcMaxPos);
-  }
-
-  @Test
   void getPartitionStart() {
-    PartitionKey key = new PartitionKey(new Contig("chrZ"), 1);
+    PartitionKey key = new PartitionKey(new Contig("chrZ", 10), 1);
     assertEquals(5, Partition.getPartitionStart(key, 5 + (1 << Partition.NR_POS_BITS)));
   }
 
   @Test
   void getPartitionStartFirstBin() {
-    PartitionKey key = new PartitionKey(new Contig("chrZ"), 0);
+    PartitionKey key = new PartitionKey(new Contig("chrZ", 10), 0);
     assertEquals(5, Partition.getPartitionStart(key, 5));
   }
 }

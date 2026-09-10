@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.Maps;
 
 public class VdbArchiveIndex {
   @Getter(PACKAGE)
@@ -16,8 +17,7 @@ public class VdbArchiveIndex {
   }
 
   public VdbArchiveIndex(int nrEntries) {
-    int initialCapacity = (int) Math.ceil(nrEntries / 0.75f);
-    entryNameToIdMap = new LinkedHashMap<>(initialCapacity);
+    entryNameToIdMap = Maps.newLinkedHashMapWithExpectedSize(nrEntries);
   }
 
   public boolean isEmpty() {

@@ -26,23 +26,23 @@ class PartitionIteratorTest {
 
     Interval interval0 = new Interval(chr1, 1, (1 << 18) + 1);
     AnnotatedInterval<Interval, Annotation> annotatedInterval0 =
-        new AnnotatedInterval<>(interval0, mock(Annotation.class));
+        new AnnotatedInterval<>(interval0, mock(CompositeAnnotation.class));
 
     Interval interval1 = new Interval(chr1, 2, 3);
     AnnotatedInterval<Interval, Annotation> annotatedInterval1 =
-        new AnnotatedInterval<>(interval1, mock(Annotation.class));
+        new AnnotatedInterval<>(interval1, mock(CompositeAnnotation.class));
 
     Interval interval2 = new Interval(chr1, (1 << 18), (1 << 18) + 1); // boundary check
     AnnotatedInterval<Interval, Annotation> annotatedInterval2 =
-        new AnnotatedInterval<>(interval2, mock(Annotation.class));
+        new AnnotatedInterval<>(interval2, mock(CompositeAnnotation.class));
 
     Interval interval3 = new Interval(chr1, (1 << 18) + 1, (1 << 18) + 2);
     AnnotatedInterval<Interval, Annotation> annotatedInterval3 =
-        new AnnotatedInterval<>(interval3, mock(Annotation.class));
+        new AnnotatedInterval<>(interval3, mock(CompositeAnnotation.class));
 
     Interval interval4 = new Interval(chr2, 2, 3);
     AnnotatedInterval<Interval, Annotation> annotatedInterval4 =
-        new AnnotatedInterval<>(interval4, mock(Annotation.class));
+        new AnnotatedInterval<>(interval4, mock(CompositeAnnotation.class));
 
     List<AnnotatedInterval<Interval, Annotation>> annotatedIntervals =
         List.of(

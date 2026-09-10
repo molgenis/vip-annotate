@@ -11,7 +11,7 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 @RequiredArgsConstructor
 public class VcfAnnotationModule implements AutoCloseableNoThrow {
   private final VcfHeaderAnnotator vcfHeaderAnnotator;
-  private final VcfRecordAnnotator vcfRecordAnnotator;
+  private final VcfRecordAnnotator<?> vcfRecordAnnotator;
 
   public HeaderUpdateResult updateHeader(VcfHeader vcfHeader) {
     return vcfHeaderAnnotator.updateHeader(vcfHeader);

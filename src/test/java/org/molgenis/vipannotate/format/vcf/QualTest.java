@@ -16,14 +16,14 @@ class QualTest {
   @ParameterizedTest
   @MethodSource("getArgsProvider")
   void get(String fieldRaw, double doubleValue) {
-    Double qualValue = Qual.wrap(fieldRaw).get();
+    Double qualValue = Qual.wrap(fieldRaw).getRaw();
     assertNotNull(qualValue);
     assertEquals(doubleValue, qualValue, 1E-6);
   }
 
   @Test
   void getMissing() {
-    assertNull(Qual.wrap(".").get());
+    assertNull(Qual.wrap(".").getRaw());
   }
 
   @Test

@@ -17,7 +17,7 @@ public class Quantizer {
    * @param value value in [x,y]
    * @return quantized value in [u,v]
    */
-  public int quantize(double value) {
+  public long quantize(double value) {
     if (!valueInterval.contains(value)) {
       throw new IllegalArgumentException(
           "quantization value %f is not in range [%f, %f]"
@@ -27,7 +27,7 @@ public class Quantizer {
     double scale =
         (quantizationLevels.max() - quantizationLevels.min())
             / (valueInterval.max() - valueInterval.min());
-    return (int) Math.round((value - valueInterval.min()) * scale) + quantizationLevels.min();
+    return Math.round((value - valueInterval.min()) * scale) + quantizationLevels.min();
   }
 
   /**
@@ -37,7 +37,7 @@ public class Quantizer {
    * @param value value in [u, v]
    * @return dequantized value in [x, y]
    */
-  public double dequantize(int value) {
+  public double dequantize(long value) {
     if (!quantizationLevels.contains(value)) {
       throw new IllegalArgumentException(
           "dequantization value %d is not in range [%d, %d]"

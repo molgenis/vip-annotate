@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.annotation.spec.SequenceVariantType;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
 
 public class SequenceVariantTypeDetector {

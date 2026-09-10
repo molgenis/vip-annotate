@@ -2,10 +2,11 @@ package org.molgenis.vipannotate.format.vcf;
 
 import java.io.*;
 import java.util.List;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.ZeroCopyBufferedWriter;
 
-public class VcfWriter implements AutoCloseable {
+public class VcfWriter implements AutoCloseableNoThrow {
   private final ZeroCopyBufferedWriter writer;
 
   VcfWriter(ZeroCopyBufferedWriter writer) {

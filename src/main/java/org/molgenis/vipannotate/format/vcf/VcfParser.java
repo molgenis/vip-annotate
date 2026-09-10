@@ -4,10 +4,11 @@ import java.util.Iterator;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class VcfParser implements Iterator<List<VcfRecord>>, AutoCloseable {
+public class VcfParser implements Iterator<List<VcfRecord>>, AutoCloseableNoThrow {
   @Getter private final VcfHeader header;
   private final VcfRecordBatchIterator vcfRecordBatchIterator;
 

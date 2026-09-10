@@ -53,14 +53,22 @@ public enum AltAlleleRegistry {
     ALT_ALLELES[INDEX_TT] = new AltAllele("TT");
   }
 
-  public AltAllele get(CharSequence charSequence) {
-    AltAllele altAllele =
-        switch (charSequence.length()) {
-          case 1 -> get(charSequence.charAt(0));
-          case 2 -> get(charSequence.charAt(0), charSequence.charAt(1));
-          default -> null;
-        };
+  public @Nullable AltAllele get(CharSequence charSequence) {
+    return switch (charSequence.length()) {
+      case 1 -> get(charSequence.charAt(0));
+      case 2 -> get(charSequence.charAt(0), charSequence.charAt(1));
+      default -> null;
+    };
+  }
+
+  public AltAllele getOrWrap(CharSequence charSequence) {
+    AltAllele altAllele = get(charSequence);
     return altAllele != null ? altAllele : new AltAllele(charSequence);
+  }
+
+  public AltAllele getOrCreate(CharSequence charSequence) {
+    AltAllele altAllele = get(charSequence);
+    return altAllele != null ? altAllele : new AltAllele(charSequence.toString());
   }
 
   private @Nullable AltAllele get(char c) {

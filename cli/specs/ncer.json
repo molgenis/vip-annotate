@@ -1,55 +1,20 @@
 {
-  "id": "ncer",
+  "id": "NCER",
+  "description": "ncER non-coding essential regulation, see https://doi.org/10.1038/s41467-019-13212-3",
   "version": "1.0.0",
   "input": {
     "type": "bed",
-    "file": "GRCh38_ncER_perc.bed.gz",
-    "from": "name"
+    "annotations": {
+      "score": "name"
+    }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "position",
-    "supported_variant_types": [
-      "snv",
-      "mnv",
-      "indel",
-      "insertion",
-      "deletion"
-    ],
-    "annotation_datasets": [
-      {
-        "id": "score",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u16"
-          },
-          "logical_type": {
-            "type": "scalar",
-            "scalar_type": "f64",
-            "nullable": true
-          },
-          "encoding": {
-            "type": "quantized",
-            "range": {
-              "min": 0,
-              "max": 100
-            },
-            "levels": {
-              "min": 1,
-              "max": 65535
-            },
-            "null_code": 0
-          }
-        }
+    "annotations": {
+      "score": {
+        "type": "floating_point",
+        "description": " non-coding essential regulation score ranging from 0 (non-essential) to 1 (putative essential)"
       }
-    ],
-    "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "ncER",
-    "infoNumber": "A",
-    "infoType": "Float",
-    "infoDescription": "ncER score",
-    "infoVersion": "1.0.0"
+    }
   }
 }

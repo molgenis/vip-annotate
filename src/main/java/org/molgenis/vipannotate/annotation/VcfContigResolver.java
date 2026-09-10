@@ -21,7 +21,7 @@ public class VcfContigResolver {
 
   private Contig getContigFromIdentifier(CharSequence vcfChromIdentifier) {
     if (lastContig == null || !CharSequenceUtils.equals(lastContig.getName(), vcfChromIdentifier)) {
-      lastContig = new Contig(vcfChromIdentifier.toString());
+      lastContig = new Contig(vcfChromIdentifier.toString(), 1); // FIXME
     }
     return lastContig;
   }

@@ -1,0 +1,30 @@
+{
+  "id": "AVI",
+  "description": "AlphaGenome Variant Impact (AVI) score, see https://doi.org/10.64898/2026.09.16.26363192",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "coordinate_system": "1-based",
+    "contig": 1,
+    "start": 2,
+    "ref": 3,
+    "alt": 4,
+    "annotation_columns": {
+      "raw_score": 5,
+      "score": 6
+    }
+  },
+  "definition": {
+    "annotation_type": "sequence_variant",
+    "annotations": {
+      "raw_score": {
+        "type": "floating_point",
+        "description": "Raw model predictions"
+      },
+      "score": {
+        "type": "floating_point",
+        "description": "Raw model predictions converted to PHRED scores (PHRED 10 indicates top 10% of predictions, 20 indicates top 1%, etc.)"
+      }
+    }
+  }
+}

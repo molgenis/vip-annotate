@@ -1,26 +1,26 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.spec.EnumLogicalType;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.annotation.resolved.ResolvedEnumAnnotationSpec;
+import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<StringAnnotation> {
-  private final EnumLogicalType enumLogicalType;
+  private final ResolvedEnumAnnotationSpec enumAnnotationSpec;
   private final AnnotationBlobReader blobReader;
 
   @Override
   public AnnotationDataset<StringAnnotation> decode(PartitionKey partitionKey) {
-    MemoryBuffer memBuffer = blobReader.read(partitionKey);
+    BinaryReader binaryReader = blobReader.read(partitionKey);
 
-    return memBuffer != null
+    return binaryReader != null
         ? index -> {
           if (index < 0) {
             throw new IllegalArgumentException();
           }
 
-          String[] enumValues = enumLogicalType.values();
+          String[] enumValues = enumAnnotationSpec.values();
           int bitsPerAnnotation = getBitsPerAnnotation();
 
           if (bitsPerAnnotation == 0) {
@@ -35,7 +35,7 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
           int bitsRead = 0;
 
           while (bitsRead < bitsPerAnnotation) {
-            int currentByte = memBuffer.getUnsignedByte(byteOffset);
+            int currentByte = binaryReader.getUnsignedByte(byteOffset);
             int bitsAvailable = Byte.SIZE - bitInByte;
             int bitsToRead = Math.min(bitsAvailable, bitsPerAnnotation - bitsRead);
 
@@ -49,11 +49,11 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
             bitInByte = 0;
           }
 
-          if (enumLogicalType.nullable() && value == 0) {
+          if (enumAnnotationSpec.nullable() && value == 0) {
             return new StringAnnotation(null);
           }
 
-          int enumIndex = enumLogicalType.nullable() ? value - 1 : value;
+          int enumIndex = enumAnnotationSpec.nullable() ? value - 1 : value;
 
           if (enumIndex < 0 || enumIndex >= enumValues.length) {
             throw new IllegalArgumentException("Invalid enum index: %d".formatted(value));
@@ -70,8 +70,8 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
   }
 
   private int getBitsPerAnnotation() {
-    int enumValueCount = enumLogicalType.values().length;
-    int valueCount = enumLogicalType.nullable() ? enumValueCount + 1 : enumValueCount;
+    int enumValueCount = enumAnnotationSpec.values().length;
+    int valueCount = enumAnnotationSpec.nullable() ? enumValueCount + 1 : enumValueCount;
 
     return Integer.SIZE - Integer.numberOfLeadingZeros(valueCount - 1);
   }

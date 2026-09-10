@@ -31,10 +31,10 @@ public final class Alt extends Field {
         throw new IllegalArgumentException("no alt allele");
       }
       // fast path: prevent parsing
-      altAllele = AltAlleleRegistry.INSTANCE.get(fieldRawView);
+      altAllele = AltAlleleRegistry.INSTANCE.getOrWrap(fieldRawView);
     } else if (fieldRawView.length() == 2) {
       // fast path: prevent parsing
-      altAllele = AltAlleleRegistry.INSTANCE.get(fieldRawView);
+      altAllele = AltAlleleRegistry.INSTANCE.getOrWrap(fieldRawView);
     } else {
       altAllele = getAlleles().getFirst();
     }
@@ -60,18 +60,18 @@ public final class Alt extends Field {
     int commaIndex = fieldRawView.indexOf(FIELD_RAW_SEPARATOR);
     if (commaIndex == -1) {
       // fast path: single alt allele
-      parsedField.addFirst(AltAlleleRegistry.INSTANCE.get(fieldRawView));
+      parsedField.addFirst(AltAlleleRegistry.INSTANCE.getOrWrap(fieldRawView));
       return;
     }
 
     int start = 0;
     int comma = commaIndex;
     while (comma != -1) {
-      parsedField.add(AltAlleleRegistry.INSTANCE.get(fieldRawView.subSequence(start, comma)));
+      parsedField.add(AltAlleleRegistry.INSTANCE.getOrWrap(fieldRawView.subSequence(start, comma)));
       start = comma + 1;
       comma = fieldRawView.indexOf(FIELD_RAW_SEPARATOR, start);
     }
-    parsedField.add(AltAlleleRegistry.INSTANCE.get(fieldRawView.subSequence(start)));
+    parsedField.add(AltAlleleRegistry.INSTANCE.getOrWrap(fieldRawView.subSequence(start)));
   }
 
   @Override

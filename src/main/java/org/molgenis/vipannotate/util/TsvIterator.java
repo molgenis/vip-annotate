@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
  * Basic tab-separated value iterator that skips lines starting with '#' as well as empty lines.
  * Does not support quoted values and does not support escaped tab character.
  */
-public class TsvIterator implements Iterator<String[]>, AutoCloseable {
+public class TsvIterator implements Iterator<String[]>, AutoCloseableNoThrow {
   private final BufferedReader bufferedReader;
   @Nullable private String nextLine;
 
@@ -51,7 +51,7 @@ public class TsvIterator implements Iterator<String[]>, AutoCloseable {
   }
 
   @Override
-  public void close() throws Exception {
-    bufferedReader.close();
+  public void close() {
+    ClosableUtils.close(bufferedReader);
   }
 }

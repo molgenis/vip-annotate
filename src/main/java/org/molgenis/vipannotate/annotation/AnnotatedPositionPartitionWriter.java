@@ -1,13 +1,14 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.format.vdb.Compression;
 import org.molgenis.vipannotate.format.vdb.IoMode;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.util.Logger;
 import org.molgenis.vipannotate.util.Numbers;
 import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
@@ -17,56 +18,39 @@ import org.molgenis.vipannotate.util.TransformingIterator;
  *
  * @param <T> type of genomic position
  * @param <U> type of genomic position annotation
- * @param <V> annotated genomic position typed by T and U
+ * @param <W> annotated genomic position typed by T and U
  */
 @RequiredArgsConstructor
 public class AnnotatedPositionPartitionWriter<
-        T extends Position, U extends Annotation, V extends AnnotatedInterval<T, U>>
-    implements AnnotatedIntervalPartitionWriter<T, U, V> {
+        T extends Position,
+        U extends Annotation, // type of position annotation
+        V extends Annotation, // type of position annotation part to write to partition
+        W extends AnnotatedInterval<T, U>>
+    implements AnnotatedIntervalPartitionWriter<T, U, W> {
   private final String annotationDataId;
-  private final IndexedAnnotatedFeatureDatasetEncoder<U> annotationDatasetEncoder;
+  private final AnnotationDatasetEncoder<V> annotationDatasetEncoder;
   private final BinaryPartitionWriter binaryPartitionWriter;
+  private final Function<W, V> annotationExtractor;
   @Nullable private MemoryBuffer scratchBuffer;
 
   @Override
-  public void write(Partition<T, U, V> partition) {
-    if (Logger.isDebugEnabled()) {
-      Logger.debug(
-          "processing partition %s/%d", partition.key().contig().getName(), partition.key().bin());
-    }
-
+  public void write(Partition<T, U, W> partition) {
     // prepare
-    SizedIterator<IndexedAnnotation<U>> intervalIt =
-        createIndexedAnnotatedIntervalIterator(partition);
-    int maxAnnotations = partition.calcMaxPos();
+    List<W> annotatedVariants = partition.annotatedIntervals();
+    SizedIterator<V> annotationIt =
+        new SizedIterator<>(
+            new TransformingIterator<>(annotatedVariants.iterator(), annotationExtractor),
+            annotatedVariants.size());
 
     // encode
-    long encodedSize = annotationDatasetEncoder.getEncodedSizeInBytes(maxAnnotations);
-    MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedSize);
-    annotationDatasetEncoder.encode(intervalIt, maxAnnotations, memBuffer);
+    long encodedAnnotationByteSize =
+        annotationDatasetEncoder.getEncodedSizeInBytes(annotationIt.getSize());
+    MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedAnnotationByteSize);
+    annotationDatasetEncoder.encode(annotationIt, BinaryWriter.fixed(memBuffer));
 
     // write
     binaryPartitionWriter.write(
         annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partition.key());
-  }
-
-  private SizedIterator<IndexedAnnotation<U>> createIndexedAnnotatedIntervalIterator(
-      Partition<T, U, V> partition) {
-    PartitionKey partitionKey = partition.key();
-    List<V> annotatedIntervals = partition.annotatedIntervals();
-
-    return new SizedIterator<>(
-        new TransformingIterator<>(
-            annotatedIntervals.iterator(),
-            annotation -> createIndexedAnnotatedInterval(partitionKey, annotation)),
-        annotatedIntervals.size());
-  }
-
-  private IndexedAnnotation<U> createIndexedAnnotatedInterval(
-      PartitionKey partitionKey, V annotatedFeature) {
-    int partitionStart =
-        Partition.getPartitionStart(partitionKey, annotatedFeature.getFeature().getStart());
-    return new IndexedAnnotation<>(partitionStart, annotatedFeature.getAnnotation());
   }
 
   private MemoryBuffer getHeapBackedScratchBuffer(long minCapacity) {

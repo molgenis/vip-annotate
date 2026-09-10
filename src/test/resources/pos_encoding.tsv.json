@@ -1,0 +1,38 @@
+{
+  "id": "pos_encoding",
+  "description": "pos encoding description",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "coordinate_system": "1-based",
+    "contig": 1,
+    "start": 2,
+    "annotation_columns": {
+      "my_f64_q8": 3,
+      "my_f64_q8_nullable": 4,
+      "my_f64_q16": 5,
+      "my_f64_q16_nullable": 6
+    }
+  },
+  "definition": {
+    "annotation_type": "position",
+    "annotations": {
+      "my_f64_q8": {
+        "type": "floating_point",
+        "description": "my f64 q8 description"
+      },
+      "my_f64_q8_nullable": {
+        "type": "floating_point",
+        "description": "my f64 q8 nullable description"
+      },
+      "my_f64_q16": {
+        "type": "floating_point",
+        "description": "my f64 q16 description"
+      },
+      "my_f64_q16_nullable": {
+        "type": "floating_point",
+        "description": "my f64 q16 nullable description"
+      }
+    }
+  }
+}

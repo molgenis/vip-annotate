@@ -5,4 +5,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 // keep in sync with
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 @JsonTypeName("vcf")
-public record VcfInputFormat() implements InputFormat {}
+public record VcfInputFormat() implements InputFormat {
+  @Override
+  public AnnotationType annotationType() {
+    return AnnotationType.SEQUENCE_VARIANT;
+  }
+}

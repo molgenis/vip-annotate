@@ -9,4 +9,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   @JsonSubTypes.Type(value = TsvInputFormat.class, name = "tsv"),
   @JsonSubTypes.Type(value = VcfInputFormat.class, name = "vcf")
 })
-public sealed interface InputFormat permits BedInputFormat, TsvInputFormat, VcfInputFormat {}
+public sealed interface InputFormat permits BedInputFormat, TsvInputFormat, VcfInputFormat {
+  AnnotationType annotationType();
+}

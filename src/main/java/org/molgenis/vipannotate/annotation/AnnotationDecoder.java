@@ -1,9 +1,9 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.BinaryReader;
 
 public interface AnnotationDecoder<T extends Annotation> {
-  T decode(MemoryBuffer memBuffer, int annotationIndex);
+  T decode(BinaryReader binaryReader, int annotationIndex);
 
-  void decodeInto(MemoryBuffer memBuffer, int annotationIndex, T annotation);
+  void decodeInto(BinaryReader binaryReader, int annotationIndex, T annotation);
 }
