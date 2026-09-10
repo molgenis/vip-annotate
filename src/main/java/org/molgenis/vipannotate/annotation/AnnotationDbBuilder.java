@@ -182,8 +182,11 @@ public class AnnotationDbBuilder {
   private static <T extends Annotation>
       AnnotationDatasetEncoder<T> createScalarAnnotationDatasetEncoder(
           ScalarLogicalType scalarLogicalType, AnnotationValue annotationValue) {
-    AnnotationEncoder<T> annotationEncoder = createEncoder(annotationValue, false);
+    AnnotationEncoder<T> annotationEncoder =
+        createScalarEncoder(
+            scalarLogicalType, annotationValue.encoding(), annotationValue.storageType(), false);
 
+    // TODO move to ScalarAnnotationDatasetEncoder
     return new AnnotationDatasetEncoder<>() {
 
       @Override
@@ -270,7 +273,7 @@ public class AnnotationDbBuilder {
     // do something like public sealed interface StorageType permits ScalarStorageType,
     // BitSetStorageType {}?
 
-    // FIXME implement createEnumEncoder
+    // FIXME implement createEnumSetEncoder
     throw new UnsupportedOperationException();
   }
 
@@ -279,11 +282,10 @@ public class AnnotationDbBuilder {
       Encoding encoding,
       StorageType storageType,
       boolean writeAtIndex) {
-    ValueWriter valueWriter =
-        ValueWriterFactory.createValueWriter(storageType.scalarType(), writeAtIndex);
+
     return (AnnotationEncoder<T>)
-        new ScalarAnnotationEncoderFactory()
-            .create(logicalType, encoding, storageType, valueWriter);
+        new ScalarAnnotationEncoderFactory(new ValueWriterFactory())
+            .create(logicalType, encoding, storageType, writeAtIndex);
   }
 
   // TODO improve performance by reusing annotated interval

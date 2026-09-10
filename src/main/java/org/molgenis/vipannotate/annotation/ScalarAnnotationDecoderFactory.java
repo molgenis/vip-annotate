@@ -12,7 +12,6 @@ public class ScalarAnnotationDecoderFactory {
       // FIXME handle other logical types
       ScalarLogicalType logicalType = (ScalarLogicalType) annotationValue.logicalType();
       StorageType storageType = annotationValue.storageType();
-      ReadValueFunction readValueFunction = createReadValueFunction(storageType);
 
       if (logicalType.nullable()) {
         if (logicalType.range() != null) {
@@ -25,13 +24,14 @@ public class ScalarAnnotationDecoderFactory {
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new OffsetNullableIntAnnotationDecoder(
-                            readValueFunction, (int) integerRange.min());
+                            createIntReadValueFunction(storageType), (int) integerRange.min());
           };
         } else {
           return switch (storageType.scalarType()) {
             case I8, I16, I32, U8, U16 ->
                 (AnnotationDecoder<ScalarAnnotation>)
-                    (AnnotationDecoder<?>) new NullableIntAnnotationDecoder(readValueFunction);
+                    (AnnotationDecoder<?>)
+                        new NullableIntAnnotationDecoder(createIntReadValueFunction(storageType));
             case I64, U32, U64, F32, F64 -> {
               // FIXME support null encoding for U64,F32,F64
               throw new UnsupportedOperationException();
@@ -46,9 +46,14 @@ public class ScalarAnnotationDecoderFactory {
           return switch (storageType.scalarType()) {
             case I8, I16, I32, U8, U16 ->
                 (AnnotationDecoder<ScalarAnnotation>)
-                    (AnnotationDecoder<?>) new IntAnnotationDecoder(readValueFunction);
-            case I64, U32, U64, F32, F64 -> {
-              // FIXME support null encoding for U64,F32,F64
+                    (AnnotationDecoder<?>)
+                        new IntAnnotationDecoder(createIntReadValueFunction(storageType));
+            case F32, F64 ->
+                (AnnotationDecoder<ScalarAnnotation>)
+                    (AnnotationDecoder<?>)
+                        new FloatAnnotationDecoder(createFloatReadValueFunction(storageType));
+            case I64, U32, U64 -> {
+              // FIXME support null encoding for U64
               throw new UnsupportedOperationException();
             }
           };
@@ -74,8 +79,8 @@ public class ScalarAnnotationDecoderFactory {
       StorageType storageType, ScalarLogicalType logicalType, QuantizedEncoding encoding) {
     Quantizer quantizer = createQuantizer(logicalType, encoding);
 
-    ReadValueFunction readValueFunction = createReadValueFunction(storageType);
-    return new QuantizedAnnotationDecoder(quantizer, readValueFunction, encoding.nullCode());
+    IntReadValueFunction intReadValueFunction = createIntReadValueFunction(storageType);
+    return new QuantizedAnnotationDecoder(quantizer, intReadValueFunction, encoding.nullCode());
   }
 
   private static Quantizer createQuantizer(
@@ -95,13 +100,22 @@ public class ScalarAnnotationDecoderFactory {
         new DoubleInterval(range.min(), range.max()), new IntInterval(levels.min(), levels.max()));
   }
 
-  private static ReadValueFunction createReadValueFunction(StorageType storageType) {
+  private static IntReadValueFunction createIntReadValueFunction(StorageType storageType) {
     return switch (storageType.scalarType()) {
       case I8 -> MemoryBuffer::getByteAtIndex;
       case I16 -> MemoryBuffer::getShortAtIndex;
       case I32 -> MemoryBuffer::getIntAtIndex;
       case U8 -> MemoryBuffer::getUnsignedByteAtIndex;
       case U16 -> MemoryBuffer::getUnsignedShortAtIndex;
+      default -> throw new IllegalArgumentException();
+    };
+  }
+
+  private static FloatReadValueFunction createFloatReadValueFunction(StorageType storageType) {
+    return switch (storageType.scalarType()) {
+      case F32 -> (memoryBuffer, index) -> Float.intBitsToFloat(memoryBuffer.getIntAtIndex(index));
+      // FIXME introduce memoryBuffer double write operations
+      case F64 -> throw new UnsupportedOperationException();
       default -> throw new IllegalArgumentException();
     };
   }

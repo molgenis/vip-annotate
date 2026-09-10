@@ -6,7 +6,7 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
 @RequiredArgsConstructor
 public class OffsetIntAnnotationEncoder implements AnnotationEncoder<IntAnnotation> {
-  private final ValueWriter valueWriter;
+  private final IntValueWriter intValueWriter;
   private final int offset;
 
   @Override
@@ -17,11 +17,11 @@ public class OffsetIntAnnotationEncoder implements AnnotationEncoder<IntAnnotati
 
   @Override
   public void encodeInto(IntAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
-    valueWriter.write(offset + annotation.getValue(), memoryBuffer, index);
+    intValueWriter.write(offset + annotation.getValue(), memoryBuffer, index);
   }
 
   @Override
   public long getEncodedSizeInBytes() {
-    return valueWriter.getValueSizeInBytes();
+    return intValueWriter.getValueSizeInBytes();
   }
 }

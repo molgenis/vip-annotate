@@ -10,12 +10,12 @@ import org.molgenis.vipannotate.util.Quantizer;
 @RequiredArgsConstructor
 public class QuantizedAnnotationDecoder implements AnnotationDecoder<ScalarAnnotation> {
   private final Quantizer quantizer;
-  private final ReadValueFunction readValueFunction;
+  private final IntReadValueFunction intReadValueFunction;
   @Nullable private final Integer nullValue;
 
   @Override
   public ScalarAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
-    int quantizedValue = readValueFunction.apply(memBuffer, annotationIndex);
+    int quantizedValue = intReadValueFunction.apply(memBuffer, annotationIndex);
 
     ScalarAnnotation scalarAnnotation;
     if (nullValue != null && quantizedValue == nullValue) {

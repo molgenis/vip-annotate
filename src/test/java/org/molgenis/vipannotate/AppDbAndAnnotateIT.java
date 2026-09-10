@@ -28,11 +28,11 @@ public class AppDbAndAnnotateIT {
 ##contig=<ID=chr1,length=248956422>
 ##INFO=<ID=my,NUMBER=A,TYPE=String,DESCRIPTION="my annotation formatted as 'my_enum'",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-chr1	1	.	G	A	.	.	my=B|P|-128|96|0|254|-32768|32766|0|65534|-2147483648|2147483646
-chr1	2	.	G	A	.	.	my=LB|LP|-64|32|32|128|-16384|16384|8192|32768|-1073741824|1073741824
-chr1	3	.	G	A	.	.	my=VUS||0||64||0||16384||0|
-chr1	4	.	G	A	.	.	my=LP|LB|64|-32|128|32|16384|-16384|32768|8192|1073741824|-1073741824
-chr1	5	.	G	A	.	.	my=P|B|127|-96|255|0|32767|-32768|65535|0|2147483647|-2147483648
+chr1	1	.	G	A	.	.	my=B|P|-128|96|0|254|-32768|32766|0|65534|-2147483648|2147483646|-2.345
+chr1	2	.	G	A	.	.	my=LB|LP|-64|32|32|128|-16384|16384|8192|32768|-1073741824|1073741824|-1.234
+chr1	3	.	G	A	.	.	my=VUS||0||64||0||16384||0||0
+chr1	4	.	G	A	.	.	my=LP|LB|64|-32|128|32|16384|-16384|32768|8192|1073741824|-1073741824|1.234
+chr1	5	.	G	A	.	.	my=P|B|127|-96|255|0|32767|-32768|65535|0|2147483647|-2147483648|2.345
               """;
 
   private Path dbDir;
@@ -66,7 +66,7 @@ chr1	5	.	G	A	.	.	my=P|B|127|-96|255|0|32767|-32768|65535|0|2147483647|-214748364
     // one of the goals of vip-annotate is compact annotation archives, so check size
     // update thresholds in case index got smaller
     assertAll(
-        () -> assertEquals(53532L, Files.size(dbDir.resolve("all_types_sequence_variant_tsv.vdb"))),
+        () -> assertEquals(57634L, Files.size(dbDir.resolve("all_types_sequence_variant_tsv.vdb"))),
         () -> assertEquals(EXPECTED_VCF_OUTPUT, vcf));
   }
 

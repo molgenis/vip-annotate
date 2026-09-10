@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import lombok.*;
 
 public sealed interface ScalarAnnotation extends Annotation {
+  // TODO inconsistency with IntAnnotation that has @Setter instead of reset
   @Getter
   @AllArgsConstructor
   @ToString

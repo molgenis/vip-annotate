@@ -1,12 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
 @RequiredArgsConstructor
-public class IntAnnotationEncoder implements AnnotationEncoder<IntAnnotation> {
-  private final IntValueWriter intValueWriter;
+public class FloatAnnotationEncoder implements AnnotationEncoder<DoubleAnnotation> {
+  private final FloatValueWriter floatValueWriter;
 
   @Override
   public void initialize(MemoryBuffer memoryBuffer) {
@@ -15,12 +15,12 @@ public class IntAnnotationEncoder implements AnnotationEncoder<IntAnnotation> {
   }
 
   @Override
-  public void encodeInto(IntAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
-    intValueWriter.write(annotation.getValue(), memoryBuffer, index);
+  public void encodeInto(DoubleAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
+    floatValueWriter.write(annotation.getValue(), memoryBuffer, index);
   }
 
   @Override
   public long getEncodedSizeInBytes() {
-    return intValueWriter.getValueSizeInBytes();
+    return floatValueWriter.getValueSizeInBytes();
   }
 }

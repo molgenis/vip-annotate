@@ -7,7 +7,7 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 @RequiredArgsConstructor
 public class OffsetNullableIntAnnotationEncoder
     implements AnnotationEncoder<NullableIntAnnotation> {
-  private final ValueWriter valueWriter;
+  private final IntValueWriter intValueWriter;
   private final int offset;
 
   @Override
@@ -19,11 +19,11 @@ public class OffsetNullableIntAnnotationEncoder
   @Override
   public void encodeInto(NullableIntAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
     int encodedValue = annotation.isNull() ? 0 : offset + annotation.getValue() + 1;
-    valueWriter.write(encodedValue, memoryBuffer, index);
+    intValueWriter.write(encodedValue, memoryBuffer, index);
   }
 
   @Override
   public long getEncodedSizeInBytes() {
-    return valueWriter.getValueSizeInBytes();
+    return intValueWriter.getValueSizeInBytes();
   }
 }
