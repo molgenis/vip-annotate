@@ -15,7 +15,6 @@
 - [ ] feat (db): support ClinVar CLINSIGINCL (e.g. 431417:Pathogenic|585009:Likely_pathogenic)
 - [ ] perf (db): improve database building performance (e.g. SpliceAI takes > 24 hours to build)
 - [ ] perf (db): ClinVar vdb 135M > source data 43M. why?
-- [ ] refactor: switch to https://github.com/palantir/palantir-java-format#motivation--examples
 - [ ] refactor: bump streamvbyte to v3.0.0
 - [ ] refactor: make Annotation a sealed interface
 

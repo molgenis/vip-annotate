@@ -19,7 +19,9 @@
       10,
       11,
       12,
-      13
+      13,
+      14,
+      15
     ]
   },
   "schema": {
@@ -176,6 +178,32 @@
           "logical_type": {
             "type": "scalar",
             "scalar_type": "u16",
+            "nullable": true
+          }
+        }
+      },
+      {
+        "id": "my_i32",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i32"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i32",
+            "nullable": false
+          }
+        }
+      },
+      {
+        "id": "my_i32_nullable",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "i32"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "i32",
             "nullable": true
           }
         }
