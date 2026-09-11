@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,52 +40,42 @@ public class VcfAnnotationModuleLoader {
   }
 
   private <T extends Annotation> AnnotationDatasetDecoder<T> createAnnotationDatasetReader(
-      AnnotationDataset annotationDataset, PartitionedVdbArchiveReader archiveReader) {
-    AnnotationValue annotationValue = annotationDataset.annotationValue();
-    AnnotationBlobReader blobReader =
-        new AnnotationBlobReader(annotationDataset.id(), archiveReader);
+      String annotationDatasetId,
+      AnnotationDataset annotationDataset,
+      PartitionedVdbArchiveReader archiveReader) {
+    AnnotationBlobReader blobReader = new AnnotationBlobReader(annotationDatasetId, archiveReader);
     return (AnnotationDatasetDecoder<T>)
-        switch (annotationValue.logicalType()) {
+        switch (annotationDataset.logicalType()) {
           case EnumLogicalType enumLogicalType ->
-              createEnumAnnotationDatasetReader(enumLogicalType, blobReader);
+              new EnumAnnotationDatasetReader(enumLogicalType, blobReader);
           case EnumSetLogicalType enumSetLogicalType ->
-              createEnumSetAnnotationDatasetReader(enumSetLogicalType, blobReader);
+              new EnumSetAnnotationDatasetDecoder(enumSetLogicalType, blobReader);
           case ScalarLogicalType scalarLogicalType ->
-              createScalarAnnotationDatasetReader(annotationDataset, blobReader);
+              new ScalarAnnotationDatasetReader(
+                  createAnnotationDecoder(annotationDataset), blobReader);
         };
   }
 
-  private EnumAnnotationDatasetReader createEnumAnnotationDatasetReader(
-      EnumLogicalType logicalType, AnnotationBlobReader blobReader) {
-    return new EnumAnnotationDatasetReader(logicalType, blobReader);
-  }
-
-  private AnnotationDatasetDecoder<StringListAnnotation> createEnumSetAnnotationDatasetReader(
-      EnumSetLogicalType logicalType, AnnotationBlobReader blobReader) {
-    return new EnumSetAnnotationDatasetDecoder(logicalType, blobReader);
-  }
-
-  private ScalarAnnotationDatasetReader createScalarAnnotationDatasetReader(
-      AnnotationDataset annotationDataset, AnnotationBlobReader blobReader) {
-    AnnotationDecoder<ScalarAnnotation> annotationDecoder =
-        createAnnotationDecoder(annotationDataset.annotationValue());
-    return new ScalarAnnotationDatasetReader(annotationDecoder, blobReader);
-  }
-
   private AnnotationDecoder<ScalarAnnotation> createAnnotationDecoder(
-      AnnotationValue annotationValue) {
+      AnnotationDataset annotationDataset) {
     return new ScalarAnnotationDecoderFactory(new ReadValueFunctionFactory())
-        .create(annotationValue);
+        .create(annotationDataset);
   }
 
   private AnnotationDatasetDecoder<CompositeAnnotation> createCompositeAnnotationDatasetReader(
-      List<AnnotationDataset> annotationDatasets, PartitionedVdbArchiveReader archiveReader) {
+      Map<String, AnnotationDataset> annotationDatasets,
+      PartitionedVdbArchiveReader archiveReader) {
     AnnotationDatasetDecoder<?>[] annotationDatasetReaders =
         new AnnotationDatasetDecoder[annotationDatasets.size()];
-    for (int i = 0; i < annotationDatasets.size(); i++) {
-      annotationDatasetReaders[i] =
-          createAnnotationDatasetReader(annotationDatasets.get(i), archiveReader);
+
+    int i = 0;
+    for (Map.Entry<String, AnnotationDataset> entry : annotationDatasets.entrySet()) {
+      String annotationDatasetId = entry.getKey();
+      AnnotationDataset annotationDataset = entry.getValue();
+      annotationDatasetReaders[i++] =
+          createAnnotationDatasetReader(annotationDatasetId, annotationDataset, archiveReader);
     }
+
     return new CompositeAnnotationDatasetReader(annotationDatasetReaders);
   }
 
@@ -99,7 +89,7 @@ public class VcfAnnotationModuleLoader {
 
     return switch (annotationSchema.annotationType()) {
       case SEQUENCE_VARIANT -> {
-        List<AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
+        Map<String, AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
 
         SequenceVariantAnnotationIndexDispatcherReaderFactory<SequenceVariant>
             indexDispatcherReaderFactory =
@@ -174,12 +164,15 @@ public class VcfAnnotationModuleLoader {
         };
       }
       case POSITION -> {
-        List<AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
+        Map<String, AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
         yield switch (annotationDatasets.size()) {
           case 0 -> throw new IllegalStateException();
           case 1 -> {
             AnnotationDatasetDecoder<ScalarAnnotation> annotationDatasetReader =
-                createAnnotationDatasetReader(annotationDatasets.getFirst(), archiveReader);
+                createAnnotationDatasetReader(
+                    annotationDatasets.keySet().iterator().next(),
+                    annotationDatasets.values().iterator().next(),
+                    archiveReader);
             IntervalAnnotationDb<SequenceVariant, ScalarAnnotation> annotationDb =
                 new IntervalAnnotationDb<>(new PartitionResolver(), annotationDatasetReader);
 

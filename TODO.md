@@ -2,9 +2,13 @@
 
 ## 0.0.1-alpha.6
 
+- [ ] fix (db): fix vcf support
+- [ ] fix: support I64, U32, U64 writing and reading
 - [ ] fix (annotate): SpliceAI can produce multiple annotations for same sequence variant
 - [ ] fix (db): build_annotation_databases.sh
 - [ ] fix (db): reintroduce xref support (e.g. SpliceAI ncbiGeneId)
+- [ ] feat: add BOOL support
+- [ ] feat (spec): replace "annotations": { "my_enum": 4 } with { "my_enum":{ "col": 4, mis_val: "."} }
 - [ ] feat (spec): automatically determine encoding and storage from logical type
 - [ ] feat (spec): only store relevant spec part in db (e.g. do not store input info)
 - [ ] feat (spec): do not put file paths in spec (e.g. allow using on chr21 and all)

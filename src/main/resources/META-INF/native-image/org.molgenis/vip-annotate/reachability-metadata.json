@@ -9,8 +9,9 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "java.lang.String",
-            "org.molgenis.vipannotate.annotation.spec.AnnotationValue"
+            "org.molgenis.vipannotate.annotation.spec.StorageType",
+            "org.molgenis.vipannotate.annotation.spec.LogicalType",
+            "org.molgenis.vipannotate.annotation.spec.Encoding"
           ]
         }
       ]
@@ -23,7 +24,7 @@
           "parameterTypes": [
             "org.molgenis.vipannotate.annotation.spec.AnnotationType",
             "java.util.EnumSet",
-            "java.util.List",
+            "java.util.Map",
             "org.molgenis.vipannotate.annotation.spec.AnnotationSelector"
           ]
         }
@@ -51,19 +52,6 @@
       "type": "org.molgenis.vipannotate.annotation.spec.AnnotationType"
     },
     {
-      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationValue",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "org.molgenis.vipannotate.annotation.spec.StorageType",
-            "org.molgenis.vipannotate.annotation.spec.LogicalType",
-            "org.molgenis.vipannotate.annotation.spec.Encoding"
-          ]
-        }
-      ]
-    },
-    {
       "type": "org.molgenis.vipannotate.annotation.spec.BedField"
     },
     {
@@ -73,7 +61,7 @@
           "name": "<init>",
           "parameterTypes": [
             "java.nio.file.Path",
-            "org.molgenis.vipannotate.annotation.spec.BedField"
+            "java.util.Map"
           ]
         }
       ]
@@ -244,7 +232,7 @@
             "java.lang.Integer",
             "java.lang.Integer",
             "java.lang.Integer",
-            "int[]"
+            "java.util.Map"
           ]
         }
       ]

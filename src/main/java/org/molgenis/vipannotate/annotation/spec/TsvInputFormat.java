@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.annotation.spec;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import java.util.Map;
 
 // keep in sync with
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
@@ -14,5 +15,5 @@ public record TsvInputFormat(
     @JsonProperty(value = "end") Integer end,
     @JsonProperty(value = "ref") Integer ref,
     @JsonProperty(value = "alt") Integer alt,
-    @JsonProperty(value = "annotations", required = true) int[] annotations)
+    @JsonProperty(value = "annotations", required = true) Map<String, Integer> annotations)
     implements InputFormat {}

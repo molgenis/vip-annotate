@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.spec.AnnotationDataset;
 import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IntInterval;
 import org.molgenis.vipannotate.util.Quantizer;
@@ -10,11 +11,11 @@ import org.molgenis.vipannotate.util.Quantizer;
 public class ScalarAnnotationDecoderFactory {
   private final ReadValueFunctionFactory readValueFunctionFactory;
 
-  public AnnotationDecoder<ScalarAnnotation> create(AnnotationValue annotationValue) {
-    if (annotationValue.encoding() == null) {
+  public AnnotationDecoder<ScalarAnnotation> create(AnnotationDataset annotationDataset) {
+    if (annotationDataset.encoding() == null) {
       // FIXME handle other logical types
-      ScalarLogicalType logicalType = (ScalarLogicalType) annotationValue.logicalType();
-      StorageType storageType = annotationValue.storageType();
+      ScalarLogicalType logicalType = (ScalarLogicalType) annotationDataset.logicalType();
+      ScalarType storageScalarType = logicalType.scalarType();
 
       if (logicalType.nullable()) {
         if (logicalType.range() != null) {
@@ -27,21 +28,22 @@ public class ScalarAnnotationDecoderFactory {
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new OffsetNullableIntAnnotationDecoder(
-                            readValueFunctionFactory.createIntReadValueFunction(storageType),
+                            readValueFunctionFactory.createIntReadValueFunction(storageScalarType),
                             (int) integerRange.min());
           };
         } else {
-          return switch (storageType.scalarType()) {
+          return switch (storageScalarType) {
             case I8, I16, I32, U8, U16 ->
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new NullableIntAnnotationDecoder(
-                            readValueFunctionFactory.createIntReadValueFunction(storageType));
+                            readValueFunctionFactory.createIntReadValueFunction(storageScalarType));
             case F32, F64 ->
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new NullableFloatAnnotationDecoder(
-                            readValueFunctionFactory.createFloatReadValueFunction(storageType));
+                            readValueFunctionFactory.createFloatReadValueFunction(
+                                storageScalarType));
             case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
                 throw new UnsupportedOperationException();
           };
@@ -51,17 +53,18 @@ public class ScalarAnnotationDecoderFactory {
           // FIXME implement
           throw new UnsupportedOperationException();
         } else {
-          return switch (storageType.scalarType()) {
+          return switch (storageScalarType) {
             case I8, I16, I32, U8, U16 ->
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new IntAnnotationDecoder(
-                            readValueFunctionFactory.createIntReadValueFunction(storageType));
+                            readValueFunctionFactory.createIntReadValueFunction(storageScalarType));
             case F32, F64 ->
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new FloatAnnotationDecoder(
-                            readValueFunctionFactory.createFloatReadValueFunction(storageType));
+                            readValueFunctionFactory.createFloatReadValueFunction(
+                                storageScalarType));
             case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
                 throw new UnsupportedOperationException();
           };
@@ -69,16 +72,16 @@ public class ScalarAnnotationDecoderFactory {
       }
     }
 
-    return switch (annotationValue.encoding()) {
+    return switch (annotationDataset.encoding()) {
       case EnumEncoding enumEncoding -> {
         // FIXME implement
         throw new UnsupportedOperationException();
       }
       case QuantizedEncoding quantizedEncoding ->
           createQuantizedAnnotationDecoder(
-              annotationValue.storageType(),
+              annotationDataset.storageType(),
               // FIXME remove cast
-              (ScalarLogicalType) annotationValue.logicalType(),
+              (ScalarLogicalType) annotationDataset.logicalType(),
               quantizedEncoding);
     };
   }
@@ -88,7 +91,7 @@ public class ScalarAnnotationDecoderFactory {
     Quantizer quantizer = createQuantizer(logicalType, encoding);
 
     IntReadValueFunction intReadValueFunction =
-        readValueFunctionFactory.createIntReadValueFunction(storageType);
+        readValueFunctionFactory.createIntReadValueFunction(storageType.scalarType());
     return new QuantizedAnnotationDecoder(quantizer, intReadValueFunction, encoding.nullCode());
   }
 

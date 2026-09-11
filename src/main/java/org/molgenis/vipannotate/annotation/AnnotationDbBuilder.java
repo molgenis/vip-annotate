@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
@@ -98,19 +99,23 @@ public class AnnotationDbBuilder {
       AnnotationSchema annotationSchema,
       Path resourceDir,
       BinaryPartitionWriter partitionWriter) {
-    throw new RuntimeException("implement vcf"); // FIXME
+    // FIXME implement vcf
+    throw new UnsupportedOperationException();
   }
 
   private Iterator<AnnotatedInterval<Position, ScalarAnnotation>> createAnnotatedPosIteratorFromBed(
       Iterator<BedFeature> bedFeatureIterator, BedInputFormat bedInputFormat) {
-    return Iterators.flatMap(
-        Iterators.map(bedFeatureIterator, bedFeature -> create(bedFeature, bedInputFormat.from())),
-        GenomicIterators.iteratePositions());
+    // FIXME bed support
+    throw new UnsupportedOperationException();
+    //    return Iterators.flatMap(
+    //        Iterators.map(bedFeatureIterator, bedFeature -> create(bedFeature,
+    // bedInputFormat.from())),
+    //        GenomicIterators.iteratePositions());
   }
 
   private void createCompositeAnnotatedSequenceVariantDb(
       Iterator<AnnotatedSequenceVariant<CompositeAnnotation>> annotatedIterator,
-      List<AnnotationDataset> annotationDatasets,
+      Map<String, AnnotationDataset> annotationDatasets,
       BinaryPartitionWriter partitionWriter) {
     List<
             AnnotatedSequenceVariantPartitionWriter<
@@ -120,16 +125,17 @@ public class AnnotationDbBuilder {
                 AnnotatedSequenceVariant<CompositeAnnotation>>>
         partitionWriters = new ArrayList<>(annotationDatasets.size());
 
-    for (int i = 0; i < annotationDatasets.size(); i++) {
-      AnnotationDataset annotationDataset = annotationDatasets.get(i);
-      int annotationIndex = i;
-
+    int i = 0;
+    for (Map.Entry<String, AnnotationDataset> entry : annotationDatasets.entrySet()) {
+      String annotationDatasetId = entry.getKey();
+      AnnotationDataset value = entry.getValue();
       AnnotationDatasetEncoder<Annotation> annotationDatasetEncoder =
-          createAnnotationDatasetEncoder(annotationDataset);
+          createAnnotationDatasetEncoder(value);
 
+      int annotationIndex = i++;
       partitionWriters.add(
           new AnnotatedSequenceVariantPartitionWriter<>(
-              annotationDataset.id(),
+              annotationDatasetId,
               annotationDatasetEncoder,
               partitionWriter,
               variant -> variant.getAnnotation().annotations()[annotationIndex]));
@@ -156,16 +162,14 @@ public class AnnotationDbBuilder {
 
   private static <T extends Annotation> AnnotationDatasetEncoder<T> createAnnotationDatasetEncoder(
       AnnotationDataset annotationDataset) {
-    AnnotationValue annotationValue = annotationDataset.annotationValue();
-    LogicalType logicalType = annotationValue.logicalType();
+    LogicalType logicalType = annotationDataset.logicalType();
     return (AnnotationDatasetEncoder<T>)
         switch (logicalType) {
-          case EnumLogicalType enumLogicalType ->
-              createEnumAnnotationDatasetEncoder(enumLogicalType, annotationValue);
+          case EnumLogicalType enumLogicalType -> new EnumAnnotationDatasetEncoder(enumLogicalType);
           case EnumSetLogicalType enumSetLogicalType ->
-              createEnumSetAnnotationDatasetEncoder(enumSetLogicalType, annotationValue);
+              new EnumSetAnnotationDatasetEncoder(enumSetLogicalType);
           case ScalarLogicalType scalarLogicalType ->
-              createScalarAnnotationDatasetEncoder(scalarLogicalType, annotationValue);
+              createScalarAnnotationDatasetEncoder(scalarLogicalType, annotationDataset);
         };
   }
 
@@ -181,10 +185,13 @@ public class AnnotationDbBuilder {
 
   private static <T extends Annotation>
       AnnotationDatasetEncoder<T> createScalarAnnotationDatasetEncoder(
-          ScalarLogicalType scalarLogicalType, AnnotationValue annotationValue) {
+          ScalarLogicalType scalarLogicalType, AnnotationDataset annotationDataset) {
     AnnotationEncoder<T> annotationEncoder =
         createScalarEncoder(
-            scalarLogicalType, annotationValue.encoding(), annotationValue.storageType(), false);
+            scalarLogicalType,
+            annotationDataset.encoding(),
+            annotationDataset.storageType(),
+            false);
 
     // TODO move to ScalarAnnotationDatasetEncoder
     return new AnnotationDatasetEncoder<>() {
@@ -205,33 +212,34 @@ public class AnnotationDbBuilder {
 
   private void createAnnotatedIntervalDb(
       Iterator<AnnotatedInterval<Position, ScalarAnnotation>> annotatedPosIterator,
-      List<AnnotationDataset> annotationDatasets,
+      Map<String, AnnotationDataset> annotationDatasets,
       BinaryPartitionWriter partitionWriter) {
-
-    // get annotation dataset definition
-    if (annotationDatasets.size() != 1) {
-      throw new IllegalArgumentException(); // FIXME handle other sizes
-    }
-    AnnotationDataset annotationDataset = annotationDatasets.getFirst();
-
-    IndexedAnnotationEncoder<ScalarAnnotation> annotationEncoder =
-        createIndexedEncoder(annotationDataset.annotationValue());
-
-    // annotation dataset writer
-    try (AnnotatedPositionPartitionWriter<
-            Position, ScalarAnnotation, AnnotatedInterval<Position, ScalarAnnotation>>
-        posPartitionWriter =
-            new AnnotatedPositionPartitionWriter<>(
-                annotationDataset.id(),
-                new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder),
-                partitionWriter)) {
-
-      AnnotatedIntervalDbWriter<
-              Position, ScalarAnnotation, AnnotatedInterval<Position, ScalarAnnotation>>
-          annotationDbWriter = new AnnotatedIntervalDbWriter<>(posPartitionWriter);
-
-      annotationDbWriter.write(annotatedPosIterator);
-    }
+    // FIXME createAnnotatedIntervalDb
+    throw new UnsupportedOperationException();
+    //    // get annotation dataset definition
+    //    if (annotationDatasets.size() != 1) {
+    //      throw new IllegalArgumentException(); // FIXME handle other sizes
+    //    }
+    //    AnnotationDataset annotationDataset = annotationDatasets.getFirst();
+    //
+    //    IndexedAnnotationEncoder<ScalarAnnotation> annotationEncoder =
+    //        createIndexedEncoder(annotationDataset.annotationValue());
+    //
+    //    // annotation dataset writer
+    //    try (AnnotatedPositionPartitionWriter<
+    //            Position, ScalarAnnotation, AnnotatedInterval<Position, ScalarAnnotation>>
+    //        posPartitionWriter =
+    //            new AnnotatedPositionPartitionWriter<>(
+    //                annotationDataset.id(),
+    //                new IndexedAnnotatedFeatureDatasetEncoder<>(annotationEncoder),
+    //                partitionWriter)) {
+    //
+    //      AnnotatedIntervalDbWriter<
+    //              Position, ScalarAnnotation, AnnotatedInterval<Position, ScalarAnnotation>>
+    //          annotationDbWriter = new AnnotatedIntervalDbWriter<>(posPartitionWriter);
+    //
+    //      annotationDbWriter.write(annotatedPosIterator);
+    //    }
   }
 
   private static IndexedAnnotationEncoder<ScalarAnnotation> createIndexedEncoder(
@@ -321,29 +329,31 @@ public class AnnotationDbBuilder {
 
   private AnnotatedPosition<ScalarAnnotation> createPosFromTsv(
       String[] tsvFeature, TsvInputFormat tsvInputFormat) {
-    int idxContig = tsvInputFormat.contig();
-    int idxStart = tsvInputFormat.start();
-    int[] idxAnnotations = tsvInputFormat.annotations();
-    if (idxAnnotations.length != 1) {
-      throw new UnsupportedOperationException("not implemented"); // FIXME
-    }
-    int idxAnnotation = idxAnnotations[0];
-
-    Contig contig = new Contig(tsvFeature[idxContig], 9); // FIXME
-    int start = Integer.parseInt(tsvFeature[idxStart]);
-    switch (tsvInputFormat.coordinateSystem()) {
-      case ZERO_BASED -> start++;
-      case ONE_BASED -> {}
-    }
-    return new AnnotatedPosition<>(
-        new Position(contig, start),
-        new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation])));
+    // FIXME createPosFromTsv
+    throw new UnsupportedOperationException();
+    //    int idxContig = tsvInputFormat.contig();
+    //    int idxStart = tsvInputFormat.start();
+    //    int[] idxAnnotations = tsvInputFormat.annotations();
+    //    if (idxAnnotations.length != 1) {
+    //      throw new UnsupportedOperationException("not implemented"); // FIXME
+    //    }
+    //    int idxAnnotation = idxAnnotations[0];
+    //
+    //    Contig contig = new Contig(tsvFeature[idxContig], 9); // FIXME
+    //    int start = Integer.parseInt(tsvFeature[idxStart]);
+    //    switch (tsvInputFormat.coordinateSystem()) {
+    //      case ZERO_BASED -> start++;
+    //      case ONE_BASED -> {}
+    //    }
+    //    return new AnnotatedPosition<>(
+    //        new Position(contig, start),
+    //        new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation])));
   }
 
   private <T extends Annotation> AnnotatedSequenceVariant<T> createSeqVarFromTsv(
       String[] tsvFeature,
       TsvInputFormat tsvInputFormat,
-      List<AnnotationDataset> annotationDatasets) {
+      Map<String, AnnotationDataset> annotationDatasets) {
     int idxContig = tsvInputFormat.contig();
     int idxStart = tsvInputFormat.start();
     int idxRef = tsvInputFormat.ref();
@@ -375,29 +385,35 @@ public class AnnotationDbBuilder {
   private <T extends Annotation> T createAnnotationFromTsvFeature(
       String[] tsvFeature,
       TsvInputFormat tsvInputFormat,
-      List<AnnotationDataset> annotationDatasets) {
-    int[] idxAnnotations = tsvInputFormat.annotations();
-    if (idxAnnotations.length == 0) {
+      Map<String, AnnotationDataset> annotationDatasets) {
+    Map<String, Integer> idxAnnotations = tsvInputFormat.annotations();
+    if (idxAnnotations.isEmpty()) {
       throw new IllegalArgumentException();
       //    }
       //    else if (idxAnnotations.length == 1) {
       //      int idxAnnotation = idxAnnotations[0];
       //      return (T) new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
     } else {
-      Annotation[] annotations = new Annotation[idxAnnotations.length];
-      for (int i = 0; i < idxAnnotations.length; i++) {
-        int idxAnnotation = idxAnnotations[i];
-        AnnotationValue annotationValue = annotationDatasets.get(i).annotationValue();
-        annotations[i] = createAnnotationFromTsvValue(tsvFeature[idxAnnotation], annotationValue);
-      }
-      return (T) new CompositeAnnotation(annotations);
+      List<Annotation> annotations = new ArrayList<>(annotationDatasets.size());
+      annotationDatasets.forEach(
+          (annotationId, annotationDataset) -> {
+            Integer idxAnnotation = idxAnnotations.get(annotationId);
+            if (idxAnnotation == null) {
+              throw new IllegalArgumentException(
+                  "'schema.annotation_datasets.%s' not defined in 'input.annotations'"
+                      .formatted(annotationId));
+            }
+            annotations.add(
+                createAnnotationFromTsvValue(tsvFeature[idxAnnotation], annotationDataset));
+          });
+      return (T) new CompositeAnnotation(annotations.toArray(new Annotation[0]));
     }
   }
 
   private <T extends Annotation> T createAnnotationFromTsvValue(
-      String tsvValue, AnnotationValue annotationValue) {
+      String tsvValue, AnnotationDataset annotationDataset) {
     return (T)
-        switch (annotationValue.logicalType()) {
+        switch (annotationDataset.logicalType()) {
           case EnumLogicalType enumLogicalType ->
               createAnnotationFromTsvValue(tsvValue, enumLogicalType);
           case EnumSetLogicalType enumSetLogicalType ->

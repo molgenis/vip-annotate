@@ -16,10 +16,12 @@ public final class ScalarAnnotationEncoderFactory {
       Encoding encoding,
       StorageType storageType,
       boolean writeAtIndex) {
+
+    ScalarType storageScalarType = logicalType.scalarType();
     if (encoding == null) {
       if (logicalType.nullable()) {
         if (logicalType.range() != null) {
-          return switch (storageType.scalarType()) {
+          return switch (storageScalarType) {
             case I8, I16, I32, U8, U16 -> {
               Range range = logicalType.range();
               yield switch (range) {
@@ -31,8 +33,7 @@ public final class ScalarAnnotationEncoderFactory {
                 // FIXME don't cast
                 case Range.IntegerRange integerRange ->
                     new OffsetNullableIntAnnotationEncoder(
-                        valueWriterFactory.createIntValueWriter(
-                            storageType.scalarType(), writeAtIndex),
+                        valueWriterFactory.createIntValueWriter(storageScalarType, writeAtIndex),
                         (int) integerRange.min());
               };
             }
@@ -42,27 +43,25 @@ public final class ScalarAnnotationEncoderFactory {
             }
           };
         } else {
-          ScalarType scalarType = storageType.scalarType();
-          return switch (scalarType) {
+          return switch (storageScalarType) {
             case I8, I16, I32, U8, U16 ->
                 new NullableIntAnnotationEncoder(
-                    valueWriterFactory.createIntValueWriter(scalarType, writeAtIndex));
+                    valueWriterFactory.createIntValueWriter(storageScalarType, writeAtIndex));
             case F32, F64 ->
                 new NullableFloatAnnotationEncoder(
-                    valueWriterFactory.createFloatValueWriter(scalarType, writeAtIndex));
+                    valueWriterFactory.createFloatValueWriter(storageScalarType, writeAtIndex));
             case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
                 throw new UnsupportedOperationException();
           };
         }
       } else {
-        ScalarType scalarType = storageType.scalarType();
-        return switch (scalarType) {
+        return switch (storageScalarType) {
           case I8, I16, I32, U8, U16 ->
               new IntAnnotationEncoder(
-                  valueWriterFactory.createIntValueWriter(scalarType, writeAtIndex));
+                  valueWriterFactory.createIntValueWriter(storageScalarType, writeAtIndex));
           case F32, F64 ->
               new FloatAnnotationEncoder(
-                  valueWriterFactory.createFloatValueWriter(scalarType, writeAtIndex));
+                  valueWriterFactory.createFloatValueWriter(storageScalarType, writeAtIndex));
           case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
               throw new UnsupportedOperationException();
         };
@@ -84,7 +83,7 @@ public final class ScalarAnnotationEncoderFactory {
 
           yield new QuantizedAnnotationEncoder(
               quantizer,
-              valueWriterFactory.createIntValueWriter(storageType.scalarType(), writeAtIndex),
+              valueWriterFactory.createIntValueWriter(storageScalarType, writeAtIndex),
               quantizedEncoding.nullCode());
         }
       };
