@@ -23,7 +23,9 @@
       14,
       15,
       16,
-      17
+      17,
+      18,
+      19
     ]
   },
   "schema": {
@@ -232,6 +234,32 @@
           "logical_type": {
             "type": "scalar",
             "scalar_type": "f32",
+            "nullable": true
+          }
+        }
+      },
+      {
+        "id": "my_f64",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "f64"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
+            "nullable": false
+          }
+        }
+      },
+      {
+        "id": "my_f64_nullable",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "f64"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f64",
             "nullable": true
           }
         }

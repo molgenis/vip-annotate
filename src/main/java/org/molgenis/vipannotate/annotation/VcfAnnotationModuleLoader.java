@@ -74,9 +74,8 @@ public class VcfAnnotationModuleLoader {
 
   private AnnotationDecoder<ScalarAnnotation> createAnnotationDecoder(
       AnnotationValue annotationValue) {
-    // FIXME resolve cast
-    return (AnnotationDecoder<ScalarAnnotation>)
-        new ScalarAnnotationDecoderFactory().create(annotationValue);
+    return new ScalarAnnotationDecoderFactory(new ReadValueFunctionFactory())
+        .create(annotationValue);
   }
 
   private AnnotationDatasetDecoder<CompositeAnnotation> createCompositeAnnotationDatasetReader(

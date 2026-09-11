@@ -434,6 +434,29 @@ class MemoryBufferTest {
   }
 
   @Test
+  void setLongAtIndexGetLongAtIndex() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new long[3])) {
+      memBuffer.setLongAtIndex(0, 2L);
+      memBuffer.setLongAtIndex(1, 0L);
+      memBuffer.setLongAtIndex(2, 1L);
+      assertAll(
+          () -> assertEquals(2L, memBuffer.getLongAtIndex(0)),
+          () -> assertEquals(0L, memBuffer.getLongAtIndex(1)),
+          () -> assertEquals(1L, memBuffer.getLongAtIndex(2)));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {8, 12})
+  void setLongAtIndexIncreaseCapacity(int capacity) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(capacity)) {
+      memBuffer.setLongAtIndex(0, 0L);
+      memBuffer.setLongAtIndex(1, 1L);
+      assertEquals(16, memBuffer.getLimit());
+    }
+  }
+
+  @Test
   void putMixedGetMixedNative() {
     try (MemoryBuffer memBuffer = MemoryBuffer.allocate(100)) {
       memBuffer.putByte(Byte.MAX_VALUE);

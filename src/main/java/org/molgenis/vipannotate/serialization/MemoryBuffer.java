@@ -538,6 +538,11 @@ public final class MemoryBuffer implements AutoCloseable {
     return memSegment.get(LAYOUT_LONG, pos);
   }
 
+  /** same as {@link #getByteAtIndex(long)} for <code>long</code>. */
+  public long getLongAtIndex(long index) {
+    return memSegment.getAtIndex(LAYOUT_LONG, index);
+  }
+
   /** same as {@link #putByte(byte)} for <code>long</code> */
   public void putLong(long value) {
     ensureCapacity(position + LAYOUT_LONG.byteSize());
@@ -551,6 +556,21 @@ public final class MemoryBuffer implements AutoCloseable {
   public void putLongUnchecked(long value) {
     memSegment.set(LAYOUT_LONG, position, value);
     position += LAYOUT_LONG.byteSize();
+  }
+
+  /** same as {@link #setByteAtIndex(long, byte)} for <code>long</code> */
+  public void setLongAtIndex(long index, long value) {
+    long minCapacity = (index * LAYOUT_LONG.byteSize()) + LAYOUT_LONG.byteSize();
+    ensureCapacity(minCapacity);
+    setLongAtIndexUnchecked(index, value);
+    if (minCapacity > limit) {
+      limit = minCapacity;
+    }
+  }
+
+  /** see {@link #setByteAtIndexUnchecked(long, byte)} for <code>long</code>. */
+  public void setLongAtIndexUnchecked(long index, long value) {
+    memSegment.setAtIndex(LAYOUT_LONG, index, value);
   }
 
   /**

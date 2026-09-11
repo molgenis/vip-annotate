@@ -118,15 +118,18 @@ public final class ValueWriterFactory {
     return switch (scalarType) {
       case F32 ->
           new FloatValueWriter(
-              (double value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.putIntUnchecked(Float.floatToRawIntBits((float) value)),
+              (double value,
+                  MemoryBuffer memoryBuffer,
+                  int _) -> // TODO introduce and use memoryBuffer float write operations
+              memoryBuffer.putIntUnchecked(Float.floatToRawIntBits((float) value)),
               Float.BYTES);
-      // FIXME introduce memoryBuffer double write operations
+
       case F64 ->
           new FloatValueWriter(
-              (double value, MemoryBuffer memoryBuffer, int index) -> {
-                throw new UnsupportedOperationException();
-              },
+              (double value,
+                  MemoryBuffer memoryBuffer,
+                  int _) -> // TODO introduce and use memoryBuffer double write operations
+              memoryBuffer.putLongUnchecked(Double.doubleToRawLongBits(value)),
               Double.BYTES);
       default -> throw new IllegalArgumentException();
     };
