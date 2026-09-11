@@ -32,10 +32,13 @@ public class ScalarAnnotationDecoderFactory {
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new NullableIntAnnotationDecoder(createIntReadValueFunction(storageType));
-            case I64, U32, U64, F32, F64 -> {
-              // FIXME support null encoding for U64,F32,F64
-              throw new UnsupportedOperationException();
-            }
+            case F32, F64 ->
+                (AnnotationDecoder<ScalarAnnotation>)
+                    (AnnotationDecoder<?>)
+                        new NullableFloatAnnotationDecoder(
+                            createFloatReadValueFunction(storageType));
+            case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
+                throw new UnsupportedOperationException();
           };
         }
       } else {
@@ -52,10 +55,8 @@ public class ScalarAnnotationDecoderFactory {
                 (AnnotationDecoder<ScalarAnnotation>)
                     (AnnotationDecoder<?>)
                         new FloatAnnotationDecoder(createFloatReadValueFunction(storageType));
-            case I64, U32, U64 -> {
-              // FIXME support null encoding for U64
-              throw new UnsupportedOperationException();
-            }
+            case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
+                throw new UnsupportedOperationException();
           };
         }
       }

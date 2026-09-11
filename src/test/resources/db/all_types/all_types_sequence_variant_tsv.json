@@ -22,7 +22,8 @@
       13,
       14,
       15,
-      16
+      16,
+      17
     ]
   },
   "schema": {
@@ -219,6 +220,19 @@
             "type": "scalar",
             "scalar_type": "f32",
             "nullable": false
+          }
+        }
+      },
+      {
+        "id": "my_f32_nullable",
+        "annotation_value": {
+          "storage_type": {
+            "scalar_type": "f32"
+          },
+          "logical_type": {
+            "type": "scalar",
+            "scalar_type": "f32",
+            "nullable": true
           }
         }
       }

@@ -42,22 +42,29 @@ public final class ScalarAnnotationEncoderFactory {
             }
           };
         } else {
-          return new NullableIntAnnotationEncoder(
-              valueWriterFactory.createIntValueWriter(storageType.scalarType(), writeAtIndex));
+          ScalarType scalarType = storageType.scalarType();
+          return switch (scalarType) {
+            case I8, I16, I32, U8, U16 ->
+                new NullableIntAnnotationEncoder(
+                    valueWriterFactory.createIntValueWriter(scalarType, writeAtIndex));
+            case F32, F64 ->
+                new NullableFloatAnnotationEncoder(
+                    valueWriterFactory.createFloatValueWriter(scalarType, writeAtIndex));
+            case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
+                throw new UnsupportedOperationException();
+          };
         }
       } else {
-        return switch (storageType.scalarType()) {
+        ScalarType scalarType = storageType.scalarType();
+        return switch (scalarType) {
           case I8, I16, I32, U8, U16 ->
               new IntAnnotationEncoder(
-                  valueWriterFactory.createIntValueWriter(storageType.scalarType(), writeAtIndex));
+                  valueWriterFactory.createIntValueWriter(scalarType, writeAtIndex));
           case F32, F64 ->
               new FloatAnnotationEncoder(
-                  valueWriterFactory.createFloatValueWriter(
-                      storageType.scalarType(), writeAtIndex));
-          case I64, U32, U64 -> {
-            // FIXME support null encoding for U64,F32,F64
-            throw new UnsupportedOperationException();
-          }
+                  valueWriterFactory.createFloatValueWriter(scalarType, writeAtIndex));
+          case I64, U32, U64 -> // FIXME support null encoding for I64, U32, U64
+              throw new UnsupportedOperationException();
         };
       }
     } else {
