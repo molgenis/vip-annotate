@@ -24,6 +24,9 @@ public class AnnotationSpecReader {
     JsonMapper jsonMapper =
         JsonMapper.builder()
             .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(
+                DeserializationFeature
+                    .FAIL_ON_NULL_FOR_PRIMITIVES) // workaround to allow leaving out nullable:false
             .withCoercionConfig(
                 LogicalType.Integer,
                 config -> config.setCoercion(CoercionInputShape.Float, CoercionAction.Fail))

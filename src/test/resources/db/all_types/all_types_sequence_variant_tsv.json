@@ -43,8 +43,7 @@
             "VUS",
             "LP",
             "P"
-          ],
-          "nullable": false
+          ]
         }
       },
       "my_enum_nullable": {
@@ -63,8 +62,7 @@
       "my_i8": {
         "logical_type": {
           "type": "scalar",
-          "scalar_type": "i8",
-          "nullable": false
+          "scalar_type": "i8"
         }
       },
       "my_i8_nullable": {
@@ -77,8 +75,7 @@
       "my_u8": {
         "logical_type": {
           "type": "scalar",
-          "scalar_type": "u8",
-          "nullable": false
+          "scalar_type": "u8"
         }
       },
       "my_u8_nullable": {
@@ -91,8 +88,7 @@
       "my_i16": {
         "logical_type": {
           "type": "scalar",
-          "scalar_type": "i16",
-          "nullable": false
+          "scalar_type": "i16"
         }
       },
       "my_i16_nullable": {
@@ -105,8 +101,7 @@
       "my_u16": {
         "logical_type": {
           "type": "scalar",
-          "scalar_type": "u16",
-          "nullable": false
+          "scalar_type": "u16"
         }
       },
       "my_u16_nullable": {
@@ -119,8 +114,7 @@
       "my_i32": {
         "logical_type": {
           "type": "scalar",
-          "scalar_type": "i32",
-          "nullable": false
+          "scalar_type": "i32"
         }
       },
       "my_i32_nullable": {
@@ -133,8 +127,7 @@
       "my_f32": {
         "logical_type": {
           "type": "scalar",
-          "scalar_type": "f32",
-          "nullable": false
+          "scalar_type": "f32"
         }
       },
       "my_f32_nullable": {
@@ -147,8 +140,7 @@
       "my_f64": {
         "logical_type": {
           "type": "scalar",
-          "scalar_type": "f64",
-          "nullable": false
+          "scalar_type": "f64"
         }
       },
       "my_f64_nullable": {
