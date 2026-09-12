@@ -1,7 +1,5 @@
 package org.molgenis.vipannotate.cli;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -12,6 +10,7 @@ import org.molgenis.vipannotate.annotation.AnnotationSpecReader;
 import org.molgenis.vipannotate.annotation.spec.AnnotationSpec;
 import org.molgenis.vipannotate.format.vdb.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
 import tools.jackson.databind.DatabindException;
 
@@ -19,6 +18,7 @@ public class DbBuildCommand implements Command {
   @Override
   public void run(String[] args) {
     DbBuildArgs dbBuildArgs = new DbBuildArgsParser().parse(args);
+    Input input = dbBuildArgs.input();
     Path inputRecipe = dbBuildArgs.inputRecipe();
 
     // construct output db path
@@ -33,13 +33,13 @@ public class DbBuildCommand implements Command {
     Logger.debug("creating database ...");
     long startCreateDb = System.currentTimeMillis();
 
-    buildDb(inputRecipe, outputDb, dbBuildArgs.force() != null && dbBuildArgs.force());
+    buildDb(input, inputRecipe, outputDb, dbBuildArgs.force() != null && dbBuildArgs.force());
 
     long endCreateDb = System.currentTimeMillis();
     Logger.debug("creating database done in %sms", endCreateDb - startCreateDb);
   }
 
-  private static void buildDb(Path inputRecipe, Path outputDb, boolean force) {
+  private static void buildDb(Input input, Path inputRecipe, Path outputDb, boolean force) {
 
     byte[] bytes;
     try {
@@ -66,8 +66,7 @@ public class DbBuildCommand implements Command {
       try (PartitionedVdbArchiveWriter archiveWriter =
           PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
         archiveWriter.write("spec", Compression.ZSTD, IoMode.BUFFERED, memBuffer);
-        new AnnotationDbBuilder()
-            .create(annotationSpec, requireNonNull(inputRecipe.getParent()), archiveWriter);
+        new AnnotationDbBuilder().create(annotationSpec, input, archiveWriter);
       }
     }
   }

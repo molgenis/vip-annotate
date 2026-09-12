@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,30 +26,24 @@ public class AnnotationDbBuilder {
   public AnnotationDbBuilder() {}
 
   public void create(
-      AnnotationSpec annotationSpec,
-      Path resourceDir,
-      //      Input input,
-      //      @Nullable List<Region> regions,
-      //      FastaIndex fastaIndex,
-      BinaryPartitionWriter partitionWriter) {
+      AnnotationSpec annotationSpec, Input input, BinaryPartitionWriter partitionWriter) {
     InputFormat inputFormat = annotationSpec.inputFormat();
     AnnotationSchema annotationSchema = annotationSpec.annotationSchema();
     switch (inputFormat) {
       case BedInputFormat bedInputFormat ->
-          createFromBed(bedInputFormat, annotationSchema, resourceDir, partitionWriter);
+          createFromBed(bedInputFormat, annotationSchema, input, partitionWriter);
       case TsvInputFormat tsvInputFormat ->
-          createFromTsv(tsvInputFormat, annotationSchema, resourceDir, partitionWriter);
+          createFromTsv(tsvInputFormat, annotationSchema, input, partitionWriter);
       case VcfInputFormat vcfInputFormat ->
-          createFromVcf(vcfInputFormat, annotationSchema, resourceDir, partitionWriter);
+          createFromVcf(vcfInputFormat, annotationSchema, input, partitionWriter);
     }
   }
 
   private void createFromBed(
       BedInputFormat bedInputFormat,
       AnnotationSchema annotationSchema,
-      Path resourceDir,
+      Input bedInput,
       BinaryPartitionWriter partitionWriter) {
-    Input bedInput = new Input(resourceDir.resolve(bedInputFormat.file()));
     try (BedParser bedParser = BedParserFactory.create(bedInput)) {
       Iterator<AnnotatedInterval<Position, ScalarAnnotation>> annotatedPosIterator =
           createAnnotatedPosIteratorFromBed(bedParser, bedInputFormat);
@@ -67,9 +60,8 @@ public class AnnotationDbBuilder {
   private void createFromTsv(
       TsvInputFormat tsvInputFormat,
       AnnotationSchema annotationSchema,
-      Path resourceDir,
+      Input tsvInput,
       BinaryPartitionWriter partitionWriter) {
-    Input tsvInput = new Input(resourceDir.resolve(tsvInputFormat.file()));
     try (TsvParser tsvParser = TsvParserFactory.create(tsvInput)) {
       switch (annotationSchema.annotationType()) {
         case SEQUENCE_VARIANT -> {
@@ -97,7 +89,7 @@ public class AnnotationDbBuilder {
   private void createFromVcf(
       VcfInputFormat vcfInputFormat,
       AnnotationSchema annotationSchema,
-      Path resourceDir,
+      Input vcfInput,
       BinaryPartitionWriter partitionWriter) {
     // FIXME implement vcf
     throw new UnsupportedOperationException();
@@ -171,16 +163,6 @@ public class AnnotationDbBuilder {
           case ScalarLogicalType scalarLogicalType ->
               createScalarAnnotationDatasetEncoder(scalarLogicalType, annotationDataset);
         };
-  }
-
-  private static EnumAnnotationDatasetEncoder createEnumAnnotationDatasetEncoder(
-      EnumLogicalType enumLogicalType, AnnotationValue annotationValue) {
-    return new EnumAnnotationDatasetEncoder(enumLogicalType);
-  }
-
-  private static EnumSetAnnotationDatasetEncoder createEnumSetAnnotationDatasetEncoder(
-      EnumSetLogicalType enumSetLogicalType, AnnotationValue annotationValue) {
-    return new EnumSetAnnotationDatasetEncoder(enumSetLogicalType);
   }
 
   private static <T extends Annotation>

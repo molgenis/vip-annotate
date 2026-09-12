@@ -60,7 +60,6 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "java.nio.file.Path",
             "java.util.Map"
           ]
         }
@@ -225,7 +224,6 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "java.lang.String",
             "org.molgenis.vipannotate.annotation.spec.CoordinateSystem",
             "int",
             "int",

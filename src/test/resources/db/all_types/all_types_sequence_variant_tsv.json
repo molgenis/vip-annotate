@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
-    "file": "all_types_sequence_variant.tsv",
     "coordinate_system": "1-based",
     "contig": 0,
     "start": 1,

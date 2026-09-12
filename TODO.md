@@ -11,7 +11,6 @@
 - [ ] feat (spec): replace "annotations": { "my_enum": 4 } with { "my_enum":{ "col": 4, mis_val: "."} }
 - [ ] feat (spec): automatically determine encoding and storage from logical type
 - [ ] feat (spec): only store relevant spec part in db (e.g. do not store input info)
-- [ ] feat (spec): do not put file paths in spec (e.g. allow using on chr21 and all)
 - [ ] feat (spec): support non-nullable enum_set?
 - [ ] feat (db): validate contigs in all preprocessing scripts
 - [ ] feat (db): support bit-level packing for ranged values

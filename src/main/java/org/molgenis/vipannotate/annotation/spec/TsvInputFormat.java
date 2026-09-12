@@ -8,7 +8,6 @@ import java.util.Map;
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 @JsonTypeName("tsv")
 public record TsvInputFormat(
-    @JsonProperty(value = "file", required = true) String file,
     @JsonProperty(value = "coordinate_system", required = true) CoordinateSystem coordinateSystem,
     @JsonProperty(value = "contig", required = true) int contig,
     @JsonProperty(value = "start", required = true) int start,

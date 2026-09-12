@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +32,7 @@ chr1	2	.	G	A	.	.	my=LB|LP|-64|32|32|128|-16384|16384|8192|32768|-1073741824|1073
 chr1	3	.	G	A	.	.	my=VUS||0||64||0||16384||0||0||0|
 chr1	4	.	G	A	.	.	my=LP|LB|64|-32|128|32|16384|-16384|32768|8192|1073741824|-1073741824|1.234|-1.234|12.345|-12.345
 chr1	5	.	G	A	.	.	my=P|B|127|-96|255|0|32767|-32768|65535|0|2147483647|-2147483648|2.345|-2.345|23.456|-23.456
-              """;
+""";
 
   private Path dbDir;
 
@@ -60,7 +59,7 @@ chr1	5	.	G	A	.	.	my=P|B|127|-96|255|0|32767|-32768|65535|0|2147483647|-214748364
 
   @Test
   public void createDbsAndAnnotate() {
-    createDbs();
+    createDb("all_types_sequence_variant.tsv", "all_types_sequence_variant_tsv.json");
     String vcf = annotateVcf("annotate/all_types/input_all_types.vcf");
 
     // one of the goals of vip-annotate is compact annotation archives, so check size
@@ -70,19 +69,17 @@ chr1	5	.	G	A	.	.	my=P|B|127|-96|255|0|32767|-32768|65535|0|2147483647|-214748364
         () -> assertEquals(EXPECTED_VCF_OUTPUT, vcf));
   }
 
-  private void createDbs() {
-    List<String> recipeList = List.of("all_types_sequence_variant_tsv.json");
-    recipeList.forEach(
-        recipeFilename ->
-            App.main(
-                new String[] {
-                  "--debug",
-                  "database-build",
-                  "--recipe",
-                  getResource("db/all_types/%s".formatted(recipeFilename)).toString(),
-                  "--output-dir",
-                  dbDir.toString()
-                }));
+  private void createDb(String inputFilename, String recipeFilename) {
+    App.main(
+        new String[] {
+          "database-build",
+          "--input",
+          getResource("db/all_types/%s".formatted(inputFilename)).toString(),
+          "--recipe",
+          getResource("db/all_types/%s".formatted(recipeFilename)).toString(),
+          "--output-dir",
+          dbDir.toString()
+        });
   }
 
   private String annotateVcf(String vcfResourceName) {
