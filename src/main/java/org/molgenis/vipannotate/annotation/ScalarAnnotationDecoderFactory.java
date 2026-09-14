@@ -89,9 +89,11 @@ public class ScalarAnnotationDecoderFactory {
   private QuantizedAnnotationDecoder createQuantizedAnnotationDecoder(
       StorageType storageType, ScalarLogicalType logicalType, QuantizedEncoding encoding) {
     Quantizer quantizer = createQuantizer(logicalType, encoding);
-
+    // FIXME improve type determination
+    ScalarType storageScalarType =
+        encoding.levels().max() <= Byte.MAX_VALUE - Byte.MIN_VALUE ? ScalarType.U8 : ScalarType.U16;
     IntReadValueFunction intReadValueFunction =
-        readValueFunctionFactory.createIntReadValueFunction(storageType.scalarType());
+        readValueFunctionFactory.createIntReadValueFunction(storageScalarType);
     return new QuantizedAnnotationDecoder(quantizer, intReadValueFunction, encoding.nullCode());
   }
 

@@ -81,6 +81,9 @@ public final class ScalarAnnotationEncoderFactory {
                   new DoubleInterval(range.min(), range.max()),
                   new IntInterval(levels.min(), levels.max()));
 
+          // FIXME improve type determination
+          storageScalarType =
+              levels.max() <= Byte.MAX_VALUE - Byte.MIN_VALUE ? ScalarType.U8 : ScalarType.U16;
           yield new QuantizedAnnotationEncoder(
               quantizer,
               valueWriterFactory.createIntValueWriter(storageScalarType, writeAtIndex),

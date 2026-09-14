@@ -23,8 +23,8 @@ public class TsvParserFactory {
 
   private TsvParserFactory() {}
 
-  public static TsvParser create(Input inputBed) {
-    Path inputBedPath = inputBed.path();
+  public static TsvParser create(Input inputTsv) {
+    Path inputBedPath = inputTsv.path();
     InputType inputType;
     InputStream inputStream;
     if (inputBedPath != null) {

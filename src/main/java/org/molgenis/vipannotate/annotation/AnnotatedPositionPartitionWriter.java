@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
@@ -17,26 +18,30 @@ import org.molgenis.vipannotate.util.TransformingIterator;
  *
  * @param <T> type of genomic position
  * @param <U> type of genomic position annotation
- * @param <V> annotated genomic position typed by T and U
+ * @param <W> annotated genomic position typed by T and U
  */
 @RequiredArgsConstructor
 public class AnnotatedPositionPartitionWriter<
-        T extends Position, U extends Annotation, V extends AnnotatedInterval<T, U>>
-    implements AnnotatedIntervalPartitionWriter<T, U, V> {
+        T extends Position,
+        U extends Annotation, // type of sequence variant annotation
+        V extends Annotation, // type of sequence variant annotation part to write to partition
+        W extends AnnotatedInterval<T, U>>
+    implements AnnotatedIntervalPartitionWriter<T, U, W> {
   private final String annotationDataId;
-  private final IndexedAnnotatedFeatureDatasetEncoder<U> annotationDatasetEncoder;
+  private final IndexedAnnotatedFeatureDatasetEncoder<V> annotationDatasetEncoder;
   private final BinaryPartitionWriter binaryPartitionWriter;
+  private final Function<W, V> annotationExtractor;
   @Nullable private MemoryBuffer scratchBuffer;
 
   @Override
-  public void write(Partition<T, U, V> partition) {
+  public void write(Partition<T, U, W> partition) {
     if (Logger.isDebugEnabled()) {
       Logger.debug(
           "processing partition %s/%d", partition.key().contig().getName(), partition.key().bin());
     }
 
     // prepare
-    SizedIterator<IndexedAnnotation<U>> intervalIt =
+    SizedIterator<IndexedAnnotation<V>> intervalIt =
         createIndexedAnnotatedIntervalIterator(partition);
     int maxAnnotations = partition.calcMaxPos();
 
@@ -50,10 +55,10 @@ public class AnnotatedPositionPartitionWriter<
         annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partition.key());
   }
 
-  private SizedIterator<IndexedAnnotation<U>> createIndexedAnnotatedIntervalIterator(
-      Partition<T, U, V> partition) {
+  private SizedIterator<IndexedAnnotation<V>> createIndexedAnnotatedIntervalIterator(
+      Partition<T, U, W> partition) {
     PartitionKey partitionKey = partition.key();
-    List<V> annotatedIntervals = partition.annotatedIntervals();
+    List<W> annotatedIntervals = partition.annotatedIntervals();
 
     return new SizedIterator<>(
         new TransformingIterator<>(
@@ -62,11 +67,11 @@ public class AnnotatedPositionPartitionWriter<
         annotatedIntervals.size());
   }
 
-  private IndexedAnnotation<U> createIndexedAnnotatedInterval(
-      PartitionKey partitionKey, V annotatedFeature) {
+  private IndexedAnnotation<V> createIndexedAnnotatedInterval(
+      PartitionKey partitionKey, W annotatedFeature) {
     int partitionStart =
         Partition.getPartitionStart(partitionKey, annotatedFeature.getFeature().getStart());
-    return new IndexedAnnotation<>(partitionStart, annotatedFeature.getAnnotation());
+    return new IndexedAnnotation<>(partitionStart, annotationExtractor.apply(annotatedFeature));
   }
 
   private MemoryBuffer getHeapBackedScratchBuffer(long minCapacity) {

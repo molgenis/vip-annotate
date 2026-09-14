@@ -1,5 +1,5 @@
 {
-  "id": "tsv_sequence_variant_all_types",
+  "id": "seq_var_all_types",
   "version": "1.0.0",
   "input": {
     "type": "tsv",

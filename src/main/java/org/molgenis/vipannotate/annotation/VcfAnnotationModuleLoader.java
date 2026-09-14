@@ -167,24 +167,39 @@ public class VcfAnnotationModuleLoader {
         Map<String, AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
         yield switch (annotationDatasets.size()) {
           case 0 -> throw new IllegalStateException();
-          case 1 -> {
-            AnnotationDatasetDecoder<ScalarAnnotation> annotationDatasetReader =
-                createAnnotationDatasetReader(
-                    annotationDatasets.keySet().iterator().next(),
-                    annotationDatasets.values().iterator().next(),
-                    archiveReader);
-            IntervalAnnotationDb<SequenceVariant, ScalarAnnotation> annotationDb =
+          case 1 -> throw new UnsupportedOperationException();
+          default -> {
+            AnnotationDatasetDecoder<CompositeAnnotation> annotationDatasetReader =
+                createCompositeAnnotationDatasetReader(annotationDatasets, archiveReader);
+            IntervalAnnotationDb<SequenceVariant, CompositeAnnotation> annotationDb =
                 new IntervalAnnotationDb<>(new PartitionResolver(), annotationDatasetReader);
 
             ScalarAnnotationSelector annotationSelector = createScalarAnnotationSelector();
 
             yield new VcfRecordAnnotator<>(
-                new SequenceVariantAnnotator<>(canAnnotate, annotationDb, annotationSelector),
+                new SequenceVariantAnnotator<>(
+                    canAnnotate,
+                    annotationDb,
+                    (annotationList) -> {
+                      if (annotationList.isEmpty()) {
+                        return null;
+                      } else if (annotationList.size() == 1) {
+                        return annotationList.getFirst();
+                      } else {
+                        // FIXME implement annotation selector for composite annotations
+                        // FIXME invalid for this spliceai example
+                        // #[0]CHROM       [1]POS  [2]REF  [3]ALT  [4]NCBI_GENE_ID [5]DS_AG
+                        // [6]DS_AL        [7]DS_DG        [8]DS_DL        [9]DP_AG        [10]DP_AL
+                        //       [11]DP_DG       [12]DP_DL
+                        // chr21 29596046 A C 100379661 0.00 0.00 0.01 0.00 -2
+                        // chr21 29596046 A C 2897 0.00 0.00 0.00 0.00
+                        return annotationList.getFirst();
+                      }
+                    }),
                 new VcfRecordAnnotationWriter<>(
                     ((VcfOutputFormat) annotationSpec.outputFormat()).infoId()), // FIXME hardcoded
                 new VcfContigResolver()); // FIXME annotationId != infoId
           }
-          default -> throw new RuntimeException("Not implemented");
         };
       }
     };
