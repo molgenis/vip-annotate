@@ -91,34 +91,48 @@ public class Numbers {
     }
   }
 
-  public static byte safeIntToByte(int value) {
+  public static byte safeLongToByte(long value) {
     if (value < Byte.MIN_VALUE || value > Byte.MAX_VALUE) {
-      throw new IllegalArgumentException("int '%d' cannot fit in a byte".formatted(value));
+      throw new IllegalArgumentException("long '%d' cannot fit in a byte".formatted(value));
     }
     return (byte) value;
   }
 
-  public static byte safeIntToUnsignedByte(int value) {
+  public static byte safeLongToUnsignedByte(long value) {
     if (value < 0 || value > 0xFF) {
       throw new IllegalArgumentException(
-          "int '%d' cannot fit in an unsigned byte".formatted(value));
+          "long '%d' cannot fit in an unsigned byte".formatted(value));
     }
     return (byte) value;
   }
 
-  public static short safeIntToShort(int value) {
+  public static short safeLongToShort(long value) {
     if (value < Short.MIN_VALUE || value > Short.MAX_VALUE) {
-      throw new IllegalArgumentException("int '%d' cannot fit in a short".formatted(value));
+      throw new IllegalArgumentException("long '%d' cannot fit in a short".formatted(value));
     }
     return (short) value;
   }
 
-  public static short safeIntToUnsignedShort(int value) {
+  public static short safeLongToUnsignedShort(long value) {
     if (value < 0 || value > 0xFFFF) {
       throw new IllegalArgumentException(
           "int '%d' cannot fit in a unsigned short".formatted(value));
     }
     return (short) value;
+  }
+
+  public static int safeLongToInt(long value) {
+    if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("long '%d' cannot fit in a int".formatted(value));
+    }
+    return (int) value;
+  }
+
+  public static int safeLongToUnsignedInt(long value) {
+    if (value < 0 || value > 0xFFFFFFFFL) {
+      throw new IllegalArgumentException("long '%d' cannot fit in a unsigned int".formatted(value));
+    }
+    return (int) value;
   }
 
   public static long nextPowerOf2(long value) {

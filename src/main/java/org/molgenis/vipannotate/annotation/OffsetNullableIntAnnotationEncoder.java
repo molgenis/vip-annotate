@@ -18,7 +18,7 @@ public class OffsetNullableIntAnnotationEncoder
 
   @Override
   public void encodeInto(NullableIntAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
-    int encodedValue = annotation.isNull() ? 0 : offset + annotation.getValue() + 1;
+    long encodedValue = annotation.isNull() ? 0 : offset + annotation.getValue() + 1;
     intValueWriter.write(encodedValue, memoryBuffer, index);
   }
 

@@ -9,8 +9,7 @@ public class IntValueWriter {
   private final IntWriteValueFunction writeValueFunction;
   @Getter private final int valueSizeInBytes;
 
-  // TODO change everything to long?
-  public void write(int value, MemoryBuffer memoryBuffer, int index) {
+  public void write(long value, MemoryBuffer memoryBuffer, int index) {
     writeValueFunction.apply(value, memoryBuffer, index);
   }
 }

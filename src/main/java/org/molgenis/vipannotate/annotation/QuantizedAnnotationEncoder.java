@@ -36,12 +36,12 @@ public class QuantizedAnnotationEncoder implements AnnotationEncoder<ScalarAnnot
   }
 
   private void encodeInto(FloatAnnotation annotation, MemoryBuffer memBuffer, int index) {
-    int quantizedValue = quantizer.quantize(annotation.getValue());
+    long quantizedValue = quantizer.quantize(annotation.getValue());
     intValueWriter.write(quantizedValue, memBuffer, index);
   }
 
   private void encodeInto(NullableFloatAnnotation annotation, MemoryBuffer memBuffer, int index) {
-    int quantizedValue;
+    long quantizedValue;
     if (annotation.isNull()) {
       if (nullValue == null) {
         throw new IllegalStateException();

@@ -1,19 +1,19 @@
 package org.molgenis.vipannotate.util;
 
 /**
- * Closed int interval
+ * Closed integer interval
  *
  * @param min min value (inclusive)
  * @param max max value (inclusive)
  */
-public record IntInterval(int min, int max) {
+public record IntInterval(long min, long max) {
   public IntInterval {
     if (min > max) {
       throw new IllegalArgumentException("min > max");
     }
   }
 
-  public boolean contains(int value) {
+  public boolean contains(long value) {
     return value >= min && value <= max;
   }
 }

@@ -10,7 +10,7 @@ public class NullableIntAnnotationDecoder implements AnnotationDecoder<NullableI
 
   @Override
   public NullableIntAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
-    int value = intReadValueFunction.apply(memBuffer, annotationIndex);
+    long value = intReadValueFunction.apply(memBuffer, annotationIndex);
     return value == 0
         ? new NullableIntAnnotation()
         : new NullableIntAnnotation(value < 0 ? value : value - 1);
@@ -19,7 +19,7 @@ public class NullableIntAnnotationDecoder implements AnnotationDecoder<NullableI
   @Override
   public void decodeInto(
       MemoryBuffer memBuffer, int annotationIndex, NullableIntAnnotation annotation) {
-    int value = intReadValueFunction.apply(memBuffer, annotationIndex);
+    long value = intReadValueFunction.apply(memBuffer, annotationIndex);
     if (value == 0) {
       annotation.reset();
     } else if (value < 0) {

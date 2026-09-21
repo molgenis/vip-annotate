@@ -4,5 +4,5 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
 @FunctionalInterface
 public interface IntWriteValueFunction {
-  void apply(int value, MemoryBuffer memoryBuffer, int index);
+  void apply(long value, MemoryBuffer memoryBuffer, int index);
 }

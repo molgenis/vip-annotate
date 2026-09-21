@@ -3,13 +3,14 @@
 ## 0.0.1-alpha.6
 
 - [ ] fix (db): fix vcf support
-- [ ] fix: support I64, U32, U64 writing and reading
+- [ ] fix (db): fix bed support
 - [ ] fix (annotate): SpliceAI can produce multiple annotations for same sequence variant
 - [ ] fix (db): build_annotation_databases.sh
 - [ ] fix (db): reintroduce xref support (e.g. SpliceAI ncbiGeneId)
 - [ ] feat: add BOOL support
 - [ ] feat: support null bitmap as alternative for null sentinel and decide when to use which
-- [ ] feat (spec): replace "annotations": { "my_enum": 4 } with { "my_enum":{ "col": 4, mis_val: "."} }
+- [ ] feat (spec): configure missing value character for input/type=tsv
+- [ ] feat (spec): configure list value character for input/type=tsv
 - [ ] feat (spec): automatically determine encoding and storage from logical type
 - [ ] feat (spec): only store relevant spec part in db (e.g. do not store input info)
 - [ ] feat (spec): support non-nullable enum_set?
@@ -17,6 +18,7 @@
 - [ ] feat (db): support bit-level packing for ranged values
 - [ ] feat (db): determine encoding per-partition (e.g. sharper min-max, enum subsets)
 - [ ] feat (db): support ClinVar CLINSIGINCL (e.g. 431417:Pathogenic|585009:Likely_pathogenic)
+- [ ] perf (db): use https://mvnrepository.com/artifact/ch.randelshofer/fastdoubleparser/2.0.1
 - [ ] perf (db): use binary format instead of json for internal spec format
 - [ ] perf (db): improve database building performance (e.g. SpliceAI takes > 24 hours to build)
 - [ ] perf (db): ClinVar vdb 135M > source data 43M. why?

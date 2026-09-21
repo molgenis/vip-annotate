@@ -48,6 +48,7 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
     switch (annotation) {
       case FloatAnnotation floatAnnotation ->
           reusableVcfInfoBuilder.appendRaw(floatAnnotation.getValue(), 3);
+      // FIXME for unsigned long this should append Long.toUnsignedString(value)
       case IntAnnotation intAnnotation ->
           reusableVcfInfoBuilder.appendRaw(intAnnotation.getValue());
       case NullableFloatAnnotation nullableFloatAnnotation -> {
@@ -65,6 +66,7 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
             reusableVcfInfoBuilder.appendRawMissing();
           }
         } else {
+          // FIXME for unsigned long this should append Long.toUnsignedString(value)
           reusableVcfInfoBuilder.appendRaw(nullableIntAnnotation.getValue());
         }
       }

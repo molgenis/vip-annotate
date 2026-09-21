@@ -15,7 +15,7 @@ public class QuantizedAnnotationDecoder implements AnnotationDecoder<ScalarAnnot
 
   @Override
   public ScalarAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
-    int quantizedValue = intReadValueFunction.apply(memBuffer, annotationIndex);
+    long quantizedValue = intReadValueFunction.apply(memBuffer, annotationIndex);
 
     ScalarAnnotation scalarAnnotation;
     if (nullValue != null && quantizedValue == nullValue) {

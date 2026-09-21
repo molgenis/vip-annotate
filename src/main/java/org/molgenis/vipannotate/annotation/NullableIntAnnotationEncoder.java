@@ -16,11 +16,11 @@ public class NullableIntAnnotationEncoder implements AnnotationEncoder<NullableI
 
   @Override
   public void encodeInto(NullableIntAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
-    int encodedValue;
+    long encodedValue;
     if (annotation.isNull()) {
       encodedValue = 0;
     } else {
-      int value = annotation.getValue();
+      long value = annotation.getValue();
       encodedValue = value < 0 ? value : value + 1;
     }
     intValueWriter.write(encodedValue, memoryBuffer, index);

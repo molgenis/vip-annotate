@@ -64,20 +64,20 @@ public sealed interface ScalarAnnotation extends Annotation {
   @ToString
   @EqualsAndHashCode
   final class IntAnnotation implements ScalarAnnotation {
-    private int value;
+    private long value;
   }
 
   @AllArgsConstructor
   @ToString
   final class NullableIntAnnotation implements ScalarAnnotation {
     @Getter private boolean isNull;
-    @Getter private int value;
+    @Getter private long value;
 
     public NullableIntAnnotation() {
-      this(true, 0);
+      this(true, 0L);
     }
 
-    public NullableIntAnnotation(int value) {
+    public NullableIntAnnotation(long value) {
       this(false, value);
     }
 
@@ -86,7 +86,7 @@ public sealed interface ScalarAnnotation extends Annotation {
       this.value = 0; // FIXME can't do NaN here, does it work correctly?
     }
 
-    public void reset(int value) {
+    public void reset(long value) {
       this.isNull = false;
       this.value = value;
     }
@@ -105,7 +105,7 @@ public sealed interface ScalarAnnotation extends Annotation {
     @Override
     public int hashCode() {
       if (isNull) return 0;
-      return Integer.hashCode(value);
+      return Long.hashCode(value);
     }
   }
 }

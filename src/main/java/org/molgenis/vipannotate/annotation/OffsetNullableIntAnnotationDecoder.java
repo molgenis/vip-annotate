@@ -12,7 +12,7 @@ public class OffsetNullableIntAnnotationDecoder
 
   @Override
   public NullableIntAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
-    int value = intReadValueFunction.apply(memBuffer, annotationIndex);
+    long value = intReadValueFunction.apply(memBuffer, annotationIndex);
     if (value == 0) {
       return new NullableIntAnnotation();
     } else {
@@ -23,7 +23,7 @@ public class OffsetNullableIntAnnotationDecoder
   @Override
   public void decodeInto(
       MemoryBuffer memBuffer, int annotationIndex, NullableIntAnnotation annotation) {
-    int value = intReadValueFunction.apply(memBuffer, annotationIndex);
+    long value = intReadValueFunction.apply(memBuffer, annotationIndex);
     if (value == 0) {
       annotation.reset();
     } else {

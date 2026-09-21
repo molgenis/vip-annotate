@@ -11,13 +11,13 @@ public final class ReadValueFunctionFactory {
   public IntReadValueFunction createIntReadValueFunction(IntType intType) {
     return switch (intType) {
       case I8 -> MemoryBuffer::getByteAtIndex;
-      case I16 -> MemoryBuffer::getShortAtIndex;
-      case I32 -> MemoryBuffer::getIntAtIndex;
-      case I64 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
       case U8 -> MemoryBuffer::getUnsignedByteAtIndex;
+      case I16 -> MemoryBuffer::getShortAtIndex;
       case U16 -> MemoryBuffer::getUnsignedShortAtIndex;
-      case U32 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
-      case U64 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
+      case I32 -> MemoryBuffer::getIntAtIndex;
+      case U32 -> MemoryBuffer::getUnsignedIntAtIndex;
+      // caller is responsible for converting unsigned long using e.g. Long.toUnsignedString(value)
+      case I64, U64 -> MemoryBuffer::getLongAtIndex;
     };
   }
 

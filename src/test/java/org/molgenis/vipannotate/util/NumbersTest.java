@@ -203,17 +203,17 @@ class NumbersTest {
 
   @Test
   void safeIntToByte() {
-    assertEquals((byte) 64, Numbers.safeIntToByte(64));
+    assertEquals((byte) 64, Numbers.safeLongToByte(64));
   }
 
   @Test
   void safeIntToByteTooLow() {
-    assertThrows(IllegalArgumentException.class, () -> Numbers.safeIntToByte(-256));
+    assertThrows(IllegalArgumentException.class, () -> Numbers.safeLongToByte(-256));
   }
 
   @Test
   void safeIntToByteTooHigh() {
-    assertThrows(IllegalArgumentException.class, () -> Numbers.safeIntToByte(256));
+    assertThrows(IllegalArgumentException.class, () -> Numbers.safeLongToByte(256));
   }
 
   @Test

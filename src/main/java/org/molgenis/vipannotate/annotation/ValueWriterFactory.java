@@ -12,34 +12,39 @@ public final class ValueWriterFactory {
     return switch (intType) {
       case I8 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putByteUnchecked(Numbers.safeIntToByte(value)),
+              (long value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putByteUnchecked(Numbers.safeLongToByte(value)),
+              Byte.BYTES);
+      case U8 ->
+          new IntValueWriter(
+              (long value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putByteUnchecked(Numbers.safeLongToUnsignedByte(value)),
               Byte.BYTES);
       case I16 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putShortUnchecked(Numbers.safeIntToShort(value)),
+              (long value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putShortUnchecked(Numbers.safeLongToShort(value)),
+              Short.BYTES);
+      case U16 ->
+          new IntValueWriter(
+              (long value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putShortUnchecked(Numbers.safeLongToUnsignedShort(value)),
               Short.BYTES);
       case I32 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) -> memoryBuffer.putIntUnchecked(value),
+              (long value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putIntUnchecked(Numbers.safeLongToInt(value)),
               Integer.BYTES);
-      case I64 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
-      case U8 ->
-          new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putByteUnchecked(Numbers.safeIntToUnsignedByte(value)),
-              Byte.BYTES);
-      case U16 ->
-          new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) ->
-                  memoryBuffer.putShortUnchecked(Numbers.safeIntToUnsignedShort(value)),
-              Short.BYTES);
       case U32 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int _) -> memoryBuffer.putIntUnchecked(value),
+              (long value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putIntUnchecked(Numbers.safeLongToUnsignedInt(value)),
               Integer.BYTES);
-      case U64 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
+      case I64, U64 ->
+          new IntValueWriter(
+              (long value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putLongUnchecked(value),
+              Long.BYTES);
     };
   }
 
@@ -47,56 +52,62 @@ public final class ValueWriterFactory {
     return switch (intType) {
       case I8 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setByteAtIndexUnchecked(index, Numbers.safeIntToByte(value)),
+              (long value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setByteAtIndexUnchecked(index, Numbers.safeLongToByte(value)),
+              Byte.BYTES);
+      case U8 ->
+          new IntValueWriter(
+              (long value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setByteAtIndexUnchecked(
+                      index, Numbers.safeLongToUnsignedByte(value)),
               Byte.BYTES);
       case I16 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setShortAtIndexUnchecked(index, Numbers.safeIntToShort(value)),
+              (long value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setShortAtIndexUnchecked(index, Numbers.safeLongToShort(value)),
+              Short.BYTES);
+      case U16 ->
+          new IntValueWriter(
+              (long value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setShortAtIndexUnchecked(
+                      index, Numbers.safeLongToUnsignedShort(value)),
               Short.BYTES);
       case I32 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setIntAtIndexUnchecked(index, value),
+              (long value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setIntAtIndexUnchecked(index, Numbers.safeLongToInt(value)),
               Integer.BYTES);
-      case I64 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
-      case U8 ->
+      case U32 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setByteAtIndexUnchecked(index, Numbers.safeIntToUnsignedByte(value)),
-              Byte.BYTES);
-
-      case U16 ->
+              (long value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setIntAtIndexUnchecked(index, Numbers.safeLongToUnsignedInt(value)),
+              Integer.BYTES);
+      case I64, U64 ->
           new IntValueWriter(
-              (int value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setShortAtIndexUnchecked(
-                      index, Numbers.safeIntToUnsignedShort(value)),
-              Short.BYTES);
-      case U32 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
-      case U64 -> throw new UnsupportedOperationException("Not implemented yet"); // FIXME implement
+              (long value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setLongAtIndexUnchecked(index, value),
+              Long.BYTES);
     };
   }
 
   public FloatValueWriter createFloatValueWriter(FloatType floatType) {
+    // TODO write actual float and double
     return switch (floatType) {
       case F32 ->
           new FloatValueWriter(
-              (double value, MemoryBuffer memoryBuffer, int index) ->
-                  memoryBuffer.setIntAtIndexUnchecked(
-                      index, Float.floatToRawIntBits((float) value)),
+              (double value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putIntUnchecked(Float.floatToRawIntBits((float) value)),
               Float.BYTES);
-      // FIXME introduce memoryBuffer double write operations
       case F64 ->
           new FloatValueWriter(
-              (double value, MemoryBuffer memoryBuffer, int index) -> {
-                throw new UnsupportedOperationException();
-              },
+              (double value, MemoryBuffer memoryBuffer, int _) ->
+                  memoryBuffer.putLongUnchecked(Double.doubleToRawLongBits(value)),
               Double.BYTES);
     };
   }
 
   public FloatValueWriter createIndexedFloatValueWriter(FloatType floatType) {
+    // TODO write actual float and double
     return switch (floatType) {
       case F32 ->
           new FloatValueWriter(
@@ -104,12 +115,10 @@ public final class ValueWriterFactory {
                   memoryBuffer.setIntAtIndexUnchecked(
                       index, Float.floatToRawIntBits((float) value)),
               Float.BYTES);
-      // FIXME introduce memoryBuffer double write operations
       case F64 ->
           new FloatValueWriter(
-              (double value, MemoryBuffer memoryBuffer, int index) -> {
-                throw new UnsupportedOperationException();
-              },
+              (double value, MemoryBuffer memoryBuffer, int index) ->
+                  memoryBuffer.setLongAtIndexUnchecked(index, Double.doubleToRawLongBits(value)),
               Double.BYTES);
     };
   }
