@@ -13,6 +13,11 @@ public abstract class Field {
   /// Whether the field has been parsed
   protected boolean parsed;
 
+  /// Raw unparsed view of the field content
+  public CharSequence getRawView() {
+    return fieldRawView;
+  }
+
   /// Resets the field view to point to a new field. Will clear parsed state and reset internal
   /// structures (if any).
   public final void reset(String fieldRaw) {

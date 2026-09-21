@@ -5,8 +5,7 @@ import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
 @RequiredArgsConstructor
-public class OffsetIntAnnotationDecoder<T extends Annotation>
-    implements AnnotationDecoder<IntAnnotation> {
+public class OffsetIntAnnotationDecoder implements AnnotationDecoder<IntAnnotation> {
   private final IntReadValueFunction intReadValueFunction;
   private final int offset;
 

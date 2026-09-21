@@ -15,4 +15,29 @@ public record TsvInputFormat(
     @JsonProperty(value = "ref") Integer ref,
     @JsonProperty(value = "alt") Integer alt,
     @JsonProperty(value = "annotations", required = true) Map<String, Integer> annotations)
-    implements InputFormat {}
+    implements InputFormat {
+  @Override
+  public AnnotationType annotationType() {
+    boolean hasRef = ref() != null;
+    boolean hasAlt = alt() != null;
+    boolean hasEnd = end() != null;
+
+    if (hasRef && hasAlt) {
+      if (hasEnd) {
+        throw new IllegalArgumentException(
+            "'ref' and 'alt' must be defined together, and 'end' must be undefined");
+      }
+      return AnnotationType.SEQUENCE_VARIANT;
+    }
+
+    if (hasEnd) {
+      if (hasRef || hasAlt) {
+        throw new IllegalArgumentException(
+            "'end' must be defined, and 'ref' and 'alt' must be undefined");
+      }
+      return AnnotationType.INTERVAL;
+    }
+
+    return AnnotationType.POSITION;
+  }
+}

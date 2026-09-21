@@ -13,7 +13,7 @@ public final class Qual extends Field {
   }
 
   // perf: parse on demand
-  public @Nullable Double get() {
+  public @Nullable Double getRaw() {
     return fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE
         ? null
         : Double.parseDouble(fieldRawView.asString());

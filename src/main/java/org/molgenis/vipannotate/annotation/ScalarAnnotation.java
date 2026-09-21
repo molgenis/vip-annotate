@@ -8,7 +8,7 @@ public sealed interface ScalarAnnotation extends Annotation {
   @AllArgsConstructor
   @ToString
   @EqualsAndHashCode
-  final class DoubleAnnotation implements ScalarAnnotation {
+  final class FloatAnnotation implements ScalarAnnotation {
     private double value;
 
     public void reset(double value) {
@@ -18,15 +18,15 @@ public sealed interface ScalarAnnotation extends Annotation {
 
   @AllArgsConstructor
   @ToString
-  final class NullableDoubleAnnotation implements ScalarAnnotation {
+  final class NullableFloatAnnotation implements ScalarAnnotation {
     @Getter private boolean isNull;
     @Getter private double value;
 
-    public NullableDoubleAnnotation() {
+    public NullableFloatAnnotation() {
       this(true, Double.NaN);
     }
 
-    public NullableDoubleAnnotation(double value) {
+    public NullableFloatAnnotation(double value) {
       this(false, value);
     }
 
@@ -43,7 +43,7 @@ public sealed interface ScalarAnnotation extends Annotation {
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof NullableDoubleAnnotation other)) return false;
+      if (!(o instanceof NullableFloatAnnotation other)) return false;
 
       if (this.isNull && other.isNull()) return true;
       if (this.isNull != other.isNull()) return false;

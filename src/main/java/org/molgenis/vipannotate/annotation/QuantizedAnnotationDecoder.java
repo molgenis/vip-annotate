@@ -2,8 +2,8 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Quantizer;
 
@@ -19,11 +19,11 @@ public class QuantizedAnnotationDecoder implements AnnotationDecoder<ScalarAnnot
 
     ScalarAnnotation scalarAnnotation;
     if (nullValue != null && quantizedValue == nullValue) {
-      scalarAnnotation = new NullableDoubleAnnotation();
+      scalarAnnotation = new NullableFloatAnnotation();
     } else {
       double value = quantizer.dequantize(quantizedValue);
       scalarAnnotation =
-          nullValue != null ? new NullableDoubleAnnotation(value) : new DoubleAnnotation(value);
+          nullValue != null ? new NullableFloatAnnotation(value) : new FloatAnnotation(value);
     }
     return scalarAnnotation;
   }

@@ -1,13 +1,14 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.AppMetadata;
-import org.molgenis.vipannotate.annotation.spec.*;
-import org.molgenis.vipannotate.annotation.spec.AnnotationDataset;
+import org.molgenis.vipannotate.annotation.resolved.*;
+import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.VcfOutputFormat;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
@@ -16,20 +17,23 @@ import org.molgenis.vipannotate.util.NumberCollections;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class VcfAnnotationModuleLoader {
   private final PartitionedVdbArchiveReaderFactory archiveReaderFactory;
-  private final AnnotationSpecLoader schemaLoader;
+  private final ResolvedAnnotationDbSpecReader schemaLoader;
+  private final AnnotationDatasetDecoderFactory datasetDecoderFactory;
 
   public VcfAnnotationModule load(Path annotationDbPath) {
     PartitionedVdbArchiveReader archiveReader = archiveReaderFactory.create(annotationDbPath);
 
-    AnnotationSpec annotationSpec = schemaLoader.load(archiveReader);
+    ResolvedAnnotationDbSpec annotationDbSpec = schemaLoader.read(archiveReader);
 
-    VcfHeaderAnnotator headerAnnotator = createHeaderAnnotator(annotationSpec);
-    VcfRecordAnnotator<?> recordAnnotator = createRecordAnnotator(annotationSpec, archiveReader);
+    VcfHeaderAnnotator headerAnnotator = createHeaderAnnotator(annotationDbSpec);
+    VcfRecordAnnotator<?> recordAnnotator = createRecordAnnotator(annotationDbSpec, archiveReader);
     return new VcfAnnotationModule(headerAnnotator, recordAnnotator);
   }
 
-  private VcfHeaderAnnotator createHeaderAnnotator(AnnotationSpec annotationSpec) {
-    VcfOutputFormat output = (VcfOutputFormat) annotationSpec.outputFormat();
+  private VcfHeaderAnnotator createHeaderAnnotator(
+      ResolvedAnnotationDbSpec resolvedAnnotationDbSpec) {
+    // FIXME remove cast
+    VcfOutputFormat output = (VcfOutputFormat) resolvedAnnotationDbSpec.outputFormat();
     return new InfoVcfHeaderAnnotator(
         output.infoId(),
         output.infoNumber(),
@@ -39,49 +43,32 @@ public class VcfAnnotationModuleLoader {
         "%s+db%s".formatted(AppMetadata.getVersion(), output.infoVersion()));
   }
 
-  private <T extends Annotation> AnnotationDatasetDecoder<T> createAnnotationDatasetReader(
+  private AnnotationDatasetDecoder<?> createAnnotationDatasetReader(
       String annotationDatasetId,
-      AnnotationDataset annotationDataset,
+      ResolvedAnnotationSpec annotationSpec,
       PartitionedVdbArchiveReader archiveReader) {
     AnnotationBlobReader blobReader = new AnnotationBlobReader(annotationDatasetId, archiveReader);
-    return (AnnotationDatasetDecoder<T>)
-        switch (annotationDataset.logicalType()) {
-          case EnumLogicalType enumLogicalType ->
-              new EnumAnnotationDatasetReader(enumLogicalType, blobReader);
-          case EnumSetLogicalType enumSetLogicalType ->
-              new EnumSetAnnotationDatasetDecoder(enumSetLogicalType, blobReader);
-          case ScalarLogicalType scalarLogicalType ->
-              new ScalarAnnotationDatasetReader(
-                  createAnnotationDecoder(annotationDataset), blobReader);
-        };
-  }
-
-  private AnnotationDecoder<ScalarAnnotation> createAnnotationDecoder(
-      AnnotationDataset annotationDataset) {
-    return new ScalarAnnotationDecoderFactory(new ReadValueFunctionFactory())
-        .create(annotationDataset);
+    return datasetDecoderFactory.create(annotationSpec, blobReader);
   }
 
   private AnnotationDatasetDecoder<CompositeAnnotation> createCompositeAnnotationDatasetReader(
-      Map<String, AnnotationDataset> annotationDatasets,
-      PartitionedVdbArchiveReader archiveReader) {
+      ResolvedAnnotationSpecs annotationSpecs, PartitionedVdbArchiveReader archiveReader) {
     AnnotationDatasetDecoder<?>[] annotationDatasetReaders =
-        new AnnotationDatasetDecoder[annotationDatasets.size()];
+        new AnnotationDatasetDecoder[annotationSpecs.size()];
 
-    int i = 0;
-    for (Map.Entry<String, AnnotationDataset> entry : annotationDatasets.entrySet()) {
-      String annotationDatasetId = entry.getKey();
-      AnnotationDataset annotationDataset = entry.getValue();
-      annotationDatasetReaders[i++] =
-          createAnnotationDatasetReader(annotationDatasetId, annotationDataset, archiveReader);
-    }
+    AtomicInteger atomicInteger = new AtomicInteger();
+    annotationSpecs.forEach(
+        (annotationDatasetId, annotationSpec) ->
+            annotationDatasetReaders[atomicInteger.getAndIncrement()] =
+                createAnnotationDatasetReader(annotationDatasetId, annotationSpec, archiveReader));
 
     return new CompositeAnnotationDatasetReader(annotationDatasetReaders);
   }
 
   private VcfRecordAnnotator<?> createRecordAnnotator(
-      AnnotationSpec annotationSpec, PartitionedVdbArchiveReader archiveReader) {
-    AnnotationSchema annotationSchema = annotationSpec.annotationSchema();
+      ResolvedAnnotationDbSpec resolvedAnnotationDbSpec,
+      PartitionedVdbArchiveReader archiveReader) {
+    ResolvedAnnotationSchema annotationSchema = resolvedAnnotationDbSpec.annotationSchema();
 
     Predicate<SequenceVariant> canAnnotate =
         sequenceVariant ->
@@ -89,7 +76,7 @@ public class VcfAnnotationModuleLoader {
 
     return switch (annotationSchema.annotationType()) {
       case SEQUENCE_VARIANT -> {
-        Map<String, AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
+        ResolvedAnnotationSpecs annotationSpecs = annotationSchema.annotationSpecs();
 
         SequenceVariantAnnotationIndexDispatcherReaderFactory<SequenceVariant>
             indexDispatcherReaderFactory =
@@ -103,14 +90,14 @@ public class VcfAnnotationModuleLoader {
 
         PartitionResolver partitionResolver = new PartitionResolver();
 
-        yield switch (annotationDatasets.size()) {
+        yield switch (annotationSpecs.size()) {
           case 0 -> throw new IllegalStateException();
           //          case 1 -> {
           //            // FIXME only works for scalar now
           //            AnnotationDatasetReader<ScalarAnnotation> annotationDatasetReader =
           //                (AnnotationDatasetReader<ScalarAnnotation>)
           //                    (AnnotationDatasetReader<?>)
-          //                        createAnnotationDatasetReader(annotationDatasets.getFirst(),
+          //                        createAnnotationDatasetReader(annotationSpecs.getFirst(),
           // archiveReader);
           //
           //            SequenceVariantAnnotationDb<SequenceVariant, ScalarAnnotation> annotationDb
@@ -131,7 +118,7 @@ public class VcfAnnotationModuleLoader {
           //          }
           default -> {
             AnnotationDatasetDecoder<CompositeAnnotation> annotationDatasetReader =
-                createCompositeAnnotationDatasetReader(annotationDatasets, archiveReader);
+                createCompositeAnnotationDatasetReader(annotationSpecs, archiveReader);
 
             SequenceVariantAnnotationDb<SequenceVariant, CompositeAnnotation> annotationDb =
                 new SequenceVariantAnnotationDb<>(
@@ -158,19 +145,21 @@ public class VcfAnnotationModuleLoader {
                       }
                     }),
                 new VcfRecordAnnotationWriter<>(
-                    ((VcfOutputFormat) annotationSpec.outputFormat()).infoId()), // FIXME hardcoded
+                    ((VcfOutputFormat) resolvedAnnotationDbSpec.outputFormat())
+                        .infoId()), // FIXME hardcoded
                 new VcfContigResolver()); // FIXME annotationId != infoId
           }
         };
       }
+      case INTERVAL -> throw new UnsupportedOperationException(); // FIXME support
       case POSITION -> {
-        Map<String, AnnotationDataset> annotationDatasets = annotationSchema.annotationDatasets();
-        yield switch (annotationDatasets.size()) {
+        ResolvedAnnotationSpecs annotationSpecs = annotationSchema.annotationSpecs();
+        yield switch (annotationSpecs.size()) {
           case 0 -> throw new IllegalStateException();
           case 1 -> throw new UnsupportedOperationException();
           default -> {
             AnnotationDatasetDecoder<CompositeAnnotation> annotationDatasetReader =
-                createCompositeAnnotationDatasetReader(annotationDatasets, archiveReader);
+                createCompositeAnnotationDatasetReader(annotationSpecs, archiveReader);
             IntervalAnnotationDb<SequenceVariant, CompositeAnnotation> annotationDb =
                 new IntervalAnnotationDb<>(new PartitionResolver(), annotationDatasetReader);
 
@@ -197,7 +186,8 @@ public class VcfAnnotationModuleLoader {
                       }
                     }),
                 new VcfRecordAnnotationWriter<>(
-                    ((VcfOutputFormat) annotationSpec.outputFormat()).infoId()), // FIXME hardcoded
+                    ((VcfOutputFormat) resolvedAnnotationDbSpec.outputFormat())
+                        .infoId()), // FIXME hardcoded
                 new VcfContigResolver()); // FIXME annotationId != infoId
           }
         };
@@ -215,12 +205,12 @@ public class VcfAnnotationModuleLoader {
                   candidateAnnotations,
                   scalarAnnotation ->
                       switch (scalarAnnotation) {
-                        case ScalarAnnotation.DoubleAnnotation doubleAnnotation ->
-                            doubleAnnotation.getValue();
-                        case ScalarAnnotation.NullableDoubleAnnotation nullableDoubleAnnotation ->
-                            nullableDoubleAnnotation.isNull()
+                        case ScalarAnnotation.FloatAnnotation floatAnnotation ->
+                            floatAnnotation.getValue();
+                        case ScalarAnnotation.NullableFloatAnnotation nullableFloatAnnotation ->
+                            nullableFloatAnnotation.isNull()
                                 ? null
-                                : nullableDoubleAnnotation.getValue();
+                                : nullableFloatAnnotation.getValue();
                         default ->
                             throw new IllegalStateException(
                                 "Unexpected value: " + scalarAnnotation); // FIXME
@@ -230,6 +220,8 @@ public class VcfAnnotationModuleLoader {
 
   public static VcfAnnotationModuleLoader create() {
     return new VcfAnnotationModuleLoader(
-        PartitionedVdbArchiveReaderFactory.create(), AnnotationSpecLoader.create());
+        PartitionedVdbArchiveReaderFactory.create(),
+        ResolvedAnnotationDbSpecReader.create(),
+        AnnotationDatasetDecoderFactory.create());
   }
 }

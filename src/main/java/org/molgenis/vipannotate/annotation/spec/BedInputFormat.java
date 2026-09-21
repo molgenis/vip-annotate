@@ -11,4 +11,9 @@ import java.util.Map;
 public record BedInputFormat(
     @JsonProperty(value = "file", required = true) Path file,
     @JsonProperty(value = "annotations", required = true) Map<String, BedField> annotations)
-    implements InputFormat {}
+    implements InputFormat {
+  @Override
+  public AnnotationType annotationType() {
+    return AnnotationType.INTERVAL;
+  }
+}

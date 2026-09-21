@@ -5,9 +5,9 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.molgenis.vipannotate.annotation.AnnotationDbBuilder;
-import org.molgenis.vipannotate.annotation.AnnotationSpecReader;
-import org.molgenis.vipannotate.annotation.spec.AnnotationSpec;
+import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.annotation.spec.AnnotationDbSpec;
+import org.molgenis.vipannotate.annotation.spec.AnnotationDbSpecReader;
 import org.molgenis.vipannotate.format.vdb.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Input;
@@ -53,9 +53,9 @@ public class DbBuildCommand implements Command {
       memBuffer.putByteArray(bytes);
       memBuffer.flip();
 
-      AnnotationSpec annotationSpec;
+      AnnotationDbSpec annotationDbSpec;
       try {
-        annotationSpec = AnnotationSpecReader.create().readSpec(memBuffer);
+        annotationDbSpec = AnnotationDbSpecReader.create().readSpec(memBuffer);
       } catch (DatabindException e) {
         throw new IllegalStateException("error parsing %s".formatted(inputRecipe), e);
       }
@@ -65,8 +65,7 @@ public class DbBuildCommand implements Command {
           VdbArchiveWriterFactory.create(memBufferFactory).create(outputDb, force);
       try (PartitionedVdbArchiveWriter archiveWriter =
           PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
-        archiveWriter.write("spec", Compression.ZSTD, IoMode.BUFFERED, memBuffer);
-        new AnnotationDbBuilder().create(annotationSpec, input, archiveWriter);
+        AnnotationDbBuilder.create().buildDb(input, annotationDbSpec, archiveWriter);
       }
     }
   }

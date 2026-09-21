@@ -8,6 +8,7 @@
 - [ ] fix (db): build_annotation_databases.sh
 - [ ] fix (db): reintroduce xref support (e.g. SpliceAI ncbiGeneId)
 - [ ] feat: add BOOL support
+- [ ] feat: support null bitmap as alternative for null sentinel and decide when to use which
 - [ ] feat (spec): replace "annotations": { "my_enum": 4 } with { "my_enum":{ "col": 4, mis_val: "."} }
 - [ ] feat (spec): automatically determine encoding and storage from logical type
 - [ ] feat (spec): only store relevant spec part in db (e.g. do not store input info)
@@ -16,6 +17,7 @@
 - [ ] feat (db): support bit-level packing for ranged values
 - [ ] feat (db): determine encoding per-partition (e.g. sharper min-max, enum subsets)
 - [ ] feat (db): support ClinVar CLINSIGINCL (e.g. 431417:Pathogenic|585009:Likely_pathogenic)
+- [ ] perf (db): use binary format instead of json for internal spec format
 - [ ] perf (db): improve database building performance (e.g. SpliceAI takes > 24 hours to build)
 - [ ] perf (db): ClinVar vdb 135M > source data 43M. why?
 - [ ] refactor: bump streamvbyte to v3.0.0

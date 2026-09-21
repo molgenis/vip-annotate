@@ -4,7 +4,7 @@
 ##INFO=<ID=my,NUMBER=A,TYPE=String,DESCRIPTION="my annotation description",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 chr1	1	.	G	A	.	.	my=0|1|0|1
-chr1	2	.	G	A	.	.	my=0.251|0.752|0.25|0.75
-chr1	3	.	G	A	.	.	my=0.502||0.5|
-chr1	4	.	G	A	.	.	my=0.749|0.252|0.75|0.25
+chr1	2	.	G	A	.	.	my=0.25|0.75|0.25|0.75
+chr1	3	.	G	A	.	.	my=0.5||0.5|
+chr1	4	.	G	A	.	.	my=0.75|0.25|0.75|0.25
 chr1	5	.	G	A	.	.	my=1|0|1|0

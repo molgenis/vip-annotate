@@ -1,11 +1,11 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 
 @RequiredArgsConstructor
-public class NullableFloatAnnotationEncoder implements AnnotationEncoder<NullableDoubleAnnotation> {
+public class NullableFloatAnnotationEncoder implements AnnotationEncoder<NullableFloatAnnotation> {
   private final FloatValueWriter valueWriter;
 
   @Override
@@ -15,8 +15,7 @@ public class NullableFloatAnnotationEncoder implements AnnotationEncoder<Nullabl
   }
 
   @Override
-  public void encodeInto(
-      NullableDoubleAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
+  public void encodeInto(NullableFloatAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
     double encodedValue = annotation.isNull() ? Double.NaN : annotation.getValue();
     valueWriter.write(encodedValue, memoryBuffer, index);
   }

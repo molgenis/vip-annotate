@@ -3,14 +3,14 @@ package org.molgenis.vipannotate.annotation;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.spec.EnumSetLogicalType;
+import org.molgenis.vipannotate.annotation.resolved.ResolvedEnumSetAnnotationSpec;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class EnumSetAnnotationDatasetDecoder
     implements AnnotationDatasetDecoder<StringListAnnotation> {
-  private final EnumSetLogicalType enumSetLogicalType;
+  private final ResolvedEnumSetAnnotationSpec enumSetAnnotationSpec;
   private final AnnotationBlobReader blobReader;
 
   @Override
@@ -22,7 +22,7 @@ public class EnumSetAnnotationDatasetDecoder
           if (index < 0) {
             throw new IllegalArgumentException();
           }
-          String[] enumValues = enumSetLogicalType.values();
+          String[] enumValues = enumSetAnnotationSpec.values();
 
           int bitOffset = Math.multiplyExact(index, enumValues.length);
           int byteOffset = bitOffset >>> 3;

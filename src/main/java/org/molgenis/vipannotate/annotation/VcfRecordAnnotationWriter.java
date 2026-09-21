@@ -2,9 +2,9 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
 import org.molgenis.vipannotate.format.vcf.Info;
 import org.molgenis.vipannotate.format.vcf.VcfInfoSubfieldValueBuilder;
@@ -46,17 +46,17 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
 
   private void appendRawAnnotation(Annotation annotation, boolean writeMissing) {
     switch (annotation) {
-      case DoubleAnnotation doubleAnnotation ->
-          reusableVcfInfoBuilder.appendRaw(doubleAnnotation.getValue(), 3);
+      case FloatAnnotation floatAnnotation ->
+          reusableVcfInfoBuilder.appendRaw(floatAnnotation.getValue(), 3);
       case IntAnnotation intAnnotation ->
           reusableVcfInfoBuilder.appendRaw(intAnnotation.getValue());
-      case NullableDoubleAnnotation nullableDoubleAnnotation -> {
-        if (nullableDoubleAnnotation.isNull()) {
+      case NullableFloatAnnotation nullableFloatAnnotation -> {
+        if (nullableFloatAnnotation.isNull()) {
           if (writeMissing) {
             reusableVcfInfoBuilder.appendRawMissing();
           }
         } else {
-          reusableVcfInfoBuilder.appendRaw(nullableDoubleAnnotation.getValue(), 3);
+          reusableVcfInfoBuilder.appendRaw(nullableFloatAnnotation.getValue(), 3);
         }
       }
       case NullableIntAnnotation nullableIntAnnotation -> {
@@ -74,10 +74,8 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
           reusableVcfInfoBuilder.appendRaw(value);
         }
       }
-      case StringListAnnotation stringListAnnotation -> {
-        // TODO improve perf
-        reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.values()));
-      }
+      case StringListAnnotation stringListAnnotation -> // TODO improve perf
+          reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.values()));
 
       default ->
           throw new UnsupportedOperationException(

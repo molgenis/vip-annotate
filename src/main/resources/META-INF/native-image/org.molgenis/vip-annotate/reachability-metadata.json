@@ -4,7 +4,7 @@
       "type": "java.lang.Record"
     },
     {
-      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationDataset",
+      "type": "org.molgenis.vipannotate.annotation.spec.AnnotationSpec",
       "methods": [
         {
           "name": "<init>",

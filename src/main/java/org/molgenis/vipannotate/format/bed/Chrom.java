@@ -9,7 +9,7 @@ public final class Chrom extends Field {
     super(fieldRawView);
   }
 
-  public CharSequence get() {
+  public CharSequence getRaw() {
     return fieldRawView;
   }
 

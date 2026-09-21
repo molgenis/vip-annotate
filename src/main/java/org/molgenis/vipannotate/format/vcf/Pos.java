@@ -11,7 +11,7 @@ public final class Pos extends Field {
     super(fieldRawView);
   }
 
-  public int get() {
+  public int getRaw() {
     parseIfNeeded();
     return parsedField;
   }

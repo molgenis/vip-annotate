@@ -2,8 +2,8 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Quantizer;
 
@@ -23,9 +23,9 @@ public class QuantizedAnnotationEncoder implements AnnotationEncoder<ScalarAnnot
   @Override
   public void encodeInto(ScalarAnnotation annotation, MemoryBuffer memBuffer, int index) {
     switch (annotation) {
-      case DoubleAnnotation doubleAnnotation -> encodeInto(doubleAnnotation, memBuffer, index);
-      case NullableDoubleAnnotation nullableDoubleAnnotation ->
-          encodeInto(nullableDoubleAnnotation, memBuffer, index);
+      case FloatAnnotation floatAnnotation -> encodeInto(floatAnnotation, memBuffer, index);
+      case NullableFloatAnnotation nullableFloatAnnotation ->
+          encodeInto(nullableFloatAnnotation, memBuffer, index);
       default -> throw new IllegalStateException("Unexpected value: %s".formatted(annotation));
     }
   }
@@ -35,12 +35,12 @@ public class QuantizedAnnotationEncoder implements AnnotationEncoder<ScalarAnnot
     return intValueWriter.getValueSizeInBytes();
   }
 
-  private void encodeInto(DoubleAnnotation annotation, MemoryBuffer memBuffer, int index) {
+  private void encodeInto(FloatAnnotation annotation, MemoryBuffer memBuffer, int index) {
     int quantizedValue = quantizer.quantize(annotation.getValue());
     intValueWriter.write(quantizedValue, memBuffer, index);
   }
 
-  private void encodeInto(NullableDoubleAnnotation annotation, MemoryBuffer memBuffer, int index) {
+  private void encodeInto(NullableFloatAnnotation annotation, MemoryBuffer memBuffer, int index) {
     int quantizedValue;
     if (annotation.isNull()) {
       if (nullValue == null) {

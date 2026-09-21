@@ -34,120 +34,66 @@
     ],
     "annotation_datasets": {
       "my_enum": {
-        "logical_type": {
-          "type": "enum",
-          "values": [
-            "B",
-            "LB",
-            "VUS",
-            "LP",
-            "P"
-          ]
-        }
+        "type": "enum",
+        "values": [
+          "B",
+          "LB",
+          "VUS",
+          "LP",
+          "P"
+        ]
       },
       "my_enum_nullable": {
-        "logical_type": {
-          "type": "enum",
-          "values": [
-            "B",
-            "LB",
-            "VUS",
-            "LP",
-            "P"
-          ],
-          "nullable": true
-        }
+        "type": "enum",
+        "values": [
+          "B",
+          "LB",
+          "VUS",
+          "LP",
+          "P"
+        ]
       },
       "my_i8": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "i8"
-        }
+        "type": "integer"
       },
       "my_i8_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "i8",
-          "nullable": true
-        }
+        "type": "integer"
       },
       "my_u8": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "u8"
-        }
+        "type": "integer"
       },
       "my_u8_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "u8",
-          "nullable": true
-        }
+        "type": "integer"
       },
       "my_i16": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "i16"
-        }
+        "type": "integer"
       },
       "my_i16_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "i16",
-          "nullable": true
-        }
+        "type": "integer"
       },
       "my_u16": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "u16"
-        }
+        "type": "integer"
       },
       "my_u16_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "u16",
-          "nullable": true
-        }
+        "type": "integer"
       },
       "my_i32": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "i32"
-        }
+        "type": "integer"
       },
       "my_i32_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "i32",
-          "nullable": true
-        }
+        "type": "integer"
       },
       "my_f32": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f32"
-        }
+        "type": "floating_point"
       },
       "my_f32_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f32",
-          "nullable": true
-        }
+        "type": "floating_point"
       },
       "my_f64": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f64"
-        }
+        "type": "floating_point"
       },
       "my_f64_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f64",
-          "nullable": true
-        }
+        "type": "floating_point"
       }
     },
     "annotation_selector": "max_value"

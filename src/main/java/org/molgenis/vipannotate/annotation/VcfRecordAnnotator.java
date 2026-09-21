@@ -14,7 +14,7 @@ public class VcfRecordAnnotator<T extends Annotation> implements AutoCloseableNo
 
   public void annotate(VcfRecord vcfRecord, AnnotationMode annotationMode) {
     Contig contig = contigRegistry.getContig(vcfRecord);
-    int start = vcfRecord.getPos().get();
+    int start = vcfRecord.getPos().getRaw();
     int stop = start + vcfRecord.getRef().getBaseCount() - 1;
 
     for (AltAllele altAllele : vcfRecord.getAlt().getAlleles()) {

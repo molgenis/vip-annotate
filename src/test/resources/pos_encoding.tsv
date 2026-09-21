@@ -1,6 +1,6 @@
-#[0]contig	[1]start	[2]ref	[3]alt	[4]my_f64_q8	[5]my_f64_q8_nullable	[6]my_f64_q8	[7]my_f64_q8_nullable
-chr1	1	G	A	0	1	0	1
-chr1	2	G	A	0.25	0.75	0.25	0.75
-chr1	3	G	A	0.5		0.5	
-chr1	4	G	A	0.75	0.25	0.75	0.25
-chr1	5	G	A	1	0	1	0
+#[0]contig	[1]start	[2]my_f64_q8	[3]my_f64_q8_nullable	[4]my_f64_q8	[5]my_f64_q8_nullable
+chr1	1	0	1	0	1
+chr1	2	0.25	0.75	0.25	0.75
+chr1	3	0.5		0.5	
+chr1	4	0.75	0.25	0.75	0.25
+chr1	5	1	0	1	0

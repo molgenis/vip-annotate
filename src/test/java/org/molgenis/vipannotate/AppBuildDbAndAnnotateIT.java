@@ -46,13 +46,13 @@ public class AppBuildDbAndAnnotateIT {
             "seq_var_all_types.tsv.json",
             "seq_var_all_types.vcf",
             "seq_var_all_types.annotated.vcf",
-            69936L),
+            69937L),
         Arguments.of(
             "pos_encoding.tsv",
             "pos_encoding.tsv.json",
             "pos_encoding.vcf",
             "pos_encoding.annotated.vcf",
-            20674L));
+            20668L));
   }
 
   private long buildDb(Path dbDir, String inputFilename, String recipeFilename) {

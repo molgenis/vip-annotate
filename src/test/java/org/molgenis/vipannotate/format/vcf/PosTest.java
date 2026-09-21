@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 class PosTest {
   @Test
   void get() {
-    assertEquals(123, Pos.wrap("123").get());
+    assertEquals(123, Pos.wrap("123").getRaw());
   }
 
   @Test
   void getAfterReset() {
     Pos pos = Pos.wrap("123");
     pos.reset("456");
-    assertEquals(456, pos.get());
+    assertEquals(456, pos.getRaw());
   }
 
   @Test

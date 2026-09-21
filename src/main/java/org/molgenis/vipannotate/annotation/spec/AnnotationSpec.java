@@ -1,14 +1,16 @@
 package org.molgenis.vipannotate.annotation.spec;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 // keep in sync with
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
-public record AnnotationSpec(
-    // TODO use [a-z0-9._-] and length ≤ 64
-    @JsonProperty(value = "id", required = true) String specId,
-    // TODO use SemVer class with regex, see https://semver.org
-    @JsonProperty(value = "version", required = true) String specVersion,
-    @JsonProperty(value = "input", required = true) InputFormat inputFormat,
-    @JsonProperty(value = "schema", required = true) AnnotationSchema annotationSchema,
-    @JsonProperty(value = "output", required = true) OutputFormat outputFormat) {}
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = EnumAnnotationSpec.class, name = "enum"),
+  @JsonSubTypes.Type(value = EnumSetAnnotationSpec.class, name = "enum_set"),
+  @JsonSubTypes.Type(value = FloatAnnotationSpec.class, name = "floating_point"),
+  @JsonSubTypes.Type(value = IntAnnotationSpec.class, name = "integer")
+})
+public sealed interface AnnotationSpec
+    permits EnumAnnotationSpec, EnumSetAnnotationSpec, FloatAnnotationSpec, IntAnnotationSpec {}

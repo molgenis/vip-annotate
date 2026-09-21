@@ -6,13 +6,11 @@
     "coordinate_system": "1-based",
     "contig": 0,
     "start": 1,
-    "ref": 2,
-    "alt": 3,
     "annotations": {
-      "my_f64_q8": 4,
-      "my_f64_q8_nullable": 5,
-      "my_f64_q16": 6,
-      "my_f64_q16_nullable": 7
+      "my_f64_q8": 2,
+      "my_f64_q8_nullable": 3,
+      "my_f64_q16": 4,
+      "my_f64_q16_nullable": 5
     }
   },
   "schema": {
@@ -22,76 +20,16 @@
     ],
     "annotation_datasets": {
       "my_f64_q8": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f64"
-        },
-        "encoding": {
-          "type": "quantized",
-          "range": {
-            "min": 0,
-            "max": 1
-          },
-          "levels": {
-            "min": 0,
-            "max": 255
-          }
-        }
+        "type": "floating_point"
       },
       "my_f64_q8_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f64",
-          "nullable": true
-        },
-        "encoding": {
-          "type": "quantized",
-          "range": {
-            "min": 0,
-            "max": 1
-          },
-          "levels": {
-            "min": 1,
-            "max": 255
-          },
-          "null_code": 0
-        }
+        "type": "floating_point"
       },
       "my_f64_q16": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f64"
-        },
-        "encoding": {
-          "type": "quantized",
-          "range": {
-            "min": 0,
-            "max": 1
-          },
-          "levels": {
-            "min": 0,
-            "max": 65535
-          }
-        }
+        "type": "floating_point"
       },
       "my_f64_q16_nullable": {
-        "logical_type": {
-          "type": "scalar",
-          "scalar_type": "f64",
-          "nullable": true
-        },
-        "encoding": {
-          "type": "quantized",
-          "range": {
-            "min": 0,
-            "max": 1
-          },
-          "levels": {
-            "min": 1,
-            "max": 65535
-          },
-          "null_code": 0
-        }
+        "type": "floating_point"
       }
     },
     "annotation_selector": "max_value"
