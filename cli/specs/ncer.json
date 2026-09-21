@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "input": {
     "type": "bed",
-    "from": "name"
+    "annotations": {
+      "score": "name"
+    }
   },
   "schema": {
     "annotation_type": "position",
