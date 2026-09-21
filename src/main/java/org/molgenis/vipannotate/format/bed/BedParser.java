@@ -2,11 +2,12 @@ package org.molgenis.vipannotate.format.bed;
 
 import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 /** <a href="https://samtools.github.io/hts-specs/BEDv1.pdf">.bed</a> file parser */
 @RequiredArgsConstructor
-public class BedParser implements Iterator<BedFeature>, AutoCloseable {
+public class BedParser implements Iterator<BedFeature>, AutoCloseableNoThrow {
   private final BedFeatureIterator bedFeatureIterator;
 
   @Override

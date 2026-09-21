@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.BufferedLineReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
-public class BedFeatureBatchIterator implements Iterator<List<BedFeature>>, AutoCloseable {
+public class BedFeatureBatchIterator implements Iterator<List<BedFeature>>, AutoCloseableNoThrow {
   private static final int BUFFER_SIZE_STRING_BUILDER = 256;
 
   private final BufferedLineReader reader;

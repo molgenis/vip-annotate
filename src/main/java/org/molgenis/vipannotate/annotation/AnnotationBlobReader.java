@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vdb.BinaryPartitionReader;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class AnnotationBlobReader implements AutoCloseable {
+public class AnnotationBlobReader implements AutoCloseableNoThrow {
   private final String blobId;
   private final BinaryPartitionReader partitionReader;
   @Nullable private MemoryBuffer reusableMemBuffer;

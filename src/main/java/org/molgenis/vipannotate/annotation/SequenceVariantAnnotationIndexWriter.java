@@ -7,11 +7,12 @@ import org.molgenis.vipannotate.format.vdb.Compression;
 import org.molgenis.vipannotate.format.vdb.IoMode;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexWriter<T extends SequenceVariant>
-    implements AutoCloseable {
+    implements AutoCloseableNoThrow {
   private final MemoryBufferWriter<AnnotationIndex<T>> indexWriter;
   private final BinaryPartitionWriter binaryPartitionWriter;
   @Nullable private MemoryBuffer reusableMemBuffer;

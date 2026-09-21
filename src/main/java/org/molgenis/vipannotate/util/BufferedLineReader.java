@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.util;
 
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
@@ -9,7 +8,7 @@ import java.io.UncheckedIOException;
  * Fast alternative for {@link java.io.BufferedReader} that reads into {@link StringBuilder} instead
  * of creating a new {@link String} for each line read.
  */
-public final class BufferedLineReader implements AutoCloseable {
+public final class BufferedLineReader implements AutoCloseableNoThrow {
   private static final int BUFFER_SIZE_DEFAULT = 32768;
 
   private final Reader reader;

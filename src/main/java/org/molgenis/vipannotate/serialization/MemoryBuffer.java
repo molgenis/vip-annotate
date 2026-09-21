@@ -12,11 +12,12 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.Numbers;
 
 /** Memory buffer with little endian byte order. */
-public final class MemoryBuffer implements AutoCloseable {
+public final class MemoryBuffer implements AutoCloseableNoThrow {
   private static final ValueLayout.OfByte LAYOUT_BYTE;
   private static final VarHandle LAYOUT_BYTE_VAR_HANDLE;
   private static final ValueLayout.OfShort LAYOUT_SHORT;

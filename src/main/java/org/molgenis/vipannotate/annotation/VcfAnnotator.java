@@ -3,11 +3,12 @@ package org.molgenis.vipannotate.annotation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.format.vcf.*;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.Logger;
 
 @RequiredArgsConstructor
-public class VcfAnnotator implements AutoCloseable {
+public class VcfAnnotator implements AutoCloseableNoThrow {
   private static final int LOG_EVERY_N = 500000;
 
   private final VcfParser vcfParser;
