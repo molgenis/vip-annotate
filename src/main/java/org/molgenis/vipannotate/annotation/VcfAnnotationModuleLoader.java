@@ -156,7 +156,8 @@ public class VcfAnnotationModuleLoader {
         ResolvedAnnotationSpecs annotationSpecs = annotationSchema.annotationSpecs();
         yield switch (annotationSpecs.size()) {
           case 0 -> throw new IllegalStateException();
-          case 1 -> throw new UnsupportedOperationException();
+          // FIXME support singular annotations
+          //          case 1 -> throw new UnsupportedOperationException();
           default -> {
             AnnotationDatasetDecoder<CompositeAnnotation> annotationDatasetReader =
                 createCompositeAnnotationDatasetReader(annotationSpecs, archiveReader);
