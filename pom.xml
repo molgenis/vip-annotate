@@ -423,9 +423,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>tools.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
                 <version>${version.jackson}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
