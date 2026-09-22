@@ -12,13 +12,6 @@
   },
   "schema": {
     "annotation_type": "position",
-    "supported_variant_types": [
-      "snv",
-      "mnv",
-      "indel",
-      "insertion",
-      "deletion"
-    ],
     "annotation_datasets": {
       "score": {
         "type": "floating_point"

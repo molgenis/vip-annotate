@@ -15,9 +15,6 @@
   },
   "schema": {
     "annotation_type": "position",
-    "supported_variant_types": [
-      "snv"
-    ],
     "annotation_datasets": {
       "my_f64_q8": {
         "type": "floating_point"

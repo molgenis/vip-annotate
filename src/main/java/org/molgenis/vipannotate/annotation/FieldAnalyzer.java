@@ -2,8 +2,8 @@ package org.molgenis.vipannotate.annotation;
 
 import org.molgenis.vipannotate.format.Field;
 
-public interface AnnotationAnalyzer<T extends Field> {
+public interface FieldAnalyzer<T extends Field> {
   void analyze(T field);
 
-  AnnotationAnalysis collect();
+  FieldAnalysis collect();
 }

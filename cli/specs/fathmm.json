@@ -14,9 +14,6 @@
   },
   "schema": {
     "annotation_type": "sequence_variant",
-    "supported_variant_types": [
-      "snv"
-    ],
     "annotation_datasets": {
       "score": {
         "type": "floating_point"

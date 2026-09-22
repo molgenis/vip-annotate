@@ -22,13 +22,6 @@
   },
   "schema": {
     "annotation_type": "sequence_variant",
-    "supported_variant_types": [
-      "snv",
-      "mnv",
-      "indel",
-      "insertion",
-      "deletion"
-    ],
     "annotation_datasets": {
       "ncbi_gene_id": {
         "type": "integer"

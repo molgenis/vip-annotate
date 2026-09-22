@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-// FIXME should be part of spec and metadata
 public enum SequenceVariantType {
   /**
    * Single nucleotide variant.

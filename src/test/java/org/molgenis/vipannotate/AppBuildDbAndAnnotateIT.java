@@ -52,7 +52,7 @@ public class AppBuildDbAndAnnotateIT {
             "pos_encoding.tsv.json",
             "pos_encoding.vcf",
             "pos_encoding.annotated.vcf",
-            20668L));
+            20669L));
   }
 
   private long buildDb(Path dbDir, String inputFilename, String recipeFilename) {

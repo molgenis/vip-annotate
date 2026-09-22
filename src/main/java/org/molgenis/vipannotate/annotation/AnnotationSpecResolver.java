@@ -14,7 +14,7 @@ import org.molgenis.vipannotate.util.Maps;
 
 @RequiredArgsConstructor
 public class AnnotationSpecResolver {
-  public ResolvedAnnotationSpecs resolve(AnnotationAnalyses analyses) {
+  public ResolvedAnnotationSpecs resolve(InputAnalyses analyses) {
     Map<String, ResolvedAnnotationSpec> resolvedSpecsMap =
         Maps.newLinkedHashMapWithExpectedSize(analyses.size());
 
@@ -25,13 +25,12 @@ public class AnnotationSpecResolver {
     return new ResolvedAnnotationSpecs(resolvedSpecsMap);
   }
 
-  private ResolvedAnnotationSpec resolve(AnnotationAnalysis annotationAnalysis) {
-    return switch (annotationAnalysis) {
-      case EnumAnnotationAnalysis analysis -> resolve(analysis.annotationSpec(), analysis.stats());
-      case EnumSetAnnotationAnalysis analysis ->
-          resolve(analysis.annotationSpec(), analysis.stats());
-      case FloatAnnotationAnalysis analysis -> resolve(analysis.annotationSpec(), analysis.stats());
-      case IntAnnotationAnalysis analysis -> resolve(analysis.annotationSpec(), analysis.stats());
+  private ResolvedAnnotationSpec resolve(FieldAnalysis fieldAnalysis) {
+    return switch (fieldAnalysis) {
+      case EnumFieldAnalysis analysis -> resolve(analysis.annotationSpec(), analysis.stats());
+      case EnumSetFieldAnalysis analysis -> resolve(analysis.annotationSpec(), analysis.stats());
+      case FloatFieldAnalysis analysis -> resolve(analysis.annotationSpec(), analysis.stats());
+      case IntFieldAnalysis analysis -> resolve(analysis.annotationSpec(), analysis.stats());
     };
   }
 

@@ -12,7 +12,6 @@
 - [ ] feat (spec): configure missing value character for input/type=tsv
 - [ ] feat (spec): configure list value character for input/type=tsv
 - [ ] feat (spec): support nested values for input/type=vcf
-- [ ] feat (spec): derive supported_variant_types during data analysis (at least for sequence variant)
 - [ ] feat (spec): update annotation_datasets so that output can be produced from that info
 - [ ] perf (db): use binary format instead of json for internal spec format
 - [ ] feat (db): boolean support

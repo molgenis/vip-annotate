@@ -9,11 +9,11 @@ import org.molgenis.vipannotate.format.bed.BedParserFactory;
 import org.molgenis.vipannotate.util.Input;
 
 @RequiredArgsConstructor
-public class BedAnnotationsAnalyzer implements AnnotationsAnalyzer {
+public class BedInputAnalyzer implements InputAnalyzer {
   private final BedInputFormat bedInputFormat;
 
   @Override
-  public AnnotationAnalyses analyze(Input input, AnnotationSpecs annotationSpecs) {
+  public InputAnalyses analyze(Input input, AnnotationSpecs annotationSpecs) {
     // process records
     try (BedParser bedParser = BedParserFactory.create(input)) {
       while (bedParser.hasNext()) {

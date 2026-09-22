@@ -5,7 +5,7 @@ import org.molgenis.vipannotate.annotation.spec.FloatAnnotationSpec;
 import org.molgenis.vipannotate.format.Field;
 
 @RequiredArgsConstructor
-public class FloatAnnotationAnalyzer implements AnnotationAnalyzer<Field> {
+public class FloatFieldAnalyzer implements FieldAnalyzer<Field> {
   private final FloatAnnotationSpec annotationSpec;
 
   private long count;
@@ -33,8 +33,8 @@ public class FloatAnnotationAnalyzer implements AnnotationAnalyzer<Field> {
   }
 
   @Override
-  public FloatAnnotationAnalysis collect() {
-    return new FloatAnnotationAnalysis(
+  public FloatFieldAnalysis collect() {
+    return new FloatFieldAnalysis(
         annotationSpec, new FloatAnnotationStats(count, nullCount, min, max));
   }
 }

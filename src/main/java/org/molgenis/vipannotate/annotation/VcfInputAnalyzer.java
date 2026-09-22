@@ -6,11 +6,11 @@ import org.molgenis.vipannotate.annotation.spec.VcfInputFormat;
 import org.molgenis.vipannotate.util.Input;
 
 @RequiredArgsConstructor
-public class VcfAnnotationsAnalyzer implements AnnotationsAnalyzer {
+public class VcfInputAnalyzer implements InputAnalyzer {
   private final VcfInputFormat vcfInputFormat;
 
   @Override
-  public AnnotationAnalyses analyze(Input input, AnnotationSpecs annotationSpecs) {
+  public InputAnalyses analyze(Input input, AnnotationSpecs annotationSpecs) {
     throw new UnsupportedOperationException("not implemented yet"); // FIXME implement
   }
 }
