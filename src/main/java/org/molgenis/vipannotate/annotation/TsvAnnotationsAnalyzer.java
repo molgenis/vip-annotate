@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +9,7 @@ import org.molgenis.vipannotate.format.tsv.TsvParser;
 import org.molgenis.vipannotate.format.tsv.TsvParserFactory;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
 import org.molgenis.vipannotate.util.Input;
+import org.molgenis.vipannotate.util.Maps;
 
 @RequiredArgsConstructor
 public class TsvAnnotationsAnalyzer implements AnnotationsAnalyzer {
@@ -38,7 +38,7 @@ public class TsvAnnotationsAnalyzer implements AnnotationsAnalyzer {
 
     // create analyses
     Map<String, AnnotationAnalysis> annotationAnalysesMap =
-        new LinkedHashMap<>((int) (analyses.length / 0.75f) + 1);
+        Maps.newLinkedHashMapWithExpectedSize(analyses.length);
     for (TsvAnnotationAnalysis analysis : analyses) {
       AnnotationAnalysis annotationAnalysis = analysis.analyzer().collect();
       annotationAnalysesMap.put(analysis.annotationDatasetId(), annotationAnalysis);

@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
@@ -11,12 +10,13 @@ import org.molgenis.vipannotate.annotation.spec.EnumAnnotationSpec;
 import org.molgenis.vipannotate.annotation.spec.EnumSetAnnotationSpec;
 import org.molgenis.vipannotate.annotation.spec.FloatAnnotationSpec;
 import org.molgenis.vipannotate.annotation.spec.IntAnnotationSpec;
+import org.molgenis.vipannotate.util.Maps;
 
 @RequiredArgsConstructor
 public class AnnotationSpecResolver {
   public ResolvedAnnotationSpecs resolve(AnnotationAnalyses analyses) {
     Map<String, ResolvedAnnotationSpec> resolvedSpecsMap =
-        new LinkedHashMap<>((int) (analyses.size() / 0.75f) + 1);
+        Maps.newLinkedHashMapWithExpectedSize(analyses.size());
 
     analyses.forEach(
         (annotationDatasetId, analysis) ->

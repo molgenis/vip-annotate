@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.util;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,7 @@ public class HgncToNcbiGeneIdMapper {
    * 'Selected columns' 'GeneID' and 'Symbol'.
    */
   public static HgncToNcbiGeneIdMapper create(Path ncbiGeneTsvPath) {
-    int capacity = (int) Math.ceil(192436 / 0.75);
-    Map<String, Integer> hgncToNcbiGeneIdMap = new HashMap<>(capacity);
+    Map<String, Integer> hgncToNcbiGeneIdMap = Maps.newHashMapWithExpectedSize(192436);
 
     try (BufferedReader bufferedReader = Readers.newBufferedReaderUtf8(ncbiGeneTsvPath)) {
       // parse header
