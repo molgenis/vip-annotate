@@ -1,5 +1,6 @@
 {
-  "id": "gnomad",
+  "id": "GNOMAD",
+  "description": "gnomAD v4.1.0, see https://gnomad.broadinstitute.org/",
   "version": "1.0.0",
   "input": {
     "type": "tsv",
@@ -23,6 +24,7 @@
     "annotation_datasets": {
       "src": {
         "type": "enum",
+        "description": "Source: E=Exomes, G=Genomes, T=Joint",
         "values": [
           "G",
           "E",
@@ -30,19 +32,24 @@
         ]
       },
       "af": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "Alternate allele frequency"
       },
       "faf95": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "Filtering allele frequency (using Poisson 95% CI)"
       },
       "faf99": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "Filtering allele frequency (using Poisson 95% CI)"
       },
       "nhomalt": {
-        "type": "integer"
+        "type": "integer",
+        "description": "Count of homozygous individuals"
       },
       "filters": {
         "type": "enum_set",
+        "description": "Failed variant filters",
         "values": [
           "AC0",
           "AS_VQSR",
@@ -50,17 +57,10 @@
         ]
       },
       "cov": {
+        "description": "Percentage of individuals with coverage at this variant",
         "type": "floating_point"
       }
     },
     "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "gnomAD",
-    "infoNumber": "A",
-    "infoType": "String",
-    "infoDescription": "gnomAD v4.1.0 annotation formatted as 'SRC|AF|FAF95|FAF99|HN|QC|COV'; SRC=source (E=exomes, G=genomes, T=total), AF=allele frequency, FAF95=filtering allele frequency (95% confidence), FAF99=filtering allele frequency (99% confidence), HN=number of homozygotes, QC=quality control filters that failed, COV=coverage (percent of individuals in gnomAD source)",
-    "infoVersion": "1.0.0"
   }
 }

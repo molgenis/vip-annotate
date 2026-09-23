@@ -1,5 +1,6 @@
 {
-  "id": "ncer",
+  "id": "NCER",
+  "description": "ncER non-coding essential regulation, see https://doi.org/10.1038/s41467-019-13212-3",
   "version": "1.0.0",
   "input": {
     "type": "bed",
@@ -11,7 +12,8 @@
     "annotation_type": "position",
     "annotation_datasets": {
       "score": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": " non-coding essential regulation score ranging from 0 (non-essential) to 1 (putative essential)"
       }
     },
     "annotation_selector": "max_value"

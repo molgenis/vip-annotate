@@ -1,5 +1,6 @@
 {
-  "id": "remm",
+  "id": "REMM",
+  "description": "REMM (Regulatory Mendelian Mutation) score, see https://doi.org/10.1093/gigascience/giad024",
   "version": "1.0.0",
   "input": {
     "type": "tsv",
@@ -14,17 +15,10 @@
     "annotation_type": "position",
     "annotation_datasets": {
       "score": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "score prediction of the potential pathogenicity of noncoding variants"
       }
     },
     "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "REMM",
-    "infoNumber": "A",
-    "infoType": "Float",
-    "infoDescription": "REMM score",
-    "infoVersion": "1.0.0"
   }
 }

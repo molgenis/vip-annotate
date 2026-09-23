@@ -1,5 +1,6 @@
 {
-  "id": "phylop",
+  "id": "PHYLOP",
+  "description": "phyloP conservation scores, see http://compgen.bscb.cornell.edu/phast",
   "version": "1.0.0",
   "input": {
     "type": "bed",
@@ -11,17 +12,10 @@
     "annotation_type": "position",
     "annotation_datasets": {
       "score": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "evolutionary conservation measure, with positive scores indicating conservation and negative scores indicating accelerated evolution"
       }
     },
     "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "phyloP",
-    "infoNumber": "A",
-    "infoType": "Float",
-    "infoDescription": "phyloP score",
-    "infoVersion": "1.0.0"
   }
 }

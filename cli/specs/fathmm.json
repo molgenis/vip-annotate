@@ -1,5 +1,6 @@
 {
-  "id": "fathmm",
+  "id": "FATHMM_MKL",
+  "description": "FATHMM-MKL functional consequence prediction for coding/non-coding SNVs, see https://doi.org/10.1093/bioinformatics/btv009",
   "version": "1.0.0",
   "input": {
     "type": "tsv",
@@ -16,17 +17,10 @@
     "annotation_type": "sequence_variant",
     "annotation_datasets": {
       "score": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "p-value: above 0.5 predicts deleterious; below 0.5 predicts neutral/benign."
       }
     },
     "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "FATHMM_MKL",
-    "infoNumber": "A",
-    "infoType": "Float",
-    "infoDescription": "FATHMM-MKL score",
-    "infoVersion": "1.0.0"
   }
 }

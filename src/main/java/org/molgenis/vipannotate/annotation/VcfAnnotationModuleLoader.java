@@ -1,7 +1,10 @@
 package org.molgenis.vipannotate.annotation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,33 +43,47 @@ public class VcfAnnotationModuleLoader {
         stringBuilder.append(". ");
       }
     }
-    stringBuilder.append("format:'");
-    annotationSchema
-        .annotationSpecs()
-        .forEach(
-            (annotationId, annotationSpec) -> {
-              stringBuilder.append(annotationId).append('[');
-              stringBuilder.append(
-                  switch (annotationSpec) {
-                    case ResolvedEnumAnnotationSpec _ -> "NUMBER=1,TYPE=String";
-                    case ResolvedEnumSetAnnotationSpec _ -> "NUMBER=.,TYPE=String";
-                    case ResolvedFloatAnnotationSpec _ -> "NUMBER=1,TYPE=Float";
-                    case ResolvedIntAnnotationSpec _ -> "NUMBER=1,TYPE=Integer";
-                  });
 
-              String description = annotationSpec.description();
-              if (description != null) {
-                stringBuilder.append(",DESCRIPTION=").append(description);
-              }
-              stringBuilder.append(']').append('|');
-            });
-    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-    stringBuilder.append('\'');
+    ResolvedAnnotationSpecs specs = annotationSchema.annotationSpecs();
+    String infoNumber = "A";
+    String infoType;
+    if (specs.size() == 1) {
+      AtomicReference<String> infoTypeRef = new AtomicReference<>();
+      specs.forEach(
+          (_, spec) ->
+              infoTypeRef.set(
+                  switch (spec) {
+                    case ResolvedEnumAnnotationSpec _, ResolvedEnumSetAnnotationSpec _ -> "String";
+                    case ResolvedFloatAnnotationSpec _ -> "Float";
+                    case ResolvedIntAnnotationSpec _ -> "Integer";
+                  }));
+      infoType = requireNonNull(infoTypeRef.get());
+    } else {
+      infoType = "String";
+      stringBuilder.append("format:");
+      specs.forEach(
+          (annotationId, annotationSpec) -> {
+            stringBuilder.append(annotationId).append('[');
+            stringBuilder.append(
+                switch (annotationSpec) {
+                  case ResolvedEnumAnnotationSpec _ -> "NUMBER=1,TYPE=String";
+                  case ResolvedEnumSetAnnotationSpec _ -> "NUMBER=.,TYPE=String";
+                  case ResolvedFloatAnnotationSpec _ -> "NUMBER=1,TYPE=Float";
+                  case ResolvedIntAnnotationSpec _ -> "NUMBER=1,TYPE=Integer";
+                });
 
+            String description = annotationSpec.description();
+            if (description != null) {
+              stringBuilder.append(",DESCRIPTION='").append(description).append('\'');
+            }
+            stringBuilder.append(']').append('|');
+          });
+      stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    }
     return new InfoVcfHeaderAnnotator(
         resolvedAnnotationDbSpec.specId(),
-        "A",
-        "String", // FIXME for non-compound annotations this might not be string
+        infoNumber,
+        infoType,
         stringBuilder.toString(),
         AppMetadata.getName(),
         "%s+db%s".formatted(AppMetadata.getVersion(), resolvedAnnotationDbSpec.specVersion()));

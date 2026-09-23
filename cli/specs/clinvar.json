@@ -1,5 +1,6 @@
 {
-  "id": "clinvar",
+  "id": "CLNVAR",
+  "description": "ClinVar 2026-08-22, see https://www.ncbi.nlm.nih.gov/clinvar/",
   "version": "1.0.0",
   "input": {
     "type": "tsv",
@@ -18,10 +19,12 @@
     "annotation_type": "sequence_variant",
     "annotation_datasets": {
       "id": {
-        "type": "integer"
+        "type": "integer",
+        "description": "ClinVar Allele ID"
       },
       "clnsig": {
         "type": "enum_set",
+        "description": "Aggregate germline classification for this single variant",
         "values": [
           "Uncertain_significance",
           "Likely_benign",
@@ -34,6 +37,7 @@
       },
       "clnrevstat": {
         "type": "enum",
+        "description": "ClinVar review status of germline classification for the Variation ID",
         "values": [
           "criteria_provided,_single_submitter",
           "criteria_provided,_multiple_submitters,_no_conflicts",
@@ -48,13 +52,5 @@
       }
     },
     "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "ClinVar",
-    "infoNumber": "A",
-    "infoType": "String",
-    "infoDescription": "ClinVar annotation formatted as 'ID|CLNSIG|CLNSIGREVSTAT'",
-    "infoVersion": "1.0.0"
   }
 }

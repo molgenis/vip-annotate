@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import lombok.RequiredArgsConstructor;
 
-/// VCF field Keywords: Low memory, high performance, reusable, lazy parsing
+/// Field Keywords: Low memory, high performance, reusable, lazy parsing
 @RequiredArgsConstructor
 public abstract class Field {
   /// Raw unparsed view of the field content
