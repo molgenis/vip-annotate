@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.resolved.*;
 import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSpec;
-import org.molgenis.vipannotate.annotation.spec.VcfOutputFormat;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
@@ -32,15 +31,45 @@ public class VcfAnnotationModuleLoader {
 
   private VcfHeaderAnnotator createHeaderAnnotator(
       ResolvedAnnotationDbSpec resolvedAnnotationDbSpec) {
-    // FIXME remove cast
-    VcfOutputFormat output = (VcfOutputFormat) resolvedAnnotationDbSpec.outputFormat();
+    ResolvedAnnotationSchema annotationSchema = resolvedAnnotationDbSpec.annotationSchema();
+    StringBuilder stringBuilder = new StringBuilder();
+    String specDescription = resolvedAnnotationDbSpec.specDescription();
+    if (specDescription != null) {
+      stringBuilder.append(specDescription);
+      if (stringBuilder.charAt(stringBuilder.length() - 1) != '.') {
+        stringBuilder.append(". ");
+      }
+    }
+    stringBuilder.append("format:'");
+    annotationSchema
+        .annotationSpecs()
+        .forEach(
+            (annotationId, annotationSpec) -> {
+              stringBuilder.append(annotationId).append('[');
+              stringBuilder.append(
+                  switch (annotationSpec) {
+                    case ResolvedEnumAnnotationSpec _ -> "NUMBER=1,TYPE=String";
+                    case ResolvedEnumSetAnnotationSpec _ -> "NUMBER=.,TYPE=String";
+                    case ResolvedFloatAnnotationSpec _ -> "NUMBER=1,TYPE=Float";
+                    case ResolvedIntAnnotationSpec _ -> "NUMBER=1,TYPE=Integer";
+                  });
+
+              String description = annotationSpec.description();
+              if (description != null) {
+                stringBuilder.append(",DESCRIPTION=").append(description);
+              }
+              stringBuilder.append(']').append('|');
+            });
+    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    stringBuilder.append('\'');
+
     return new InfoVcfHeaderAnnotator(
-        output.infoId(),
-        output.infoNumber(),
-        output.infoType(),
-        output.infoDescription(),
+        resolvedAnnotationDbSpec.specId(),
+        "A",
+        "String", // FIXME for non-compound annotations this might not be string
+        stringBuilder.toString(),
         AppMetadata.getName(),
-        "%s+db%s".formatted(AppMetadata.getVersion(), output.infoVersion()));
+        "%s+db%s".formatted(AppMetadata.getVersion(), resolvedAnnotationDbSpec.specVersion()));
   }
 
   private AnnotationDatasetDecoder<?> createAnnotationDatasetReader(
@@ -144,9 +173,7 @@ public class VcfAnnotationModuleLoader {
                         return annotationList.getFirst();
                       }
                     }),
-                new VcfRecordAnnotationWriter<>(
-                    ((VcfOutputFormat) resolvedAnnotationDbSpec.outputFormat())
-                        .infoId()), // FIXME hardcoded
+                new VcfRecordAnnotationWriter<>(resolvedAnnotationDbSpec.specId()),
                 new VcfContigResolver()); // FIXME annotationId != infoId
           }
         };
@@ -186,9 +213,7 @@ public class VcfAnnotationModuleLoader {
                         return annotationList.getFirst();
                       }
                     }),
-                new VcfRecordAnnotationWriter<>(
-                    ((VcfOutputFormat) resolvedAnnotationDbSpec.outputFormat())
-                        .infoId()), // FIXME hardcoded
+                new VcfRecordAnnotationWriter<>(resolvedAnnotationDbSpec.specId()),
                 new VcfContigResolver()); // FIXME annotationId != infoId
           }
         };

@@ -35,12 +35,12 @@ public class AnnotationSpecResolver {
   }
 
   private ResolvedEnumAnnotationSpec resolve(EnumAnnotationSpec spec, EnumAnnotationStats stats) {
-    return new ResolvedEnumAnnotationSpec(spec.values(), stats.nullCount() > 0);
+    return new ResolvedEnumAnnotationSpec(spec.description(), spec.values(), stats.nullCount() > 0);
   }
 
   private ResolvedEnumSetAnnotationSpec resolve(
       EnumSetAnnotationSpec spec, EnumSetAnnotationStats ignoredStats) {
-    return new ResolvedEnumSetAnnotationSpec(spec.values());
+    return new ResolvedEnumSetAnnotationSpec(spec.description(), spec.values());
   }
 
   private ResolvedFloatAnnotationSpec resolve(
@@ -53,7 +53,7 @@ public class AnnotationSpecResolver {
             new QuantizedEncoding.Range(stats.min(), stats.max()),
             new QuantizedEncoding.Levels(lvlMin, lvlMax),
             nullCode);
-    return new ResolvedFloatAnnotationSpec(IntType.U16, floatEncoding);
+    return new ResolvedFloatAnnotationSpec(spec.description(), IntType.U16, floatEncoding);
   }
 
   private ResolvedIntAnnotationSpec resolve(IntAnnotationSpec spec, IntAnnotationStats stats) {
@@ -82,11 +82,12 @@ public class AnnotationSpecResolver {
               ? new OffsetNullableIntEncoding((int) offset)
               : new OffsetIntEncoding((int) offset);
 
-      return new ResolvedIntAnnotationSpec(requireNonNull(offsetType), encoding);
+      return new ResolvedIntAnnotationSpec(
+          spec.description(), requireNonNull(offsetType), encoding);
     }
 
     IntEncoding encoding = nullable ? new NullableIntEncoding() : new PlainIntEncoding();
-    return new ResolvedIntAnnotationSpec(requireNonNull(plainType), encoding);
+    return new ResolvedIntAnnotationSpec(spec.description(), requireNonNull(plainType), encoding);
   }
 
   private static @Nullable IntType resolvePlainIntType(long min, long max, boolean nullable) {

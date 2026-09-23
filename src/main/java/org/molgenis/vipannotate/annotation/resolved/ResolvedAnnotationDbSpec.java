@@ -1,11 +1,14 @@
 package org.molgenis.vipannotate.annotation.resolved;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.molgenis.vipannotate.annotation.spec.OutputFormat;
+import org.jspecify.annotations.Nullable;
 
-// FIXME do not depend on spec: do not use spec.OutputFormat
 // keep in sync with
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 public record ResolvedAnnotationDbSpec(
-    @JsonProperty(value = "schema", required = true) ResolvedAnnotationSchema annotationSchema,
-    @JsonProperty(value = "output", required = true) OutputFormat outputFormat) {}
+    // TODO use SemVer class with regex, see https://semver.org
+    @JsonProperty(value = "version", required = true) String specVersion,
+    // TODO use [a-z0-9._-] and length ≤ 64
+    @JsonProperty(value = "id", required = true) String specId,
+    @JsonProperty(value = "description") @Nullable String specDescription,
+    @JsonProperty(value = "schema", required = true) ResolvedAnnotationSchema annotationSchema) {}

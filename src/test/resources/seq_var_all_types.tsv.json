@@ -94,13 +94,5 @@
       }
     },
     "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "my",
-    "infoNumber": "A",
-    "infoType": "String",
-    "infoDescription": "my annotation formatted as 'my_enum'",
-    "infoVersion": "1.0.0"
   }
 }

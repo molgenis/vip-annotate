@@ -1,5 +1,6 @@
 {
   "id": "pos_encoding",
+  "description": "pos encoding description",
   "version": "1.0.0",
   "input": {
     "type": "tsv",
@@ -17,26 +18,22 @@
     "annotation_type": "position",
     "annotation_datasets": {
       "my_f64_q8": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "my f64 q8 description"
       },
       "my_f64_q8_nullable": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "my f64 q8 nullable description"
       },
       "my_f64_q16": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "my f64 q16 description"
       },
       "my_f64_q16_nullable": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "my f64 q16 nullable description"
       }
     },
     "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "my",
-    "infoNumber": "A",
-    "infoType": "String",
-    "infoDescription": "my annotation description",
-    "infoVersion": "1.0.0"
   }
 }

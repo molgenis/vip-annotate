@@ -39,12 +39,14 @@ public class AnnotationDbBuilder {
 
     ResolvedAnnotationDbSpec resolvedAnnotationDbSpec =
         new ResolvedAnnotationDbSpec(
+            annotationDbSpec.specVersion(),
+            annotationDbSpec.specId(),
+            annotationDbSpec.specDescription(),
             new ResolvedAnnotationSchema(
                 annotationSchema.annotationType(),
                 inputAnalyses.sequenceVariantTypes(),
                 resolvedAnnotationSpecs,
-                annotationSchema.annotationSelector()),
-            annotationDbSpec.outputFormat());
+                annotationSchema.annotationSelector()));
     // TODO improve spec logging
     Logger.debug("resolved annotation specification '%s'", resolvedAnnotationDbSpec);
     specWriter.write(resolvedAnnotationDbSpec, partitionWriter);
