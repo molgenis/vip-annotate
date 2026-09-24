@@ -21,7 +21,7 @@
   },
   "schema": {
     "annotation_type": "sequence_variant",
-    "annotation_datasets": {
+    "annotations": {
       "src": {
         "type": "enum",
         "description": "Source: E=Exomes, G=Genomes, T=Joint",

@@ -29,7 +29,7 @@
   },
   "schema": {
     "annotation_type": "sequence_variant",
-    "annotation_datasets": {
+    "annotations": {
       "my_enum": {
         "type": "enum",
         "values": [

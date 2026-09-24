@@ -23,7 +23,7 @@
   },
   "schema": {
     "annotation_type": "sequence_variant",
-    "annotation_datasets": {
+    "annotations": {
       "ncbi_gene_id": {
         "type": "integer",
         "description": "NCBI gene identifier"

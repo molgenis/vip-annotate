@@ -17,7 +17,7 @@
   },
   "schema": {
     "annotation_type": "sequence_variant",
-    "annotation_datasets": {
+    "annotations": {
       "id": {
         "type": "integer",
         "description": "ClinVar Allele ID"

@@ -16,7 +16,7 @@
   },
   "schema": {
     "annotation_type": "position",
-    "annotation_datasets": {
+    "annotations": {
       "my_f64_q8": {
         "type": "floating_point",
         "description": "my f64 q8 description"

@@ -10,7 +10,7 @@
   },
   "schema": {
     "annotation_type": "position",
-    "annotation_datasets": {
+    "annotations": {
       "score": {
         "type": "floating_point",
         "description": "evolutionary conservation measure, with positive scores indicating conservation and negative scores indicating accelerated evolution"

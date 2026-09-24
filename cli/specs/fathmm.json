@@ -15,7 +15,7 @@
   },
   "schema": {
     "annotation_type": "sequence_variant",
-    "annotation_datasets": {
+    "annotations": {
       "score": {
         "type": "floating_point",
         "description": "p-value: above 0.5 predicts deleterious; below 0.5 predicts neutral/benign."

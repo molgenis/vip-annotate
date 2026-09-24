@@ -13,7 +13,7 @@
   },
   "schema": {
     "annotation_type": "position",
-    "annotation_datasets": {
+    "annotations": {
       "score": {
         "type": "floating_point",
         "description": "score prediction of the potential pathogenicity of noncoding variants"
