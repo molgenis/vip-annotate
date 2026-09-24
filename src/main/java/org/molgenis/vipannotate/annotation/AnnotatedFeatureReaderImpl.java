@@ -4,21 +4,22 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.spec.*;
-import org.molgenis.vipannotate.format.tsv.TsvParser;
-import org.molgenis.vipannotate.format.tsv.TsvRecord;
+import org.molgenis.vipannotate.format.Field;
+import org.molgenis.vipannotate.format.Record;
+import org.molgenis.vipannotate.format.RecordReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
-public class TsvAnnotatedFeatureReader implements AnnotatedFeatureReader {
-  private final TsvParser parser;
+public class AnnotatedFeatureReaderImpl<F extends Field, R extends Record<F>>
+    implements AnnotatedFeatureReader {
+  private final RecordReader<F, R> recordReader;
 
   /**
    * produced AnnotatedFeature must not retain the TsvRecord input, since it's reused between calls.
    */
-  private final Function<TsvRecord, AnnotatedFeature<?, ?>> mapper;
+  private final Function<R, AnnotatedFeature<?, ?>> mapper;
 
-  private @Nullable TsvRecord next;
+  private @Nullable R next;
   private boolean loaded;
 
   @Override
@@ -46,8 +47,8 @@ public class TsvAnnotatedFeatureReader implements AnnotatedFeatureReader {
     }
 
     if (next == null) {
-      next = parser.read();
-    } else if (!parser.readInto(next)) {
+      next = recordReader.read();
+    } else if (!recordReader.readInto(next)) {
       next = null;
     }
 
@@ -56,6 +57,6 @@ public class TsvAnnotatedFeatureReader implements AnnotatedFeatureReader {
 
   @Override
   public void close() {
-    ClosableUtils.close(parser);
+    ClosableUtils.close(recordReader);
   }
 }
