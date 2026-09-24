@@ -8,7 +8,7 @@
     "start": 1,
     "ref": 2,
     "alt": 3,
-    "annotations": {
+    "annotation_columns": {
       "my_enum": 4,
       "my_enum_nullable": 5,
       "my_i8": 6,

@@ -9,7 +9,7 @@
     "start": 1,
     "ref": 3,
     "alt": 4,
-    "annotations": {
+    "annotation_columns": {
       "id": 2,
       "clnsig": 5,
       "clnrevstat": 7

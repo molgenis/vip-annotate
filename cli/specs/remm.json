@@ -7,7 +7,7 @@
     "coordinate_system": "1-based",
     "contig": 0,
     "start": 1,
-    "annotations": {
+    "annotation_columns": {
       "score": 2
     }
   },

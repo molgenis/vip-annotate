@@ -9,7 +9,7 @@
     "start": 1,
     "ref": 2,
     "alt": 3,
-    "annotations": {
+    "annotation_columns": {
       "ncbi_gene_id": 4,
       "ds_ag": 5,
       "ds_al": 6,

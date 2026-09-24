@@ -3,7 +3,6 @@
 ## 0.0.1-alpha.6
 
 - [ ] fix (db): fix vcf support
-- [ ] fix (db): fix bed support
 - [ ] fix (db): build_annotation_databases.sh
 - [ ] fix (db): reintroduce xref support (e.g. SpliceAI ncbiGeneId)
 - [ ] fix (annotate): SpliceAI can produce multiple annotations for same sequence variant

@@ -7,7 +7,7 @@
     "coordinate_system": "1-based",
     "contig": 0,
     "start": 1,
-    "annotations": {
+    "annotation_columns": {
       "my_f64_q8": 2,
       "my_f64_q8_nullable": 3,
       "my_f64_q16": 4,
