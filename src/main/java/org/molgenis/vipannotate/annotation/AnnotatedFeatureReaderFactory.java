@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.nio.file.Path;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSpecs;
@@ -10,27 +11,26 @@ import org.molgenis.vipannotate.format.bed.BedField;
 import org.molgenis.vipannotate.format.bed.BedParserFactory;
 import org.molgenis.vipannotate.format.tsv.TsvParserFactory;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
-import org.molgenis.vipannotate.util.Input;
 
 @RequiredArgsConstructor
 public class AnnotatedFeatureReaderFactory {
 
   public AnnotatedFeatureReader create(
-      Input input, InputFormat inputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+      Path input, InputFormat inputFormat, ResolvedAnnotationSpecs annotationSpecs) {
     return switch (inputFormat) {
-      case BedInputFormat bedInputFormat -> create(input, bedInputFormat, annotationSpecs);
-      case TsvInputFormat tsvInputFormat -> create(input, tsvInputFormat, annotationSpecs);
-      case VcfInputFormat vcfInputFormat -> create(input, vcfInputFormat, annotationSpecs);
+      case BedInputFormat bedInputFormat -> createFromBed(input, bedInputFormat, annotationSpecs);
+      case TsvInputFormat tsvInputFormat -> createFromTsv(input, tsvInputFormat, annotationSpecs);
+      case VcfInputFormat vcfInputFormat -> createFromVcf(input, vcfInputFormat, annotationSpecs);
     };
   }
 
-  private VcfAnnotatedFeatureReader create(
-      Input input, VcfInputFormat vcfInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+  private VcfAnnotatedFeatureReader createFromVcf(
+      Path input, VcfInputFormat vcfInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
     return new VcfAnnotatedFeatureReader(input, vcfInputFormat, annotationSpecs);
   }
 
-  private AnnotatedFeatureReader create(
-      Input input, TsvInputFormat tsvInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+  private AnnotatedFeatureReader createFromTsv(
+      Path input, TsvInputFormat tsvInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
 
     Function<TsvRecord, AnnotatedFeature<?, ?>> mapper =
         switch (tsvInputFormat.annotationType()) {
@@ -39,12 +39,12 @@ public class AnnotatedFeatureReaderFactory {
           case SEQUENCE_VARIANT ->
               new TsvAnnotatedSequenceVariantMapper(tsvInputFormat, annotationSpecs)::apply;
         };
-    return new AnnotatedFeatureReaderImpl<>(TsvParserFactory.create(input), mapper);
+    return new AnnotatedFeatureReaderImpl<>(TsvParserFactory.createFromPath(input), mapper);
   }
 
-  private static AnnotatedFeatureReader create(
-      Input input, BedInputFormat bedInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
-    RecordReader<BedField, BedFeature> bedParser = BedParserFactory.create(input);
+  private static AnnotatedFeatureReader createFromBed(
+      Path input, BedInputFormat bedInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+    RecordReader<BedField, BedFeature> bedParser = BedParserFactory.createFromPath(input);
     Function<BedFeature, AnnotatedFeature<?, ?>> mapper =
         new BedAnnotatedPositionMapper(bedInputFormat, annotationSpecs)::apply;
     return new AnnotatedFeatureReaderImpl<>(bedParser, mapper);

@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import static org.molgenis.vipannotate.annotation.SequenceVariantType.OTHER;
 import static org.molgenis.vipannotate.annotation.SequenceVariantType.STRUCTURAL;
 
+import java.nio.file.Path;
 import java.util.EnumSet;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.format.RecordReader;
@@ -14,11 +15,10 @@ import org.molgenis.vipannotate.format.tsv.TsvParserFactory;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
 import org.molgenis.vipannotate.format.vcf.AltAlleleRegistry;
-import org.molgenis.vipannotate.util.Input;
 
 public class InputAnalyzerFactory {
 
-  public InputAnalyzer create(Input input, InputFormat inputFormat) {
+  public InputAnalyzer create(Path input, InputFormat inputFormat) {
     return switch (inputFormat) {
       case BedInputFormat bedInputFormat -> createBed(input, bedInputFormat);
       case TsvInputFormat tsvInputFormat -> createTsv(input, tsvInputFormat);
@@ -26,8 +26,8 @@ public class InputAnalyzerFactory {
     };
   }
 
-  private InputAnalyzer createBed(Input input, BedInputFormat inputFormat) {
-    RecordReader<BedField, BedFeature> recordReader = BedParserFactory.create(input);
+  private InputAnalyzer createBed(Path input, BedInputFormat inputFormat) {
+    RecordReader<BedField, BedFeature> recordReader = BedParserFactory.createFromPath(input);
     FieldResolver<BedField, BedFeature> fieldResolver =
         annotationId -> {
           BedFieldType fieldIndex = inputFormat.annotations().get(annotationId);
@@ -57,8 +57,8 @@ public class InputAnalyzerFactory {
         recordReader, fieldResolver, sequenceVariantTypeAnalyzer, new FieldAnalyzerFactory<>());
   }
 
-  private InputAnalyzer createTsv(Input input, TsvInputFormat inputFormat) {
-    RecordReader<TsvField, TsvRecord> recordReader = TsvParserFactory.create(input);
+  private InputAnalyzer createTsv(Path input, TsvInputFormat inputFormat) {
+    RecordReader<TsvField, TsvRecord> recordReader = TsvParserFactory.createFromPath(input);
     FieldResolver<TsvField, TsvRecord> fieldResolver =
         annotationId -> {
           Integer fieldIndex = inputFormat.annotations().get(annotationId);
@@ -111,7 +111,7 @@ public class InputAnalyzerFactory {
         recordReader, fieldResolver, sequenceVariantTypeAnalyzer, new FieldAnalyzerFactory<>());
   }
 
-  private InputAnalyzer createVcf(Input input, VcfInputFormat inputFormat) {
+  private InputAnalyzer createVcf(Path input, VcfInputFormat inputFormat) {
     throw new UnsupportedOperationException("Not supported yet."); // FIXME
   }
 

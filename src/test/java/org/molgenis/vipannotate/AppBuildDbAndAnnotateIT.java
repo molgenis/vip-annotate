@@ -24,12 +24,12 @@ public class AppBuildDbAndAnnotateIT {
   @MethodSource("testCases")
   void buildDbAndAnnotate(
       String inputFilename,
-      String recipeFilename,
+      String inputDefFilename,
       String vcfFilename,
       String expectedVcfFilename,
       long expectedDbSize,
       @TempDir Path tmpDir) {
-    long dbSize = buildDb(tmpDir, inputFilename, recipeFilename);
+    long dbSize = buildDb(tmpDir, inputFilename, inputDefFilename);
     String vcf = annotateVcf(tmpDir, vcfFilename);
 
     // one of the goals of vip-annotate is compact annotation archives, so check size
@@ -55,18 +55,18 @@ public class AppBuildDbAndAnnotateIT {
             20668L));
   }
 
-  private long buildDb(Path dbDir, String inputFilename, String recipeFilename) {
+  private long buildDb(Path dbDir, String inputFilename, String inputDefFilename) {
     App.main(
         new String[] {
           "database-build",
+          "--definition",
+          getResource(inputDefFilename).toString(),
           "--input",
           getResource(inputFilename).toString(),
-          "--recipe",
-          getResource(recipeFilename).toString(),
           "--output-dir",
           dbDir.toString()
         });
-    String vdbFilename = recipeFilename.replaceFirst("\\.json$", ".vdb");
+    String vdbFilename = inputDefFilename.replaceFirst("\\.json$", ".vdb");
 
     try {
       return Files.size(dbDir.resolve(vdbFilename));

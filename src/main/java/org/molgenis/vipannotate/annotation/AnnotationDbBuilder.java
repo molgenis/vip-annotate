@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +22,7 @@ public class AnnotationDbBuilder {
   private final ResolvedAnnotationDbSpecWriter specWriter;
 
   public void buildDb(
-      Input input, AnnotationDbSpec annotationDbSpec, BinaryPartitionWriter partitionWriter) {
+      Path input, AnnotationDbSpec annotationDbSpec, BinaryPartitionWriter partitionWriter) {
     InputFormat inputFormat = annotationDbSpec.inputFormat();
     AnnotationSchema annotationSchema = annotationDbSpec.annotationSchema();
     AnnotationSpecs annotationSpecs = annotationSchema.annotationSpecs();

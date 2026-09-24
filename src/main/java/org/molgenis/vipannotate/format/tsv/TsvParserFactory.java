@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.BufferedLineReader;
 import org.molgenis.vipannotate.util.CloseIgnoringInputStream;
 import org.molgenis.vipannotate.util.Input;
@@ -19,7 +20,10 @@ public class TsvParserFactory {
   private TsvParserFactory() {}
 
   public static TsvParser create(Input inputTsv) {
-    Path inputTsvPath = inputTsv.path();
+    return createFromPath(inputTsv.path());
+  }
+
+  public static TsvParser createFromPath(@Nullable Path inputTsvPath) {
     InputType inputType;
     InputStream inputStream;
     if (inputTsvPath != null) {

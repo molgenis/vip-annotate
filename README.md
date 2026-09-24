@@ -82,17 +82,17 @@ vip-annotate database-build --help
 
 ```
 Usage:
-  vip-annotate database-build --input <FILE> --recipe <FILE> [OPTIONS]
+  vip-annotate database-build --definition <FILE> --input <FILE> [OPTIONS]
   vip-annotate database-build --help
 
 Options:
-  -i, --input         FILE  Input file path; use '-' for stdin  (required)
-  -r, --recipe        FILE  Database build recipe (.json)       (required)
+  -d, --definition    FILE  Defines how to build the annotation database from input  (required)
+  -i, --input         FILE  Input file path                                          (required)
   -o, --output-dir    DIR   Output directory
   -f, --force         Overwrite existing output file if it exists
 ```
 
-#### Recipe
+#### Definition
 
 TODO
 
