@@ -11,8 +11,9 @@ public class ResolvedAnnotationDbSpecWriter {
   private final ResolvedAnnotationDbSpecSerializer specSerializer;
 
   public void write(ResolvedAnnotationDbSpec spec, BinaryPartitionWriter partitionWriter) {
-    MemoryBuffer memoryBuffer = specSerializer.serialize(spec);
-    partitionWriter.write("spec", Compression.ZSTD, IoMode.BUFFERED, memoryBuffer);
+    try (MemoryBuffer memoryBuffer = specSerializer.serialize(spec)) {
+      partitionWriter.write("spec", Compression.ZSTD, IoMode.BUFFERED, memoryBuffer);
+    }
   }
 
   public static ResolvedAnnotationDbSpecWriter create() {

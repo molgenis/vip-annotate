@@ -12,7 +12,6 @@
 - [ ] feat (spec): configure missing value character for input/type=tsv
 - [ ] feat (spec): configure list value character for input/type=tsv
 - [ ] feat (spec): support nested values for input/type=vcf
-- [ ] perf (db): use binary format instead of json for internal spec format
 - [ ] feat (db): boolean support
 - [ ] feat (db): null bitmap instead of or in addition to nullable types
 - [ ] feat (db): validate contigs in all preprocessing scripts

@@ -11,13 +11,14 @@ public class ResolvedAnnotationDbSpecReader {
   private final ResolvedAnnotationDbSpecDeserializer specDeserializer;
 
   public ResolvedAnnotationDbSpec read(BinaryPartitionReader partitionReader) {
-    MemoryBuffer memoryBuffer = partitionReader.read("spec");
-    if (memoryBuffer == null) {
-      throw new UncheckedIOException(new IOException("failed to read spec"));
-    }
-    memoryBuffer.rewind();
+    try (MemoryBuffer memoryBuffer = partitionReader.read("spec")) {
+      if (memoryBuffer == null) {
+        throw new UncheckedIOException(new IOException("failed to read spec"));
+      }
+      memoryBuffer.rewind();
 
-    return specDeserializer.deserialize(memoryBuffer);
+      return specDeserializer.deserialize(memoryBuffer);
+    }
   }
 
   public static ResolvedAnnotationDbSpecReader create() {
