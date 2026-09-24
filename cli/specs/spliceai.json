@@ -21,7 +21,7 @@
       "dp_dl": 12
     }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "sequence_variant",
     "annotations": {
       "ncbi_gene_id": {

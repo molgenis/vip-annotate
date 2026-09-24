@@ -14,7 +14,7 @@
       "my_f64_q16_nullable": 5
     }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "position",
     "annotations": {
       "my_f64_q8": {

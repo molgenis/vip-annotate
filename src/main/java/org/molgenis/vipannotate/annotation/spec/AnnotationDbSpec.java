@@ -13,4 +13,4 @@ public record AnnotationDbSpec(
     // TODO use [a-zA-Z0-9_-<space>]
     @JsonProperty(value = "description") @Nullable String specDescription,
     @JsonProperty(value = "input", required = true) InputFormat inputFormat,
-    @JsonProperty(value = "schema", required = true) AnnotationSchema annotationSchema) {}
+    @JsonProperty(value = "definition", required = true) AnnotationSchema annotationSchema) {}

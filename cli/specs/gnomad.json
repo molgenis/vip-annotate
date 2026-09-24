@@ -19,7 +19,7 @@
       "cov": 10
     }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "sequence_variant",
     "annotations": {
       "src": {

@@ -11,4 +11,5 @@ public record ResolvedAnnotationDbSpec(
     // TODO use [a-z0-9._-] and length ≤ 64
     @JsonProperty(value = "id", required = true) String specId,
     @JsonProperty(value = "description") @Nullable String specDescription,
-    @JsonProperty(value = "schema", required = true) ResolvedAnnotationSchema annotationSchema) {}
+    @JsonProperty(value = "definition", required = true)
+        ResolvedAnnotationSchema annotationSchema) {}

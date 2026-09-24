@@ -27,7 +27,7 @@
       "my_f64_nullable": 19
     }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "sequence_variant",
     "annotations": {
       "my_enum": {

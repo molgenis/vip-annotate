@@ -15,7 +15,7 @@
       "clnrevstat": 7
     }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "sequence_variant",
     "annotations": {
       "id": {

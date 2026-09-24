@@ -11,7 +11,7 @@
       "score": 2
     }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "position",
     "annotations": {
       "score": {
