@@ -27,12 +27,13 @@ public class AnnotationDbBuilder {
     AnnotationSpecs annotationSpecs = annotationSchema.annotationSpecs();
 
     // pass #1 collect stats from input data
-    InputAnalyzer inputAnalyzer = inputAnalyzerFactory.create(inputFormat);
-    long startAnalyzeInput = System.currentTimeMillis();
-    Logger.debug("analyzing input ...");
-    InputAnalyses inputAnalyses = inputAnalyzer.analyze(input, annotationSpecs);
-    long endAnalyzeInput = System.currentTimeMillis();
-    Logger.debug("analyzing input done in %sms", endAnalyzeInput - startAnalyzeInput);
+    InputAnalyses inputAnalyses;
+    try (InputAnalyzer inputAnalyzer = inputAnalyzerFactory.create(input, inputFormat)) {
+      Logger.debug("analyzing input ...");
+      long startAnalyzeInput = System.currentTimeMillis();
+      inputAnalyses = inputAnalyzer.analyze(annotationSpecs);
+      Logger.debug("analyzing input done in %sms", System.currentTimeMillis() - startAnalyzeInput);
+    }
 
     // create resolved specs
     ResolvedAnnotationSpecs resolvedAnnotationSpecs = annotationSpecResolver.resolve(inputAnalyses);
@@ -56,10 +57,7 @@ public class AnnotationDbBuilder {
         annotationReaderFactory.create(input, inputFormat, resolvedAnnotationSpecs)) {
 
       switch (inputFormat.annotationType()) {
-        case INTERVAL ->
-            // FIXME implement
-            throw new UnsupportedOperationException("Not implemented yet");
-        case POSITION ->
+        case INTERVAL, POSITION ->
             // FIXME get rid of cast
             createAnnotatedIntervalDb(
                 (Iterator) annotationReader, resolvedAnnotationSpecs, partitionWriter);

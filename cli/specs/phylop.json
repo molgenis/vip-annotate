@@ -5,7 +5,7 @@
   "input": {
     "type": "bed",
     "annotations": {
-      "score": "name"
+      "score": "score"
     }
   },
   "schema": {

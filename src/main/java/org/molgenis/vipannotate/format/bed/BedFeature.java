@@ -5,19 +5,42 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.molgenis.vipannotate.format.Field;
+import org.molgenis.vipannotate.format.Record;
 import org.molgenis.vipannotate.format.StringView;
 
+// FIXME missing bed fields after score
 /** low memory, high performance, reusable, lazy parsing */
 @ToString(includeFieldNames = false)
 @RequiredArgsConstructor
-public final class BedFeature {
+public final class BedFeature implements Record<BedField> {
   static final int INDEX_CHROM = 0;
   static final int INDEX_CHROM_START = 1;
   static final int INDEX_CHROM_END = 2;
   static final int INDEX_NAME = 3;
+  static final int INDEX_SCORE = 4;
 
-  private final Field[] fields;
+  private final BedField[] fields;
+
+  public BedFeature(CharSequence dataLine) {
+    this.fields = new BedField[5];
+    this.fields[0] = Chrom.wrap(new StringView(dataLine));
+    this.fields[1] = ChromStart.wrap(new StringView(dataLine));
+    this.fields[2] = ChromEnd.wrap(new StringView(dataLine));
+    this.fields[3] = Name.wrap(new StringView(dataLine));
+    this.fields[4] = Score.wrap(new StringView(dataLine));
+
+    reset(dataLine);
+  }
+
+  @Override
+  public BedField[] fields() {
+    return fields;
+  }
+
+  @Override
+  public BedField field(int index) {
+    return fields[index];
+  }
 
   public Chrom getChrom() {
     return (Chrom) fields[INDEX_CHROM];
@@ -33,6 +56,10 @@ public final class BedFeature {
 
   public Name getName() {
     return (Name) fields[INDEX_NAME];
+  }
+
+  public Score getScore() {
+    return (Score) fields[INDEX_SCORE];
   }
 
   public void reset(CharSequence dataLine) {
@@ -51,6 +78,10 @@ public final class BedFeature {
     fromIndex = toIndex + 1;
     toIndex = nextTabSeparator(dataLine, fromIndex);
     getName().reset(dataLine, fromIndex, toIndex);
+
+    fromIndex = toIndex + 1;
+    toIndex = nextTabSeparator(dataLine, fromIndex);
+    getScore().reset(dataLine, fromIndex, toIndex);
   }
 
   public void write(Writer writer) {
@@ -62,6 +93,8 @@ public final class BedFeature {
       getChromEnd().write(writer);
       writer.write('\t');
       getName().write(writer);
+      writer.write('\t');
+      getScore().write(writer);
       writer.write('\t');
 
       writer.write('\n');

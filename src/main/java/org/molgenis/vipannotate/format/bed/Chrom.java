@@ -1,10 +1,9 @@
 package org.molgenis.vipannotate.format.bed;
 
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
-public final class Chrom extends Field {
+public final class Chrom extends BedField {
   private Chrom(StringView fieldRawView) {
     super(fieldRawView);
   }

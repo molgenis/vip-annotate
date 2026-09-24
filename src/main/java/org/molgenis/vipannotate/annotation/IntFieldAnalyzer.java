@@ -5,7 +5,7 @@ import org.molgenis.vipannotate.annotation.spec.IntAnnotationSpec;
 import org.molgenis.vipannotate.format.Field;
 
 @RequiredArgsConstructor
-public class IntFieldAnalyzer implements FieldAnalyzer<Field> {
+public class IntFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
   private final IntAnnotationSpec annotationSpec;
 
   private long count;
@@ -14,7 +14,7 @@ public class IntFieldAnalyzer implements FieldAnalyzer<Field> {
   private long max = Long.MIN_VALUE;
 
   @Override
-  public void analyze(Field field) {
+  public void analyze(F field) {
     CharSequence charSequence = field.getRawView();
 
     count++;

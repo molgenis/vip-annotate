@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum BedField {
+public enum BedFieldType {
   @JsonProperty(value = "chrom")
   CHROM(0),
   @JsonProperty(value = "chromStart")

@@ -1,7 +1,7 @@
 ##fileformat=VCFv4.5
 ##reference=file:///references/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 ##contig=<ID=chr1,length=248956422>
-##INFO=<ID=seq_var_all_types,NUMBER=A,TYPE=String,DESCRIPTION="format:'my_enum[NUMBER=1,TYPE=String]|my_enum_nullable[NUMBER=1,TYPE=String]|my_i8[NUMBER=1,TYPE=Integer]|my_i8_nullable[NUMBER=1,TYPE=Integer]|my_u8[NUMBER=1,TYPE=Integer]|my_u8_nullable[NUMBER=1,TYPE=Integer]|my_i16[NUMBER=1,TYPE=Integer]|my_i16_nullable[NUMBER=1,TYPE=Integer]|my_u16[NUMBER=1,TYPE=Integer]|my_u16_nullable[NUMBER=1,TYPE=Integer]|my_i32[NUMBER=1,TYPE=Integer]|my_i32_nullable[NUMBER=1,TYPE=Integer]|my_f32[NUMBER=1,TYPE=Float]|my_f32_nullable[NUMBER=1,TYPE=Float]|my_f64[NUMBER=1,TYPE=Float]|my_f64_nullable[NUMBER=1,TYPE=Float]'",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
+##INFO=<ID=seq_var_all_types,NUMBER=A,TYPE=String,DESCRIPTION="format:my_enum[NUMBER=1,TYPE=String]|my_enum_nullable[NUMBER=1,TYPE=String]|my_i8[NUMBER=1,TYPE=Integer]|my_i8_nullable[NUMBER=1,TYPE=Integer]|my_u8[NUMBER=1,TYPE=Integer]|my_u8_nullable[NUMBER=1,TYPE=Integer]|my_i16[NUMBER=1,TYPE=Integer]|my_i16_nullable[NUMBER=1,TYPE=Integer]|my_u16[NUMBER=1,TYPE=Integer]|my_u16_nullable[NUMBER=1,TYPE=Integer]|my_i32[NUMBER=1,TYPE=Integer]|my_i32_nullable[NUMBER=1,TYPE=Integer]|my_f32[NUMBER=1,TYPE=Float]|my_f32_nullable[NUMBER=1,TYPE=Float]|my_f64[NUMBER=1,TYPE=Float]|my_f64_nullable[NUMBER=1,TYPE=Float]",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 chr1	1	.	G	A	.	.	seq_var_all_types=B|P|-128|96|0|254|-32768|32766|0|65534|-2147483648|2147483646|-2.345|2.345|-23.456|23.456
 chr1	2	.	G	A	.	.	seq_var_all_types=LB|LP|-64|32|32|128|-16384|16384|8192|32768|-1073741824|1073741824|-1.234|1.234|-12.345|12.345

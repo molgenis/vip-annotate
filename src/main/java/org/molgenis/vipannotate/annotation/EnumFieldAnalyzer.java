@@ -5,14 +5,14 @@ import org.molgenis.vipannotate.annotation.spec.EnumAnnotationSpec;
 import org.molgenis.vipannotate.format.Field;
 
 @RequiredArgsConstructor
-public class EnumFieldAnalyzer implements FieldAnalyzer<Field> {
+public class EnumFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
   private final EnumAnnotationSpec annotationSpec;
 
   private long count;
   private long nullCount;
 
   @Override
-  public void analyze(Field field) {
+  public void analyze(F field) {
     CharSequence charSequence = field.getRawView();
 
     count++;

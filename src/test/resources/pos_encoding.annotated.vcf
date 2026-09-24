@@ -1,7 +1,7 @@
 ##fileformat=VCFv4.5
 ##reference=file:///references/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 ##contig=<ID=chr1,length=248956422>
-##INFO=<ID=pos_encoding,NUMBER=A,TYPE=String,DESCRIPTION="pos encoding description. format:'my_f64_q8[NUMBER=1,TYPE=Float,DESCRIPTION=my f64 q8 description]|my_f64_q8_nullable[NUMBER=1,TYPE=Float,DESCRIPTION=my f64 q8 nullable description]|my_f64_q16[NUMBER=1,TYPE=Float,DESCRIPTION=my f64 q16 description]|my_f64_q16_nullable[NUMBER=1,TYPE=Float,DESCRIPTION=my f64 q16 nullable description]'",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
+##INFO=<ID=pos_encoding,NUMBER=A,TYPE=String,DESCRIPTION="pos encoding description. format:my_f64_q8[NUMBER=1,TYPE=Float,DESCRIPTION='my f64 q8 description']|my_f64_q8_nullable[NUMBER=1,TYPE=Float,DESCRIPTION='my f64 q8 nullable description']|my_f64_q16[NUMBER=1,TYPE=Float,DESCRIPTION='my f64 q16 description']|my_f64_q16_nullable[NUMBER=1,TYPE=Float,DESCRIPTION='my f64 q16 nullable description']",SOURCE="vip-annotate",VERSION="0.0.0-dev+db1.0.0">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
 chr1	1	.	G	A	.	.	pos_encoding=0|1|0|1
 chr1	2	.	G	A	.	.	pos_encoding=0.25|0.75|0.25|0.75

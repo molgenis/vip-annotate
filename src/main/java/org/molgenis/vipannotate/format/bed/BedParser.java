@@ -1,27 +1,27 @@
 package org.molgenis.vipannotate.format.bed;
 
-import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.format.RecordReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 /** <a href="https://samtools.github.io/hts-specs/BEDv1.pdf">.bed</a> file parser */
 @RequiredArgsConstructor
-public class BedParser implements Iterator<BedFeature>, AutoCloseableNoThrow {
-  private final BedFeatureIterator bedFeatureIterator;
+public class BedParser implements RecordReader<BedField, BedFeature> {
+  private final BedRecordReader recordReader;
 
   @Override
-  public boolean hasNext() {
-    return this.bedFeatureIterator.hasNext();
+  public @Nullable BedFeature read() {
+    return recordReader.read();
   }
 
   @Override
-  public BedFeature next() {
-    return this.bedFeatureIterator.next();
+  public boolean readInto(BedFeature bedFeature) {
+    return recordReader.readInto(bedFeature);
   }
 
   @Override
   public void close() {
-    ClosableUtils.close(bedFeatureIterator);
+    ClosableUtils.close(recordReader);
   }
 }
