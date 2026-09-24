@@ -66,6 +66,13 @@ public class DbBuildCommand implements Command {
       try (PartitionedVdbArchiveWriter archiveWriter =
           PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
         AnnotationDbBuilder.create().buildDb(input, annotationDbSpec, archiveWriter);
+      } catch (Throwable t) {
+        try {
+          Files.deleteIfExists(outputDb);
+        } catch (IOException _) {
+          // ignore
+        }
+        throw t;
       }
     }
   }
