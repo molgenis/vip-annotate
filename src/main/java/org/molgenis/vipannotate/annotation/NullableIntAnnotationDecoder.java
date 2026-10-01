@@ -2,15 +2,15 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.BinaryReader;
 
 @RequiredArgsConstructor
 public class NullableIntAnnotationDecoder implements AnnotationDecoder<NullableIntAnnotation> {
-  private final ReadValueFunction readValueFunction;
+  private final IntReadValueFunction intReadValueFunction;
 
   @Override
-  public NullableIntAnnotation decode(MemoryBuffer memBuffer, int annotationIndex) {
-    int value = readValueFunction.apply(memBuffer, annotationIndex);
+  public NullableIntAnnotation decode(BinaryReader binaryReader, int annotationIndex) {
+    long value = intReadValueFunction.apply(binaryReader, annotationIndex);
     return value == 0
         ? new NullableIntAnnotation()
         : new NullableIntAnnotation(value < 0 ? value : value - 1);
@@ -18,8 +18,8 @@ public class NullableIntAnnotationDecoder implements AnnotationDecoder<NullableI
 
   @Override
   public void decodeInto(
-      MemoryBuffer memBuffer, int annotationIndex, NullableIntAnnotation annotation) {
-    int value = readValueFunction.apply(memBuffer, annotationIndex);
+      BinaryReader binaryReader, int annotationIndex, NullableIntAnnotation annotation) {
+    long value = intReadValueFunction.apply(binaryReader, annotationIndex);
     if (value == 0) {
       annotation.reset();
     } else if (value < 0) {

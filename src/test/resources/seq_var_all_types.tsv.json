@@ -1,0 +1,97 @@
+{
+  "id": "seq_var_all_types",
+  "version": "1.0.0",
+  "input": {
+    "type": "tsv",
+    "coordinate_system": "1-based",
+    "contig": 1,
+    "start": 2,
+    "ref": 3,
+    "alt": 4,
+    "annotation_columns": {
+      "my_enum": 5,
+      "my_enum_nullable": 6,
+      "my_i8": 7,
+      "my_i8_nullable": 8,
+      "my_u8": 9,
+      "my_u8_nullable": 10,
+      "my_i16": 11,
+      "my_i16_nullable": 12,
+      "my_u16": 13,
+      "my_u16_nullable": 14,
+      "my_i32": 15,
+      "my_i32_nullable": 16,
+      "my_f32": 17,
+      "my_f32_nullable": 18,
+      "my_f64": 19,
+      "my_f64_nullable": 20
+    }
+  },
+  "definition": {
+    "annotation_type": "sequence_variant",
+    "annotations": {
+      "my_enum": {
+        "type": "enum",
+        "values": [
+          "B",
+          "LB",
+          "VUS",
+          "LP",
+          "P"
+        ]
+      },
+      "my_enum_nullable": {
+        "type": "enum",
+        "values": [
+          "B",
+          "LB",
+          "VUS",
+          "LP",
+          "P"
+        ]
+      },
+      "my_i8": {
+        "type": "integer"
+      },
+      "my_i8_nullable": {
+        "type": "integer"
+      },
+      "my_u8": {
+        "type": "integer"
+      },
+      "my_u8_nullable": {
+        "type": "integer"
+      },
+      "my_i16": {
+        "type": "integer"
+      },
+      "my_i16_nullable": {
+        "type": "integer"
+      },
+      "my_u16": {
+        "type": "integer"
+      },
+      "my_u16_nullable": {
+        "type": "integer"
+      },
+      "my_i32": {
+        "type": "integer"
+      },
+      "my_i32_nullable": {
+        "type": "integer"
+      },
+      "my_f32": {
+        "type": "floating_point"
+      },
+      "my_f32_nullable": {
+        "type": "floating_point"
+      },
+      "my_f64": {
+        "type": "floating_point"
+      },
+      "my_f64_nullable": {
+        "type": "floating_point"
+      }
+    }
+  }
+}

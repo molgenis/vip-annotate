@@ -45,15 +45,15 @@ class VcfRecordBatchIteratorTest {
     assertTrue(vcfRecordBatchIterator.hasNext());
     List<VcfRecord> vcfRecordBatch0 = vcfRecordBatchIterator.next();
     assertEquals(3, vcfRecordBatch0.size());
-    assertEquals(0, vcfRecord0.getPos().get());
-    assertEquals(1, vcfRecord1.getPos().get());
-    assertEquals(2, vcfRecord2.getPos().get());
+    assertEquals(0, vcfRecord0.getPos().getRaw());
+    assertEquals(1, vcfRecord1.getPos().getRaw());
+    assertEquals(2, vcfRecord2.getPos().getRaw());
 
     assertTrue(vcfRecordBatchIterator.hasNext());
     List<VcfRecord> vcfRecordBatch1 = vcfRecordBatchIterator.next();
     assertEquals(2, vcfRecordBatch1.size());
-    assertEquals(3, vcfRecord0.getPos().get());
-    assertEquals(4, vcfRecord1.getPos().get());
+    assertEquals(3, vcfRecord0.getPos().getRaw());
+    assertEquals(4, vcfRecord1.getPos().getRaw());
 
     assertFalse(vcfRecordBatchIterator.hasNext());
   }

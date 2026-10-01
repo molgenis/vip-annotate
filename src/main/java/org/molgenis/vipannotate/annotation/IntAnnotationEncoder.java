@@ -2,25 +2,19 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 
 @RequiredArgsConstructor
 public class IntAnnotationEncoder implements AnnotationEncoder<IntAnnotation> {
-  private final ValueWriter valueWriter;
+  private final IntValueWriter intValueWriter;
 
   @Override
-  public void initialize(MemoryBuffer memoryBuffer) {
-    // FIXME implement initialize(MemoryBuffer memBuffer)
-    System.err.println("FIXME implement initialize(MemoryBuffer memBuffer)");
-  }
-
-  @Override
-  public void encodeInto(IntAnnotation annotation, MemoryBuffer memoryBuffer, int index) {
-    valueWriter.write(annotation.getValue(), memoryBuffer, index);
+  public void encodeInto(IntAnnotation annotation, BinaryWriter binaryWriter) {
+    intValueWriter.write(annotation.getValue(), binaryWriter);
   }
 
   @Override
   public long getEncodedSizeInBytes() {
-    return valueWriter.getValueSizeInBytes();
+    return intValueWriter.getValueSizeInBytes();
   }
 }

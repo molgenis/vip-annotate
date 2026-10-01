@@ -12,10 +12,8 @@ import org.jspecify.annotations.Nullable;
 public record Region(Contig contig, @Nullable Integer start, @Nullable Integer stop)
     implements Feature {
   public Region {
-    if ((start != null
-            && (start <= 0 || (contig.getLength() != null && start > contig.getLength())))
-        || (stop != null
-            && (stop <= 0 || (contig.getLength() != null && stop > contig.getLength())))
+    if ((start != null && (start <= 0 || (start > contig.getLength())))
+        || (stop != null && (stop <= 0 || (stop > contig.getLength())))
         || ((start != null && stop != null) && stop < start)) {
       throw new IllegalArgumentException();
     }
@@ -26,6 +24,6 @@ public record Region(Contig contig, @Nullable Integer start, @Nullable Integer s
   }
 
   public Region(Contig contig, Integer start) {
-    this(contig, start, null);
+    this(contig, start, contig.getLength());
   }
 }

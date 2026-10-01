@@ -6,16 +6,12 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
-import org.molgenis.vipannotate.format.bed.*;
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.BufferedLineReader;
 import org.molgenis.vipannotate.util.CloseIgnoringInputStream;
 import org.molgenis.vipannotate.util.Input;
-import org.molgenis.vipannotate.util.TsvIterator;
 
-// TODO dedup with BedParserFactory
-// TODO perf: use BufferedLineReader similar to BedParser
 public class TsvParserFactory {
-  public static final int ANNOTATE_BATCH_SIZE = 100;
-
   public enum InputType {
     COMPRESSED,
     UNCOMPRESSED
@@ -23,23 +19,26 @@ public class TsvParserFactory {
 
   private TsvParserFactory() {}
 
-  public static TsvParser create(Input inputBed) {
-    Path inputBedPath = inputBed.path();
+  public static TsvParser create(Input inputTsv) {
+    return createFromPath(inputTsv.path());
+  }
+
+  public static TsvParser createFromPath(@Nullable Path inputTsvPath) {
     InputType inputType;
     InputStream inputStream;
-    if (inputBedPath != null) {
-      Path pathFileName = inputBedPath.getFileName();
+    if (inputTsvPath != null) {
+      Path pathFileName = inputTsvPath.getFileName();
       if (pathFileName == null) {
         throw new IllegalArgumentException(
-            "Input bed file path '%s' must not have zero elements".formatted(inputBedPath));
+            "Input tsv file path '%s' must not have zero elements".formatted(inputTsvPath));
       }
-      String inputBedFilename = pathFileName.toString();
+      String inputTsvFilename = pathFileName.toString();
       inputType =
-          inputBedFilename.endsWith(".gz") || inputBedFilename.endsWith(".bgz")
+          inputTsvFilename.endsWith(".gz") || inputTsvFilename.endsWith(".bgz")
               ? InputType.COMPRESSED
               : InputType.UNCOMPRESSED;
       try {
-        inputStream = Files.newInputStream(inputBedPath);
+        inputStream = Files.newInputStream(inputTsvPath);
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
@@ -53,7 +52,7 @@ public class TsvParserFactory {
       try {
         bytesRead = pushbackInputStream.read(buffer);
         if (bytesRead != 2) {
-          throw new BedParserException("bed file is not a valid gzip file");
+          throw new TsvParserException("tsv file is not a valid gzip file");
         }
 
         // gzip magic number: 1F 8B
@@ -74,20 +73,22 @@ public class TsvParserFactory {
   }
 
   private static TsvParser create(InputStream inputStream, InputType inputType) {
-    return new TsvParser(new TsvIterator(createReader(inputStream, inputType)));
+    BufferedLineReader reader = createReader(inputStream, inputType);
+    return new TsvParser(new TsvRecordReader(reader));
   }
 
-  private static BufferedReader createReader(InputStream inputStream, InputType inputType) {
+  private static BufferedLineReader createReader(
+      InputStream inputStream, TsvParserFactory.InputType inputType) {
     final int inputStreamReaderBufferSize = 32768;
 
-    BufferedReader reader;
+    BufferedLineReader reader;
     try {
       InputStream wrappedInputStream =
           switch (inputType) {
             case COMPRESSED -> new GZIPInputStream(inputStream, inputStreamReaderBufferSize);
             case UNCOMPRESSED -> inputStream;
           };
-      reader = new BufferedReader(new InputStreamReader(wrappedInputStream, UTF_8));
+      reader = new BufferedLineReader(new InputStreamReader(wrappedInputStream, UTF_8));
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

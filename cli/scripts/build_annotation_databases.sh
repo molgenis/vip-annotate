@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-
+#FIXME update script
 SCRIPT_NAME="$(basename "$0")"
 
 usage() {

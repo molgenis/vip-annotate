@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.format.vdb.Compression;
 import org.molgenis.vipannotate.format.vdb.IoMode;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Numbers;
 import org.molgenis.vipannotate.util.SizedIterator;
@@ -105,7 +106,7 @@ public class AnnotatedSequenceVariantPartitionWriter<
     long encodedAnnotationByteSize =
         annotationDatasetEncoder.getEncodedSizeInBytes(annotationIt.getSize());
     MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedAnnotationByteSize);
-    annotationDatasetEncoder.encode(annotationIt, -1, memBuffer); // FIXME remove maxAnnotations
+    annotationDatasetEncoder.encode(annotationIt, BinaryWriter.fixed(memBuffer));
 
     // write
     binaryPartitionWriter.write(

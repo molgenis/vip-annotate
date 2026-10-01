@@ -1,55 +1,20 @@
 {
-  "id": "phylop",
+  "id": "PHYLOP",
+  "description": "phyloP conservation scores, see http://compgen.bscb.cornell.edu/phast",
   "version": "1.0.0",
   "input": {
     "type": "bed",
-    "file": "hg38.phyloP100way.bed.gz",
-    "from": "name"
+    "annotations": {
+      "score": "score"
+    }
   },
-  "schema": {
+  "definition": {
     "annotation_type": "position",
-    "supported_variant_types": [
-      "snv",
-      "mnv",
-      "indel",
-      "insertion",
-      "deletion"
-    ],
-    "annotation_datasets": [
-      {
-        "id": "score",
-        "annotation_value": {
-          "storage_type": {
-            "scalar_type": "u16"
-          },
-          "logical_type": {
-            "type": "scalar",
-            "scalar_type": "f64",
-            "nullable": true
-          },
-          "encoding": {
-            "type": "quantized",
-            "range": {
-              "min": -20.0,
-              "max": 10.003
-            },
-            "levels": {
-              "min": 1,
-              "max": 65535
-            },
-            "null_code": 0
-          }
-        }
+    "annotations": {
+      "score": {
+        "type": "floating_point",
+        "description": "evolutionary conservation measure, with positive scores indicating conservation and negative scores indicating accelerated evolution"
       }
-    ],
-    "annotation_selector": "max_value"
-  },
-  "output": {
-    "type": "vcf",
-    "infoId": "phyloP",
-    "infoNumber": "A",
-    "infoType": "Float",
-    "infoDescription": "phyloP score",
-    "infoVersion": "1.0.0"
+    }
   }
 }

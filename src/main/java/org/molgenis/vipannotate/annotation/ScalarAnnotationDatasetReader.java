@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
@@ -11,9 +11,9 @@ public class ScalarAnnotationDatasetReader implements AnnotationDatasetDecoder<S
 
   @Override
   public AnnotationDataset<ScalarAnnotation> decode(PartitionKey partitionKey) {
-    MemoryBuffer memoryBuffer = blobReader.read(partitionKey);
-    return memoryBuffer != null
-        ? new ScalarAnnotationDataset(annotationDecoder, memoryBuffer)
+    BinaryReader binaryReader = blobReader.read(partitionKey);
+    return binaryReader != null
+        ? new ScalarAnnotationDataset(annotationDecoder, binaryReader)
         : EmptyAnnotationDataset.getInstance();
   }
 

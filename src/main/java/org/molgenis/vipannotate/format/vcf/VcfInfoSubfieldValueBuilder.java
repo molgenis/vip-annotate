@@ -93,7 +93,7 @@ public final class VcfInfoSubfieldValueBuilder {
    *
    * <p>Must be used between {@link #startRawValue()} and {@link #endRawValue()}.
    */
-  public void appendRaw(int i) {
+  public void appendRaw(long i) {
     stringBuilder.append(i);
   }
 

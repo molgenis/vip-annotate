@@ -40,8 +40,8 @@ class PositionAnnotationDbTest {
     PartitionKey partitionKey = mock(PartitionKey.class);
     @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
-    Annotation annotation0 = mock(Annotation.class);
-    Annotation annotation1 = mock(Annotation.class);
+    Annotation annotation0 = mock(CompositeAnnotation.class);
+    Annotation annotation1 = mock(CompositeAnnotation.class);
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
     when(partitionResolver.resolvePartitionKey(contig, 124)).thenReturn(partitionKey);
@@ -73,7 +73,7 @@ class PositionAnnotationDbTest {
     PartitionKey partitionKey = mock(PartitionKey.class);
     @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
-    Annotation annotation = mock(Annotation.class);
+    Annotation annotation = mock(CompositeAnnotation.class);
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
     when(partitionResolver.getPartitionPos(123)).thenReturn(456);

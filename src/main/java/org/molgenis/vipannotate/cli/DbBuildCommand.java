@@ -1,15 +1,13 @@
 package org.molgenis.vipannotate.cli;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import org.molgenis.vipannotate.annotation.AnnotationDbBuilder;
-import org.molgenis.vipannotate.annotation.AnnotationSpecReader;
-import org.molgenis.vipannotate.annotation.spec.AnnotationSpec;
+import java.util.List;
+import org.molgenis.vipannotate.annotation.*;
+import org.molgenis.vipannotate.annotation.spec.AnnotationDbSpec;
+import org.molgenis.vipannotate.annotation.spec.AnnotationDbSpecReader;
 import org.molgenis.vipannotate.format.vdb.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Logger;
@@ -19,31 +17,28 @@ public class DbBuildCommand implements Command {
   @Override
   public void run(String[] args) {
     DbBuildArgs dbBuildArgs = new DbBuildArgsParser().parse(args);
-    Path inputRecipe = dbBuildArgs.inputRecipe();
+    Path input = dbBuildArgs.input();
+    Path inputDef = dbBuildArgs.inputDef();
 
-    // construct output db path
-    String dbFileName = inputRecipe.getFileName().toString().replaceFirst("\\.json$", ".vdb");
-    Path outputDir = dbBuildArgs.outputDir();
-    if (outputDir == null) {
-      outputDir = Paths.get(System.getProperty("user.dir"));
+    Path output = dbBuildArgs.output();
+    if (output == null) {
+      output = createOutput(input);
     }
-    Path outputDb = outputDir.resolve(dbFileName);
 
     // build db
     Logger.debug("creating database ...");
     long startCreateDb = System.currentTimeMillis();
 
-    buildDb(inputRecipe, outputDb, dbBuildArgs.force() != null && dbBuildArgs.force());
+    buildDb(input, inputDef, output, dbBuildArgs.force() != null && dbBuildArgs.force());
 
     long endCreateDb = System.currentTimeMillis();
     Logger.debug("creating database done in %sms", endCreateDb - startCreateDb);
   }
 
-  private static void buildDb(Path inputRecipe, Path outputDb, boolean force) {
-
+  private static void buildDb(Path input, Path inputDef, Path outputDb, boolean force) {
     byte[] bytes;
     try {
-      bytes = Files.readAllBytes(inputRecipe);
+      bytes = Files.readAllBytes(inputDef);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
@@ -53,11 +48,11 @@ public class DbBuildCommand implements Command {
       memBuffer.putByteArray(bytes);
       memBuffer.flip();
 
-      AnnotationSpec annotationSpec;
+      AnnotationDbSpec annotationDbSpec;
       try {
-        annotationSpec = AnnotationSpecReader.create().readSpec(memBuffer);
+        annotationDbSpec = AnnotationDbSpecReader.create().readSpec(memBuffer);
       } catch (DatabindException e) {
-        throw new IllegalStateException("error parsing %s".formatted(inputRecipe), e);
+        throw new IllegalStateException("error parsing %s".formatted(inputDef), e);
       }
 
       VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
@@ -65,10 +60,35 @@ public class DbBuildCommand implements Command {
           VdbArchiveWriterFactory.create(memBufferFactory).create(outputDb, force);
       try (PartitionedVdbArchiveWriter archiveWriter =
           PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
-        archiveWriter.write("spec", Compression.ZSTD, IoMode.BUFFERED, memBuffer);
-        new AnnotationDbBuilder()
-            .create(annotationSpec, requireNonNull(inputRecipe.getParent()), archiveWriter);
+        AnnotationDbBuilder.create().buildDb(input, annotationDbSpec, archiveWriter);
+      } catch (Throwable t) {
+        try {
+          Files.deleteIfExists(outputDb);
+        } catch (IOException _) {
+          // ignore
+        }
+        throw t;
       }
     }
+  }
+
+  private static Path createOutput(Path inputPath) {
+    String filename = inputPath.getFileName().toString();
+
+    for (String extension : List.of(".bgz", ".gz")) {
+      if (filename.endsWith(extension)) {
+        filename = filename.substring(0, filename.length() - extension.length());
+        break;
+      }
+    }
+
+    for (String extension : List.of(".bed", ".tsv", ".vcf")) {
+      if (filename.endsWith(extension)) {
+        filename = filename.substring(0, filename.length() - extension.length());
+        break;
+      }
+    }
+
+    return Path.of(filename + ".vdb");
   }
 }

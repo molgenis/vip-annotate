@@ -2,46 +2,40 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.DoubleAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableDoubleAnnotation;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
+import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 import org.molgenis.vipannotate.util.Quantizer;
 
 // TODO merge (Nullable)DoubleAnnotation and change to AnnotationEncoder<DoubleAnnotation>
 @RequiredArgsConstructor
 public class QuantizedAnnotationEncoder implements AnnotationEncoder<ScalarAnnotation> {
   private final Quantizer quantizer;
-  private final ValueWriter valueWriter;
+  private final IntValueWriter intValueWriter;
   @Nullable private final Integer nullValue;
 
   @Override
-  public void initialize(MemoryBuffer memBuffer) {
-    // FIXME implement initialize(MemoryBuffer memBuffer)
-    System.err.println("FIXME implement initialize(MemoryBuffer memBuffer)");
-  }
-
-  @Override
-  public void encodeInto(ScalarAnnotation annotation, MemoryBuffer memBuffer, int index) {
+  public void encodeInto(ScalarAnnotation annotation, BinaryWriter binaryWriter) {
     switch (annotation) {
-      case DoubleAnnotation doubleAnnotation -> encodeInto(doubleAnnotation, memBuffer, index);
-      case NullableDoubleAnnotation nullableDoubleAnnotation ->
-          encodeInto(nullableDoubleAnnotation, memBuffer, index);
+      case FloatAnnotation floatAnnotation -> encodeInto(floatAnnotation, binaryWriter);
+      case NullableFloatAnnotation nullableFloatAnnotation ->
+          encodeInto(nullableFloatAnnotation, binaryWriter);
       default -> throw new IllegalStateException("Unexpected value: %s".formatted(annotation));
     }
   }
 
   @Override
   public long getEncodedSizeInBytes() {
-    return valueWriter.getValueSizeInBytes();
+    return intValueWriter.getValueSizeInBytes();
   }
 
-  private void encodeInto(DoubleAnnotation annotation, MemoryBuffer memBuffer, int index) {
-    int quantizedValue = quantizer.quantize(annotation.getValue());
-    valueWriter.write(quantizedValue, memBuffer, index);
+  private void encodeInto(FloatAnnotation annotation, BinaryWriter binaryWriter) {
+    long quantizedValue = quantizer.quantize(annotation.getValue());
+    intValueWriter.write(quantizedValue, binaryWriter);
   }
 
-  private void encodeInto(NullableDoubleAnnotation annotation, MemoryBuffer memBuffer, int index) {
-    int quantizedValue;
+  private void encodeInto(NullableFloatAnnotation annotation, BinaryWriter binaryWriter) {
+    long quantizedValue;
     if (annotation.isNull()) {
       if (nullValue == null) {
         throw new IllegalStateException();
@@ -50,6 +44,6 @@ public class QuantizedAnnotationEncoder implements AnnotationEncoder<ScalarAnnot
     } else {
       quantizedValue = quantizer.quantize(annotation.getValue());
     }
-    valueWriter.write(quantizedValue, memBuffer, index);
+    intValueWriter.write(quantizedValue, binaryWriter);
   }
 }

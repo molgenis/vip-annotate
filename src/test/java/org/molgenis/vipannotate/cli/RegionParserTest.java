@@ -34,16 +34,16 @@ class RegionParserTest {
   @Test
   void parseTokenContigStartSingle() {
     Contig contig = mock(Contig.class);
-    when(contig.getLength()).thenReturn(null);
+    when(contig.getLength()).thenReturn(456);
     doReturn(contig).when(contigRegistry).getContig("chr1");
     List<Region> regions = regionParser.parse("chr1:123");
-    assertEquals(List.of(new Region(contig, 123)), regions);
+    assertEquals(List.of(new Region(contig, 123, 456)), regions);
   }
 
   @Test
   void parseTokenContigStartStopSingle() {
     Contig contig = mock(Contig.class);
-    when(contig.getLength()).thenReturn(null);
+    when(contig.getLength()).thenReturn(1024);
     doReturn(contig).when(contigRegistry).getContig("chr1");
     List<Region> regions = regionParser.parse("chr1:123-456");
     assertEquals(List.of(new Region(contig, 123, 456)), regions);
@@ -52,10 +52,10 @@ class RegionParserTest {
   @Test
   void parseTokenMultiple() {
     Contig contig1 = mock(Contig.class);
-    when(contig1.getLength()).thenReturn(null);
+    when(contig1.getLength()).thenReturn(1024);
     doReturn(contig1).when(contigRegistry).getContig("chr1");
     Contig contig2 = mock(Contig.class);
-    when(contig2.getLength()).thenReturn(null);
+    when(contig2.getLength()).thenReturn(1024);
     doReturn(contig2).when(contigRegistry).getContig("chr2");
     List<Region> regions = regionParser.parse("chr1:123-456,chr2:234-567");
     assertEquals(List.of(new Region(contig1, 123, 456), new Region(contig2, 234, 567)), regions);

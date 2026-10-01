@@ -35,7 +35,7 @@ class AltAlleleRegistryTest {
   @ParameterizedTest
   @MethodSource("getPrecomputedProvider")
   void getPrecomputed(CharSequence charSequence) {
-    assertEquals(new AltAllele(charSequence), AltAlleleRegistry.INSTANCE.get(charSequence));
+    assertEquals(new AltAllele(charSequence), AltAlleleRegistry.INSTANCE.getOrWrap(charSequence));
   }
 
   private static Stream<Arguments> getNewProvider() {
@@ -52,6 +52,6 @@ class AltAlleleRegistryTest {
   @ParameterizedTest
   @MethodSource("getNewProvider")
   void getNew(CharSequence charSequence) {
-    assertEquals(new AltAllele(charSequence), AltAlleleRegistry.INSTANCE.get(charSequence));
+    assertEquals(new AltAllele(charSequence), AltAlleleRegistry.INSTANCE.getOrWrap(charSequence));
   }
 }

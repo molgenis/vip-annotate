@@ -16,9 +16,6 @@ public record Partition<
 
   public int calcMaxPos() {
     Contig contig = key.contig();
-    if (contig.getLength() == null) {
-      throw new IllegalArgumentException("contig length is null");
-    }
 
     int maxPosInContig = contig.getLength();
     boolean isLastBin = calcBin(maxPosInContig) == key.bin();

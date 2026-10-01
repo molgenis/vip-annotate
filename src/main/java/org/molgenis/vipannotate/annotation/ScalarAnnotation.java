@@ -3,11 +3,12 @@ package org.molgenis.vipannotate.annotation;
 import lombok.*;
 
 public sealed interface ScalarAnnotation extends Annotation {
+  // TODO inconsistency with IntAnnotation that has @Setter instead of reset
   @Getter
   @AllArgsConstructor
   @ToString
   @EqualsAndHashCode
-  final class DoubleAnnotation implements ScalarAnnotation {
+  final class FloatAnnotation implements ScalarAnnotation {
     private double value;
 
     public void reset(double value) {
@@ -17,15 +18,15 @@ public sealed interface ScalarAnnotation extends Annotation {
 
   @AllArgsConstructor
   @ToString
-  final class NullableDoubleAnnotation implements ScalarAnnotation {
+  final class NullableFloatAnnotation implements ScalarAnnotation {
     @Getter private boolean isNull;
     @Getter private double value;
 
-    public NullableDoubleAnnotation() {
+    public NullableFloatAnnotation() {
       this(true, Double.NaN);
     }
 
-    public NullableDoubleAnnotation(double value) {
+    public NullableFloatAnnotation(double value) {
       this(false, value);
     }
 
@@ -42,7 +43,7 @@ public sealed interface ScalarAnnotation extends Annotation {
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof NullableDoubleAnnotation other)) return false;
+      if (!(o instanceof NullableFloatAnnotation other)) return false;
 
       if (this.isNull && other.isNull()) return true;
       if (this.isNull != other.isNull()) return false;
@@ -63,20 +64,20 @@ public sealed interface ScalarAnnotation extends Annotation {
   @ToString
   @EqualsAndHashCode
   final class IntAnnotation implements ScalarAnnotation {
-    private int value;
+    private long value;
   }
 
   @AllArgsConstructor
   @ToString
   final class NullableIntAnnotation implements ScalarAnnotation {
     @Getter private boolean isNull;
-    @Getter private int value;
+    @Getter private long value;
 
     public NullableIntAnnotation() {
-      this(true, 0);
+      this(true, 0L);
     }
 
-    public NullableIntAnnotation(int value) {
+    public NullableIntAnnotation(long value) {
       this(false, value);
     }
 
@@ -85,7 +86,7 @@ public sealed interface ScalarAnnotation extends Annotation {
       this.value = 0; // FIXME can't do NaN here, does it work correctly?
     }
 
-    public void reset(int value) {
+    public void reset(long value) {
       this.isNull = false;
       this.value = value;
     }
@@ -104,7 +105,7 @@ public sealed interface ScalarAnnotation extends Annotation {
     @Override
     public int hashCode() {
       if (isNull) return 0;
-      return Integer.hashCode(value);
+      return Long.hashCode(value);
     }
   }
 }

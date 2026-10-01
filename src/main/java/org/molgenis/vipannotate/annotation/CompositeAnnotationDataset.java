@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class CompositeAnnotationDataset implements AnnotationDataset<CompositeAnnotation> {
-  private final AnnotationDataset<Annotation>[] annotationDatasets;
+  private final AnnotationDataset<? extends Annotation>[] annotationDatasets;
 
   @Override
   public @Nullable CompositeAnnotation findByIndex(int index) {

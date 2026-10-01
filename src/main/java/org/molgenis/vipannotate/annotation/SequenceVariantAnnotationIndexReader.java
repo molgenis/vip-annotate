@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
@@ -14,21 +14,20 @@ public class SequenceVariantAnnotationIndexReader<T extends SequenceVariant>
 
   @Override
   public @Nullable AnnotationIndex<T> read(PartitionKey partitionKey) {
-    MemoryBuffer memBuffer = annotationBlobReader.read(partitionKey);
-    if (memBuffer == null) {
+    BinaryReader binaryReader = annotationBlobReader.read(partitionKey);
+    if (binaryReader == null) {
       return null;
     }
-    return indexReader.readFrom(memBuffer);
+    return indexReader.readFrom(binaryReader.unwrap());
   }
 
   @Override
   public boolean readInto(PartitionKey partitionKey, AnnotationIndex<T> annotationIndex) {
-    MemoryBuffer memBuffer = annotationBlobReader.read(partitionKey);
-    if (memBuffer == null) {
+    BinaryReader binaryReader = annotationBlobReader.read(partitionKey);
+    if (binaryReader == null) {
       return false;
     }
-
-    indexReader.readInto(memBuffer, annotationIndex);
+    indexReader.readInto(binaryReader.unwrap(), annotationIndex);
     return true;
   }
 

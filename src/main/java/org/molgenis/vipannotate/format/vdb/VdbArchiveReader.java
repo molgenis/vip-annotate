@@ -6,11 +6,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.OpenOptions;
 import org.molgenis.zstd.ZstdDecompressionContext;
 
-public class VdbArchiveReader implements AutoCloseable {
+public class VdbArchiveReader implements AutoCloseableNoThrow {
   private final FileChannel alignedChannel;
   private final FileChannel unalignedChannel;
   private final ZstdDecompressionContext zstdContext;

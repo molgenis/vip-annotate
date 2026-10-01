@@ -3,26 +3,26 @@ package org.molgenis.vipannotate.annotation;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.spec.EnumSetLogicalType;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.annotation.resolved.ResolvedEnumSetAnnotationSpec;
+import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class EnumSetAnnotationDatasetDecoder
     implements AnnotationDatasetDecoder<StringListAnnotation> {
-  private final EnumSetLogicalType enumSetLogicalType;
+  private final ResolvedEnumSetAnnotationSpec enumSetAnnotationSpec;
   private final AnnotationBlobReader blobReader;
 
   @Override
   public AnnotationDataset<StringListAnnotation> decode(PartitionKey partitionKey) {
-    MemoryBuffer memBuffer = blobReader.read(partitionKey);
+    BinaryReader binaryReader = blobReader.read(partitionKey);
 
-    return memBuffer != null
+    return binaryReader != null
         ? index -> {
           if (index < 0) {
             throw new IllegalArgumentException();
           }
-          String[] enumValues = enumSetLogicalType.values();
+          String[] enumValues = enumSetAnnotationSpec.values();
 
           int bitOffset = Math.multiplyExact(index, enumValues.length);
           int byteOffset = bitOffset >>> 3;
@@ -35,7 +35,7 @@ public class EnumSetAnnotationDatasetDecoder
             int byteIndex = byteOffset + (bitIndex >>> 3);
             int bit = bitIndex & 7;
 
-            int encodedByte = memBuffer.getUnsignedByte(byteIndex);
+            int encodedByte = binaryReader.getUnsignedByte(byteIndex);
 
             if ((encodedByte & (1 << bit)) != 0) {
               values.add(enumValues[enumIndex]);

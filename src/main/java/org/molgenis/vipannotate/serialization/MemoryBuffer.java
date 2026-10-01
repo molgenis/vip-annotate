@@ -12,13 +12,17 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.Numbers;
 
 /** Memory buffer with little endian byte order. */
-public final class MemoryBuffer implements AutoCloseable {
+public final class MemoryBuffer implements AutoCloseableNoThrow {
+  private static final ValueLayout.OfBoolean LAYOUT_BOOLEAN;
   private static final ValueLayout.OfByte LAYOUT_BYTE;
   private static final VarHandle LAYOUT_BYTE_VAR_HANDLE;
+  private static final ValueLayout.OfDouble LAYOUT_DOUBLE;
+  private static final ValueLayout.OfFloat LAYOUT_FLOAT;
   private static final ValueLayout.OfShort LAYOUT_SHORT;
   private static final VarHandle LAYOUT_SHORT_VAR_HANDLE;
   private static final ValueLayout.OfInt LAYOUT_INT;
@@ -30,9 +34,15 @@ public final class MemoryBuffer implements AutoCloseable {
     ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
 
     //noinspection DataFlowIssue
+    LAYOUT_BOOLEAN = ValueLayout.JAVA_BOOLEAN.withOrder(byteOrder);
+    //noinspection DataFlowIssue
     LAYOUT_BYTE = ValueLayout.JAVA_BYTE.withOrder(byteOrder);
     //noinspection DataFlowIssue
     LAYOUT_BYTE_VAR_HANDLE = LAYOUT_BYTE.varHandle();
+    //noinspection DataFlowIssue
+    LAYOUT_DOUBLE = ValueLayout.JAVA_DOUBLE_UNALIGNED.withOrder(byteOrder);
+    //noinspection DataFlowIssue
+    LAYOUT_FLOAT = ValueLayout.JAVA_FLOAT_UNALIGNED.withOrder(byteOrder);
     //noinspection DataFlowIssue
     LAYOUT_SHORT = ValueLayout.JAVA_SHORT_UNALIGNED.withOrder(byteOrder);
     //noinspection DataFlowIssue
@@ -157,16 +167,75 @@ public final class MemoryBuffer implements AutoCloseable {
     this.position = 0;
   }
 
+  /** Returns the boolean at the current position and increments the position. */
+  public boolean getBoolean() {
+    boolean value = memSegment.get(LAYOUT_BOOLEAN, position);
+    position += LAYOUT_BOOLEAN.byteSize();
+    return value;
+  }
+
+  /** Returns the boolean at the given position. */
+  public boolean getBoolean(long pos) {
+    return memSegment.get(LAYOUT_BOOLEAN, pos);
+  }
+
+  /** Returns the boolean at the given index. */
+  public boolean getBooleanAtIndex(long index) {
+    return memSegment.getAtIndex(LAYOUT_BOOLEAN, index);
+  }
+
+  /**
+   * Writes a boolean at the current position.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void putBoolean(boolean value) {
+    ensureCapacity(position + LAYOUT_BOOLEAN.byteSize());
+    putBooleanUnchecked(value);
+    if (position > limit) {
+      limit = position;
+    }
+  }
+
+  /**
+   * Writes a boolean at the current position. Very fast. Use with care.
+   *
+   * <p>does not check whether it is possible to write the boolean which could result in writing
+   * after the limit.
+   */
+  public void putBooleanUnchecked(boolean value) {
+    memSegment.set(LAYOUT_BOOLEAN, position, value);
+    position += LAYOUT_BOOLEAN.byteSize();
+  }
+
+  /**
+   * Writes a boolean at the given index.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void setBooleanAtIndex(long index, boolean value) {
+    long minCapacity = (index * LAYOUT_BOOLEAN.byteSize()) + LAYOUT_BOOLEAN.byteSize();
+    ensureCapacity(minCapacity);
+    setBooleanAtIndexUnchecked(index, value);
+    if (minCapacity > limit) {
+      limit = minCapacity;
+    }
+  }
+
+  /**
+   * Writes a boolean at the given index. Very fast. Use with care.
+   *
+   * <p>does not check whether it is possible to write the boolean.
+   */
+  public void setBooleanAtIndexUnchecked(long index, boolean value) {
+    memSegment.setAtIndex(LAYOUT_BOOLEAN, index, value);
+  }
+
   /** Returns the byte at the current position and increments the position */
   public byte getByte() {
     byte value = memSegment.get(LAYOUT_BYTE, position);
     position += LAYOUT_BYTE.byteSize();
     return value;
-  }
-
-  /** Returns the unsigned byte at the current position and increments the position */
-  public int getUnsignedByte() {
-    return Byte.toUnsignedInt(getByte());
   }
 
   /** Returns the byte at the given position */
@@ -175,6 +244,7 @@ public final class MemoryBuffer implements AutoCloseable {
   }
 
   /** Returns the unsigned byte at the given position */
+  @Deprecated // FIXME delete
   public int getUnsignedByte(long pos) {
     return Byte.toUnsignedInt(getByte(pos));
   }
@@ -182,11 +252,6 @@ public final class MemoryBuffer implements AutoCloseable {
   /** Returns the byte at the given index */
   public byte getByteAtIndex(long index) {
     return memSegment.getAtIndex(LAYOUT_BYTE, index);
-  }
-
-  /** Returns the byte at the given index */
-  public int getUnsignedByteAtIndex(long index) {
-    return Byte.toUnsignedInt(getByteAtIndex(index));
   }
 
   /**
@@ -267,6 +332,7 @@ public final class MemoryBuffer implements AutoCloseable {
     return array;
   }
 
+  // FIXME move to BinaryReader
   public int[] getUnsignedByteArray() {
     int arrayLength = getVarUnsignedInt();
     int[] array = new int[arrayLength];
@@ -293,6 +359,177 @@ public final class MemoryBuffer implements AutoCloseable {
     position += array.length * LAYOUT_BYTE.byteSize();
   }
 
+  /** Returns the double at the current position and increments the position. */
+  public double getDouble() {
+    double value = getDouble(position);
+    position += LAYOUT_DOUBLE.byteSize();
+    return value;
+  }
+
+  /** Returns the double at the given position. */
+  public double getDouble(long pos) {
+    return memSegment.get(LAYOUT_DOUBLE, pos);
+  }
+
+  /** Returns the double at the given index. */
+  public double getDoubleAtIndex(long index) {
+    return memSegment.getAtIndex(LAYOUT_DOUBLE, index);
+  }
+
+  /**
+   * Writes a double at the current position.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void putDouble(double value) {
+    ensureCapacity(position + LAYOUT_DOUBLE.byteSize());
+    putDoubleUnchecked(value);
+    if (position > limit) {
+      limit = position;
+    }
+  }
+
+  /** Writes a double without bounds/capacity checks. */
+  public void putDoubleUnchecked(double value) {
+    memSegment.set(LAYOUT_DOUBLE, position, value);
+    position += LAYOUT_DOUBLE.byteSize();
+  }
+
+  /**
+   * Writes a double at the given index.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void setDoubleAtIndex(long index, double value) {
+    long minCapacity = (index * LAYOUT_DOUBLE.byteSize()) + LAYOUT_DOUBLE.byteSize();
+    ensureCapacity(minCapacity);
+    setDoubleAtIndexUnchecked(index, value);
+    if (minCapacity > limit) {
+      limit = minCapacity;
+    }
+  }
+
+  /** Writes a double at the given index without bounds/capacity checks. */
+  public void setDoubleAtIndexUnchecked(long index, double value) {
+    memSegment.setAtIndex(LAYOUT_DOUBLE, index, value);
+  }
+
+  /** Reads a double[] prefixed with its variable-length length. */
+  public double[] getDoubleArray() {
+    int arrayLength = getVarUnsignedInt();
+    double[] array = new double[arrayLength];
+    MemorySegment.copy(memSegment, LAYOUT_DOUBLE, position, array, 0, arrayLength);
+    position += arrayLength * LAYOUT_DOUBLE.byteSize();
+    return array;
+  }
+
+  /**
+   * Writes a double[] prefixed with its variable-length length.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void putDoubleArray(double[] array) {
+    ensureCapacity(position + VAR_INT_MAX_BYTE_SIZE + (array.length * LAYOUT_DOUBLE.byteSize()));
+    putDoubleArrayUnchecked(array);
+    if (position > limit) {
+      limit = position;
+    }
+  }
+
+  /** Writes a double[] without capacity/limit checks. */
+  public void putDoubleArrayUnchecked(double[] array) {
+    putVarUnsignedIntUnchecked(array.length);
+    MemorySegment.copy(array, 0, memSegment, LAYOUT_DOUBLE, position, array.length);
+    position += array.length * LAYOUT_DOUBLE.byteSize();
+  }
+
+  // start
+  /** Returns the float at the current position and increments the position. */
+  public float getFloat() {
+    float value = getFloat(position);
+    position += LAYOUT_FLOAT.byteSize();
+    return value;
+  }
+
+  /** Returns the float at the given position. */
+  public float getFloat(long pos) {
+    return memSegment.get(LAYOUT_FLOAT, pos);
+  }
+
+  /** Returns the float at the given index. */
+  public float getFloatAtIndex(long index) {
+    return memSegment.getAtIndex(LAYOUT_FLOAT, index);
+  }
+
+  /**
+   * Writes a float at the current position.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void putFloat(float value) {
+    ensureCapacity(position + LAYOUT_FLOAT.byteSize());
+    putFloatUnchecked(value);
+    if (position > limit) {
+      limit = position;
+    }
+  }
+
+  /** Writes a float without bounds/capacity checks. */
+  public void putFloatUnchecked(float value) {
+    memSegment.set(LAYOUT_FLOAT, position, value);
+    position += LAYOUT_FLOAT.byteSize();
+  }
+
+  /**
+   * Writes a float at the given index.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void setFloatAtIndex(long index, float value) {
+    long minCapacity = (index * LAYOUT_FLOAT.byteSize()) + LAYOUT_FLOAT.byteSize();
+    ensureCapacity(minCapacity);
+    setFloatAtIndexUnchecked(index, value);
+    if (minCapacity > limit) {
+      limit = minCapacity;
+    }
+  }
+
+  /** Writes a float at the given index without bounds/capacity checks. */
+  public void setFloatAtIndexUnchecked(long index, float value) {
+    memSegment.setAtIndex(LAYOUT_FLOAT, index, value);
+  }
+
+  /** Reads a float[] prefixed with its variable-length length. */
+  public float[] getFloatArray() {
+    int arrayLength = getVarUnsignedInt();
+    float[] array = new float[arrayLength];
+    MemorySegment.copy(memSegment, LAYOUT_FLOAT, position, array, 0, arrayLength);
+    position += arrayLength * LAYOUT_FLOAT.byteSize();
+    return array;
+  }
+
+  /**
+   * Writes a float[] prefixed with its variable-length length.
+   *
+   * <p>grows capacity and extends limit if required.
+   */
+  public void putFloatArray(float[] array) {
+    ensureCapacity(position + VAR_INT_MAX_BYTE_SIZE + (array.length * LAYOUT_FLOAT.byteSize()));
+    putFloatArrayUnchecked(array);
+    if (position > limit) {
+      limit = position;
+    }
+  }
+
+  /** Writes a float[] without capacity/limit checks. */
+  public void putFloatArrayUnchecked(float[] array) {
+    putVarUnsignedIntUnchecked(array.length);
+    MemorySegment.copy(array, 0, memSegment, LAYOUT_FLOAT, position, array.length);
+    position += array.length * LAYOUT_FLOAT.byteSize();
+  }
+
+  // end
+
   /** same as {@link #getByte()} for <code>short</code>. */
   public short getShort() {
     short value = memSegment.get(LAYOUT_SHORT, position);
@@ -300,19 +537,9 @@ public final class MemoryBuffer implements AutoCloseable {
     return value;
   }
 
-  /** same as {@link #getUnsignedByte()} for <code>short</code>. */
-  public int getUnsignedShort() {
-    return Short.toUnsignedInt(getShort());
-  }
-
   /** see {@link #getByteAtIndex(long)} for <code>short</code>. */
   public short getShortAtIndex(long index) {
     return memSegment.getAtIndex(LAYOUT_SHORT, index);
-  }
-
-  /** see {@link #getUnsignedByteAtIndex(long)} for <code>short</code>. */
-  public int getUnsignedShortAtIndex(long index) {
-    return Short.toUnsignedInt(getShortAtIndex(index));
   }
 
   /** same as {@link #putByte(byte)} put for <code>short</code> */
@@ -352,29 +579,14 @@ public final class MemoryBuffer implements AutoCloseable {
     return value;
   }
 
-  /** same as {@link #getUnsignedByte()} for <code>int</code>. */
-  public long getUnsignedInt() {
-    return Integer.toUnsignedLong(getInt());
-  }
-
   /** same as {@link #getByte(long)} for <code>int</code>. */
   public int getInt(long pos) {
     return memSegment.get(LAYOUT_INT, pos);
   }
 
-  /** same as {@link #getUnsignedByte(long)} for <code>int</code>. */
-  public long getUnsignedInt(long pos) {
-    return Integer.toUnsignedLong(getInt(pos));
-  }
-
   /** same as {@link #getByteAtIndex(long)} for <code>int</code>. */
   public int getIntAtIndex(long index) {
     return memSegment.getAtIndex(LAYOUT_INT, index);
-  }
-
-  /** same as {@link #getByteAtIndex(long)} for <code>int</code>. */
-  public long getUnsignedIntAtIndex(long index) {
-    return Integer.toUnsignedLong(getIntAtIndex(index));
   }
 
   /** same as {@link #putByte(byte)} put for <code>int</code> */
@@ -538,6 +750,11 @@ public final class MemoryBuffer implements AutoCloseable {
     return memSegment.get(LAYOUT_LONG, pos);
   }
 
+  /** same as {@link #getByteAtIndex(long)} for <code>long</code>. */
+  public long getLongAtIndex(long index) {
+    return memSegment.getAtIndex(LAYOUT_LONG, index);
+  }
+
   /** same as {@link #putByte(byte)} for <code>long</code> */
   public void putLong(long value) {
     ensureCapacity(position + LAYOUT_LONG.byteSize());
@@ -551,6 +768,21 @@ public final class MemoryBuffer implements AutoCloseable {
   public void putLongUnchecked(long value) {
     memSegment.set(LAYOUT_LONG, position, value);
     position += LAYOUT_LONG.byteSize();
+  }
+
+  /** same as {@link #setByteAtIndex(long, byte)} for <code>long</code> */
+  public void setLongAtIndex(long index, long value) {
+    long minCapacity = (index * LAYOUT_LONG.byteSize()) + LAYOUT_LONG.byteSize();
+    ensureCapacity(minCapacity);
+    setLongAtIndexUnchecked(index, value);
+    if (minCapacity > limit) {
+      limit = minCapacity;
+    }
+  }
+
+  /** see {@link #setByteAtIndexUnchecked(long, byte)} for <code>long</code>. */
+  public void setLongAtIndexUnchecked(long index, long value) {
+    memSegment.setAtIndex(LAYOUT_LONG, index, value);
   }
 
   /**
@@ -628,6 +860,28 @@ public final class MemoryBuffer implements AutoCloseable {
    * @return a new {@code MemoryBuffer} view of the given array
    */
   public static MemoryBuffer wrap(byte[] array) {
+    return new MemoryBuffer(MemorySegment.ofArray(array));
+  }
+
+  /**
+   * Wraps an existing {@code double[]} array in a {@code MemoryBuffer}. The buffer provides a view
+   * of the array's contents; modifications are reflected in both.
+   *
+   * @param array the array to wrap
+   * @return a new {@code MemoryBuffer} view of the given array
+   */
+  public static MemoryBuffer wrap(double[] array) {
+    return new MemoryBuffer(MemorySegment.ofArray(array));
+  }
+
+  /**
+   * Wraps an existing {@code float[]} array in a {@code MemoryBuffer}. The buffer provides a view
+   * of the array's contents; modifications are reflected in both.
+   *
+   * @param array the array to wrap
+   * @return a new {@code MemoryBuffer} view of the given array
+   */
+  public static MemoryBuffer wrap(float[] array) {
     return new MemoryBuffer(MemorySegment.ofArray(array));
   }
 

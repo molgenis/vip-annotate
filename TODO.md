@@ -1,25 +1,29 @@
 # todo
 
-## 0.0.1-alpha.6
-
-- [ ] fix (annotate): SpliceAI can produce multiple annotations for same sequence variant
-- [ ] fix (db): build_annotation_databases.sh
-- [ ] fix (db): reintroduce xref support (e.g. SpliceAI ncbiGeneId)
-- [ ] feat (spec): automatically determine encoding and storage from logical type
-- [ ] feat (spec): only store relevant spec part in db (e.g. do not store input info)
-- [ ] feat (spec): do not put file paths in spec (e.g. allow using on chr21 and all)
-- [ ] feat (spec): support non-nullable enum_set?
-- [ ] feat (db): validate contigs in all preprocessing scripts
-- [ ] feat (db): support bit-level packing for ranged values
-- [ ] feat (db): determine encoding per-partition (e.g. sharper min-max, enum subsets)
-- [ ] feat (db): support ClinVar CLINSIGINCL (e.g. 431417:Pathogenic|585009:Likely_pathogenic)
-- [ ] perf (db): improve database building performance (e.g. SpliceAI takes > 24 hours to build)
-- [ ] perf (db): ClinVar vdb 135M > source data 43M. why?
-- [ ] refactor: switch to https://github.com/palantir/palantir-java-format#motivation--examples
-- [ ] refactor: bump streamvbyte to v3.0.0
-- [ ] refactor: make Annotation a sealed interface
+in addition to below see >100 TODO items in code
 
 ## 0.0.1-alpha.7
+
+- [ ] feat (spec): add annotation type=enum/enum_set value descriptions
+- [ ] feat (spec): add annotation type=string
+- [ ] feat (spec): add annotation type=floating_point encoding=lossless/lossy_u8/lossy_u16
+- [ ] feat (spec): input/type=tsv: allow using column names as alternative to column indexes
+- [ ] feat (spec): input/type=tsv: configure missing value & list value character (e.g. dot from bcftools)
+- [ ] feat (spec): input/type=vcf: nested value support
+- [ ] feat (db): add 'all_single_nucleotide_variants' indexless-db (e.g. avi)
+- [ ] feat (db): use [ALP](https://ir.cwi.nl/pub/33334/33334.pdf) for lossless float storage
+- [ ] feat (db): reintroduce dictionary support (e.g. SpliceAI ncbiGeneId)
+- [ ] feat (db): null bitmap instead of nullable types (rank1 to determine index)
+- [ ] feat (db): support bit-level packing for ranged values
+- [ ] feat (db): determine encoding per-partition instead of per-input (e.g. sharper min-max, enum subsets)
+- [ ] feat (db): support nested compound annotations (e.g. CLINSIGINCL 431417:Pathogenic|585009:Likely_pathogenic)
+- [ ] perf (db): use https://mvnrepository.com/artifact/ch.randelshofer/fastdoubleparser/2.0.1
+- [ ] perf (db): ClinVar vdb 135M > source data 43M. why?
+- [ ] fix (annotate): SpliceAI can produce multiple annotations for same sequence variant
+- [ ] feat (scripts): validate contigs in all preprocessing scripts
+- [ ] refactor: bump streamvbyte to v3.0.0
+
+## 0.0.1-alpha.8
 
 - [ ] feat: write max error in output vcf header
 - [ ] feat (annotate): write bgzip instead of gzip for compressed VCF,
@@ -48,7 +52,6 @@
 - [ ] feat (db): validate that annotation reference is normalized
 - [ ] feat (annotate): write gene index to header e.g. ##GENEIDX=<ID=0,SRCID=672,SYMBOL=BRCA1>
 - [ ] perf: native-image profile guided optimization
-- [ ] feat (annotate): write vcf header with structured metadata (e.g. FORMAT=X|Y TYPE_X=.. NUMBER_X=..)
 - [ ] perf: medium 64-bit sequence variant index
 - [ ] refactor: move zstd-ffm to separate repository
 - [ ] refactor: move streamvbyte-ffm to separate repository

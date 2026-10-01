@@ -146,6 +146,59 @@ class MemoryBufferTest {
   }
 
   @Test
+  void putBooleanGetBoolean() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[3])) {
+      memBuffer.putBoolean(true);
+      memBuffer.putBoolean(false);
+      memBuffer.putBoolean(true);
+      memBuffer.flip();
+
+      assertAll(
+          () -> {
+            assertTrue(memBuffer.getBoolean());
+            assertFalse(memBuffer.getBoolean());
+            assertTrue(memBuffer.getBoolean());
+            assertEquals(3, memBuffer.getPosition());
+          },
+          () -> assertTrue(memBuffer.getBoolean(0)),
+          () -> assertFalse(memBuffer.getBoolean(1)),
+          () -> assertTrue(memBuffer.getBoolean(2)));
+    }
+  }
+
+  @Test
+  void putBooleanIncreaseCapacity() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(1)) {
+      memBuffer.putBoolean(true);
+      memBuffer.putBoolean(false);
+      assertEquals(2, memBuffer.getLimit());
+    }
+  }
+
+  @Test
+  void setBooleanAtIndexGetBooleanAtIndex() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[3])) {
+      memBuffer.setBooleanAtIndex(0, true);
+      memBuffer.setBooleanAtIndex(1, false);
+      memBuffer.setBooleanAtIndex(2, true);
+      assertAll(
+          () -> assertTrue(memBuffer.getBooleanAtIndex(0)),
+          () -> assertFalse(memBuffer.getBooleanAtIndex(1)),
+          () -> assertTrue(memBuffer.getBooleanAtIndex(2)),
+          () -> assertEquals((byte) 0, memBuffer.getPosition()));
+    }
+  }
+
+  @Test
+  void setBooleanAtIndexIncreaseCapacity() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(1)) {
+      memBuffer.setBooleanAtIndex(0, true);
+      memBuffer.setBooleanAtIndex(1, false);
+      assertEquals(2, memBuffer.getLimit());
+    }
+  }
+
+  @Test
   void putByteGetByte() {
     try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[3])) {
       memBuffer.putByte((byte) 0);
@@ -233,6 +286,138 @@ class MemoryBufferTest {
     try (MemoryBuffer memBuffer = MemoryBuffer.allocate(2)) {
       memBuffer.putByte((byte) 1, 3);
       assertAll(() -> assertEquals((byte) 3, memBuffer.getLimit()));
+    }
+  }
+
+  @Test
+  void putDoubleGetDouble() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new double[3])) {
+      memBuffer.putDouble(0.12);
+      memBuffer.putDouble(1.23);
+      memBuffer.putDouble(2.34);
+      memBuffer.flip();
+      assertEquals(0.12, memBuffer.getDouble(), 1e-10);
+      assertEquals(1.23, memBuffer.getDouble(), 1e-10);
+      assertEquals(2.34, memBuffer.getDouble(), 1e-10);
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {2, 6, 8})
+  void putDoubleIncreaseCapacity(int capacity) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(capacity)) {
+      memBuffer.putDouble(0.12);
+      memBuffer.putDouble(1.23);
+      memBuffer.flip();
+
+      assertEquals(16, memBuffer.getLimit());
+    }
+  }
+
+  @Test
+  void setDoubleAtIndexGetDoubleAtIndex() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new double[3])) {
+      memBuffer.setDoubleAtIndex(0, 2.34);
+      memBuffer.setDoubleAtIndex(1, 0.12);
+      memBuffer.setDoubleAtIndex(2, 1.23);
+      assertAll(
+          () -> assertEquals(2.34, memBuffer.getDoubleAtIndex(0), 1e-10),
+          () -> assertEquals(0.12, memBuffer.getDoubleAtIndex(1), 1e-10),
+          () -> assertEquals(1.23, memBuffer.getDoubleAtIndex(2), 1e-10));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {8, 16})
+  void setDoubleAtIndexIncreaseCapacity(int capacity) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(capacity)) {
+      memBuffer.setDoubleAtIndex(0, 0.12);
+      memBuffer.setDoubleAtIndex(1, 1.23);
+      assertEquals(16, memBuffer.getLimit());
+    }
+  }
+
+  @Test
+  void putDoubleArrayGetDoubleArray() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(20)) {
+      double[] doubleArray = {0.12, 1.23, 2.34, 3.45};
+      memBuffer.putDoubleArray(doubleArray);
+      memBuffer.flip();
+      assertArrayEquals(doubleArray, memBuffer.getDoubleArray());
+    }
+  }
+
+  @Test
+  void putDoubleArrayIncreaseCapacity() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(20)) {
+      memBuffer.putDoubleArray(new double[] {0.12, 1.23, 2.34, 3.45});
+      assertEquals(33, memBuffer.getLimit());
+    }
+  }
+
+  @Test
+  void putFloatGetFloat() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new float[3])) {
+      memBuffer.putFloat(0.12f);
+      memBuffer.putFloat(1.23f);
+      memBuffer.putFloat(2.34f);
+      memBuffer.flip();
+      assertEquals(0.12f, memBuffer.getFloat(), 1e-10);
+      assertEquals(1.23f, memBuffer.getFloat(), 1e-10);
+      assertEquals(2.34f, memBuffer.getFloat(), 1e-10);
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {3, 4, 6})
+  void putFloatIncreaseCapacity(int capacity) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(capacity)) {
+      memBuffer.putFloat(0.12f);
+      memBuffer.putFloat(1.23f);
+      memBuffer.flip();
+
+      assertEquals(8, memBuffer.getLimit());
+    }
+  }
+
+  @Test
+  void setFloatAtIndexGetFloatAtIndex() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new float[3])) {
+      memBuffer.setFloatAtIndex(0, 2.34f);
+      memBuffer.setFloatAtIndex(1, 0.12f);
+      memBuffer.setFloatAtIndex(2, 1.23f);
+      assertAll(
+          () -> assertEquals(2.34f, memBuffer.getFloatAtIndex(0), 1e-10),
+          () -> assertEquals(0.12f, memBuffer.getFloatAtIndex(1), 1e-10),
+          () -> assertEquals(1.23f, memBuffer.getFloatAtIndex(2), 1e-10));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {4, 6})
+  void setFloatAtIndexIncreaseCapacity(int capacity) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(capacity)) {
+      memBuffer.setFloatAtIndex(0, 0.12f);
+      memBuffer.setFloatAtIndex(1, 1.23f);
+      assertEquals(8, memBuffer.getLimit());
+    }
+  }
+
+  @Test
+  void putFloatArrayGetFloatArray() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(20)) {
+      float[] floatArray = {0.12f, 1.23f, 2.34f, 3.45f};
+      memBuffer.putFloatArray(floatArray);
+      memBuffer.flip();
+      assertArrayEquals(floatArray, memBuffer.getFloatArray());
+    }
+  }
+
+  @Test
+  void putFloatArrayIncreaseCapacity() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(10)) {
+      memBuffer.putFloatArray(new float[] {0.12f, 1.23f, 2.34f, 3.45f});
+      assertEquals(17, memBuffer.getLimit());
     }
   }
 
@@ -429,6 +614,29 @@ class MemoryBufferTest {
       memBuffer.putLong(1);
       memBuffer.flip();
 
+      assertEquals(16, memBuffer.getLimit());
+    }
+  }
+
+  @Test
+  void setLongAtIndexGetLongAtIndex() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new long[3])) {
+      memBuffer.setLongAtIndex(0, 2L);
+      memBuffer.setLongAtIndex(1, 0L);
+      memBuffer.setLongAtIndex(2, 1L);
+      assertAll(
+          () -> assertEquals(2L, memBuffer.getLongAtIndex(0)),
+          () -> assertEquals(0L, memBuffer.getLongAtIndex(1)),
+          () -> assertEquals(1L, memBuffer.getLongAtIndex(2)));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {8, 12})
+  void setLongAtIndexIncreaseCapacity(int capacity) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(capacity)) {
+      memBuffer.setLongAtIndex(0, 0L);
+      memBuffer.setLongAtIndex(1, 1L);
       assertEquals(16, memBuffer.getLimit());
     }
   }

@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.serialization;
 
+// FIXME most comms must go through BinaryReader
 public interface MemoryBufferReader<T> {
   /** read new object from a memory buffer */
   T readFrom(MemoryBuffer memoryBuffer);

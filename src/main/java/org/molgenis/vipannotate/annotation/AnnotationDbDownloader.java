@@ -14,11 +14,12 @@ import java.util.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.Logger;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class AnnotationDbDownloader implements AutoCloseable {
+public class AnnotationDbDownloader implements AutoCloseableNoThrow {
   private static final String BASE_URL =
       "https://download.molgeniscloud.org/downloads/vip-annotate/latest/";
   private final HttpClient httpClient;

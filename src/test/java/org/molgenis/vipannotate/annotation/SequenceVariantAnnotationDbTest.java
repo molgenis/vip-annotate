@@ -42,7 +42,7 @@ class SequenceVariantAnnotationDbTest {
     @SuppressWarnings("unchecked")
     AnnotationDataset<Annotation> annotationDataset0 = mock(AnnotationDataset.class);
 
-    Annotation annotation0 = mock(Annotation.class);
+    Annotation annotation0 = mock(CompositeAnnotation.class);
     List<Annotation> annotations = new ArrayList<>();
     when(annotationIndex0.findIndexes(sequenceVariant0)).thenReturn(indexRange0);
     doAnswer(

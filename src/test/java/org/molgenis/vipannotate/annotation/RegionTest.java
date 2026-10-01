@@ -11,20 +11,20 @@ import org.junit.jupiter.params.provider.MethodSource;
 class RegionTest {
   private static Stream<Arguments> validRegionArgsProvider() {
     return Stream.of(
-        Arguments.of(new Contig("chr1"), 1, 2),
-        Arguments.of(new Contig("chr1"), 1, null),
-        Arguments.of(new Contig("chr1"), null, 2),
+        Arguments.of(new Contig("chr1", 10), 1, 2),
+        Arguments.of(new Contig("chr1", 10), 1, null),
+        Arguments.of(new Contig("chr1", 10), null, 2),
         Arguments.of(new Contig("chr1", 3), 1, 2),
         Arguments.of(new Contig("chr1", 3), 1, 3),
-        Arguments.of(new Contig("chr1"), 2, 2));
+        Arguments.of(new Contig("chr1", 10), 2, 2));
   }
 
   private static Stream<Arguments> invalidRegionArgsProvider() {
     return Stream.of(
-        Arguments.of(new Contig("chr1"), 0, null),
-        Arguments.of(new Contig("chr1"), null, 0),
-        Arguments.of(new Contig("chr1"), 0, 1),
-        Arguments.of(new Contig("chr1"), 2, 1),
+        Arguments.of(new Contig("chr1", 10), 0, null),
+        Arguments.of(new Contig("chr1", 10), null, 0),
+        Arguments.of(new Contig("chr1", 10), 0, 1),
+        Arguments.of(new Contig("chr1", 10), 2, 1),
         Arguments.of(new Contig("chr1", 3), 1, 4),
         Arguments.of(new Contig("chr1", 3), null, 4));
   }

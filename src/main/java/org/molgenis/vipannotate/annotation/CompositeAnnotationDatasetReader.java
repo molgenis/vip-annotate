@@ -9,7 +9,8 @@ public class CompositeAnnotationDatasetReader
 
   @Override
   public AnnotationDataset<CompositeAnnotation> decode(PartitionKey partitionKey) {
-    AnnotationDataset[] annotationDatasets = new AnnotationDataset[datasetReaders.length];
+    AnnotationDataset<? extends Annotation>[] annotationDatasets =
+        new AnnotationDataset<?>[datasetReaders.length];
     for (int i = 0, length = datasetReaders.length; i < length; i++) {
       annotationDatasets[i] = datasetReaders[i].decode(partitionKey);
     }

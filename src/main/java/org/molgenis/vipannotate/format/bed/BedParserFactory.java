@@ -6,13 +6,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.BufferedLineReader;
 import org.molgenis.vipannotate.util.CloseIgnoringInputStream;
 import org.molgenis.vipannotate.util.Input;
 
+// TODO dedup with TsvParserFactory
 public class BedParserFactory {
-  public static final int ANNOTATE_BATCH_SIZE = 100;
-
   public enum InputType {
     COMPRESSED,
     UNCOMPRESSED
@@ -21,7 +21,10 @@ public class BedParserFactory {
   private BedParserFactory() {}
 
   public static BedParser create(Input inputBed) {
-    Path inputBedPath = inputBed.path();
+    return createFromPath(inputBed.path());
+  }
+
+  public static BedParser createFromPath(@Nullable Path inputBedPath) {
     InputType inputType;
     InputStream inputStream;
     if (inputBedPath != null) {
@@ -72,9 +75,7 @@ public class BedParserFactory {
 
   private static BedParser create(InputStream inputStream, InputType inputType) {
     BufferedLineReader reader = createReader(inputStream, inputType);
-    BedFeature bedFeature = BedFeatureDummyFactory.INSTANCE.createDummy();
-    BedFeatureIterator batchIterator = new BedFeatureIterator(reader, bedFeature);
-    return new BedParser(batchIterator);
+    return new BedParser(new BedRecordReader(reader));
   }
 
   private static BufferedLineReader createReader(InputStream inputStream, InputType inputType) {
