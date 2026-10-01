@@ -26,28 +26,60 @@
         "type": "enum_set",
         "description": "Aggregate germline classification for this single variant",
         "values": [
-          "Uncertain_significance",
-          "Likely_benign",
-          "Other",
-          "Benign",
-          "Pathogenic",
-          "Conflicting_classifications_of_pathogenicity",
-          "Likely_pathogenic"
+          {
+            "value": "Uncertain_significance"
+          },
+          {
+            "value": "Likely_benign"
+          },
+          {
+            "value": "Other"
+          },
+          {
+            "value": "Benign"
+          },
+          {
+            "value": "Pathogenic"
+          },
+          {
+            "value": "Conflicting_classifications_of_pathogenicity"
+          },
+          {
+            "value": "Likely_pathogenic"
+          }
         ]
       },
       "clnrevstat": {
         "type": "enum",
         "description": "ClinVar review status of germline classification for the Variation ID",
         "values": [
-          "criteria_provided,_single_submitter",
-          "criteria_provided,_multiple_submitters,_no_conflicts",
-          "criteria_provided,_conflicting_classifications",
-          "no_assertion_criteria_provided",
-          "reviewed_by_expert_panel",
-          "no_classification_provided",
-          "no_classification_for_the_single_variant",
-          "no_classifications_from_unflagged_records",
-          "practice_guideline"
+          {
+            "value": "criteria_provided,_single_submitter"
+          },
+          {
+            "value": "criteria_provided,_multiple_submitters,_no_conflicts"
+          },
+          {
+            "value": "criteria_provided,_conflicting_classifications"
+          },
+          {
+            "value": "no_assertion_criteria_provided"
+          },
+          {
+            "value": "reviewed_by_expert_panel"
+          },
+          {
+            "value": "no_classification_provided"
+          },
+          {
+            "value": "no_classification_for_the_single_variant"
+          },
+          {
+            "value": "no_classifications_from_unflagged_records"
+          },
+          {
+            "value": "practice_guideline"
+          }
         ]
       }
     }

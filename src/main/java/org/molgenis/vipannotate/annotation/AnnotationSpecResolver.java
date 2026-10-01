@@ -2,8 +2,10 @@ package org.molgenis.vipannotate.annotation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.resolved.*;
 import org.molgenis.vipannotate.annotation.spec.*;
@@ -38,17 +40,44 @@ public class AnnotationSpecResolver {
 
   private ResolvedEnumAnnotationSpec resolve(
       EnumAnnotationSpec spec, EnumAnnotationStats stats, AnnotationType annotationType) {
+    EnumValue[] enumValues = spec.values();
     return new ResolvedEnumAnnotationSpec(
-        spec.description(),
-        spec.values(),
+        resolveEnumSpecDescription(spec.description(), enumValues),
+        Arrays.stream(enumValues).map(EnumValue::value).toArray(String[]::new),
         stats.nullCount() > 0 || annotationType == AnnotationType.POSITION);
+  }
+
+  private static @NonNull String resolveEnumSpecDescription(
+      @Nullable String description, EnumValue[] enumValues) {
+    // resolve description from spec description and enum value descriptions
+    StringBuilder stringBuilder = new StringBuilder();
+    if (description != null) {
+      stringBuilder.append(description);
+      if (description.charAt(description.length() - 1) != '.') {
+        stringBuilder.append('.');
+      }
+      stringBuilder.append(' ');
+    }
+
+    for (EnumValue enumValue : enumValues) {
+      stringBuilder.append(enumValue.value());
+      if (enumValue.description() != null) {
+        stringBuilder.append('=').append(enumValue.description());
+      }
+      stringBuilder.append(", ");
+    }
+    stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+    return stringBuilder.toString();
   }
 
   private ResolvedEnumSetAnnotationSpec resolve(
       EnumSetAnnotationSpec spec,
       EnumSetAnnotationStats ignoredStats,
       AnnotationType ignoredAnnotationType) {
-    return new ResolvedEnumSetAnnotationSpec(spec.description(), spec.values());
+    EnumValue[] enumValues = spec.values();
+    return new ResolvedEnumSetAnnotationSpec(
+        resolveEnumSpecDescription(spec.description(), enumValues),
+        Arrays.stream(enumValues).map(EnumValue::value).toArray(String[]::new));
   }
 
   private ResolvedFloatAnnotationSpec resolve(

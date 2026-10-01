@@ -81,7 +81,7 @@
           "name": "<init>",
           "parameterTypes": [
             "java.lang.String",
-            "[Ljava.lang.String;",
+            "[Lorg.molgenis.vipannotate.annotation.spec.EnumValue;",
             "boolean"
           ]
         }
@@ -94,7 +94,7 @@
           "name": "<init>",
           "parameterTypes": [
             "java.lang.String",
-            "[Ljava.lang.String;"
+            "[Lorg.molgenis.vipannotate.annotation.spec.EnumValue;"
           ]
         }
       ]

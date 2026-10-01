@@ -7,6 +7,6 @@ import org.jspecify.annotations.Nullable;
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 public record EnumAnnotationSpec(
     @JsonProperty(value = "description") @Nullable String description,
-    @JsonProperty(value = "values", required = true) String[] values,
+    @JsonProperty(value = "values", required = true) EnumValue[] values,
     @JsonProperty(value = "nullable") boolean nullable)
     implements AnnotationSpec {}

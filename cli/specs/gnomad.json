@@ -26,9 +26,18 @@
         "type": "enum",
         "description": "Source",
         "values": [
-          "G",
-          "E",
-          "T"
+          {
+            "value": "G",
+            "description": "Genomes"
+          },
+          {
+            "value": "E",
+            "description": "Exomes"
+          },
+          {
+            "value": "T",
+            "description": "Genomes+Exomes"
+          }
         ]
       },
       "af": {
@@ -51,14 +60,23 @@
         "type": "enum_set",
         "description": "Failed variant filters",
         "values": [
-          "AC0",
-          "AS_VQSR",
-          "InbreedingCoeff"
+          {
+            "value": "AC0",
+            "description": "Allele count is zero due to removal of low quality genotypes"
+          },
+          {
+            "value": "AS_VQSR",
+            "description": "Failed allele-specific VQSR filter"
+          },
+          {
+            "value": "InbreedingCoeff",
+            "description": "Has an inbreeding coefficient < -0.3"
+          }
         ]
       },
       "cov": {
-        "description": "Percentage of individuals with coverage at this variant",
-        "type": "floating_point"
+        "type": "floating_point",
+        "description": "Percentage of individuals with coverage at this variant"
       }
     }
   }

@@ -33,21 +33,46 @@
       "my_enum": {
         "type": "enum",
         "values": [
-          "B",
-          "LB",
-          "VUS",
-          "LP",
-          "P"
+          {
+            "value": "B",
+            "description": "Benign"
+          },
+          {
+            "value": "LB",
+            "description": "Likely benign"
+          },
+          {
+            "value": "VUS",
+            "description": "Variant of uncertain significance"
+          },
+          {
+            "value": "LP",
+            "description": "Likely pathogenic"
+          },
+          {
+            "value": "P",
+            "description": "Pathogenic"
+          }
         ]
       },
       "my_enum_nullable": {
         "type": "enum",
         "values": [
-          "B",
-          "LB",
-          "VUS",
-          "LP",
-          "P"
+          {
+            "value": "B"
+          },
+          {
+            "value": "LB"
+          },
+          {
+            "value": "VUS"
+          },
+          {
+            "value": "LP"
+          },
+          {
+            "value": "P"
+          }
         ]
       },
       "my_i8": {
