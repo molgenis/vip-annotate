@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.util;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import org.jspecify.annotations.Nullable;
 
 public class ClosableUtils {
@@ -24,7 +24,7 @@ public class ClosableUtils {
   }
 
   /** Closes multiple {@link AutoCloseable}. */
-  public static void closeAll(List<? extends @Nullable AutoCloseable> closeables) {
+  public static void closeAll(Collection<? extends @Nullable AutoCloseable> closeables) {
     Throwable firstThrowable = null;
 
     for (AutoCloseable closeable : closeables) {

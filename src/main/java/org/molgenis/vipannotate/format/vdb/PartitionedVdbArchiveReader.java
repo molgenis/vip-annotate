@@ -5,12 +5,14 @@ import static lombok.AccessLevel.PACKAGE;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.PartitionKey;
+import org.molgenis.vipannotate.format.PartitionedMemoryReader;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 /** {@link VdbArchiveReader} with index stored as last entry. */
 @RequiredArgsConstructor(access = PACKAGE)
-public class PartitionedVdbArchiveReader implements BinaryPartitionReader {
+public class PartitionedVdbArchiveReader implements PartitionedMemoryReader {
   private final VdbArchiveReader archiveReader;
   private final VdbArchiveIndexReader indexReader;
 
@@ -75,7 +77,8 @@ public class PartitionedVdbArchiveReader implements BinaryPartitionReader {
       } else {
         archiveReader.readEntryInto(indexEntryId, scratchBuffer);
       }
-      activePartitionIndex = indexReader.readFrom(scratchBuffer);
+      activePartitionIndex =
+          indexReader.readFrom(MemoryDecoder.wrap(scratchBuffer)); // FIXME reuse MemoryDecoder
     } else {
       activePartitionIndex = null;
     }
@@ -91,7 +94,8 @@ public class PartitionedVdbArchiveReader implements BinaryPartitionReader {
       } else {
         archiveReader.readLastEntryInto(scratchBuffer);
       }
-      rootIndex = indexReader.readFrom(scratchBuffer);
+      rootIndex =
+          indexReader.readFrom(MemoryDecoder.wrap(scratchBuffer)); // FIXME reuse MemoryDecoder
     }
     return rootIndex;
   }

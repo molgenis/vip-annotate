@@ -12,8 +12,8 @@ import org.molgenis.vipannotate.format.vcf.AltAllele;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class SequenceVariant extends Interval {
-  private final AltAllele alt;
-  private final SequenceVariantType type;
+  private AltAllele alt;
+  private SequenceVariantType type;
 
   public SequenceVariant(
       Contig contig, int start, int stop, AltAllele alt, SequenceVariantType type) {
@@ -25,5 +25,11 @@ public class SequenceVariant extends Interval {
   /** {@return number of reference allele bases} */
   public int getRefLength() {
     return getStop() - getStart() + 1;
+  }
+
+  public void reset(Contig contig, int start, int stop, AltAllele alt, SequenceVariantType type) {
+    super.reset(contig, start, stop);
+    this.alt = alt;
+    this.type = type;
   }
 }

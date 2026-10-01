@@ -2,35 +2,38 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
+import org.molgenis.vipannotate.format.PartitionedMemoryWriter;
 import org.molgenis.vipannotate.format.vdb.Compression;
 import org.molgenis.vipannotate.format.vdb.IoMode;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncodable;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexWriter<T extends SequenceVariant>
     implements AutoCloseableNoThrow {
-  private final MemoryBufferWriter<AnnotationIndex<T>> indexWriter;
-  private final BinaryPartitionWriter binaryPartitionWriter;
-  @Nullable private MemoryBuffer reusableMemBuffer;
+  private final MemoryEncodable<SequenceVariantAnnotationIndexDispatcher<T>> indexWriter;
+  private final PartitionedMemoryWriter partitionedMemWriter;
+  @Nullable private MemoryEncoder reusableMemEncoder;
 
-  public void write(PartitionKey partitionKey, AnnotationIndex<T> annotationIndex) {
-    if (reusableMemBuffer == null) {
-      reusableMemBuffer = indexWriter.writeTo(annotationIndex);
+  public void write(
+      PartitionKey partitionKey, SequenceVariantAnnotationIndexDispatcher<T> annotationIndex) {
+    if (reusableMemEncoder == null) {
+      reusableMemEncoder = indexWriter.writeTo(annotationIndex);
     } else {
-      reusableMemBuffer.clear();
-      indexWriter.writeInto(annotationIndex, reusableMemBuffer);
+      reusableMemEncoder.unwrap().clear(); // FIXME
+      indexWriter.writeInto(annotationIndex, reusableMemEncoder);
     }
 
-    binaryPartitionWriter.write(
-        "idx", Compression.ZSTD, IoMode.BUFFERED, reusableMemBuffer, partitionKey);
+    partitionedMemWriter.write(
+        "idx", Compression.ZSTD, IoMode.BUFFERED, reusableMemEncoder.unwrap(), partitionKey);
   }
 
   @Override
   public void close() {
-    ClosableUtils.close(reusableMemBuffer);
+    if (reusableMemEncoder != null) {
+      ClosableUtils.close(reusableMemEncoder.unwrap());
+    }
   }
 }

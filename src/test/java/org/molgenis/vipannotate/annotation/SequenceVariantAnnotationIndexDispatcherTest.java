@@ -2,7 +2,7 @@ package org.molgenis.vipannotate.annotation;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type.SMALL;
+import static org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type.POS_20_BIT;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ class SequenceVariantAnnotationIndexDispatcherTest {
   @BeforeEach
   void setUp() {
     indexDispatcher = new SequenceVariantAnnotationIndexDispatcher<>();
-    indexDispatcher.register(SMALL, indexSmall);
+    indexDispatcher.register(POS_20_BIT, indexSmall);
     indexDispatcher.register(EncodedSequenceVariant.Type.BIG, indexBig);
   }
 
@@ -56,8 +56,10 @@ class SequenceVariantAnnotationIndexDispatcherTest {
     when(sequenceVariant.getType()).thenReturn(SequenceVariantType.SNV);
     when(sequenceVariant.getAlt()).thenReturn(new AltAllele("A"));
     IndexRange indexRange = mock(IndexRange.class);
-    when(indexSmall.findIndexes(sequenceVariant)).thenReturn(indexRange);
-    assertEquals(indexRange, indexDispatcher.findIndexes(sequenceVariant));
+    when(indexSmall.findIndexesInto(sequenceVariant, 123, indexRange)).thenReturn(true);
+    assertTrue(
+        indexDispatcher.findIndexesInto(
+            sequenceVariant, new PositionEncoding(123, 12), indexRange));
   }
 
   @Test
@@ -68,9 +70,12 @@ class SequenceVariantAnnotationIndexDispatcherTest {
 
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> indexDispatcher =
         new SequenceVariantAnnotationIndexDispatcher<>();
-    indexDispatcher.register(SMALL, indexSmall);
+    indexDispatcher.register(POS_20_BIT, indexSmall);
 
-    assertNull(indexDispatcher.findIndexes(sequenceVariant));
+    IndexRange indexRange = mock(IndexRange.class);
+    assertFalse(
+        indexDispatcher.findIndexesInto(
+            sequenceVariant, new PositionEncoding(123, 12), indexRange));
   }
 
   @Test
@@ -78,12 +83,15 @@ class SequenceVariantAnnotationIndexDispatcherTest {
     SequenceVariant sequenceVariant = mock(SequenceVariant.class);
     when(indexSmall.isEmpty()).thenReturn(true);
     when(indexBig.isEmpty()).thenReturn(true);
-    assertNull(indexDispatcher.findIndexes(sequenceVariant));
+    IndexRange indexRange = mock(IndexRange.class);
+    assertFalse(
+        indexDispatcher.findIndexesInto(
+            sequenceVariant, new PositionEncoding(123, 12), indexRange));
   }
 
   @Test
   void getAnnotationIndex() {
-    assertEquals(indexDispatcher.getAnnotationIndex(SMALL), indexSmall);
+    assertEquals(indexDispatcher.getAnnotationIndex(POS_20_BIT), indexSmall);
   }
 
   @Test
@@ -91,7 +99,8 @@ class SequenceVariantAnnotationIndexDispatcherTest {
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> indexDispatcher =
         new SequenceVariantAnnotationIndexDispatcher<>();
     assertThrows(
-        EnumConstantNotPresentException.class, () -> indexDispatcher.getAnnotationIndex(SMALL));
+        EnumConstantNotPresentException.class,
+        () -> indexDispatcher.getAnnotationIndex(POS_20_BIT));
   }
 
   @Test

@@ -2,19 +2,21 @@ package org.molgenis.vipannotate.format.vdb;
 
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.PartitionKey;
+import org.molgenis.vipannotate.format.PartitionedMemoryWriter;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.ExceptionUtils;
 
 /** {@link VdbArchiveWriter} with writes an index as the last entry. */
-public class PartitionedVdbArchiveWriter implements BinaryPartitionWriter {
+public class PartitionedVdbArchiveWriter implements PartitionedMemoryWriter {
   private final VdbArchiveWriter archiveWriter;
   private final VdbArchiveIndexWriter indexWriter;
   private final VdbArchiveIndex rootIndex;
 
   @Nullable private PartitionKey activePartitionIndexKey;
   @Nullable private VdbArchiveIndex activePartitionIndex;
-  @Nullable private MemoryBuffer scratchBuffer;
+  @Nullable private MemoryEncoder scratchEncoder;
 
   PartitionedVdbArchiveWriter(VdbArchiveWriter archiveWriter, VdbArchiveIndexWriter indexWriter) {
     this.archiveWriter = archiveWriter;
@@ -72,15 +74,15 @@ public class PartitionedVdbArchiveWriter implements BinaryPartitionWriter {
 
   private int writeIndex(VdbArchiveIndex archiveIndex) {
     // serialize index
-    if (scratchBuffer == null) {
-      scratchBuffer = indexWriter.writeTo(archiveIndex);
+    if (scratchEncoder == null) {
+      scratchEncoder = indexWriter.writeTo(archiveIndex);
     } else {
-      scratchBuffer.clear();
-      indexWriter.writeInto(archiveIndex, scratchBuffer);
+      scratchEncoder.unwrap().clear(); // FIXME
+      indexWriter.writeInto(archiveIndex, scratchEncoder);
     }
 
     // write index to archive
-    return archiveWriter.createEntry(scratchBuffer, Compression.ZSTD, IoMode.BUFFERED);
+    return archiveWriter.createEntry(scratchEncoder.unwrap(), Compression.ZSTD, IoMode.BUFFERED);
   }
 
   @Override
@@ -97,7 +99,11 @@ public class PartitionedVdbArchiveWriter implements BinaryPartitionWriter {
 
     // close resources
     try {
-      ClosableUtils.closeAll(scratchBuffer, archiveWriter);
+      if (scratchEncoder != null) {
+        ClosableUtils.closeAll(scratchEncoder.unwrap(), archiveWriter);
+      } else {
+        ClosableUtils.close(archiveWriter);
+      }
     } catch (Throwable throwable) {
       if (firstThrowable != null) {
         firstThrowable.addSuppressed(throwable);

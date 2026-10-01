@@ -7,15 +7,16 @@ import org.jspecify.annotations.Nullable;
 public class PredicateBatchIterator<T extends @Nullable Object> implements Iterator<List<T>> {
   private final PushbackIterator<T> sourceIt;
   private final BiPredicate<List<T>, T> batchPredicate;
-  @Nullable private List<T> reusableBatch;
+  @Nullable private final List<T> reusableBatch;
 
   public PredicateBatchIterator(Iterator<T> sourceIt, BiPredicate<List<T>, T> batchPredicate) {
-    this.sourceIt = new PushbackIterator<>(sourceIt);
-    this.batchPredicate = batchPredicate;
+    this(sourceIt, batchPredicate, null);
   }
 
   public PredicateBatchIterator(
-      Iterator<T> sourceIt, BiPredicate<List<T>, T> batchPredicate, List<T> reusableBatch) {
+      Iterator<T> sourceIt,
+      BiPredicate<List<T>, T> batchPredicate,
+      @Nullable List<T> reusableBatch) {
     this.sourceIt = new PushbackIterator<>(sourceIt);
     this.batchPredicate = batchPredicate;
     this.reusableBatch = reusableBatch;

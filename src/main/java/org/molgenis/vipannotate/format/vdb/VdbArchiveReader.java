@@ -115,16 +115,16 @@ public class VdbArchiveReader implements AutoCloseableNoThrow {
         readPlain(footerOffset, footerLength, getScratchBuffer(footerLength), IoMode.BUFFERED);
     // verify signature
     long pos = footerLength - Integer.BYTES;
-    int signature = memBuffer.getInt(pos);
+    int signature = memBuffer.getIntAtPosition(pos);
     if (signature != VdbArchive.VDB_SIGNATURE) {
       throw new VdbException("invalid vdb file: signature mismatch");
     }
 
     // get offset and length of vdb metadata
     pos -= Long.BYTES;
-    metadataLength = memBuffer.getLong(pos);
+    metadataLength = memBuffer.getLongAtPosition(pos);
     pos -= Long.BYTES;
-    metadataOffset = memBuffer.getLong(pos);
+    metadataOffset = memBuffer.getLongAtPosition(pos);
 
     // decompress metadata
     return readZstd(metadataOffset, metadataLength, null, IoMode.BUFFERED);

@@ -8,6 +8,11 @@ public final class Score extends BedField {
     super(fieldRawView);
   }
 
+  @Override
+  public boolean isMissingValue() {
+    return false;
+  }
+
   public CharSequence getRaw() {
     return fieldRawView;
   }

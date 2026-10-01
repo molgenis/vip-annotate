@@ -1,12 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.spec.IntAnnotationSpec;
+import org.molgenis.vipannotate.annotation.def.IntAnnotationDef;
 import org.molgenis.vipannotate.format.Field;
 
 @RequiredArgsConstructor
 public class IntFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
-  private final IntAnnotationSpec annotationSpec;
+  private final IntAnnotationDef annotationSpec;
 
   private long count;
   private long nullCount;
@@ -15,12 +15,11 @@ public class IntFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
 
   @Override
   public void analyze(F field) {
-    CharSequence charSequence = field.getRawView();
-
     count++;
-    if (charSequence.isEmpty()) {
+    if (field.isMissingValue()) {
       nullCount++;
     } else {
+      CharSequence charSequence = field.getRawView();
       long number = Long.parseLong(charSequence, 0, charSequence.length(), 10);
       if (number < min) {
         min = number;

@@ -1,8 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
-import org.molgenis.vipannotate.serialization.BinaryWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @RequiredArgsConstructor
 public class OffsetIntAnnotationEncoder implements AnnotationEncoder<IntAnnotation> {
@@ -10,8 +9,11 @@ public class OffsetIntAnnotationEncoder implements AnnotationEncoder<IntAnnotati
   private final int offset;
 
   @Override
-  public void encodeInto(IntAnnotation annotation, BinaryWriter binaryWriter) {
-    intValueWriter.write(offset + annotation.getValue(), binaryWriter);
+  public void encodeInto(IntAnnotation annotation, MemoryEncoder memEncoder) {
+    if (annotation.isMissingValue()) {
+      throw new IllegalArgumentException();
+    }
+    intValueWriter.write(offset + annotation.getValue(), memEncoder);
   }
 
   @Override

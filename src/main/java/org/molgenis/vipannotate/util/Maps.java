@@ -11,11 +11,13 @@ public class Maps {
 
   private Maps() {}
 
+  @SuppressWarnings("NonApiType")
   public static <K extends @Nullable Object, V extends @Nullable Object>
       HashMap<K, V> newHashMapWithExpectedSize(int expectedSize) {
     return new HashMap<>(capacity(expectedSize));
   }
 
+  @SuppressWarnings("NonApiType")
   public static <K extends @Nullable Object, V extends @Nullable Object>
       LinkedHashMap<K, V> newLinkedHashMapWithExpectedSize(int expectedSize) {
     return new LinkedHashMap<>(capacity(expectedSize));

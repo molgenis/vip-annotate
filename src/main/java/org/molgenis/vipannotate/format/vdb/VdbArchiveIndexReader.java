@@ -1,36 +1,26 @@
 package org.molgenis.vipannotate.format.vdb;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import org.molgenis.vipannotate.serialization.MemoryDecodable;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferReader;
-
-public class VdbArchiveIndexReader implements MemoryBufferReader<VdbArchiveIndex> {
+public class VdbArchiveIndexReader implements MemoryDecodable<VdbArchiveIndex> {
 
   @Override
-  public VdbArchiveIndex readFrom(MemoryBuffer memBuffer) {
-    memBuffer.flip();
+  public VdbArchiveIndex readFrom(MemoryDecoder memDecoder) {
+    memDecoder.unwrap().flip(); // FIXME should not happen here
 
-    int nrEntries = memBuffer.getInt();
-    VdbArchiveIndex archiveIndex = new VdbArchiveIndex(nrEntries);
-    fillIndex(memBuffer, nrEntries, archiveIndex);
+    VdbArchiveIndex archiveIndex = new VdbArchiveIndex();
+    memDecoder.getMapInto(
+        archiveIndex.getEntryNameToIdMap(), MemoryDecoder::getString, MemoryDecoder::getInt);
     return archiveIndex;
   }
 
   @Override
-  public void readInto(MemoryBuffer memBuffer, VdbArchiveIndex archiveIndex) {
-    memBuffer.flip();
+  public void readInto(MemoryDecoder memDecoder, VdbArchiveIndex archiveIndex) {
+    memDecoder.unwrap().flip(); // FIXME should not happen here
 
-    int nrEntries = memBuffer.getInt();
     archiveIndex.reset();
-    fillIndex(memBuffer, nrEntries, archiveIndex);
-  }
-
-  private void fillIndex(MemoryBuffer memoryBuffer, int nrEntries, VdbArchiveIndex archiveIndex) {
-    for (int i = 0; i < nrEntries; i++) {
-      byte[] bytes = memoryBuffer.getByteArray();
-      int entryId = memoryBuffer.getInt();
-      archiveIndex.addEntry(new String(bytes, UTF_8), entryId);
-    }
+    memDecoder.getMapInto(
+        archiveIndex.getEntryNameToIdMap(), MemoryDecoder::getString, MemoryDecoder::getInt);
   }
 }

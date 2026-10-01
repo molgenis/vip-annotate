@@ -1,15 +1,18 @@
 package org.molgenis.vipannotate.annotation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
+import org.molgenis.vipannotate.format.PartitionedMemoryWriter;
 import org.molgenis.vipannotate.format.vdb.Compression;
 import org.molgenis.vipannotate.format.vdb.IoMode;
-import org.molgenis.vipannotate.serialization.BinaryWriter;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.util.Numbers;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 
@@ -20,6 +23,7 @@ import org.molgenis.vipannotate.util.TransformingIterator;
  * @param <U> type of genomic position annotation
  * @param <W> annotated genomic position typed by T and U
  */
+// FIXME dedup with AnnotatedSequenceVariantPartitionWriter
 @RequiredArgsConstructor
 public class AnnotatedPositionPartitionWriter<
         T extends Position,
@@ -29,8 +33,9 @@ public class AnnotatedPositionPartitionWriter<
     implements AnnotatedIntervalPartitionWriter<T, U, W> {
   private final String annotationDataId;
   private final AnnotationDatasetEncoder<V> annotationDatasetEncoder;
-  private final BinaryPartitionWriter binaryPartitionWriter;
+  private final PartitionedMemoryWriter partitionedMemWriter;
   private final Function<W, V> annotationExtractor;
+
   @Nullable private MemoryBuffer scratchBuffer;
 
   @Override
@@ -43,36 +48,38 @@ public class AnnotatedPositionPartitionWriter<
             annotatedVariants.size());
 
     // encode
-    long encodedAnnotationByteSize =
-        annotationDatasetEncoder.getEncodedSizeInBytes(annotationIt.getSize());
-    MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedAnnotationByteSize);
-    annotationDatasetEncoder.encode(annotationIt, BinaryWriter.fixed(memBuffer));
+    AtomicReference<MemoryEncoder> memEncoder = new AtomicReference<>();
+    annotationDatasetEncoder.encodeInto(
+        annotationIt,
+        () -> {
+          if (memEncoder.get() == null) {
+            memEncoder.set(MemoryEncoder.autoGrowing(getScratchBuffer()));
+          }
+          return memEncoder.get();
+        });
 
     // write
-    binaryPartitionWriter.write(
-        annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partition.key());
+    if (memEncoder.get() != null) {
+      partitionedMemWriter.write(
+          annotationDataId,
+          Compression.ZSTD,
+          IoMode.DIRECT,
+          requireNonNull(scratchBuffer),
+          partition.key());
+    }
   }
 
-  private MemoryBuffer getHeapBackedScratchBuffer(long minCapacity) {
+  private MemoryBuffer getScratchBuffer() {
     if (scratchBuffer == null) {
-      scratchBuffer = MemoryBuffer.wrap(new byte[Math.toIntExact(minCapacity)]);
+      scratchBuffer = MemoryBuffer.allocateHeap(1);
     } else {
-      if (minCapacity > scratchBuffer.getCapacity()) {
-        // ensureCapacity does not support heap backed buffers, create a new one
-        scratchBuffer.close();
-        scratchBuffer =
-            MemoryBuffer.wrap(new byte[Math.toIntExact(Numbers.nextPowerOf2(minCapacity))]);
-      } else {
-        scratchBuffer.clear();
-      }
+      scratchBuffer.clear();
     }
     return scratchBuffer;
   }
 
   @Override
   public void close() {
-    if (scratchBuffer != null) {
-      scratchBuffer.close();
-    }
+    ClosableUtils.close(scratchBuffer);
   }
 }

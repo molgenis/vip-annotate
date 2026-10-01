@@ -4,21 +4,50 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "ref": 3,
-    "alt": 4,
-    "annotation_columns": {
-      "ncbi_gene_id": 5,
-      "ds_ag": 6,
-      "ds_al": 7,
-      "ds_dg": 8,
-      "ds_dl": 9,
-      "dp_ag": 10,
-      "dp_al": 11,
-      "dp_dg": 12,
-      "dp_dl": 13
+    "columns": {
+      "contig": {
+        "name": "#[0]CHROM"
+      },
+      "start": {
+        "name": "[1]POS"
+      },
+      "ref": {
+        "name": "[2]REF"
+      },
+      "alt": {
+        "name": "[3]ALT"
+      },
+      "annotations": {
+        "ncbi_gene_id": {
+          "name": "[4]NCBI_GENE_ID"
+        },
+        "ds_ag": {
+          "name": "[5]DS_AG"
+        },
+        "ds_al": {
+          "name": "[6]DS_AL"
+        },
+        "ds_dg": {
+          "name": "[7]DS_DG"
+        },
+        "ds_dl": {
+          "name": "[8]DS_DL"
+        },
+        "dp_ag": {
+          "name": "[9]DP_AG"
+        },
+        "dp_al": {
+          "name": "[10]DP_AL"
+        },
+        "dp_dg": {
+          "name": "[11]DP_DG"
+        },
+        "dp_dl": {
+          "name": "[12]DP_DL"
+        }
+      }
     }
   },
   "definition": {
@@ -30,18 +59,22 @@
       },
       "ds_ag": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (acceptor gain)"
       },
       "ds_al": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (acceptor loss)"
       },
       "ds_dg": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (donor gain)"
       },
       "ds_dl": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (donor loss)"
       },
       "dp_ag": {

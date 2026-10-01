@@ -1,12 +1,23 @@
 package org.molgenis.vipannotate.annotation.spec;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
-// keep in sync with
-// src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
-public record EnumAnnotationSpec(
-    @JsonProperty(value = "description") @Nullable String description,
-    @JsonProperty(value = "values", required = true) String[] values,
-    @JsonProperty(value = "nullable") boolean nullable)
-    implements AnnotationSpec {}
+public record EnumAnnotationSpec(@Nullable String description, boolean nullable, String[] values)
+    implements AnnotationSpec {
+
+  @Override
+  public void writeTo(MemoryEncoder memEncoder) {
+    memEncoder.putStringNullable(description);
+    memEncoder.putBoolean(nullable);
+    memEncoder.putArray(values, MemoryEncoder::putString);
+  }
+
+  public static EnumAnnotationSpec readFrom(MemoryDecoder memDecoder) {
+    String description = memDecoder.getStringNullable();
+    boolean nullable = memDecoder.getBoolean();
+    String[] values = memDecoder.getArray(String[]::new, MemoryDecoder::getString);
+    return new EnumAnnotationSpec(description, nullable, values);
+  }
+}

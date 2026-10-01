@@ -4,7 +4,7 @@ package org.molgenis.vipannotate.annotation;
  * Annotated feature partition key
  *
  * @param contig contig
- * @param bin bin index
+ * @param bin bin index or {@code -1} if bin unknown
  */
 // TODO move to org.molgenis.vipannotate.format.vdb and refactor
 public record PartitionKey(Contig contig, int bin) {

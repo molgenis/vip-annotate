@@ -4,13 +4,26 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": false,
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "ref": 3,
-    "alt": 4,
-    "annotation_columns": {
-      "score": 5
+    "columns": {
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
+      "ref": {
+        "index": 3
+      },
+      "alt": {
+        "index": 4
+      },
+      "annotations": {
+        "score": {
+          "index": 5
+        }
+      }
     }
   },
   "definition": {
@@ -18,6 +31,7 @@
     "annotations": {
       "score": {
         "type": "floating_point",
+        "encoding": "lossy_q8",
         "description": "p-value: above 0.5 predicts deleterious; below 0.5 predicts neutral/benign."
       }
     }

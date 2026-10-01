@@ -13,11 +13,11 @@ public class EncodedSequenceVariant {
   private int bigLength;
 
   public static EncodedSequenceVariant createSmall(int small) {
-    return new EncodedSequenceVariant(Type.SMALL, small, null, -1);
+    return new EncodedSequenceVariant(Type.POS_20_BIT, small, null, -1);
   }
 
   public void resetSmall(int small) {
-    this.type = Type.SMALL;
+    this.type = Type.POS_20_BIT;
     this.small = small;
     this.big = null;
   }
@@ -42,7 +42,7 @@ public class EncodedSequenceVariant {
   }
 
   public int getSmall() {
-    if (type != Type.SMALL) {
+    if (type != Type.POS_20_BIT) {
       throw new IllegalStateException("variant is not small");
     }
     return small;
@@ -64,7 +64,8 @@ public class EncodedSequenceVariant {
   }
 
   public enum Type {
-    SMALL,
+    POS_20_BIT,
+    POS_26_BIT,
     BIG,
     OTHER
   }

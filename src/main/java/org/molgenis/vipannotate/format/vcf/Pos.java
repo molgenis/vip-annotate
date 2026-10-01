@@ -1,14 +1,18 @@
 package org.molgenis.vipannotate.format.vcf;
 
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
-public final class Pos extends Field {
+public final class Pos extends VcfField {
   private int parsedField;
 
   private Pos(StringView fieldRawView) {
     super(fieldRawView);
+  }
+
+  @Override
+  public boolean isMissingValue() {
+    return false;
   }
 
   public int getRaw() {

@@ -1,36 +1,19 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
-import org.molgenis.vipannotate.serialization.BinaryReader;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
 import org.molgenis.vipannotate.util.Quantizer;
 
 @RequiredArgsConstructor
-public class QuantizedAnnotationDecoder implements AnnotationDecoder<ScalarAnnotation> {
+public class QuantizedAnnotationDecoder implements AnnotationDecoder<FloatAnnotation> {
   private final Quantizer quantizer;
   private final IntReadValueFunction intReadValueFunction;
-  @Nullable private final Integer nullValue;
-
-  @Override
-  public ScalarAnnotation decode(BinaryReader binaryReader, int annotationIndex) {
-    long quantizedValue = intReadValueFunction.apply(binaryReader, annotationIndex);
-
-    ScalarAnnotation scalarAnnotation;
-    if (nullValue != null && quantizedValue == nullValue) {
-      scalarAnnotation = new NullableFloatAnnotation();
-    } else {
-      double value = quantizer.dequantize(quantizedValue);
-      scalarAnnotation =
-          nullValue != null ? new NullableFloatAnnotation(value) : new FloatAnnotation(value);
-    }
-    return scalarAnnotation;
-  }
 
   @Override
   public void decodeInto(
-      BinaryReader binaryReader, int annotationIndex, ScalarAnnotation annotation) {
-    throw new RuntimeException("not implemented"); // FIXME
+      MemoryDecoder memDecoder, int annotationIndex, FloatAnnotation annotation) {
+    long quantizedValue = intReadValueFunction.apply(memDecoder, annotationIndex);
+    double value = quantizer.dequantize(quantizedValue);
+    annotation.reset(value);
   }
 }

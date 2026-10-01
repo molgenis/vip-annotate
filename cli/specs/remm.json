@@ -4,11 +4,20 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": false,
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "annotation_columns": {
-      "score": 3
+    "columns": {
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
+      "annotations": {
+        "score": {
+          "index": 3
+        }
+      }
     }
   },
   "definition": {
@@ -16,6 +25,7 @@
     "annotations": {
       "score": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "score prediction of the potential pathogenicity of noncoding variants"
       }
     }

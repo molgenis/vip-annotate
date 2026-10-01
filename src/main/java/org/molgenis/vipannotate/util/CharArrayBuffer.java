@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.util;
 
-import static org.molgenis.vipannotate.util.Numbers.requirePositive;
+import static org.molgenis.vipannotate.util.Numbers.validatePositive;
 
 import java.util.Arrays;
 import lombok.Getter;
@@ -10,7 +10,7 @@ public class CharArrayBuffer {
   @Getter private int length;
 
   public CharArrayBuffer(int initialCapacity) {
-    requirePositive(initialCapacity);
+    validatePositive(initialCapacity);
     this.buffer = new char[initialCapacity];
     this.length = 0;
   }

@@ -28,11 +28,11 @@ public class StreamVByte implements AutoCloseable {
 
   /** Returns a StreamVByte library wrapper using the native linker */
   public static StreamVByte create() {
-    //noinspection DataFlowIssue --> false positive
     return create(Linker.nativeLinker());
   }
 
   /** Returns a StreamVByte library wrapper using the given linker */
+  @SuppressWarnings("MustBeClosedChecker")
   public static StreamVByte create(Linker linker) {
     String overridePath = System.getProperty("streamvbyte.lib.path");
     if (overridePath == null) {

@@ -1,22 +1,25 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class CompositeAnnotationDatasetReader
-    implements AnnotationDatasetDecoder<CompositeAnnotation> {
-  private final AnnotationDatasetDecoder<?>[] datasetReaders;
+    implements AnnotationDatasetReader<CompositeAnnotation> {
+  private final AnnotationDatasetReader<?>[] datasetReaders;
 
   @Override
-  public AnnotationDataset<CompositeAnnotation> decode(PartitionKey partitionKey) {
+  public AnnotationDataset<CompositeAnnotation> read(PartitionKey partitionKey) {
     AnnotationDataset<? extends Annotation>[] annotationDatasets =
         new AnnotationDataset<?>[datasetReaders.length];
     for (int i = 0, length = datasetReaders.length; i < length; i++) {
-      annotationDatasets[i] = datasetReaders[i].decode(partitionKey);
+      annotationDatasets[i] = datasetReaders[i].read(partitionKey);
     }
     return new CompositeAnnotationDataset(annotationDatasets);
   }
 
   @Override
-  public void close() {}
+  public void close() {
+    ClosableUtils.closeAll(datasetReaders);
+  }
 }

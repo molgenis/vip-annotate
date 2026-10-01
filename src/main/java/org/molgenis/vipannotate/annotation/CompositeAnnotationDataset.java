@@ -1,18 +1,28 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class CompositeAnnotationDataset implements AnnotationDataset<CompositeAnnotation> {
   private final AnnotationDataset<? extends Annotation>[] annotationDatasets;
 
   @Override
-  public @Nullable CompositeAnnotation findByIndex(int index) {
-    Annotation[] annotations = new Annotation[annotationDatasets.length];
+  public CompositeAnnotation findByIndexInto(
+      int index, Supplier<CompositeAnnotation> annotationSupplier) {
+    CompositeAnnotation compositeAnnotation = annotationSupplier.get();
     for (int i = 0, length = annotationDatasets.length; i < length; i++) {
-      annotations[i] = annotationDatasets[i].findByIndex(index);
+      AnnotationDataset<Annotation> annotationDataset = getAnnotationDataset(i);
+      Annotation annotation = compositeAnnotation.annotation(i);
+      if (annotationDataset.findByIndexInto(index, () -> annotation) == null) {
+        throw new UnsupportedOperationException();
+      }
     }
-    return new CompositeAnnotation(annotations);
+    return compositeAnnotation;
+  }
+
+  @SuppressWarnings("unchecked")
+  private AnnotationDataset<Annotation> getAnnotationDataset(int index) {
+    return (AnnotationDataset<Annotation>) annotationDatasets[index];
   }
 }

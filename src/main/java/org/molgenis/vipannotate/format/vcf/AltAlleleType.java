@@ -18,7 +18,7 @@ public enum AltAlleleType {
   MISSING_OVERLAPPING_DELETION,
   /// breakend that is not part of a novel adjacency e.g. '.A' or 'T.'
   SINGLE_BREAKEND,
-  ///  symbolic / angle-bracketed ID string '<ID>'
+  /// symbolic / angle-bracketed ID string '<ID>'
   SYMBOLIC,
   /// unspecified allele '<*>'
   UNSPECIFIED

@@ -10,21 +10,32 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Interval implements Feature {
   /** genome contig identifier */
-  private final Contig contig;
+  private Contig contig;
 
   /** genome start position (inclusive, 1-based) */
-  private final int start;
+  private int start;
 
   /** genome stop position (inclusive, 1-based) */
-  private final int stop;
+  private int stop;
 
   // TODO validate start-stop against contig.length is not null
   public Interval(Contig contig, int start, int stop) {
-    if (start < 0 || stop < start) {
-      throw new IllegalArgumentException("invalid genomic interval");
-    }
+    validate(start, stop);
     this.contig = contig;
     this.start = start;
     this.stop = stop;
+  }
+
+  public void reset(Contig contig, int start, int stop) {
+    validate(start, stop);
+    this.contig = contig;
+    this.start = start;
+    this.stop = stop;
+  }
+
+  private static void validate(int start, int stop) {
+    if (start < 0 || stop < start) {
+      throw new IllegalArgumentException("invalid genomic interval");
+    }
   }
 }

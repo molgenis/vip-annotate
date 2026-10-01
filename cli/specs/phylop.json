@@ -13,7 +13,8 @@
     "annotations": {
       "score": {
         "type": "floating_point",
-        "description": "evolutionary conservation measure, with positive scores indicating conservation and negative scores indicating accelerated evolution"
+        "encoding": "lossy_q16",
+        "description": "positive scores indicating conservation and negative scores indicating accelerated evolution"
       }
     }
   }

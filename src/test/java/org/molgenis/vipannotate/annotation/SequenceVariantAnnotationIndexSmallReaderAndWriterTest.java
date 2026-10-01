@@ -12,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.streamvbyte.StreamVByte;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexSmallReaderAndWriterTest {
@@ -40,42 +42,47 @@ class SequenceVariantAnnotationIndexSmallReaderAndWriterTest {
 
   @Test
   void testWriteIntoAndReadFrom() {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[100]);
-    SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall =
-        new SequenceVariantAnnotationIndexSmall<>(encoder, new int[] {0, 1, 2, Integer.MAX_VALUE});
-    indexWriter.writeInto(indexSmall, memoryBuffer);
-    long afterWritePos = memoryBuffer.getPosition();
+    try (MemoryBuffer memoryBuffer = MemoryBuffer.allocateHeap(100)) {
 
-    memoryBuffer.flip();
-    SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmallDeserialized =
-        indexReader.readFrom(memoryBuffer);
-    assertAll(
-        () ->
-            assertArrayEquals(
-                indexSmall.getEncodedVariantsArray(),
-                indexSmallDeserialized.getEncodedVariantsArray()),
-        () -> assertEquals(afterWritePos, memoryBuffer.getPosition()));
+      SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall =
+          new SequenceVariantAnnotationIndexSmall<>(
+              encoder, new int[] {0, 1, 2, Integer.MAX_VALUE});
+      indexWriter.writeInto(indexSmall, MemoryEncoder.autoGrowing(memoryBuffer));
+      long afterWritePos = memoryBuffer.getPosition();
+
+      memoryBuffer.flip();
+      SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmallDeserialized =
+          indexReader.readFrom(MemoryDecoder.wrap(memoryBuffer));
+      assertAll(
+          () ->
+              assertArrayEquals(
+                  indexSmall.getEncodedVariantsArray(),
+                  indexSmallDeserialized.getEncodedVariantsArray()),
+          () -> assertEquals(afterWritePos, memoryBuffer.getPosition()));
+    }
   }
 
   @Test
   void testWriteIntoAndReadInto() {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[100]);
+    try (MemoryBuffer memoryBuffer = MemoryBuffer.allocateHeap(100)) {
 
-    SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall =
-        new SequenceVariantAnnotationIndexSmall<>(encoder, new int[] {0, 1, 2, Integer.MAX_VALUE});
-    indexWriter.writeInto(indexSmall, memoryBuffer);
-    long afterWritePos = memoryBuffer.getPosition();
+      SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall =
+          new SequenceVariantAnnotationIndexSmall<>(
+              encoder, new int[] {0, 1, 2, Integer.MAX_VALUE});
+      indexWriter.writeInto(indexSmall, MemoryEncoder.autoGrowing(memoryBuffer));
+      long afterWritePos = memoryBuffer.getPosition();
 
-    memoryBuffer.flip();
-    SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmallDeserialized =
-        SequenceVariantAnnotationIndexSmallFactory
-            .create(); // TODO do not use factory in unit test class
-    indexReader.readInto(memoryBuffer, indexSmallDeserialized);
-    assertAll(
-        () ->
-            assertArrayEquals(
-                indexSmall.getEncodedVariantsArray(),
-                indexSmallDeserialized.getEncodedVariantsArray()),
-        () -> assertEquals(afterWritePos, memoryBuffer.getPosition()));
+      memoryBuffer.flip();
+      SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmallDeserialized =
+          new SequenceVariantAnnotationIndexSmall<>(
+              new SequenceVariantEncoderPos20Bit<>(), new int[0]);
+      indexReader.readInto(MemoryDecoder.wrap(memoryBuffer), indexSmallDeserialized);
+      assertAll(
+          () ->
+              assertArrayEquals(
+                  indexSmall.getEncodedVariantsArray(),
+                  indexSmallDeserialized.getEncodedVariantsArray()),
+          () -> assertEquals(afterWritePos, memoryBuffer.getPosition()));
+    }
   }
 }

@@ -6,18 +6,17 @@ import java.io.Writer;
 import lombok.ToString;
 import org.molgenis.vipannotate.format.Record;
 import org.molgenis.vipannotate.format.StringView;
-import org.molgenis.vipannotate.format.vcf.*;
 
 /** low memory, high performance, reusable, lazy parsing */
 @ToString
 public final class TsvRecord implements Record<TsvField> {
   private final TsvField[] fields;
 
-  public TsvRecord(CharSequence dataLine) {
+  public TsvRecord(CharSequence dataLine, String missingValue, char listSeparator) {
     int nrFields = countTabs(dataLine) + 1;
     this.fields = new TsvField[nrFields];
     for (int i = 0; i < nrFields; i++) {
-      this.fields[i] = TsvField.wrap(new StringView(dataLine));
+      this.fields[i] = TsvField.wrap(new StringView(dataLine), missingValue, listSeparator);
     }
     reset(dataLine);
   }

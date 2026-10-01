@@ -4,19 +4,44 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "ref": 3,
-    "alt": 4,
-    "annotation_columns": {
-      "src": 5,
-      "af": 6,
-      "faf95": 7,
-      "faf99": 8,
-      "nhomalt": 9,
-      "filters": 10,
-      "cov": 11
+    "columns": {
+      "contig": {
+        "name": "#[0]CHROM"
+      },
+      "start": {
+        "name": "[1]POS"
+      },
+      "ref": {
+        "name": "[2]REF"
+      },
+      "alt": {
+        "name": "[3]ALT"
+      },
+      "annotations": {
+        "src": {
+          "name": "[4]SRC"
+        },
+        "af": {
+          "name": "[5]AF"
+        },
+        "faf95": {
+          "name": "[6]faf95"
+        },
+        "faf99": {
+          "name": "[7]faf99"
+        },
+        "nhomalt": {
+          "name": "[8]nhomalt"
+        },
+        "filters": {
+          "name": "[9]filters"
+        },
+        "cov": {
+          "name": "[10]COV"
+        }
+      }
     }
   },
   "definition": {
@@ -26,21 +51,33 @@
         "type": "enum",
         "description": "Source",
         "values": [
-          "G",
-          "E",
-          "T"
+          {
+            "value": "G",
+            "description": "Genomes"
+          },
+          {
+            "value": "E",
+            "description": "Exomes"
+          },
+          {
+            "value": "T",
+            "description": "Genomes+Exomes"
+          }
         ]
       },
       "af": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Alternate allele frequency"
       },
       "faf95": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Filtering allele frequency (using Poisson 95% CI)"
       },
       "faf99": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Filtering allele frequency (using Poisson 99% CI)"
       },
       "nhomalt": {
@@ -51,14 +88,24 @@
         "type": "enum_set",
         "description": "Failed variant filters",
         "values": [
-          "AC0",
-          "AS_VQSR",
-          "InbreedingCoeff"
+          {
+            "value": "AC0",
+            "description": "Allele count is zero due to removal of low quality genotypes"
+          },
+          {
+            "value": "AS_VQSR",
+            "description": "Failed allele-specific VQSR filter"
+          },
+          {
+            "value": "InbreedingCoeff",
+            "description": "Has an inbreeding coefficient < -0.3"
+          }
         ]
       },
       "cov": {
-        "description": "Percentage of individuals with coverage at this variant",
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16",
+        "description": "Percentage of individuals with coverage at this variant"
       }
     }
   }

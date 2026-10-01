@@ -43,16 +43,25 @@ class SequenceVariantAnnotationIndexSmallTest {
 
   @ParameterizedTest
   @MethodSource("findIndexesProvider")
-  void findIndexes(int encodedVariant, int[] encodedVariants, int length, IndexRange indexRange) {
+  void findIndexes(
+      int encodedVariant, int[] encodedVariants, int length, IndexRange expectedIndexRange) {
     SequenceVariantAnnotationIndexSmall<SequenceVariant> sequenceVariantAnnotationIndexSmall =
         new SequenceVariantAnnotationIndexSmall<>(encoder, encodedVariants, length);
     SequenceVariant sequenceVariant = mock(SequenceVariant.class);
     if (length != 0) {
       EncodedSequenceVariant encodedSequenceVariant = mock(EncodedSequenceVariant.class);
       when(encodedSequenceVariant.getSmall()).thenReturn(encodedVariant);
-      when(encoder.encode(sequenceVariant)).thenReturn(encodedSequenceVariant);
+      when(encoder.encode(sequenceVariant, 123)).thenReturn(encodedSequenceVariant);
     }
-    assertEquals(indexRange, sequenceVariantAnnotationIndexSmall.findIndexes(sequenceVariant));
+
+    IndexRange indexRange = new IndexRange(0, 0);
+    boolean found =
+        sequenceVariantAnnotationIndexSmall.findIndexesInto(sequenceVariant, 123, indexRange);
+    if (expectedIndexRange != null) {
+      assertAll(() -> assertTrue(found), () -> assertEquals(expectedIndexRange, indexRange));
+    } else {
+      assertFalse(found);
+    }
   }
 
   @Test

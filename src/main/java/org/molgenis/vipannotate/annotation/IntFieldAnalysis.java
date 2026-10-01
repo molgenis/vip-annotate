@@ -1,6 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.annotation.spec.IntAnnotationSpec;
+import org.molgenis.vipannotate.annotation.def.IntAnnotationDef;
 
-public record IntFieldAnalysis(IntAnnotationSpec annotationSpec, IntAnnotationStats stats)
+public record IntFieldAnalysis(IntAnnotationDef annotationSpec, IntAnnotationStats stats)
     implements FieldAnalysis {}

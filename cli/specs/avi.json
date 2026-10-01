@@ -4,14 +4,29 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "ref": 3,
-    "alt": 4,
-    "annotation_columns": {
-      "raw_score": 5,
-      "score": 6
+    "columns": {
+      "contig": {
+        "name": "#CHROM"
+      },
+      "start": {
+        "name": "POS"
+      },
+      "ref": {
+        "name": "REF"
+      },
+      "alt": {
+        "name": "ALT"
+      },
+      "annotations": {
+        "raw_score": {
+          "name": "raw_score"
+        },
+        "score": {
+          "name": "PHRED"
+        }
+      }
     }
   },
   "definition": {
@@ -19,10 +34,12 @@
     "annotations": {
       "raw_score": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Raw model predictions"
       },
       "score": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Raw model predictions converted to PHRED scores (PHRED 10 indicates top 10% of predictions, 20 indicates top 1%, etc.)"
       }
     }

@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
-public final class Filter extends Field {
+public final class Filter extends VcfField {
   private static final char FIELD_RAW_MISSING_VALUE = '.';
   private static final char FIELD_RAW_SEPARATOR = ';';
 
@@ -16,6 +15,11 @@ public final class Filter extends Field {
 
   private Filter(StringView fieldRaw) {
     super(fieldRaw);
+  }
+
+  @Override
+  public boolean isMissingValue() {
+    return fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE;
   }
 
   public List<CharSequence> getCodes() {
@@ -32,7 +36,7 @@ public final class Filter extends Field {
   @Override
   protected void onParse() {
     // fast path: missing value
-    if (fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE) {
+    if (isMissingValue()) {
       return;
     }
 

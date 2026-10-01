@@ -5,31 +5,34 @@ import lombok.RequiredArgsConstructor;
 import org.molgenis.streamvbyte.StreamVByte;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
-import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncodable;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexSmallWriter<T extends SequenceVariant>
-    implements MemoryBufferWriter<AnnotationIndex<T>> {
+    implements MemoryEncodable<AnnotationIndex<T>> {
   private final MemoryBufferFactory memBufferFactory;
   private final StreamVByte streamVByte;
 
   @Override
-  public MemoryBuffer writeTo(AnnotationIndex<T> object) {
-    MemoryBuffer memBuffer = memBufferFactory.newMemoryBuffer();
-    writeInto(object, memBuffer);
-    return memBuffer;
+  public MemoryEncoder writeTo(AnnotationIndex<T> object) {
+    MemoryEncoder memEncoder = MemoryEncoder.autoGrowing(memBufferFactory.newMemoryBuffer());
+    writeInto(object, memEncoder);
+    return memEncoder;
   }
 
   @Override
-  public void writeInto(AnnotationIndex<T> index, MemoryBuffer memBuffer) {
+  public void writeInto(AnnotationIndex<T> index, MemoryEncoder memEncoder) {
     SequenceVariantAnnotationIndexSmall<T> indexSmall = getTyped(index);
     int[] encodedVariantsArray = indexSmall.getEncodedVariantsArray();
     long maxCompressedBytes = streamVByte.maxCompressedBytes(encodedVariantsArray.length);
 
     // write number of index values
-    memBuffer.putVarUnsignedInt(encodedVariantsArray.length);
+    memEncoder.putVarInt(encodedVariantsArray.length);
 
     // encode index and write to buffer
+    MemoryBuffer memBuffer =
+        memEncoder.unwrap(); // FIXME replace with functional method on memBuffer?
     long pos = memBuffer.getPosition();
     memBuffer.ensureCapacity(pos + maxCompressedBytes);
     memBuffer.setLimit(pos + maxCompressedBytes);

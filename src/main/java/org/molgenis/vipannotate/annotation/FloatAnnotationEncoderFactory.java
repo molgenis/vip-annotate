@@ -1,8 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.*;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedFloatAnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IntInterval;
 import org.molgenis.vipannotate.util.Quantizer;
@@ -11,7 +10,7 @@ import org.molgenis.vipannotate.util.Quantizer;
 public class FloatAnnotationEncoderFactory {
   private final ValueWriterFactory valueWriterFactory;
 
-  public AnnotationEncoder<?> create(ResolvedFloatAnnotationSpec annotationSpec) {
+  public AnnotationEncoder<?> create(FloatAnnotationSpec annotationSpec) {
     return switch (annotationSpec.storageType()) {
       case FloatType type -> create(type, annotationSpec.floatEncoding());
       case IntType type -> create(type, annotationSpec.floatEncoding());
@@ -22,25 +21,22 @@ public class FloatAnnotationEncoderFactory {
     FloatValueWriter valueWriter = valueWriterFactory.createFloatValueWriter(floatType);
 
     return switch (floatEncoding) {
-      case NullableFloatEncoding _ -> new NullableFloatAnnotationEncoder(valueWriter);
       case PlainFloatEncoding _ -> new FloatAnnotationEncoder(valueWriter);
-      default -> throw new UnsupportedOperationException();
+      case QuantizedEncoding _ -> throw new IllegalArgumentException();
     };
   }
 
-  @SuppressWarnings("SwitchStatementWithTooFewBranches")
   private AnnotationEncoder<?> create(IntType intType, FloatEncoding floatEncoding) {
     IntValueWriter valueWriter = valueWriterFactory.createIntValueWriter(intType);
 
     return switch (floatEncoding) {
+      case PlainFloatEncoding _ -> throw new IllegalArgumentException();
       case QuantizedEncoding encoding ->
           new QuantizedAnnotationEncoder(
               new Quantizer(
                   new DoubleInterval(encoding.range().min(), encoding.range().max()),
                   new IntInterval(encoding.levels().min(), encoding.levels().max())),
-              valueWriter,
-              encoding.nullCode());
-      default -> throw new UnsupportedOperationException();
+              valueWriter);
     };
   }
 }
