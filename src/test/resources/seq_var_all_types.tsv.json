@@ -6,27 +6,67 @@
     "coordinate_system": "1-based",
     "missing_value": ".",
     "columns": {
-      "contig": 1,
-      "start": 2,
-      "ref": 3,
-      "alt": 4,
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
+      "ref": {
+        "index": 3
+      },
+      "alt": {
+        "index": 4
+      },
       "annotations": {
-        "my_enum": 5,
-        "my_enum_nullable": 6,
-        "my_i8": 7,
-        "my_i8_nullable": 8,
-        "my_u8": 9,
-        "my_u8_nullable": 10,
-        "my_i16": 11,
-        "my_i16_nullable": 12,
-        "my_u16": 13,
-        "my_u16_nullable": 14,
-        "my_i32": 15,
-        "my_i32_nullable": 16,
-        "my_f32": 17,
-        "my_f32_nullable": 18,
-        "my_f64": 19,
-        "my_f64_nullable": 20
+        "my_enum": {
+          "index": 5
+        },
+        "my_enum_nullable": {
+          "index": 6
+        },
+        "my_i8": {
+          "index": 7
+        },
+        "my_i8_nullable": {
+          "index": 8
+        },
+        "my_u8": {
+          "index": 9
+        },
+        "my_u8_nullable": {
+          "index": 10
+        },
+        "my_i16": {
+          "index": 11
+        },
+        "my_i16_nullable": {
+          "index": 12
+        },
+        "my_u16": {
+          "index": 13
+        },
+        "my_u16_nullable": {
+          "index": 14
+        },
+        "my_i32": {
+          "index": 15
+        },
+        "my_i32_nullable": {
+          "index": 16
+        },
+        "my_f32": {
+          "index": 17
+        },
+        "my_f32_nullable": {
+          "index": 18
+        },
+        "my_f64": {
+          "index": 19
+        },
+        "my_f64_nullable": {
+          "index": 20
+        }
       }
     }
   },

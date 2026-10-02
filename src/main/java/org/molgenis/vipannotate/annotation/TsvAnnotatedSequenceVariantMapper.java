@@ -30,10 +30,10 @@ public final class TsvAnnotatedSequenceVariantMapper
   }
 
   private SequenceVariant createSequenceVariant(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig() - 1);
-    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start() - 1);
-    TsvField refField = tsvRecord.field(tsvInputFormat.columns().ref() - 1);
-    TsvField altField = tsvRecord.field(tsvInputFormat.columns().alt() - 1);
+    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig().index() - 1);
+    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start().index() - 1);
+    TsvField refField = tsvRecord.field(tsvInputFormat.columns().ref().index() - 1);
+    TsvField altField = tsvRecord.field(tsvInputFormat.columns().alt().index() - 1);
 
     // FIXME hardcoded length
     // FIXME use contig registry
@@ -54,7 +54,7 @@ public final class TsvAnnotatedSequenceVariantMapper
   }
 
   private CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
-    Map<String, Integer> idxAnnotations = tsvInputFormat.columns().annotations();
+    Map<String, TsvColumn> idxAnnotations = tsvInputFormat.columns().annotations();
     if (idxAnnotations.isEmpty()) {
       throw new IllegalArgumentException();
       //    }
@@ -65,13 +65,14 @@ public final class TsvAnnotatedSequenceVariantMapper
       List<Annotation> annotations = new ArrayList<>(annotationsSpecs.size());
       annotationsSpecs.forEach(
           (annotationDatasetId, annotationSpec) -> {
-            Integer idxAnnotation = idxAnnotations.get(annotationDatasetId);
-            if (idxAnnotation == null) {
+            TsvColumn tsvColumn = idxAnnotations.get(annotationDatasetId);
+            if (tsvColumn == null) {
               throw new IllegalArgumentException(
-                  "'schema.annotation_datasets.%s' not defined in 'input.annotations'"
+                  "'definition.annotations.%s' not defined in 'input.colums.annotations'"
                       .formatted(annotationDatasetId));
             }
-            annotations.add(createAnnotation(tsvRecord.field(idxAnnotation - 1), annotationSpec));
+            annotations.add(
+                createAnnotation(tsvRecord.field(tsvColumn.index() - 1), annotationSpec));
           });
       return new CompositeAnnotation(annotations.toArray(new Annotation[0]));
     }

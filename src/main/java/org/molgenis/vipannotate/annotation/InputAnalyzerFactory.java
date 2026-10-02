@@ -63,20 +63,22 @@ public class InputAnalyzerFactory {
         TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : "");
     FieldResolver<TsvField, TsvRecord> fieldResolver =
         annotationId -> {
-          Integer fieldIndex = inputFormat.columns().annotations().get(annotationId);
+          TsvColumn tsvColumn = inputFormat.columns().annotations().get(annotationId);
 
-          if (fieldIndex == null) {
+          if (tsvColumn == null) {
             throw new IllegalArgumentException(
-                "'schema.annotation_datasets.%s' not defined in 'input.annotations'"
+                "'definition.annotations.%s' not defined in 'input.colums.annotations'"
                     .formatted(annotationId));
           }
 
-          return record -> record.fields()[fieldIndex - 1];
+          return record -> record.fields()[tsvColumn.index() - 1];
         };
     SequenceVariantTypeAnalyzer<TsvField, TsvRecord> sequenceVariantTypeAnalyzer;
-    Integer refIndex = inputFormat.columns().ref();
-    Integer altIndex = inputFormat.columns().alt();
-    if (refIndex != null && altIndex != null) {
+    TsvColumn refColumn = inputFormat.columns().ref();
+    TsvColumn altColumn = inputFormat.columns().alt();
+    if (refColumn != null && altColumn != null) {
+      int refIndex = refColumn.index();
+      int altIndex = altColumn.index();
       sequenceVariantTypeAnalyzer =
           new SequenceVariantTypeAnalyzer<>() {
             private final EnumSet<SequenceVariantType> sequenceVariantTypes =

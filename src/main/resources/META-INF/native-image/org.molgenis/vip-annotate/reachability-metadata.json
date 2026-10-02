@@ -128,16 +128,27 @@
       "type": "org.molgenis.vipannotate.annotation.spec.Range"
     },
     {
+      "type": "org.molgenis.vipannotate.annotation.spec.TsvColumn",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int"
+          ]
+        }
+      ]
+    },
+    {
       "type": "org.molgenis.vipannotate.annotation.spec.TsvColumns",
       "methods": [
         {
           "name": "<init>",
           "parameterTypes": [
-            "int",
-            "int",
-            "java.lang.Integer",
-            "java.lang.Integer",
-            "java.lang.Integer",
+            "org.molgenis.vipannotate.annotation.spec.TsvColumn",
+            "org.molgenis.vipannotate.annotation.spec.TsvColumn",
+            "org.molgenis.vipannotate.annotation.spec.TsvColumn",
+            "org.molgenis.vipannotate.annotation.spec.TsvColumn",
+            "org.molgenis.vipannotate.annotation.spec.TsvColumn",
             "java.util.Map"
           ]
         }

@@ -28,8 +28,8 @@ public final class TsvAnnotatedPositionMapper
   }
 
   private Position createPosition(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig() - 1);
-    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start() - 1);
+    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig().index() - 1);
+    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start().index() - 1);
 
     // FIXME hardcoded length
     // FIXME use contig registry
@@ -44,8 +44,8 @@ public final class TsvAnnotatedPositionMapper
 
   // FIXME dedup with TsvAnnotatedSequenceVariantMapper
   private CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
-    Map<String, Integer> idxAnnotations = tsvInputFormat.columns().annotations();
-    if (idxAnnotations.isEmpty()) {
+    Map<String, TsvColumn> tsvColumns = tsvInputFormat.columns().annotations();
+    if (tsvColumns.isEmpty()) {
       throw new IllegalArgumentException();
       //    }
       //    else if (idxAnnotations.length == 1) {
@@ -55,13 +55,14 @@ public final class TsvAnnotatedPositionMapper
       List<Annotation> annotations = new ArrayList<>(annotationsSpecs.size());
       annotationsSpecs.forEach(
           (annotationDatasetId, annotationSpec) -> {
-            Integer idxAnnotation = idxAnnotations.get(annotationDatasetId);
-            if (idxAnnotation == null) {
+            TsvColumn tsvColumn = tsvColumns.get(annotationDatasetId);
+            if (tsvColumn == null) {
               throw new IllegalArgumentException(
-                  "'schema.annotation_datasets.%s' not defined in 'input.annotations'"
+                  "'definition.annotations.%s' not defined in 'input.colums.annotations'"
                       .formatted(annotationDatasetId));
             }
-            annotations.add(createAnnotation(tsvRecord.field(idxAnnotation - 1), annotationSpec));
+            annotations.add(
+                createAnnotation(tsvRecord.field(tsvColumn.index() - 1), annotationSpec));
           });
       return new CompositeAnnotation(annotations.toArray(new Annotation[0]));
     }
