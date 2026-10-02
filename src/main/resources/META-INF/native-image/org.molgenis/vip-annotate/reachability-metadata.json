@@ -160,6 +160,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
+            "java.lang.boolean",
             "org.molgenis.vipannotate.annotation.spec.CoordinateSystem",
             "java.lang.String",
             "org.molgenis.vipannotate.annotation.spec.TsvColumns"

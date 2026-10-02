@@ -9,6 +9,7 @@ import org.molgenis.vipannotate.format.RecordReader;
 import org.molgenis.vipannotate.format.bed.BedFeature;
 import org.molgenis.vipannotate.format.bed.BedField;
 import org.molgenis.vipannotate.format.bed.BedParserFactory;
+import org.molgenis.vipannotate.format.tsv.TsvParser;
 import org.molgenis.vipannotate.format.tsv.TsvParserFactory;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
 
@@ -40,8 +41,12 @@ public class AnnotatedFeatureReaderFactory {
               new TsvAnnotatedSequenceVariantMapper(tsvInputFormat, annotationSpecs)::apply;
         };
     String missingValue = tsvInputFormat.missingValue();
-    return new AnnotatedFeatureReaderImpl<>(
-        TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : ""), mapper);
+    TsvParser tsvParser =
+        TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : "");
+    if (tsvInputFormat.header()) {
+      tsvParser.read();
+    }
+    return new AnnotatedFeatureReaderImpl<>(tsvParser, mapper);
   }
 
   private static AnnotatedFeatureReader createFromBed(

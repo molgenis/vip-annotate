@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
     "missing_value": ".",
     "columns": {

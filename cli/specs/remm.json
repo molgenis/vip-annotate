@@ -4,12 +4,19 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": false,
     "coordinate_system": "1-based",
     "columns": {
-      "contig": 1,
-      "start": 2,
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
       "annotations": {
-        "score": 3
+        "score": {
+          "index": 3
+        }
       }
     }
   },

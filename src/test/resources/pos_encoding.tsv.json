@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": false,
     "coordinate_system": "1-based",
     "columns": {
       "contig": {

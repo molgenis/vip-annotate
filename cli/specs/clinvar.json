@@ -4,16 +4,31 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
     "columns": {
-      "contig": 1,
-      "start": 2,
-      "ref": 4,
-      "alt": 5,
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
+      "ref": {
+        "index": 4
+      },
+      "alt": {
+        "index": 5
+      },
       "annotations": {
-        "id": 3,
-        "clnsig": 6,
-        "clnrevstat": 8
+        "id": {
+          "index": 3
+        },
+        "clnsig": {
+          "index": 6
+        },
+        "clnrevstat": {
+          "index": 8
+        }
       }
     }
   },

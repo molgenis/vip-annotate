@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 @JsonTypeName("tsv")
 public record TsvInputFormat(
+    @JsonProperty(value = "header", required = true) boolean header,
     @JsonProperty(value = "coordinate_system", required = true) CoordinateSystem coordinateSystem,
     @JsonProperty(value = "missing_value") @Nullable String missingValue,
     @JsonProperty(value = "columns", required = true) TsvColumns columns)

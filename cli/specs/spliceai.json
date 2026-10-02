@@ -4,22 +4,49 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
     "columns": {
-      "contig": 1,
-      "start": 2,
-      "ref": 3,
-      "alt": 4,
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
+      "ref": {
+        "index": 3
+      },
+      "alt": {
+        "index": 4
+      },
       "annotations": {
-        "ncbi_gene_id": 5,
-        "ds_ag": 6,
-        "ds_al": 7,
-        "ds_dg": 8,
-        "ds_dl": 9,
-        "dp_ag": 10,
-        "dp_al": 11,
-        "dp_dg": 12,
-        "dp_dl": 13
+        "ncbi_gene_id": {
+          "index": 5
+        },
+        "ds_ag": {
+          "index": 6
+        },
+        "ds_al": {
+          "index": 7
+        },
+        "ds_dg": {
+          "index": 8
+        },
+        "ds_dl": {
+          "index": 9
+        },
+        "dp_ag": {
+          "index": 10
+        },
+        "dp_al": {
+          "index": 11
+        },
+        "dp_dg": {
+          "index": 12
+        },
+        "dp_dl": {
+          "index": 13
+        }
       }
     }
   },

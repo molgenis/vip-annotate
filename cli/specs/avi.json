@@ -4,15 +4,28 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
     "columns": {
-      "contig": 1,
-      "start": 2,
-      "ref": 3,
-      "alt": 4,
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
+      "ref": {
+        "index": 3
+      },
+      "alt": {
+        "index": 4
+      },
       "annotations": {
-        "raw_score": 5,
-        "score": 6
+        "raw_score": {
+          "index": 5
+        },
+        "score": {
+          "index": 6
+        }
       }
     }
   },

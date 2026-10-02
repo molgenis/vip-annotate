@@ -4,20 +4,43 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
     "columns": {
-      "contig": 1,
-      "start": 2,
-      "ref": 3,
-      "alt": 4,
+      "contig": {
+        "index": 1
+      },
+      "start": {
+        "index": 2
+      },
+      "ref": {
+        "index": 3
+      },
+      "alt": {
+        "index": 4
+      },
       "annotations": {
-        "src": 5,
-        "af": 6,
-        "faf95": 7,
-        "faf99": 8,
-        "nhomalt": 9,
-        "filters": 10,
-        "cov": 11
+        "src": {
+          "index": 5
+        },
+        "af": {
+          "index": 6
+        },
+        "faf95": {
+          "index": 7
+        },
+        "faf99": {
+          "index": 8
+        },
+        "nhomalt": {
+          "index": 9
+        },
+        "filters": {
+          "index": 10
+        },
+        "cov": {
+          "index": 11
+        }
       }
     }
   },
