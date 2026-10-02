@@ -5,10 +5,12 @@
   "input": {
     "type": "tsv",
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "annotation_columns": {
-      "score": 3
+    "columns": {
+      "contig": 1,
+      "start": 2,
+      "annotations": {
+        "score": 3
+      }
     }
   },
   "definition": {

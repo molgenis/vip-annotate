@@ -30,10 +30,10 @@ public final class TsvAnnotatedSequenceVariantMapper
   }
 
   private SequenceVariant createSequenceVariant(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(tsvInputFormat.contig() - 1);
-    TsvField startField = tsvRecord.field(tsvInputFormat.start() - 1);
-    TsvField refField = tsvRecord.field(tsvInputFormat.ref() - 1);
-    TsvField altField = tsvRecord.field(tsvInputFormat.alt() - 1);
+    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig() - 1);
+    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start() - 1);
+    TsvField refField = tsvRecord.field(tsvInputFormat.columns().ref() - 1);
+    TsvField altField = tsvRecord.field(tsvInputFormat.columns().alt() - 1);
 
     // FIXME hardcoded length
     // FIXME use contig registry
@@ -54,7 +54,7 @@ public final class TsvAnnotatedSequenceVariantMapper
   }
 
   private CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
-    Map<String, Integer> idxAnnotations = tsvInputFormat.annotations();
+    Map<String, Integer> idxAnnotations = tsvInputFormat.columns().annotations();
     if (idxAnnotations.isEmpty()) {
       throw new IllegalArgumentException();
       //    }

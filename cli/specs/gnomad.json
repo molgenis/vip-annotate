@@ -5,18 +5,20 @@
   "input": {
     "type": "tsv",
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "ref": 3,
-    "alt": 4,
-    "annotation_columns": {
-      "src": 5,
-      "af": 6,
-      "faf95": 7,
-      "faf99": 8,
-      "nhomalt": 9,
-      "filters": 10,
-      "cov": 11
+    "columns": {
+      "contig": 1,
+      "start": 2,
+      "ref": 3,
+      "alt": 4,
+      "annotations": {
+        "src": 5,
+        "af": 6,
+        "faf95": 7,
+        "faf99": 8,
+        "nhomalt": 9,
+        "filters": 10,
+        "cov": 11
+      }
     }
   },
   "definition": {

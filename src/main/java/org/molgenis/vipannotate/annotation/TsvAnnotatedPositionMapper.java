@@ -28,8 +28,8 @@ public final class TsvAnnotatedPositionMapper
   }
 
   private Position createPosition(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(tsvInputFormat.contig() - 1);
-    TsvField startField = tsvRecord.field(tsvInputFormat.start() - 1);
+    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig() - 1);
+    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start() - 1);
 
     // FIXME hardcoded length
     // FIXME use contig registry
@@ -44,7 +44,7 @@ public final class TsvAnnotatedPositionMapper
 
   // FIXME dedup with TsvAnnotatedSequenceVariantMapper
   private CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
-    Map<String, Integer> idxAnnotations = tsvInputFormat.annotations();
+    Map<String, Integer> idxAnnotations = tsvInputFormat.columns().annotations();
     if (idxAnnotations.isEmpty()) {
       throw new IllegalArgumentException();
       //    }

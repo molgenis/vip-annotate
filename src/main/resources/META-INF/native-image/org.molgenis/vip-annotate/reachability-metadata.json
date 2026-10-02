@@ -128,6 +128,22 @@
       "type": "org.molgenis.vipannotate.annotation.spec.Range"
     },
     {
+      "type": "org.molgenis.vipannotate.annotation.spec.TsvColumns",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int",
+            "int",
+            "java.lang.Integer",
+            "java.lang.Integer",
+            "java.lang.Integer",
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
       "type": "org.molgenis.vipannotate.annotation.spec.TsvInputFormat",
       "methods": [
         {
@@ -135,12 +151,7 @@
           "parameterTypes": [
             "org.molgenis.vipannotate.annotation.spec.CoordinateSystem",
             "java.lang.String",
-            "int",
-            "int",
-            "java.lang.Integer",
-            "java.lang.Integer",
-            "java.lang.Integer",
-            "java.util.Map"
+            "org.molgenis.vipannotate.annotation.spec.TsvColumns"
           ]
         }
       ]

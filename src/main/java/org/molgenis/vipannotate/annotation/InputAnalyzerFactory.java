@@ -63,7 +63,7 @@ public class InputAnalyzerFactory {
         TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : "");
     FieldResolver<TsvField, TsvRecord> fieldResolver =
         annotationId -> {
-          Integer fieldIndex = inputFormat.annotations().get(annotationId);
+          Integer fieldIndex = inputFormat.columns().annotations().get(annotationId);
 
           if (fieldIndex == null) {
             throw new IllegalArgumentException(
@@ -74,8 +74,8 @@ public class InputAnalyzerFactory {
           return record -> record.fields()[fieldIndex - 1];
         };
     SequenceVariantTypeAnalyzer<TsvField, TsvRecord> sequenceVariantTypeAnalyzer;
-    Integer refIndex = inputFormat.ref();
-    Integer altIndex = inputFormat.alt();
+    Integer refIndex = inputFormat.columns().ref();
+    Integer altIndex = inputFormat.columns().alt();
     if (refIndex != null && altIndex != null) {
       sequenceVariantTypeAnalyzer =
           new SequenceVariantTypeAnalyzer<>() {

@@ -5,20 +5,22 @@
   "input": {
     "type": "tsv",
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "ref": 3,
-    "alt": 4,
-    "annotation_columns": {
-      "ncbi_gene_id": 5,
-      "ds_ag": 6,
-      "ds_al": 7,
-      "ds_dg": 8,
-      "ds_dl": 9,
-      "dp_ag": 10,
-      "dp_al": 11,
-      "dp_dg": 12,
-      "dp_dl": 13
+    "columns": {
+      "contig": 1,
+      "start": 2,
+      "ref": 3,
+      "alt": 4,
+      "annotations": {
+        "ncbi_gene_id": 5,
+        "ds_ag": 6,
+        "ds_al": 7,
+        "ds_dg": 8,
+        "ds_dl": 9,
+        "dp_ag": 10,
+        "dp_al": 11,
+        "dp_dg": 12,
+        "dp_dl": 13
+      }
     }
   },
   "definition": {

@@ -5,13 +5,15 @@
   "input": {
     "type": "tsv",
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "annotation_columns": {
-      "my_f64_q8": 3,
-      "my_f64_q8_nullable": 4,
-      "my_f64_q16": 5,
-      "my_f64_q16_nullable": 6
+    "columns": {
+      "contig": 1,
+      "start": 2,
+      "annotations": {
+        "my_f64_q8": 3,
+        "my_f64_q8_nullable": 4,
+        "my_f64_q16": 5,
+        "my_f64_q16_nullable": 6
+      }
     }
   },
   "definition": {

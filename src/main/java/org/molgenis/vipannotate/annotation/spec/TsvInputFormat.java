@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation.spec;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 // keep in sync with
@@ -11,18 +10,13 @@ import org.jspecify.annotations.Nullable;
 public record TsvInputFormat(
     @JsonProperty(value = "coordinate_system", required = true) CoordinateSystem coordinateSystem,
     @JsonProperty(value = "missing_value") @Nullable String missingValue,
-    @JsonProperty(value = "contig", required = true) int contig,
-    @JsonProperty(value = "start", required = true) int start,
-    @JsonProperty(value = "end") Integer end,
-    @JsonProperty(value = "ref") Integer ref,
-    @JsonProperty(value = "alt") Integer alt,
-    @JsonProperty(value = "annotation_columns", required = true) Map<String, Integer> annotations)
+    @JsonProperty(value = "columns", required = true) TsvColumns columns)
     implements InputFormat {
   @Override
   public AnnotationType annotationType() {
-    boolean hasRef = ref() != null;
-    boolean hasAlt = alt() != null;
-    boolean hasEnd = end() != null;
+    boolean hasRef = columns().ref() != null;
+    boolean hasAlt = columns().alt() != null;
+    boolean hasEnd = columns().end() != null;
 
     if (hasRef && hasAlt) {
       if (hasEnd) {
