@@ -5,11 +5,10 @@ import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /// Mutable representation of a VCF INFO field.
-public final class Info extends Field {
+public final class Info extends VcfField {
   private static final char FIELD_RAW_MISSING_VALUE = '.';
 
   @Nullable private StringBuilder fieldRawAppendBuilder;
@@ -17,6 +16,11 @@ public final class Info extends Field {
 
   private Info(StringView fieldRaw) {
     super(fieldRaw);
+  }
+
+  @Override
+  public boolean isMissingValue() {
+    return fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE;
   }
 
   /**

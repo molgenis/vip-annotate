@@ -15,13 +15,12 @@ public class FloatFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
 
   @Override
   public void analyze(F field) {
-    CharSequence charSequence = field.getRawView();
-
     count++;
-    if (charSequence.isEmpty()) {
+    if (field.isMissingValue()) {
       nullCount++;
     } else {
       // TODO perf: prevent toString
+      CharSequence charSequence = field.getRawView();
       double number = Double.parseDouble(charSequence.toString());
       if (number < min) {
         min = number;

@@ -8,6 +8,11 @@ public final class Chrom extends BedField {
     super(fieldRawView);
   }
 
+  @Override
+  public boolean isMissingValue() {
+    return false;
+  }
+
   public CharSequence getRaw() {
     return fieldRawView;
   }

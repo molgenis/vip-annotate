@@ -134,6 +134,7 @@
           "name": "<init>",
           "parameterTypes": [
             "org.molgenis.vipannotate.annotation.spec.CoordinateSystem",
+            "java.lang.String",
             "int",
             "int",
             "java.lang.Integer",

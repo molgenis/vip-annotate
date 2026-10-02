@@ -3,11 +3,10 @@ package org.molgenis.vipannotate.format.vcf;
 import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
-public final class Alt extends Field {
+public final class Alt extends VcfField {
   private static final char FIELD_RAW_MISSING_VALUE = '.';
   private static final char FIELD_RAW_SEPARATOR = ',';
 
@@ -15,6 +14,11 @@ public final class Alt extends Field {
 
   private Alt(StringView fieldRaw) {
     super(fieldRaw);
+  }
+
+  @Override
+  public boolean isMissingValue() {
+    return fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE;
   }
 
   /**
@@ -26,10 +30,9 @@ public final class Alt extends Field {
   public AltAllele getFirstAllele() {
     // TODO update getAlleles() to return new 'AltAlleles' with getCount/getByIndex to delay parsing
     AltAllele altAllele;
-    if (fieldRawView.length() == 1) {
-      if (fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE) {
-        throw new IllegalArgumentException("no alt allele");
-      }
+    if (isMissingValue()) {
+      throw new IllegalArgumentException("no alt allele");
+    } else if (fieldRawView.length() == 1) {
       // fast path: prevent parsing
       altAllele = AltAlleleRegistry.INSTANCE.getOrWrap(fieldRawView);
     } else if (fieldRawView.length() == 2) {
@@ -52,7 +55,7 @@ public final class Alt extends Field {
     if (parsedField == null) {
       parsedField = new ArrayList<>(2);
     }
-    if (fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE) {
+    if (isMissingValue()) {
       // fast path: missing value
       return;
     }

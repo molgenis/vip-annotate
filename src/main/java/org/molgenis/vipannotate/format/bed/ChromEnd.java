@@ -10,6 +10,11 @@ public final class ChromEnd extends BedField {
     super(fieldRawView);
   }
 
+  @Override
+  public boolean isMissingValue() {
+    return false;
+  }
+
   public int getRaw() {
     parseIfNeeded();
     return parsedField;

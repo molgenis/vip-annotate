@@ -4,6 +4,7 @@
   "input": {
     "type": "tsv",
     "coordinate_system": "1-based",
+    "missing_value": ".",
     "contig": 1,
     "start": 2,
     "ref": 3,

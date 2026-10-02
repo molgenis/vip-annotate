@@ -13,10 +13,8 @@ public class EnumSetFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
 
   @Override
   public void analyze(F field) {
-    CharSequence charSequence = field.getRawView();
-
     count++;
-    if (charSequence.isEmpty()) {
+    if (field.isMissingValue()) {
       nullCount++;
     }
   }

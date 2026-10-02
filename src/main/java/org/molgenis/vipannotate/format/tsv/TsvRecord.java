@@ -13,11 +13,11 @@ import org.molgenis.vipannotate.format.vcf.*;
 public final class TsvRecord implements Record<TsvField> {
   private final TsvField[] fields;
 
-  public TsvRecord(CharSequence dataLine) {
+  public TsvRecord(CharSequence dataLine, String missingValue) {
     int nrFields = countTabs(dataLine) + 1;
     this.fields = new TsvField[nrFields];
     for (int i = 0; i < nrFields; i++) {
-      this.fields[i] = TsvField.wrap(new StringView(dataLine));
+      this.fields[i] = TsvField.wrap(new StringView(dataLine), missingValue);
     }
     reset(dataLine);
   }

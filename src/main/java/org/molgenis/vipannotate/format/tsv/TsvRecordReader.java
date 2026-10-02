@@ -4,13 +4,16 @@ import org.molgenis.vipannotate.format.LineRecordReader;
 import org.molgenis.vipannotate.util.BufferedLineReader;
 
 public final class TsvRecordReader extends LineRecordReader<TsvField, TsvRecord> {
-  public TsvRecordReader(BufferedLineReader reader) {
+  private final String missingValue;
+
+  public TsvRecordReader(BufferedLineReader reader, String missingValue) {
     super(reader);
+    this.missingValue = missingValue;
   }
 
   @Override
   protected TsvRecord createRecord(CharSequence line) {
-    return new TsvRecord(line);
+    return new TsvRecord(line, missingValue);
   }
 
   @Override

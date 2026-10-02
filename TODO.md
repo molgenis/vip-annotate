@@ -4,8 +4,8 @@ in addition to below see >100 TODO items in code
 
 ## 0.0.1-alpha.7
 
+- [ ] feat (spec): input/type=tsv: configure list value character (e.g. ",", "|" or "&")
 - [ ] feat (spec): input/type=tsv: allow using column names as alternative to column indexes
-- [ ] feat (spec): input/type=tsv: configure missing value & list value character (e.g. dot from bcftools)
 - [ ] feat (spec): add annotation type=string
 - [ ] feat (spec): add annotation type=floating_point encoding=lossless/lossy_u8/lossy_u16
 - [ ] feat (db): reintroduce dictionary support (e.g. SpliceAI ncbiGeneId)

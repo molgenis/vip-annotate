@@ -1,12 +1,16 @@
 package org.molgenis.vipannotate.format.vcf;
 
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
-public final class Chrom extends Field {
+public final class Chrom extends VcfField {
   private Chrom(StringView fieldRawView) {
     super(fieldRawView);
+  }
+
+  @Override
+  public boolean isMissingValue() {
+    return false;
   }
 
   // perf: parse on demand

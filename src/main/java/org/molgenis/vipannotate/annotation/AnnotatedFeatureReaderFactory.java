@@ -39,7 +39,9 @@ public class AnnotatedFeatureReaderFactory {
           case SEQUENCE_VARIANT ->
               new TsvAnnotatedSequenceVariantMapper(tsvInputFormat, annotationSpecs)::apply;
         };
-    return new AnnotatedFeatureReaderImpl<>(TsvParserFactory.createFromPath(input), mapper);
+    String missingValue = tsvInputFormat.missingValue();
+    return new AnnotatedFeatureReaderImpl<>(
+        TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : ""), mapper);
   }
 
   private static AnnotatedFeatureReader createFromBed(

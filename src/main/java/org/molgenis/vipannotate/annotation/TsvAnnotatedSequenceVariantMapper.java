@@ -88,13 +88,13 @@ public final class TsvAnnotatedSequenceVariantMapper
 
   private Annotation createAnnotation(TsvField tsvField, ResolvedEnumAnnotationSpec spec) {
     return new StringAnnotation(
-        !tsvField.getRawView().isEmpty() ? tsvField.getRawView().toString() : null);
+        !tsvField.isMissingValue() ? tsvField.getRawView().toString() : null);
   }
 
   private Annotation createAnnotation(TsvField tsvField, ResolvedEnumSetAnnotationSpec spec) {
     // TODO perf: split that does not require toString
     String[] tokens =
-        !tsvField.getRawView().isEmpty()
+        !tsvField.isMissingValue()
             ? tsvField.getRawView().toString().split(",", -1)
             : new String[0];
     return new StringListAnnotation(tokens);
@@ -103,14 +103,14 @@ public final class TsvAnnotatedSequenceVariantMapper
   private Annotation createAnnotation(TsvField tsvField, ResolvedFloatAnnotationSpec spec) {
     return switch (spec.floatEncoding()) {
       case NullableFloatEncoding encoding ->
-          !tsvField.getRawView().isEmpty()
+          !tsvField.isMissingValue()
               ? new NullableFloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()))
               : new NullableFloatAnnotation();
       case PlainFloatEncoding encoding ->
           new FloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()));
       case QuantizedEncoding encoding ->
           encoding.nullCode() != null
-              ? (!tsvField.getRawView().isEmpty()
+              ? (!tsvField.isMissingValue()
                   ? new NullableFloatAnnotation(
                       Double.parseDouble(tsvField.getRawView().toString()))
                   : new NullableFloatAnnotation())
@@ -123,7 +123,7 @@ public final class TsvAnnotatedSequenceVariantMapper
     if (spec.intEncoding() instanceof NullableIntEncoding
         || spec.intEncoding() instanceof OffsetNullableIntEncoding) {
       // TODO perf: reuse new NullableIntAnnotation()
-      return !tsvField.getRawView().isEmpty()
+      return !tsvField.isMissingValue()
           ? new NullableIntAnnotation(
               Integer.parseInt(tsvField.getRawView(), 0, tsvField.getRawView().length(), 10))
           : new NullableIntAnnotation();

@@ -3,12 +3,14 @@ package org.molgenis.vipannotate.annotation.spec;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 // keep in sync with
 // src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 @JsonTypeName("tsv")
 public record TsvInputFormat(
     @JsonProperty(value = "coordinate_system", required = true) CoordinateSystem coordinateSystem,
+    @JsonProperty(value = "missing_value") @Nullable String missingValue,
     @JsonProperty(value = "contig", required = true) int contig,
     @JsonProperty(value = "start", required = true) int start,
     @JsonProperty(value = "end") Integer end,

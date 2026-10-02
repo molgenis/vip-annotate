@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
-public final class Id extends Field {
+public final class Id extends VcfField {
   private static final char FIELD_RAW_MISSING_VALUE = '.';
   private static final char FIELD_RAW_SEPARATOR = ';';
 
@@ -16,6 +15,11 @@ public final class Id extends Field {
 
   private Id(StringView fieldRawView) {
     super(fieldRawView);
+  }
+
+  @Override
+  public boolean isMissingValue() {
+    return fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE;
   }
 
   // perf: parse on demand
@@ -27,7 +31,7 @@ public final class Id extends Field {
   @Override
   protected void onParse() {
     // fast path: missing value
-    if (fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE) {
+    if (isMissingValue()) {
       return;
     }
 

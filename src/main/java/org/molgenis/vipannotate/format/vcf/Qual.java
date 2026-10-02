@@ -1,22 +1,24 @@
 package org.molgenis.vipannotate.format.vcf;
 
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
-public final class Qual extends Field {
+public final class Qual extends VcfField {
   private static final char FIELD_RAW_MISSING_VALUE = '.';
 
   private Qual(StringView fieldRaw) {
     super(fieldRaw);
   }
 
+  @Override
+  public boolean isMissingValue() {
+    return fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE;
+  }
+
   // perf: parse on demand
   public @Nullable Double getRaw() {
-    return fieldRawView.length() == 1 && fieldRawView.charAt(0) == FIELD_RAW_MISSING_VALUE
-        ? null
-        : Double.parseDouble(fieldRawView.asString());
+    return isMissingValue() ? null : Double.parseDouble(fieldRawView.asString());
   }
 
   public static Qual wrap(String fieldRaw) {

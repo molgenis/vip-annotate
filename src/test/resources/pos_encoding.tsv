@@ -1,4 +1,4 @@
-#[0]contig	[1]start	[2]my_f64_q8	[3]my_f64_q8_nullable	[4]my_f64_q8	[5]my_f64_q8_nullable
+#[1]contig	[2]start	[3]my_f64_q8	[4]my_f64_q8_nullable	[5]my_f64_q8	[6]my_f64_q8_nullable
 chr1	1	0	1	0	1
 chr1	2	0.25	0.75	0.25	0.75
 chr1	3	0.5		0.5	

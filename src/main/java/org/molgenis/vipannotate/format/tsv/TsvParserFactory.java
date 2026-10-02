@@ -19,11 +19,11 @@ public class TsvParserFactory {
 
   private TsvParserFactory() {}
 
-  public static TsvParser create(Input inputTsv) {
-    return createFromPath(inputTsv.path());
+  public static TsvParser create(Input inputTsv, String missingValue) {
+    return createFromPath(inputTsv.path(), missingValue);
   }
 
-  public static TsvParser createFromPath(@Nullable Path inputTsvPath) {
+  public static TsvParser createFromPath(@Nullable Path inputTsvPath, String missingValue) {
     InputType inputType;
     InputStream inputStream;
     if (inputTsvPath != null) {
@@ -69,12 +69,13 @@ public class TsvParserFactory {
       inputStream = pushbackInputStream;
     }
 
-    return create(inputStream, inputType);
+    return create(inputStream, inputType, missingValue);
   }
 
-  private static TsvParser create(InputStream inputStream, InputType inputType) {
+  private static TsvParser create(
+      InputStream inputStream, InputType inputType, String missingValue) {
     BufferedLineReader reader = createReader(inputStream, inputType);
-    return new TsvParser(new TsvRecordReader(reader));
+    return new TsvParser(new TsvRecordReader(reader, missingValue));
   }
 
   private static BufferedLineReader createReader(

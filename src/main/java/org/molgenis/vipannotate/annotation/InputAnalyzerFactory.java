@@ -58,7 +58,9 @@ public class InputAnalyzerFactory {
   }
 
   private InputAnalyzer createTsv(Path input, TsvInputFormat inputFormat) {
-    RecordReader<TsvField, TsvRecord> recordReader = TsvParserFactory.createFromPath(input);
+    String missingValue = inputFormat.missingValue();
+    RecordReader<TsvField, TsvRecord> recordReader =
+        TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : "");
     FieldResolver<TsvField, TsvRecord> fieldResolver =
         annotationId -> {
           Integer fieldIndex = inputFormat.annotations().get(annotationId);

@@ -4,8 +4,15 @@ import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
 public final class Name extends BedField {
+  private static final char UNINFORMATIVE_VALUE = '.';
+
   private Name(StringView fieldRawView) {
     super(fieldRawView);
+  }
+
+  @Override
+  public boolean isMissingValue() {
+    return fieldRawView.length() == 1 && fieldRawView.charAt(0) == UNINFORMATIVE_VALUE;
   }
 
   public CharSequence getRaw() {

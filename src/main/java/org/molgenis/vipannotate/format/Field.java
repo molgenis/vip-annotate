@@ -18,6 +18,9 @@ public abstract class Field {
     return fieldRawView;
   }
 
+  /// Returns whether the field content represents a missing value
+  public abstract boolean isMissingValue();
+
   /// Resets the field view to point to a new field. Will clear parsed state and reset internal
   /// structures (if any).
   public final void reset(String fieldRaw) {
