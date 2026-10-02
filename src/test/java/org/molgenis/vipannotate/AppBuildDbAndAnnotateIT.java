@@ -47,7 +47,7 @@ public class AppBuildDbAndAnnotateIT {
             "seq_var_all_types.tsv.json",
             "seq_var_all_types.vcf",
             "seq_var_all_types.annotated.vcf",
-            69935L),
+            74045L),
         Arguments.of(
             "pos_encoding.tsv",
             "pos_encoding.tsv.json",

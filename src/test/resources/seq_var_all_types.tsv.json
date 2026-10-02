@@ -26,47 +26,50 @@
         "my_enum_nullable": {
           "name": "[6]enum_nullable"
         },
+        "my_enum_multivalue": {
+          "name": "[7]enum_multivalue"
+        },
         "my_i8": {
-          "name": "[7]i8"
+          "name": "[8]i8"
         },
         "my_i8_nullable": {
-          "name": "[8]i8_nullable"
+          "name": "[9]i8_nullable"
         },
         "my_u8": {
-          "name": "[9]u8"
+          "name": "[10]u8"
         },
         "my_u8_nullable": {
-          "name": "[10]u8_nullable"
+          "name": "[11]u8_nullable"
         },
         "my_i16": {
-          "name": "[11]i16"
+          "name": "[12]i16"
         },
         "my_i16_nullable": {
-          "name": "[12]i16_nullable"
+          "name": "[13]i16_nullable"
         },
         "my_u16": {
-          "name": "[13]u16"
+          "name": "[14]u16"
         },
         "my_u16_nullable": {
-          "name": "[14]u16_nullable"
+          "name": "[15]u16_nullable"
         },
         "my_i32": {
-          "name": "[15]i32"
+          "name": "[16]i32"
         },
         "my_i32_nullable": {
-          "name": "[16]i32_nullable"
+          "name": "[17]i32_nullable"
         },
         "my_f32": {
-          "name": "[17]f32"
+          "name": "[18]f32"
         },
         "my_f32_nullable": {
-          "name": "[18]f32_nullable"
+          "name": "[19]f32_nullable"
         },
         "my_f64": {
-          "name": "[19]f64"
+          "name": "[20]f64"
         },
         "my_f64_nullable": {
-          "name": "[20]f64_nullable"
+          "name": "[21]f64_nullable"
         }
       }
     }
@@ -101,6 +104,26 @@
       },
       "my_enum_nullable": {
         "type": "enum",
+        "values": [
+          {
+            "value": "B"
+          },
+          {
+            "value": "LB"
+          },
+          {
+            "value": "VUS"
+          },
+          {
+            "value": "LP"
+          },
+          {
+            "value": "P"
+          }
+        ]
+      },
+      "my_enum_multivalue": {
+        "type": "enum_set",
         "values": [
           {
             "value": "B"
