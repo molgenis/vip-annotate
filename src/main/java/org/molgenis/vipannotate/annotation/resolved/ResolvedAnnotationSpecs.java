@@ -6,6 +6,10 @@ import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.serialization.BinaryWriter;
 
 public record ResolvedAnnotationSpecs(Map<String, ResolvedAnnotationSpec> annotationSpecMap) {
+  public boolean isEmpty() {
+    return annotationSpecMap.isEmpty();
+  }
+
   public int size() {
     return annotationSpecMap.size();
   }

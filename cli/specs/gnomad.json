@@ -8,38 +8,38 @@
     "coordinate_system": "1-based",
     "columns": {
       "contig": {
-        "index": 1
+        "name": "#[0]CHROM"
       },
       "start": {
-        "index": 2
+        "name": "[1]POS"
       },
       "ref": {
-        "index": 3
+        "name": "[2]REF"
       },
       "alt": {
-        "index": 4
+        "name": "[3]ALT"
       },
       "annotations": {
         "src": {
-          "index": 5
+          "name": "[4]SRC"
         },
         "af": {
-          "index": 6
+          "name": "[5]AF"
         },
         "faf95": {
-          "index": 7
+          "name": "[6]faf95"
         },
         "faf99": {
-          "index": 8
+          "name": "[7]faf99"
         },
         "nhomalt": {
-          "index": 9
+          "name": "[8]nhomalt"
         },
         "filters": {
-          "index": 10
+          "name": "[9]filters"
         },
         "cov": {
-          "index": 11
+          "name": "[10]COV"
         }
       }
     }

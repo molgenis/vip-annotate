@@ -1,10 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.ResolvedTsvColumns;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
@@ -19,7 +21,8 @@ import org.molgenis.vipannotate.format.vcf.AltAlleleRegistry;
 @RequiredArgsConstructor
 public final class TsvAnnotatedSequenceVariantMapper
     implements Function<TsvRecord, AnnotatedSequenceVariant<CompositeAnnotation>> {
-  private final TsvInputFormat tsvInputFormat;
+  private final CoordinateSystem coordinateSystem;
+  private final ResolvedTsvColumns resolvedTsvColumns;
   private final ResolvedAnnotationSpecs annotationsSpecs;
 
   @Override
@@ -30,16 +33,16 @@ public final class TsvAnnotatedSequenceVariantMapper
   }
 
   private SequenceVariant createSequenceVariant(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig().index() - 1);
-    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start().index() - 1);
-    TsvField refField = tsvRecord.field(tsvInputFormat.columns().ref().index() - 1);
-    TsvField altField = tsvRecord.field(tsvInputFormat.columns().alt().index() - 1);
+    TsvField contigField = tsvRecord.field(resolvedTsvColumns.contig());
+    TsvField startField = tsvRecord.field(resolvedTsvColumns.start());
+    TsvField refField = tsvRecord.field(requireNonNull(resolvedTsvColumns.ref()));
+    TsvField altField = tsvRecord.field(requireNonNull(resolvedTsvColumns.alt()));
 
     // FIXME hardcoded length
     // FIXME use contig registry
     Contig contig = new Contig(contigField.toString(), 9);
     int start = Integer.parseInt(startField.getRawView(), 0, startField.getRawView().length(), 10);
-    switch (tsvInputFormat.coordinateSystem()) {
+    switch (coordinateSystem) {
       case ZERO_BASED -> start++;
       case ONE_BASED -> {}
     }
@@ -54,8 +57,7 @@ public final class TsvAnnotatedSequenceVariantMapper
   }
 
   private CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
-    Map<String, TsvColumn> idxAnnotations = tsvInputFormat.columns().annotations();
-    if (idxAnnotations.isEmpty()) {
+    if (annotationsSpecs.isEmpty()) {
       throw new IllegalArgumentException();
       //    }
       //    else if (idxAnnotations.length == 1) {
@@ -65,14 +67,13 @@ public final class TsvAnnotatedSequenceVariantMapper
       List<Annotation> annotations = new ArrayList<>(annotationsSpecs.size());
       annotationsSpecs.forEach(
           (annotationDatasetId, annotationSpec) -> {
-            TsvColumn tsvColumn = idxAnnotations.get(annotationDatasetId);
-            if (tsvColumn == null) {
+            Integer annotationIndex = resolvedTsvColumns.annotations().get(annotationDatasetId);
+            if (annotationIndex == null) {
               throw new IllegalArgumentException(
                   "'definition.annotations.%s' not defined in 'input.colums.annotations'"
                       .formatted(annotationDatasetId));
             }
-            annotations.add(
-                createAnnotation(tsvRecord.field(tsvColumn.index() - 1), annotationSpec));
+            annotations.add(createAnnotation(tsvRecord.field(annotationIndex), annotationSpec));
           });
       return new CompositeAnnotation(annotations.toArray(new Annotation[0]));
     }

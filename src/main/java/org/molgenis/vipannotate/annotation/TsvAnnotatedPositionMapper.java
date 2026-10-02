@@ -2,9 +2,9 @@ package org.molgenis.vipannotate.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.ResolvedTsvColumns;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
@@ -17,7 +17,8 @@ import org.molgenis.vipannotate.format.tsv.TsvRecord;
 @RequiredArgsConstructor
 public final class TsvAnnotatedPositionMapper
     implements Function<TsvRecord, AnnotatedPosition<CompositeAnnotation>> {
-  private final TsvInputFormat tsvInputFormat;
+  private final CoordinateSystem coordinateSystem;
+  private final ResolvedTsvColumns resolvedTsvColumns;
   private final ResolvedAnnotationSpecs annotationsSpecs;
 
   @Override
@@ -28,14 +29,14 @@ public final class TsvAnnotatedPositionMapper
   }
 
   private Position createPosition(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(tsvInputFormat.columns().contig().index() - 1);
-    TsvField startField = tsvRecord.field(tsvInputFormat.columns().start().index() - 1);
+    TsvField contigField = tsvRecord.field(resolvedTsvColumns.contig());
+    TsvField startField = tsvRecord.field(resolvedTsvColumns.start());
 
     // FIXME hardcoded length
     // FIXME use contig registry
     Contig contig = new Contig(contigField.toString(), 9);
     int pos = Integer.parseInt(startField.getRawView(), 0, startField.getRawView().length(), 10);
-    switch (tsvInputFormat.coordinateSystem()) {
+    switch (coordinateSystem) {
       case ZERO_BASED -> pos++;
       case ONE_BASED -> {}
     }
@@ -44,8 +45,7 @@ public final class TsvAnnotatedPositionMapper
 
   // FIXME dedup with TsvAnnotatedSequenceVariantMapper
   private CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
-    Map<String, TsvColumn> tsvColumns = tsvInputFormat.columns().annotations();
-    if (tsvColumns.isEmpty()) {
+    if (annotationsSpecs.isEmpty()) {
       throw new IllegalArgumentException();
       //    }
       //    else if (idxAnnotations.length == 1) {
@@ -55,14 +55,13 @@ public final class TsvAnnotatedPositionMapper
       List<Annotation> annotations = new ArrayList<>(annotationsSpecs.size());
       annotationsSpecs.forEach(
           (annotationDatasetId, annotationSpec) -> {
-            TsvColumn tsvColumn = tsvColumns.get(annotationDatasetId);
-            if (tsvColumn == null) {
+            Integer annotationIndex = resolvedTsvColumns.annotations().get(annotationDatasetId);
+            if (annotationIndex == null) {
               throw new IllegalArgumentException(
                   "'definition.annotations.%s' not defined in 'input.colums.annotations'"
                       .formatted(annotationDatasetId));
             }
-            annotations.add(
-                createAnnotation(tsvRecord.field(tsvColumn.index() - 1), annotationSpec));
+            annotations.add(createAnnotation(tsvRecord.field(annotationIndex), annotationSpec));
           });
       return new CompositeAnnotation(annotations.toArray(new Annotation[0]));
     }

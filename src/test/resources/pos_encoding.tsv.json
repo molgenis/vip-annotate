@@ -5,7 +5,7 @@
   "input": {
     "type": "tsv",
     "header": false,
-    "coordinate_system": "1-based",
+    "coordinate_system": "0-based",
     "columns": {
       "contig": {
         "index": 1

@@ -8,44 +8,44 @@
     "coordinate_system": "1-based",
     "columns": {
       "contig": {
-        "index": 1
+        "name": "#[0]CHROM"
       },
       "start": {
-        "index": 2
+        "name": "[1]POS"
       },
       "ref": {
-        "index": 3
+        "name": "[2]REF"
       },
       "alt": {
-        "index": 4
+        "name": "[3]ALT"
       },
       "annotations": {
         "ncbi_gene_id": {
-          "index": 5
+          "name": "[4]NCBI_GENE_ID"
         },
         "ds_ag": {
-          "index": 6
+          "name": "[5]DS_AG"
         },
         "ds_al": {
-          "index": 7
+          "name": "[6]DS_AL"
         },
         "ds_dg": {
-          "index": 8
+          "name": "[7]DS_DG"
         },
         "ds_dl": {
-          "index": 9
+          "name": "[8]DS_DL"
         },
         "dp_ag": {
-          "index": 10
+          "name": "[9]DP_AG"
         },
         "dp_al": {
-          "index": 11
+          "name": "[10]DP_AL"
         },
         "dp_dg": {
-          "index": 12
+          "name": "[11]DP_DG"
         },
         "dp_dl": {
-          "index": 13
+          "name": "[12]DP_DL"
         }
       }
     }

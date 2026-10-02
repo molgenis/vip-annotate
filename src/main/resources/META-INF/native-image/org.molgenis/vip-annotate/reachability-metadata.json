@@ -133,7 +133,8 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "int"
+            "java.lang.Integer",
+            "java.lang.String"
           ]
         }
       ]

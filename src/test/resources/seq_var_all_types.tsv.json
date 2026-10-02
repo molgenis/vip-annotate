@@ -8,65 +8,65 @@
     "missing_value": ".",
     "columns": {
       "contig": {
-        "index": 1
+        "name": "#[1]contig"
       },
       "start": {
-        "index": 2
+        "name": "[2]start"
       },
       "ref": {
-        "index": 3
+        "name": "[3]ref"
       },
       "alt": {
-        "index": 4
+        "name": "[4]alt"
       },
       "annotations": {
         "my_enum": {
-          "index": 5
+          "name": "[5]enum"
         },
         "my_enum_nullable": {
-          "index": 6
+          "name": "[6]enum_nullable"
         },
         "my_i8": {
-          "index": 7
+          "name": "[7]i8"
         },
         "my_i8_nullable": {
-          "index": 8
+          "name": "[8]i8_nullable"
         },
         "my_u8": {
-          "index": 9
+          "name": "[9]u8"
         },
         "my_u8_nullable": {
-          "index": 10
+          "name": "[10]u8_nullable"
         },
         "my_i16": {
-          "index": 11
+          "name": "[11]i16"
         },
         "my_i16_nullable": {
-          "index": 12
+          "name": "[12]i16_nullable"
         },
         "my_u16": {
-          "index": 13
+          "name": "[13]u16"
         },
         "my_u16_nullable": {
-          "index": 14
+          "name": "[14]u16_nullable"
         },
         "my_i32": {
-          "index": 15
+          "name": "[15]i32"
         },
         "my_i32_nullable": {
-          "index": 16
+          "name": "[16]i32_nullable"
         },
         "my_f32": {
-          "index": 17
+          "name": "[17]f32"
         },
         "my_f32_nullable": {
-          "index": 18
+          "name": "[18]f32_nullable"
         },
         "my_f64": {
-          "index": 19
+          "name": "[19]f64"
         },
         "my_f64_nullable": {
-          "index": 20
+          "name": "[20]f64_nullable"
         }
       }
     }

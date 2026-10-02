@@ -8,23 +8,23 @@
     "coordinate_system": "1-based",
     "columns": {
       "contig": {
-        "index": 1
+        "name": "#CHROM"
       },
       "start": {
-        "index": 2
+        "name": "POS"
       },
       "ref": {
-        "index": 3
+        "name": "REF"
       },
       "alt": {
-        "index": 4
+        "name": "ALT"
       },
       "annotations": {
         "raw_score": {
-          "index": 5
+          "name": "raw_score"
         },
         "score": {
-          "index": 6
+          "name": "PHRED"
         }
       }
     }

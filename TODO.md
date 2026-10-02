@@ -5,9 +5,9 @@ in addition to below see >100 TODO items in code
 ## 0.0.1-alpha.7
 
 - [ ] feat (spec): input/type=tsv: configure list value character (e.g. ",", "|" or "&")
-- [ ] feat (spec): input/type=tsv: allow using column names as alternative to column indexes
 - [ ] feat (spec): add annotation type=string
 - [ ] feat (spec): add annotation type=floating_point encoding=lossless/lossy_u8/lossy_u16
+- [ ] feat (spec): optional map input enum values (e.g. Likely_pathogenic to LP)
 - [ ] feat (db): reintroduce dictionary support (e.g. SpliceAI ncbiGeneId)
 - [ ] feat (db): null bitmap instead of nullable types (rank1 to determine index)
 - [ ] feat (db): determine encoding per-partition instead of per-input (e.g. sharper min-max, enum subsets)

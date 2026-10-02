@@ -8,26 +8,26 @@
     "coordinate_system": "1-based",
     "columns": {
       "contig": {
-        "index": 1
+        "name": "#[1]CHROM"
       },
       "start": {
-        "index": 2
+        "name": "[2]POS"
       },
       "ref": {
-        "index": 4
+        "name": "[4]REF"
       },
       "alt": {
-        "index": 5
+        "name": "[5]ALT"
       },
       "annotations": {
         "id": {
-          "index": 3
+          "name": "[3]ID"
         },
         "clnsig": {
-          "index": 6
+          "name": "[6]CLNSIG"
         },
         "clnrevstat": {
-          "index": 8
+          "name": "[8]CLNREVSTAT"
         }
       }
     }
