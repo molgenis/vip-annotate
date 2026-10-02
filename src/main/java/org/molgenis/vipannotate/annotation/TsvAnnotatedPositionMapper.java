@@ -82,12 +82,7 @@ public final class TsvAnnotatedPositionMapper
   }
 
   private Annotation createAnnotation(TsvField tsvField, ResolvedEnumSetAnnotationSpec spec) {
-    // TODO perf: split that does not require toString
-    String[] tokens =
-        !tsvField.getRawView().isEmpty()
-            ? tsvField.getRawView().toString().split(",", -1)
-            : new String[0];
-    return new StringListAnnotation(tokens);
+    return new StringListAnnotation(tsvField.parseValues());
   }
 
   private Annotation createAnnotation(TsvField tsvField, ResolvedFloatAnnotationSpec spec) {

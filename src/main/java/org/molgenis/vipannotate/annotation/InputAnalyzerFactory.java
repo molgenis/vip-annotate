@@ -61,9 +61,10 @@ public class InputAnalyzerFactory {
   }
 
   private InputAnalyzer createTsv(Path input, TsvInputFormat inputFormat) {
-    String missingValue = inputFormat.missingValue();
+    String missingValue = inputFormat.missingValue() != null ? inputFormat.missingValue() : "";
+    char listSeparator = inputFormat.listSeparator() != null ? inputFormat.listSeparator() : ',';
     RecordReader<TsvField, TsvRecord> recordReader =
-        TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : "");
+        TsvParserFactory.createFromPath(input, missingValue, listSeparator);
     // create column name-index map for tsv with header
     Map<String, Integer> tsvHeaderMap;
     if (inputFormat.header()) {

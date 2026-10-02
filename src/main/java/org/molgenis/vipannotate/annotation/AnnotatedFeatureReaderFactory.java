@@ -35,26 +35,26 @@ public class AnnotatedFeatureReaderFactory {
   }
 
   private AnnotatedFeatureReader createFromTsv(
-      Path input, TsvInputFormat tsvInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
-    String missingValue = tsvInputFormat.missingValue();
-    TsvParser tsvParser =
-        TsvParserFactory.createFromPath(input, missingValue != null ? missingValue : "");
+      Path input, TsvInputFormat inputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+    String missingValue = inputFormat.missingValue() != null ? inputFormat.missingValue() : "";
+    char listSeparator = inputFormat.listSeparator() != null ? inputFormat.listSeparator() : ',';
+    TsvParser tsvParser = TsvParserFactory.createFromPath(input, missingValue, listSeparator);
 
-    Map<String, Integer> header = tsvInputFormat.header() ? readHeaderIndices(tsvParser) : Map.of();
-    ResolvedTsvColumns resolvedColumns = resolveColumns(tsvInputFormat.columns(), header);
+    Map<String, Integer> header = inputFormat.header() ? readHeaderIndices(tsvParser) : Map.of();
+    ResolvedTsvColumns resolvedColumns = resolveColumns(inputFormat.columns(), header);
 
     Function<TsvRecord, AnnotatedFeature<?, ?>> mapper =
-        switch (tsvInputFormat.annotationType()) {
+        switch (inputFormat.annotationType()) {
           case INTERVAL -> throw new UnsupportedOperationException(); // FIXME
           case POSITION ->
               // FIXME hardcoded contigIndex and startIndex
               new TsvAnnotatedPositionMapper(
-                      tsvInputFormat.coordinateSystem(), resolvedColumns, annotationSpecs)
+                      inputFormat.coordinateSystem(), resolvedColumns, annotationSpecs)
                   ::apply;
           case SEQUENCE_VARIANT ->
               // FIXME hardcoded contigIndex, startIndex, refIndex and altIndex
               new TsvAnnotatedSequenceVariantMapper(
-                      tsvInputFormat.coordinateSystem(), resolvedColumns, annotationSpecs)
+                      inputFormat.coordinateSystem(), resolvedColumns, annotationSpecs)
                   ::apply;
         };
     return new AnnotatedFeatureReaderImpl<>(tsvParser, mapper);

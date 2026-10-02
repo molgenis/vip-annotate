@@ -164,6 +164,7 @@
             "java.lang.boolean",
             "org.molgenis.vipannotate.annotation.spec.CoordinateSystem",
             "java.lang.String",
+            "java.lang.Character",
             "org.molgenis.vipannotate.annotation.spec.TsvColumns"
           ]
         }

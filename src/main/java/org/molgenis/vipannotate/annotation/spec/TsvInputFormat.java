@@ -11,6 +11,7 @@ public record TsvInputFormat(
     @JsonProperty(value = "header", required = true) boolean header,
     @JsonProperty(value = "coordinate_system", required = true) CoordinateSystem coordinateSystem,
     @JsonProperty(value = "missing_value") @Nullable String missingValue,
+    @JsonProperty(value = "list_separator") @Nullable Character listSeparator,
     @JsonProperty(value = "columns", required = true) TsvColumns columns)
     implements InputFormat {
   @Override

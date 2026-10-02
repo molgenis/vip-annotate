@@ -6,6 +6,7 @@
     "header": true,
     "coordinate_system": "1-based",
     "missing_value": ".",
+    "list_separator": "&",
     "columns": {
       "contig": {
         "name": "#[1]contig"
