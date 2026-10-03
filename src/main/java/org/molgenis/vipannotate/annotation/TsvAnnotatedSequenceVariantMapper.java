@@ -2,16 +2,9 @@ package org.molgenis.vipannotate.annotation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.ResolvedTsvColumns;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
-import org.molgenis.vipannotate.annotation.resolved.*;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.format.tsv.TsvField;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
@@ -23,12 +16,12 @@ public final class TsvAnnotatedSequenceVariantMapper
     implements Function<TsvRecord, AnnotatedSequenceVariant<CompositeAnnotation>> {
   private final CoordinateSystem coordinateSystem;
   private final ResolvedTsvColumns resolvedTsvColumns;
-  private final ResolvedAnnotationSpecs annotationsSpecs;
+  private final TsvAnnotationMapper annotationMapper;
 
   @Override
   public AnnotatedSequenceVariant<CompositeAnnotation> apply(TsvRecord tsvRecord) {
     SequenceVariant sequenceVariant = createSequenceVariant(tsvRecord);
-    CompositeAnnotation annotation = createAnnotation(tsvRecord);
+    CompositeAnnotation annotation = annotationMapper.createAnnotation(tsvRecord);
     return new AnnotatedSequenceVariant<>(sequenceVariant, annotation);
   }
 
@@ -54,79 +47,5 @@ public final class TsvAnnotatedSequenceVariantMapper
         start + refLen - 1,
         alt,
         SequenceVariantTypeDetector.determineType(refLen, alt));
-  }
-
-  private CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
-    if (annotationsSpecs.isEmpty()) {
-      throw new IllegalArgumentException();
-      //    }
-      //    else if (idxAnnotations.length == 1) {
-      //      int idxAnnotation = idxAnnotations[0];
-      //      return (T) new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
-    } else {
-      List<Annotation> annotations = new ArrayList<>(annotationsSpecs.size());
-      annotationsSpecs.forEach(
-          (annotationDatasetId, annotationSpec) -> {
-            Integer annotationIndex = resolvedTsvColumns.annotations().get(annotationDatasetId);
-            if (annotationIndex == null) {
-              throw new IllegalArgumentException(
-                  "'definition.annotations.%s' not defined in 'input.colums.annotations'"
-                      .formatted(annotationDatasetId));
-            }
-            annotations.add(createAnnotation(tsvRecord.field(annotationIndex), annotationSpec));
-          });
-      return new CompositeAnnotation(annotations.toArray(new Annotation[0]));
-    }
-  }
-
-  private Annotation createAnnotation(TsvField tsvField, ResolvedAnnotationSpec annotationSpec) {
-    return switch (annotationSpec) {
-      case ResolvedEnumAnnotationSpec spec -> createAnnotation(tsvField, spec);
-      case ResolvedEnumSetAnnotationSpec spec -> createAnnotation(tsvField, spec);
-      case ResolvedFloatAnnotationSpec spec -> createAnnotation(tsvField, spec);
-      case ResolvedIntAnnotationSpec spec -> createAnnotation(tsvField, spec);
-    };
-  }
-
-  private Annotation createAnnotation(TsvField tsvField, ResolvedEnumAnnotationSpec spec) {
-    return new StringAnnotation(
-        !tsvField.isMissingValue() ? tsvField.getRawView().toString() : null);
-  }
-
-  private Annotation createAnnotation(TsvField tsvField, ResolvedEnumSetAnnotationSpec spec) {
-    return new StringListAnnotation(tsvField.parseValues());
-  }
-
-  private Annotation createAnnotation(TsvField tsvField, ResolvedFloatAnnotationSpec spec) {
-    return switch (spec.floatEncoding()) {
-      case NullableFloatEncoding encoding ->
-          !tsvField.isMissingValue()
-              ? new NullableFloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()))
-              : new NullableFloatAnnotation();
-      case PlainFloatEncoding encoding ->
-          new FloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()));
-      case QuantizedEncoding encoding ->
-          encoding.nullCode() != null
-              ? (!tsvField.isMissingValue()
-                  ? new NullableFloatAnnotation(
-                      Double.parseDouble(tsvField.getRawView().toString()))
-                  : new NullableFloatAnnotation())
-              : new FloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()));
-    };
-  }
-
-  private Annotation createAnnotation(TsvField tsvField, ResolvedIntAnnotationSpec spec) {
-    // FIXME don't check with instanceof
-    if (spec.intEncoding() instanceof NullableIntEncoding
-        || spec.intEncoding() instanceof OffsetNullableIntEncoding) {
-      // TODO perf: reuse new NullableIntAnnotation()
-      return !tsvField.isMissingValue()
-          ? new NullableIntAnnotation(
-              Integer.parseInt(tsvField.getRawView(), 0, tsvField.getRawView().length(), 10))
-          : new NullableIntAnnotation();
-    } else {
-      return new IntAnnotation(
-          Integer.parseInt(tsvField.getRawView(), 0, tsvField.getRawView().length(), 10));
-    }
   }
 }

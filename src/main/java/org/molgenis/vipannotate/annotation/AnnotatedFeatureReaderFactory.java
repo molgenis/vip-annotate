@@ -43,18 +43,18 @@ public class AnnotatedFeatureReaderFactory {
     Map<String, Integer> header = inputFormat.header() ? readHeaderIndices(tsvParser) : Map.of();
     ResolvedTsvColumns resolvedColumns = resolveColumns(inputFormat.columns(), header);
 
+    TsvAnnotationMapper annotationMapper =
+        new TsvAnnotationMapper(resolvedColumns, annotationSpecs);
     Function<TsvRecord, AnnotatedFeature<?, ?>> mapper =
         switch (inputFormat.annotationType()) {
           case INTERVAL -> throw new UnsupportedOperationException(); // FIXME
           case POSITION ->
-              // FIXME hardcoded contigIndex and startIndex
               new TsvAnnotatedPositionMapper(
-                      inputFormat.coordinateSystem(), resolvedColumns, annotationSpecs)
+                      inputFormat.coordinateSystem(), resolvedColumns, annotationMapper)
                   ::apply;
           case SEQUENCE_VARIANT ->
-              // FIXME hardcoded contigIndex, startIndex, refIndex and altIndex
               new TsvAnnotatedSequenceVariantMapper(
-                      inputFormat.coordinateSystem(), resolvedColumns, annotationSpecs)
+                      inputFormat.coordinateSystem(), resolvedColumns, annotationMapper)
                   ::apply;
         };
     return new AnnotatedFeatureReaderImpl<>(tsvParser, mapper);
