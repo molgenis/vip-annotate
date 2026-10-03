@@ -86,8 +86,9 @@ Usage:
   vip-annotate database-build --help
 
 Options:
-  -d, --definition    FILE  Defines how to build the annotation database from input  (required)
-  -i, --input         FILE  Input file path                                          (required)
+  -d, --definition    FILE  JSON definition file for building the annotation database  (required)
+                            See https://github.com/molgenis/vip-annotate for format.
+  -i, --input         FILE  Input file path                                            (required)
   -o, --output        FILE  Output .vdb file path
   -f, --force         Overwrite existing output file if it exists
 ```
