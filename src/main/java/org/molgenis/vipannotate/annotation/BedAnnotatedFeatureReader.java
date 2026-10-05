@@ -1,15 +1,15 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSpecs;
-import org.molgenis.vipannotate.annotation.spec.BedInputFormat;
+import org.molgenis.vipannotate.annotation.def.BedInputFormat;
+import org.molgenis.vipannotate.annotation.spec.AnnotationsSpec;
 import org.molgenis.vipannotate.util.Input;
 
 @RequiredArgsConstructor
 public class BedAnnotatedFeatureReader implements AnnotatedFeatureReader {
   private final Input input;
   private final BedInputFormat bedInputFormat;
-  private final ResolvedAnnotationSpecs annotationSpecs;
+  private final AnnotationsSpec annotationsSpec;
 
   @Override
   public boolean hasNext() {

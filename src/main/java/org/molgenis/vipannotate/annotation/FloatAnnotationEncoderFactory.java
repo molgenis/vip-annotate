@@ -1,8 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.*;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedFloatAnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.spec.FloatAnnotationSpec;
 import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IntInterval;
 import org.molgenis.vipannotate.util.Quantizer;
@@ -11,7 +11,7 @@ import org.molgenis.vipannotate.util.Quantizer;
 public class FloatAnnotationEncoderFactory {
   private final ValueWriterFactory valueWriterFactory;
 
-  public AnnotationEncoder<?> create(ResolvedFloatAnnotationSpec annotationSpec) {
+  public AnnotationEncoder<?> create(FloatAnnotationSpec annotationSpec) {
     return switch (annotationSpec.storageType()) {
       case FloatType type -> create(type, annotationSpec.floatEncoding());
       case IntType type -> create(type, annotationSpec.floatEncoding());

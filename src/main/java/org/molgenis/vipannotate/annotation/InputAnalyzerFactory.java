@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.format.RecordReader;
 import org.molgenis.vipannotate.format.bed.BedFeature;
 import org.molgenis.vipannotate.format.bed.BedField;
@@ -91,15 +91,15 @@ public class InputAnalyzerFactory {
 
     FieldResolver<TsvField, TsvRecord> fieldResolver =
         annotationId -> {
-          TsvColumn tsvColumn = inputFormat.columns().annotations().get(annotationId);
+          TsvColumnDef tsvColumnDef = inputFormat.columns().annotations().get(annotationId);
 
-          if (tsvColumn == null) {
+          if (tsvColumnDef == null) {
             throw new IllegalArgumentException(
                 "'definition.annotations.%s' not defined in 'input.colums.annotations'"
                     .formatted(annotationId));
           }
 
-          int index = getTsvColumnIndex(tsvColumn, tsvHeaderMap);
+          int index = getTsvColumnIndex(tsvColumnDef, tsvHeaderMap);
           return record -> record.fields()[index];
         };
 
@@ -114,8 +114,8 @@ public class InputAnalyzerFactory {
             });
 
     SequenceVariantTypeAnalyzer<TsvField, TsvRecord> sequenceVariantTypeAnalyzer;
-    TsvColumn refColumn = inputFormat.columns().ref();
-    TsvColumn altColumn = inputFormat.columns().alt();
+    TsvColumnDef refColumn = inputFormat.columns().ref();
+    TsvColumnDef altColumn = inputFormat.columns().alt();
     if (refColumn != null && altColumn != null) {
       int refIndex = getTsvColumnIndex(refColumn, tsvHeaderMap);
       int altIndex = getTsvColumnIndex(altColumn, tsvHeaderMap);
@@ -159,16 +159,17 @@ public class InputAnalyzerFactory {
         new FieldAnalyzerFactory<>());
   }
 
-  // TODO dedup using AnnotatedFeaturedReaderFactory.ResolvedTsvColumns
-  private int getTsvColumnIndex(TsvColumn tsvColumn, @Nullable Map<String, Integer> tsvHeaderMap) {
+  // TODO dedup using AnnotatedFeaturedReaderFactory.TsvColumnsSpec
+  private int getTsvColumnIndex(
+      TsvColumnDef tsvColumnDef, @Nullable Map<String, Integer> tsvHeaderMap) {
     int index;
-    if (tsvColumn.index() != null) {
-      index = tsvColumn.index() - 1;
+    if (tsvColumnDef.index() != null) {
+      index = tsvColumnDef.index() - 1;
     } else {
       if (tsvHeaderMap == null) {
         throw new IllegalArgumentException();
       }
-      index = tsvHeaderMap.getOrDefault(tsvColumn.name(), -1);
+      index = tsvHeaderMap.getOrDefault(tsvColumnDef.name(), -1);
       if (index == -1) {
         throw new IllegalArgumentException();
       }

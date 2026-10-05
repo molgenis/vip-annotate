@@ -1,12 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.spec.EnumSetAnnotationSpec;
+import org.molgenis.vipannotate.annotation.def.EnumSetAnnotationDef;
 import org.molgenis.vipannotate.format.Field;
 
 @RequiredArgsConstructor
 public class EnumSetFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
-  private final EnumSetAnnotationSpec annotationSpec;
+  private final EnumSetAnnotationDef annotationSpec;
 
   private long count;
   private long nullCount;

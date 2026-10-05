@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.*;
+import org.molgenis.vipannotate.annotation.spec.*;
 
 @RequiredArgsConstructor
 public class AnnotationDatasetDecoderFactory {
@@ -11,15 +11,15 @@ public class AnnotationDatasetDecoderFactory {
   private final IntAnnotationDatasetDecoderFactory intAnnotationDatasetDecoderFactory;
 
   public AnnotationDatasetDecoder<?> create(
-      ResolvedAnnotationSpec annotationSpec, AnnotationBlobReader blobReader) {
+      AnnotationSpec annotationSpec, AnnotationBlobReader blobReader) {
     return switch (annotationSpec) {
-      case ResolvedEnumAnnotationSpec enumAnnotationSpec ->
+      case EnumAnnotationSpec enumAnnotationSpec ->
           enumAnnotationDatasetDecoderFactory.create(enumAnnotationSpec, blobReader);
-      case ResolvedEnumSetAnnotationSpec enumSetAnnotationSpec ->
+      case EnumSetAnnotationSpec enumSetAnnotationSpec ->
           enumSetAnnotationDatasetDecoderFactory.create(enumSetAnnotationSpec, blobReader);
-      case ResolvedFloatAnnotationSpec floatAnnotationSpec ->
+      case FloatAnnotationSpec floatAnnotationSpec ->
           floatAnnotationDatasetDecoderFactory.create(floatAnnotationSpec, blobReader);
-      case ResolvedIntAnnotationSpec intAnnotationSpec ->
+      case IntAnnotationSpec intAnnotationSpec ->
           intAnnotationDatasetDecoderFactory.create(intAnnotationSpec, blobReader);
     };
   }

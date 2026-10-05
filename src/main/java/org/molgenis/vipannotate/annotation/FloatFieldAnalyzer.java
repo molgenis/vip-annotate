@@ -1,12 +1,12 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.spec.FloatAnnotationSpec;
+import org.molgenis.vipannotate.annotation.def.FloatAnnotationDef;
 import org.molgenis.vipannotate.format.Field;
 
 @RequiredArgsConstructor
 public class FloatFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
-  private final FloatAnnotationSpec annotationSpec;
+  private final FloatAnnotationDef annotationSpec;
 
   private long count;
   private long nullCount;

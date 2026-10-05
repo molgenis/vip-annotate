@@ -9,7 +9,7 @@ import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
-import org.molgenis.vipannotate.annotation.resolved.*;
+import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.format.bed.BedFeature;
 import org.molgenis.vipannotate.format.bed.BedField;
@@ -19,7 +19,7 @@ import org.molgenis.vipannotate.format.bed.Chrom;
 public final class BedAnnotatedPositionMapper
     implements Function<BedFeature, AnnotatedPosition<CompositeAnnotation>> {
   private final BedInputFormat bedInputFormat;
-  private final ResolvedAnnotationSpecs annotationsSpecs;
+  private final AnnotationsSpec annotationsSpec;
 
   @Override
   public AnnotatedPosition<CompositeAnnotation> apply(BedFeature bedFeature) {
@@ -51,8 +51,8 @@ public final class BedAnnotatedPositionMapper
       //      int idxAnnotation = idxAnnotations[0];
       //      return (T) new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
     } else {
-      List<Annotation> annotations = new ArrayList<>(annotationsSpecs.size());
-      annotationsSpecs.forEach(
+      List<Annotation> annotations = new ArrayList<>(annotationsSpec.size());
+      annotationsSpec.forEach(
           (annotationDatasetId, annotationSpec) -> {
             BedFieldType bedFieldType = idxAnnotations.get(annotationDatasetId);
             if (bedFieldType == null) {
@@ -67,7 +67,7 @@ public final class BedAnnotatedPositionMapper
   }
 
   private Annotation createAnnotation(
-      BedFeature bedFeature, BedFieldType bedFieldType, ResolvedAnnotationSpec annotationSpec) {
+      BedFeature bedFeature, BedFieldType bedFieldType, AnnotationSpec annotationSpec) {
     BedField bedField =
         switch (bedFieldType) {
           case CHROM -> bedFeature.getChrom();
@@ -80,19 +80,19 @@ public final class BedAnnotatedPositionMapper
         };
 
     return switch (annotationSpec) {
-      case ResolvedEnumAnnotationSpec spec -> createAnnotation(bedField, spec);
-      case ResolvedEnumSetAnnotationSpec spec -> createAnnotation(bedField, spec);
-      case ResolvedFloatAnnotationSpec spec -> createAnnotation(bedField, spec);
-      case ResolvedIntAnnotationSpec spec -> createAnnotation(bedField, spec);
+      case EnumAnnotationSpec spec -> createAnnotation(bedField, spec);
+      case EnumSetAnnotationSpec spec -> createAnnotation(bedField, spec);
+      case FloatAnnotationSpec spec -> createAnnotation(bedField, spec);
+      case IntAnnotationSpec spec -> createAnnotation(bedField, spec);
     };
   }
 
-  private Annotation createAnnotation(BedField bedField, ResolvedEnumAnnotationSpec spec) {
+  private Annotation createAnnotation(BedField bedField, EnumAnnotationSpec spec) {
     return new StringAnnotation(
         !bedField.getRawView().isEmpty() ? bedField.getRawView().toString() : null);
   }
 
-  private Annotation createAnnotation(BedField bedField, ResolvedEnumSetAnnotationSpec spec) {
+  private Annotation createAnnotation(BedField bedField, EnumSetAnnotationSpec spec) {
     // TODO perf: split that does not require toString
     String[] tokens =
         !bedField.getRawView().isEmpty()
@@ -101,7 +101,7 @@ public final class BedAnnotatedPositionMapper
     return new StringListAnnotation(tokens);
   }
 
-  private Annotation createAnnotation(BedField bedField, ResolvedFloatAnnotationSpec spec) {
+  private Annotation createAnnotation(BedField bedField, FloatAnnotationSpec spec) {
     return switch (spec.floatEncoding()) {
       case NullableFloatEncoding _ ->
           !bedField.getRawView().isEmpty()
@@ -119,7 +119,7 @@ public final class BedAnnotatedPositionMapper
     };
   }
 
-  private Annotation createAnnotation(BedField bedField, ResolvedIntAnnotationSpec spec) {
+  private Annotation createAnnotation(BedField bedField, IntAnnotationSpec spec) {
     // FIXME don't check with instanceof
     if (spec.intEncoding() instanceof NullableIntEncoding
         || spec.intEncoding() instanceof OffsetNullableIntEncoding) {

@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSpecs;
-import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.def.*;
+import org.molgenis.vipannotate.annotation.spec.AnnotationsSpec;
 import org.molgenis.vipannotate.format.RecordReader;
 import org.molgenis.vipannotate.format.bed.BedFeature;
 import org.molgenis.vipannotate.format.bed.BedField;
@@ -21,46 +21,45 @@ import org.molgenis.vipannotate.util.Maps;
 public class AnnotatedFeatureReaderFactory {
 
   public AnnotatedFeatureReader create(
-      Path input, InputFormat inputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+      Path input, InputFormat inputFormat, AnnotationsSpec annotationsSpec) {
     return switch (inputFormat) {
-      case BedInputFormat bedInputFormat -> createFromBed(input, bedInputFormat, annotationSpecs);
-      case TsvInputFormat tsvInputFormat -> createFromTsv(input, tsvInputFormat, annotationSpecs);
-      case VcfInputFormat vcfInputFormat -> createFromVcf(input, vcfInputFormat, annotationSpecs);
+      case BedInputFormat bedInputFormat -> createFromBed(input, bedInputFormat, annotationsSpec);
+      case TsvInputFormat tsvInputFormat -> createFromTsv(input, tsvInputFormat, annotationsSpec);
+      case VcfInputFormat vcfInputFormat -> createFromVcf(input, vcfInputFormat, annotationsSpec);
     };
   }
 
   private VcfAnnotatedFeatureReader createFromVcf(
-      Path input, VcfInputFormat vcfInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+      Path input, VcfInputFormat vcfInputFormat, AnnotationsSpec annotationSpecs) {
     return new VcfAnnotatedFeatureReader(input, vcfInputFormat, annotationSpecs);
   }
 
   private AnnotatedFeatureReader createFromTsv(
-      Path input, TsvInputFormat inputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+      Path input, TsvInputFormat inputFormat, AnnotationsSpec annotationSpecs) {
     String missingValue = inputFormat.missingValue() != null ? inputFormat.missingValue() : "";
     char listSeparator = inputFormat.listSeparator() != null ? inputFormat.listSeparator() : ',';
     TsvParser tsvParser = TsvParserFactory.createFromPath(input, missingValue, listSeparator);
 
     Map<String, Integer> header = inputFormat.header() ? readHeaderIndices(tsvParser) : Map.of();
-    ResolvedTsvColumns resolvedColumns = resolveColumns(inputFormat.columns(), header);
+    TsvColumnsSpec columnsSpec = resolveColumns(inputFormat.columns(), header);
 
-    TsvAnnotationMapper annotationMapper =
-        new TsvAnnotationMapper(resolvedColumns, annotationSpecs);
+    TsvAnnotationMapper annotationMapper = new TsvAnnotationMapper(columnsSpec, annotationSpecs);
     Function<TsvRecord, AnnotatedFeature<?, ?>> mapper =
         switch (inputFormat.annotationType()) {
           case INTERVAL -> throw new UnsupportedOperationException(); // FIXME
           case POSITION ->
               new TsvAnnotatedPositionMapper(
-                      inputFormat.coordinateSystem(), resolvedColumns, annotationMapper)
+                      inputFormat.coordinateSystem(), columnsSpec, annotationMapper)
                   ::apply;
           case SEQUENCE_VARIANT ->
               new TsvAnnotatedSequenceVariantMapper(
-                      inputFormat.coordinateSystem(), resolvedColumns, annotationMapper)
+                      inputFormat.coordinateSystem(), columnsSpec, annotationMapper)
                   ::apply;
         };
     return new AnnotatedFeatureReaderImpl<>(tsvParser, mapper);
   }
 
-  public record ResolvedTsvColumns(
+  public record TsvColumnsSpec(
       int contig,
       int start,
       @Nullable Integer end,
@@ -85,8 +84,7 @@ public class AnnotatedFeatureReaderFactory {
     return indices;
   }
 
-  private ResolvedTsvColumns resolveColumns(
-      TsvColumns columns, Map<String, Integer> headerIndices) {
+  private TsvColumnsSpec resolveColumns(TsvColumnsDef columns, Map<String, Integer> headerIndices) {
     int contig = resolveColumnIndex(columns.contig(), headerIndices);
     int start = resolveColumnIndex(columns.start(), headerIndices);
     Integer end = columns.end() != null ? resolveColumnIndex(columns.end(), headerIndices) : null;
@@ -101,10 +99,10 @@ public class AnnotatedFeatureReaderFactory {
             (annotationId, column) ->
                 annotations.put(annotationId, resolveColumnIndex(column, headerIndices)));
 
-    return new ResolvedTsvColumns(contig, start, end, ref, alt, annotations);
+    return new TsvColumnsSpec(contig, start, end, ref, alt, annotations);
   }
 
-  private int resolveColumnIndex(TsvColumn column, Map<String, Integer> headerIndices) {
+  private int resolveColumnIndex(TsvColumnDef column, Map<String, Integer> headerIndices) {
     if (column.index() != null) {
       return column.index() - 1;
     }
@@ -118,7 +116,7 @@ public class AnnotatedFeatureReaderFactory {
   }
 
   private static AnnotatedFeatureReader createFromBed(
-      Path input, BedInputFormat bedInputFormat, ResolvedAnnotationSpecs annotationSpecs) {
+      Path input, BedInputFormat bedInputFormat, AnnotationsSpec annotationSpecs) {
     RecordReader<BedField, BedFeature> bedParser = BedParserFactory.createFromPath(input);
     Function<BedFeature, AnnotatedFeature<?, ?>> mapper =
         new BedAnnotatedPositionMapper(bedInputFormat, annotationSpecs)::apply;

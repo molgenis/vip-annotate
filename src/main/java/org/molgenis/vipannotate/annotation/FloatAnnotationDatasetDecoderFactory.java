@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.*;
+import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IntInterval;
 import org.molgenis.vipannotate.util.Quantizer;
@@ -11,20 +11,19 @@ public class FloatAnnotationDatasetDecoderFactory {
   private final ReadValueFunctionFactory readValueFunctionFactory;
 
   public AnnotationDatasetDecoder<?> create(
-      ResolvedFloatAnnotationSpec annotationSpec, AnnotationBlobReader blobReader) {
+      FloatAnnotationSpec annotationSpec, AnnotationBlobReader blobReader) {
     AnnotationDecoder<?> annotationDecoder = createAnnotationDecoder(annotationSpec);
     return new PerElementAnnotationDatasetReader<>(annotationDecoder, blobReader);
   }
 
-  private AnnotationDecoder<?> createAnnotationDecoder(ResolvedFloatAnnotationSpec annotationSpec) {
+  private AnnotationDecoder<?> createAnnotationDecoder(FloatAnnotationSpec annotationSpec) {
     return switch (annotationSpec.storageType()) {
       case FloatType floatType -> create(annotationSpec, floatType);
       case IntType intType -> create(annotationSpec, intType);
     };
   }
 
-  private AnnotationDecoder<?> create(
-      ResolvedFloatAnnotationSpec annotationSpec, FloatType floatType) {
+  private AnnotationDecoder<?> create(FloatAnnotationSpec annotationSpec, FloatType floatType) {
     FloatReadValueFunction readValueFunction =
         readValueFunctionFactory.createFloatReadValueFunction(floatType);
 
@@ -35,7 +34,7 @@ public class FloatAnnotationDatasetDecoderFactory {
     };
   }
 
-  private AnnotationDecoder<?> create(ResolvedFloatAnnotationSpec annotationSpec, IntType intType) {
+  private AnnotationDecoder<?> create(FloatAnnotationSpec annotationSpec, IntType intType) {
     IntReadValueFunction readValueFunction =
         readValueFunctionFactory.createIntReadValueFunction(intType);
 

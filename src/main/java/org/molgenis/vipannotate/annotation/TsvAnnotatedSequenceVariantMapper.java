@@ -4,8 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.ResolvedTsvColumns;
-import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.TsvColumnsSpec;
+import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.format.tsv.TsvField;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
 import org.molgenis.vipannotate.format.vcf.AltAllele;
@@ -15,7 +15,7 @@ import org.molgenis.vipannotate.format.vcf.AltAlleleRegistry;
 public final class TsvAnnotatedSequenceVariantMapper
     implements Function<TsvRecord, AnnotatedSequenceVariant<CompositeAnnotation>> {
   private final CoordinateSystem coordinateSystem;
-  private final ResolvedTsvColumns resolvedTsvColumns;
+  private final TsvColumnsSpec tsvColumnsSpec;
   private final TsvAnnotationMapper annotationMapper;
 
   @Override
@@ -26,10 +26,10 @@ public final class TsvAnnotatedSequenceVariantMapper
   }
 
   private SequenceVariant createSequenceVariant(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(resolvedTsvColumns.contig());
-    TsvField startField = tsvRecord.field(resolvedTsvColumns.start());
-    TsvField refField = tsvRecord.field(requireNonNull(resolvedTsvColumns.ref()));
-    TsvField altField = tsvRecord.field(requireNonNull(resolvedTsvColumns.alt()));
+    TsvField contigField = tsvRecord.field(tsvColumnsSpec.contig());
+    TsvField startField = tsvRecord.field(tsvColumnsSpec.start());
+    TsvField refField = tsvRecord.field(requireNonNull(tsvColumnsSpec.ref()));
+    TsvField altField = tsvRecord.field(requireNonNull(tsvColumnsSpec.alt()));
 
     // FIXME hardcoded length
     // FIXME use contig registry

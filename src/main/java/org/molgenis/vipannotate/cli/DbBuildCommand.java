@@ -6,8 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.molgenis.vipannotate.annotation.*;
-import org.molgenis.vipannotate.annotation.spec.AnnotationDbSpec;
-import org.molgenis.vipannotate.annotation.spec.AnnotationDbSpecReader;
+import org.molgenis.vipannotate.annotation.def.AnnotationDbDef;
+import org.molgenis.vipannotate.annotation.def.AnnotationDbDefReader;
 import org.molgenis.vipannotate.format.vdb.*;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Logger;
@@ -48,9 +48,9 @@ public class DbBuildCommand implements Command {
       memBuffer.putByteArray(bytes);
       memBuffer.flip();
 
-      AnnotationDbSpec annotationDbSpec;
+      AnnotationDbDef annotationDbDef;
       try {
-        annotationDbSpec = AnnotationDbSpecReader.create().readSpec(memBuffer);
+        annotationDbDef = AnnotationDbDefReader.create().readFrom(memBuffer);
       } catch (DatabindException e) {
         throw new IllegalStateException("error parsing %s".formatted(inputDef), e);
       }
@@ -60,7 +60,7 @@ public class DbBuildCommand implements Command {
           VdbArchiveWriterFactory.create(memBufferFactory).create(outputDb, force);
       try (PartitionedVdbArchiveWriter archiveWriter =
           PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
-        AnnotationDbBuilder.create().buildDb(input, annotationDbSpec, archiveWriter);
+        AnnotationDbBuilder.create().buildDb(input, annotationDbDef, archiveWriter);
       } catch (Throwable t) {
         try {
           Files.deleteIfExists(outputDb);

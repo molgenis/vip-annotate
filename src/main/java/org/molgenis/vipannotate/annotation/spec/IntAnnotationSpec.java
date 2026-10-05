@@ -1,9 +1,22 @@
 package org.molgenis.vipannotate.annotation.spec;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.serialization.BinaryReader;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 
-// keep in sync with
-// src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
-public record IntAnnotationSpec(@JsonProperty(value = "description") @Nullable String description)
-    implements AnnotationSpec {}
+public record IntAnnotationSpec(
+    @Nullable String description, IntType storageType, IntEncoding intEncoding)
+    implements AnnotationSpec {
+  public void writeTo(BinaryWriter binaryWriter) {
+    binaryWriter.writeStringNullable(description);
+    binaryWriter.writeEnum(storageType);
+    IntEncoding.writeTo(binaryWriter, intEncoding);
+  }
+
+  public static IntAnnotationSpec readFrom(BinaryReader binaryReader) {
+    String description = binaryReader.readStringNullable();
+    IntType intType = binaryReader.readEnum(IntType.class);
+    IntEncoding intEncoding = IntEncoding.readFrom(binaryReader);
+    return new IntAnnotationSpec(description, intType, intEncoding);
+  }
+}

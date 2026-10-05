@@ -2,8 +2,8 @@ package org.molgenis.vipannotate.annotation;
 
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.ResolvedTsvColumns;
-import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.TsvColumnsSpec;
+import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.format.tsv.TsvField;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
 
@@ -11,7 +11,7 @@ import org.molgenis.vipannotate.format.tsv.TsvRecord;
 public final class TsvAnnotatedPositionMapper
     implements Function<TsvRecord, AnnotatedPosition<CompositeAnnotation>> {
   private final CoordinateSystem coordinateSystem;
-  private final ResolvedTsvColumns resolvedTsvColumns;
+  private final TsvColumnsSpec tsvColumnsSpec;
   private final TsvAnnotationMapper annotationMapper;
 
   @Override
@@ -22,8 +22,8 @@ public final class TsvAnnotatedPositionMapper
   }
 
   private Position createPosition(TsvRecord tsvRecord) {
-    TsvField contigField = tsvRecord.field(resolvedTsvColumns.contig());
-    TsvField startField = tsvRecord.field(resolvedTsvColumns.start());
+    TsvField contigField = tsvRecord.field(tsvColumnsSpec.contig());
+    TsvField startField = tsvRecord.field(tsvColumnsSpec.start());
 
     // FIXME hardcoded length
     // FIXME use contig registry

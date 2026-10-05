@@ -1,16 +1,29 @@
 package org.molgenis.vipannotate.annotation.spec;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.serialization.BinaryReader;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 
-// keep in sync with
-// src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 public record AnnotationDbSpec(
     // TODO use SemVer class with regex, see https://semver.org
-    @JsonProperty(value = "version", required = true) String specVersion,
+    String version,
     // TODO use [a-z0-9._-] and length ≤ 64
-    @JsonProperty(value = "id", required = true) String specId,
-    // TODO use [a-zA-Z0-9_-<space>]
-    @JsonProperty(value = "description") @Nullable String specDescription,
-    @JsonProperty(value = "input", required = true) InputFormat inputFormat,
-    @JsonProperty(value = "definition", required = true) AnnotationSchema annotationSchema) {}
+    String id,
+    @Nullable String description,
+    AnnotationsSpec annotationsSpec) {
+
+  public void writeTo(BinaryWriter binaryWriter) {
+    binaryWriter.writeString(version);
+    binaryWriter.writeString(id);
+    binaryWriter.writeStringNullable(description);
+    annotationsSpec.writeTo(binaryWriter);
+  }
+
+  public static AnnotationDbSpec readFrom(BinaryReader binaryReader) {
+    String specVersion = binaryReader.readString();
+    String specId = binaryReader.readString();
+    String specDescription = binaryReader.readStringNullable();
+    AnnotationsSpec annotationSchema = AnnotationsSpec.readFrom(binaryReader);
+    return new AnnotationDbSpec(specVersion, specId, specDescription, annotationSchema);
+  }
+}

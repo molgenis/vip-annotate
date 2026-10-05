@@ -1,8 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.FloatType;
-import org.molgenis.vipannotate.annotation.resolved.IntType;
+import org.molgenis.vipannotate.annotation.spec.FloatType;
+import org.molgenis.vipannotate.annotation.spec.IntType;
 import org.molgenis.vipannotate.serialization.BinaryWriter;
 import org.molgenis.vipannotate.util.Numbers;
 

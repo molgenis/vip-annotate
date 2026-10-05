@@ -1,28 +1,27 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationDbSpec;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSchema;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSpecs;
+import org.molgenis.vipannotate.annotation.def.AnnotationDbDef;
+import org.molgenis.vipannotate.annotation.def.AnnotationType;
 import org.molgenis.vipannotate.annotation.spec.AnnotationDbSpec;
-import org.molgenis.vipannotate.annotation.spec.AnnotationType;
+import org.molgenis.vipannotate.annotation.spec.AnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.AnnotationsSpec;
 
 @RequiredArgsConstructor
 public class AnnotationDbSpecResolver {
-  private final AnnotationSpecResolver annotationSpecResolver;
+  private final AnnotationsSpecResolver annotationsSpecResolver;
 
-  public ResolvedAnnotationDbSpec resolve(
-      AnnotationDbSpec annotationDbSpec, InputAnalyses inputAnalyses) {
+  public AnnotationDbSpec resolve(AnnotationDbDef annotationDbDef, InputAnalyses inputAnalyses) {
+    AnnotationType annotationType = annotationDbDef.annotationsDef().annotationType();
+    Map<String, AnnotationSpec> annotationDbSpecMap =
+        annotationsSpecResolver.resolve(inputAnalyses.annotationAnalyses(), annotationType);
 
-    AnnotationType annotationType = annotationDbSpec.annotationSchema().annotationType();
-    ResolvedAnnotationSpecs annotationSpecs =
-        annotationSpecResolver.resolve(inputAnalyses.annotationAnalyses(), annotationType);
-
-    return new ResolvedAnnotationDbSpec(
-        annotationDbSpec.specVersion(),
-        annotationDbSpec.specId(),
-        annotationDbSpec.specDescription(),
-        new ResolvedAnnotationSchema(
-            annotationType, inputAnalyses.sequenceVariantTypes(), annotationSpecs));
+    return new AnnotationDbSpec(
+        annotationDbDef.version(),
+        annotationDbDef.id(),
+        annotationDbDef.description(),
+        new AnnotationsSpec(
+            annotationType, inputAnalyses.sequenceVariantTypes(), annotationDbSpecMap));
   }
 }

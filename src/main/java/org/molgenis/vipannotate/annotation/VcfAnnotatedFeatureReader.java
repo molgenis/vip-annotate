@@ -2,14 +2,14 @@ package org.molgenis.vipannotate.annotation;
 
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedAnnotationSpecs;
-import org.molgenis.vipannotate.annotation.spec.VcfInputFormat;
+import org.molgenis.vipannotate.annotation.def.VcfInputFormat;
+import org.molgenis.vipannotate.annotation.spec.AnnotationsSpec;
 
 @RequiredArgsConstructor
 public class VcfAnnotatedFeatureReader implements AnnotatedFeatureReader {
   private final Path vcfInput;
   private final VcfInputFormat tsvInputFormat;
-  private final ResolvedAnnotationSpecs annotationSpecs;
+  private final AnnotationsSpec annotationSpecs;
 
   @Override
   public boolean hasNext() {

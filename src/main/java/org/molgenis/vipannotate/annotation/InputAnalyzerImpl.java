@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.FieldAccessor;
-import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.Record;
 import org.molgenis.vipannotate.format.RecordReader;
@@ -24,8 +24,9 @@ public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements 
       String annotationId, FieldAnalyzer<F> analyzer, FieldAccessor<F, R> accessor) {}
 
   @Override
-  public InputAnalyses analyze(AnnotationSpecs annotationSpecs) {
-    List<AnnotationBinding<F, R>> annotationBindings = createAnnotationBindings(annotationSpecs);
+  public InputAnalyses analyze(AnnotationsDef annotationsDef) {
+    List<AnnotationBinding<F, R>> annotationBindings =
+        createAnnotationBindings(annotationsDef.annotationDefMap());
 
     R record = recordReader.read();
     if (record == null) {
@@ -62,10 +63,12 @@ public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements 
     return annotationAnalyses;
   }
 
-  private List<AnnotationBinding<F, R>> createAnnotationBindings(AnnotationSpecs annotationSpecs) {
-    List<AnnotationBinding<F, R>> annotationBindings = new ArrayList<>(annotationSpecs.size());
+  private List<AnnotationBinding<F, R>> createAnnotationBindings(
+      Map<String, AnnotationDef> annotationDefinitionMap) {
+    List<AnnotationBinding<F, R>> annotationBindings =
+        new ArrayList<>(annotationDefinitionMap.size());
 
-    annotationSpecs.forEach(
+    annotationDefinitionMap.forEach(
         (annotationId, annotationSpec) ->
             annotationBindings.add(
                 new AnnotationBinding<>(

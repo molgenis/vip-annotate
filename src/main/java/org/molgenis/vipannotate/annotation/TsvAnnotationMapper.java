@@ -3,20 +3,19 @@ package org.molgenis.vipannotate.annotation;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.ResolvedTsvColumns;
+import org.molgenis.vipannotate.annotation.AnnotatedFeatureReaderFactory.TsvColumnsSpec;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
-import org.molgenis.vipannotate.annotation.resolved.*;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.format.tsv.TsvField;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
 
 @RequiredArgsConstructor
 public final class TsvAnnotationMapper {
-  private final ResolvedTsvColumns resolvedTsvColumns;
-  private final ResolvedAnnotationSpecs annotationSpecs;
+  private final TsvColumnsSpec tsvColumnsSpec;
+  private final AnnotationsSpec annotationSpecs;
 
   public CompositeAnnotation createAnnotation(TsvRecord tsvRecord) {
     if (annotationSpecs.isEmpty()) {
@@ -27,7 +26,7 @@ public final class TsvAnnotationMapper {
 
     annotationSpecs.forEach(
         (annotationDatasetId, annotationSpec) -> {
-          Integer annotationIndex = resolvedTsvColumns.annotations().get(annotationDatasetId);
+          Integer annotationIndex = tsvColumnsSpec.annotations().get(annotationDatasetId);
 
           if (annotationIndex == null) {
             throw new IllegalArgumentException(
@@ -41,25 +40,25 @@ public final class TsvAnnotationMapper {
     return new CompositeAnnotation(annotations.toArray(new Annotation[0]));
   }
 
-  private Annotation createAnnotation(TsvField tsvField, ResolvedAnnotationSpec annotationSpec) {
+  private Annotation createAnnotation(TsvField tsvField, AnnotationSpec annotationSpec) {
     return switch (annotationSpec) {
-      case ResolvedEnumAnnotationSpec spec -> createAnnotation(tsvField, spec);
-      case ResolvedEnumSetAnnotationSpec spec -> createAnnotation(tsvField, spec);
-      case ResolvedFloatAnnotationSpec spec -> createAnnotation(tsvField, spec);
-      case ResolvedIntAnnotationSpec spec -> createAnnotation(tsvField, spec);
+      case EnumAnnotationSpec spec -> createAnnotation(tsvField, spec);
+      case EnumSetAnnotationSpec spec -> createAnnotation(tsvField, spec);
+      case FloatAnnotationSpec spec -> createAnnotation(tsvField, spec);
+      case IntAnnotationSpec spec -> createAnnotation(tsvField, spec);
     };
   }
 
-  private Annotation createAnnotation(TsvField tsvField, ResolvedEnumAnnotationSpec spec) {
+  private Annotation createAnnotation(TsvField tsvField, EnumAnnotationSpec spec) {
     return new StringAnnotation(
         !tsvField.isMissingValue() ? tsvField.getRawView().toString() : null);
   }
 
-  private Annotation createAnnotation(TsvField tsvField, ResolvedEnumSetAnnotationSpec spec) {
+  private Annotation createAnnotation(TsvField tsvField, EnumSetAnnotationSpec spec) {
     return new StringListAnnotation(tsvField.parseValues());
   }
 
-  private Annotation createAnnotation(TsvField tsvField, ResolvedFloatAnnotationSpec spec) {
+  private Annotation createAnnotation(TsvField tsvField, FloatAnnotationSpec spec) {
     return switch (spec.floatEncoding()) {
       case NullableFloatEncoding _ ->
           !tsvField.isMissingValue()
@@ -79,7 +78,7 @@ public final class TsvAnnotationMapper {
     };
   }
 
-  private Annotation createAnnotation(TsvField tsvField, ResolvedIntAnnotationSpec spec) {
+  private Annotation createAnnotation(TsvField tsvField, IntAnnotationSpec spec) {
     if (spec.intEncoding() instanceof NullableIntEncoding
         || spec.intEncoding() instanceof OffsetNullableIntEncoding) {
       return !tsvField.isMissingValue()

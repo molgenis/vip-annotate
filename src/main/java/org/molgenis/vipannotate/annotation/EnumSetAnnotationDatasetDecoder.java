@@ -3,14 +3,14 @@ package org.molgenis.vipannotate.annotation;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedEnumSetAnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.EnumSetAnnotationSpec;
 import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class EnumSetAnnotationDatasetDecoder
     implements AnnotationDatasetDecoder<StringListAnnotation> {
-  private final ResolvedEnumSetAnnotationSpec enumSetAnnotationSpec;
+  private final EnumSetAnnotationSpec enumSetAnnotationSpec;
   private final AnnotationBlobReader blobReader;
 
   @Override

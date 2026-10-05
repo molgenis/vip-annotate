@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
 import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
-import org.molgenis.vipannotate.annotation.resolved.*;
+import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.format.vdb.VdbMemoryBufferFactory;
@@ -21,73 +21,69 @@ public class AnnotationDbBuilder {
   private final AnnotationDbSpecResolver dbSpecResolver;
   private final AnnotatedFeatureReaderFactory annotationReaderFactory;
   private final AnnotationDatasetEncoderFactory annotationDatasetEncoderFactory;
-  private final ResolvedAnnotationDbSpecWriter specWriter;
+  private final AnnotationDbSpecWriter specWriter;
 
-  public void buildDb(Path input, AnnotationDbSpec dbSpec, BinaryPartitionWriter partitionWriter) {
-    InputFormat inputFormat = dbSpec.inputFormat();
+  public void buildDb(Path input, AnnotationDbDef dbDef, BinaryPartitionWriter partitionWriter) {
+    InputFormat inputFormat = dbDef.inputFormat();
 
     // pass #1 collect stats from input data
     InputAnalyses inputAnalyses;
     try (InputAnalyzer inputAnalyzer = inputAnalyzerFactory.create(input, inputFormat)) {
       Logger.debug("analyzing input ...");
       long startAnalyzeInput = System.currentTimeMillis();
-      inputAnalyses = inputAnalyzer.analyze(dbSpec.annotationSchema().annotationSpecs());
+      inputAnalyses = inputAnalyzer.analyze(dbDef.annotationsDef());
       Logger.debug("analyzing input done in %sms", System.currentTimeMillis() - startAnalyzeInput);
     }
 
-    // resolve and persist db specs
-    ResolvedAnnotationDbSpec resolvedDbSpec = dbSpecResolver.resolve(dbSpec, inputAnalyses);
-    Logger.debug("resolved annotation specification\n%s", formatAnnotationSpecs(resolvedDbSpec));
-    specWriter.write(resolvedDbSpec, partitionWriter);
+    // resolve db definition into db specs and persist
+    AnnotationDbSpec dbSpec = dbSpecResolver.resolve(dbDef, inputAnalyses);
+    Logger.debug("annotation specification\n%s", formatAnnotationSpecs(dbSpec));
+    specWriter.write(dbSpec, partitionWriter);
 
-    // pass #2 build annotation database using resolved specs
-    ResolvedAnnotationSchema resolvedSchema = resolvedDbSpec.annotationSchema();
-    ResolvedAnnotationSpecs resolvedSpecs = resolvedSchema.annotationSpecs();
+    // pass #2 build annotation database using db specs
+    AnnotationsSpec annotationsSpec = dbSpec.annotationsSpec();
     try (AnnotatedFeatureReader annotationReader =
-        annotationReaderFactory.create(input, inputFormat, resolvedSpecs)) {
+        annotationReaderFactory.create(input, inputFormat, annotationsSpec)) {
 
-      switch (resolvedSchema.annotationType()) {
+      switch (annotationsSpec.annotationType()) {
         case INTERVAL -> throw new UnsupportedOperationException(); // FIXME implement
         case POSITION ->
-            createAnnotatedPositionDb(annotationReader, resolvedSpecs, partitionWriter);
+            createAnnotatedPositionDb(annotationReader, annotationsSpec, partitionWriter);
         case SEQUENCE_VARIANT ->
             createCompositeAnnotatedSequenceVariantDb(
-                annotationReader, resolvedSpecs, partitionWriter);
+                annotationReader, annotationsSpec, partitionWriter);
       }
     }
   }
 
-  private static String formatAnnotationSpecs(ResolvedAnnotationDbSpec spec) {
+  private static String formatAnnotationSpecs(AnnotationDbSpec spec) {
     StringBuilder builder = new StringBuilder();
-    builder.append("  %-14s:  %s (%s)\n".formatted("name", spec.specId(), spec.specVersion()));
-    if (spec.specDescription() != null) {
-      builder.append("  %-14s:  %s\n".formatted("description", spec.specDescription()));
+    builder.append("  %-14s:  %s (%s)\n".formatted("name", spec.id(), spec.version()));
+    if (spec.description() != null) {
+      builder.append("  %-14s:  %s\n".formatted("description", spec.description()));
     }
-    ResolvedAnnotationSchema annotationSchema = spec.annotationSchema();
+    AnnotationsSpec annotationsSpec = spec.annotationsSpec();
     builder.append(
-        "  %-14s:  type=%s\n".formatted("annotations", annotationSchema.annotationType()));
-    annotationSchema
-        .annotationSpecs()
-        .annotationSpecMap()
-        .forEach((key, value) -> formatAnnotationSpec(builder, key, value));
+        "  %-14s:  type=%s\n".formatted("annotations", annotationsSpec.annotationType()));
+    annotationsSpec.forEach((key, value) -> formatAnnotationSpec(builder, key, value));
 
     return builder.deleteCharAt(builder.length() - 1).toString();
   }
 
   private static void formatAnnotationSpec(
-      StringBuilder stringBuilder, String name, ResolvedAnnotationSpec spec) {
+      StringBuilder stringBuilder, String name, AnnotationSpec spec) {
     stringBuilder.append("    %-12s:  ".formatted(name));
     switch (spec) {
-      case ResolvedEnumAnnotationSpec _ ->
+      case EnumAnnotationSpec _ ->
           stringBuilder.append("type=%-16s  storage_type=%-12s".formatted("enum", "bit-packing"));
-      case ResolvedEnumSetAnnotationSpec _ ->
+      case EnumSetAnnotationSpec _ ->
           stringBuilder.append(
               "type=%-16s  storage_type=%-12s".formatted("enum_set", "bit-packing"));
-      case ResolvedFloatAnnotationSpec floatSpec ->
+      case FloatAnnotationSpec floatSpec ->
           stringBuilder.append(
               "type=%-16s  storage_type=%-12s"
                   .formatted("floating_point", floatSpec.storageType()));
-      case ResolvedIntAnnotationSpec intSpec ->
+      case IntAnnotationSpec intSpec ->
           stringBuilder.append(
               "type=%-16s  storage_type=%-12s".formatted("integer", intSpec.storageType()));
     }
@@ -100,7 +96,7 @@ public class AnnotationDbBuilder {
 
   private void createCompositeAnnotatedSequenceVariantDb(
       AnnotatedFeatureReader annotationReader,
-      ResolvedAnnotationSpecs annotationSpecs,
+      AnnotationsSpec annotationSpecs,
       BinaryPartitionWriter partitionWriter) {
     // FIXME get rid of cast
     Iterator<AnnotatedSequenceVariant<CompositeAnnotation>> annotatedIterator =
@@ -148,10 +144,10 @@ public class AnnotationDbBuilder {
 
   private void createAnnotatedPositionDb(
       AnnotatedFeatureReader annotationReader,
-      ResolvedAnnotationSpecs annotationSpecs,
+      AnnotationsSpec annotationsSpec,
       BinaryPartitionWriter partitionWriter) {
     // fill all positions without annotations with null annotations
-    Annotation nullAnnotation = createNullAnnotation(annotationSpecs);
+    Annotation nullAnnotation = createNullAnnotation(annotationsSpec);
     DensePositionAnnotatedFeatureReader denseAnnotationReader =
         new DensePositionAnnotatedFeatureReader(annotationReader, nullAnnotation);
     // FIXME get rid of cast
@@ -160,10 +156,10 @@ public class AnnotationDbBuilder {
     List<
             AnnotatedIntervalPartitionWriter<
                 Position, CompositeAnnotation, AnnotatedPosition<CompositeAnnotation>>>
-        partitionWriters = new ArrayList<>(annotationSpecs.size());
+        partitionWriters = new ArrayList<>(annotationsSpec.size());
 
     AtomicInteger atomicInteger = new AtomicInteger();
-    annotationSpecs.forEach(
+    annotationsSpec.forEach(
         (annotationDatasetId, annotationSpec) -> {
           AnnotationDatasetEncoder<Annotation> annotationDatasetEncoder =
               annotationDatasetEncoderFactory.createAnnotationDatasetEncoder(annotationSpec);
@@ -188,14 +184,14 @@ public class AnnotationDbBuilder {
   }
 
   public static AnnotationDbBuilder create() {
-    AnnotationSpecResolver annotationSpecResolver = new AnnotationSpecResolver();
+    AnnotationsSpecResolver annotationsSpecResolver = new AnnotationsSpecResolver();
     AnnotationDbSpecResolver annotationDbSpecResolver =
-        new AnnotationDbSpecResolver(annotationSpecResolver);
+        new AnnotationDbSpecResolver(annotationsSpecResolver);
     InputAnalyzerFactory inputAnalyzerFactory = InputAnalyzerFactory.create();
     AnnotatedFeatureReaderFactory annotationReaderFactory = AnnotatedFeatureReaderFactory.create();
     AnnotationDatasetEncoderFactory annotationDatasetEncoderFactory =
         AnnotationDatasetEncoderFactory.create();
-    ResolvedAnnotationDbSpecWriter specWriter = ResolvedAnnotationDbSpecWriter.create();
+    AnnotationDbSpecWriter specWriter = AnnotationDbSpecWriter.create();
     return new AnnotationDbBuilder(
         inputAnalyzerFactory,
         annotationDbSpecResolver,
@@ -204,16 +200,16 @@ public class AnnotationDbBuilder {
         specWriter);
   }
 
-  private Annotation createNullAnnotation(ResolvedAnnotationSpecs specs) {
-    List<Annotation> annotations = new ArrayList<>(specs.size());
-    specs.forEach(
+  private Annotation createNullAnnotation(AnnotationsSpec annotationsSpec) {
+    List<Annotation> annotations = new ArrayList<>(annotationsSpec.size());
+    annotationsSpec.forEach(
         (_, spec) ->
             annotations.add(
                 switch (spec) {
-                  case ResolvedEnumAnnotationSpec _ -> new StringAnnotation(null);
-                  case ResolvedEnumSetAnnotationSpec _ -> new StringListAnnotation(new String[0]);
-                  case ResolvedFloatAnnotationSpec _ -> new NullableFloatAnnotation();
-                  case ResolvedIntAnnotationSpec _ -> new NullableIntAnnotation();
+                  case EnumAnnotationSpec _ -> new StringAnnotation(null);
+                  case EnumSetAnnotationSpec _ -> new StringListAnnotation(new String[0]);
+                  case FloatAnnotationSpec _ -> new NullableFloatAnnotation();
+                  case IntAnnotationSpec _ -> new NullableIntAnnotation();
                 }));
     return new CompositeAnnotation(annotations.toArray(new Annotation[0]));
   }

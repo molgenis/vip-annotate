@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.*;
+import org.molgenis.vipannotate.annotation.spec.*;
 
 @RequiredArgsConstructor
 public class AnnotationDatasetEncoderFactory {
@@ -9,40 +9,39 @@ public class AnnotationDatasetEncoderFactory {
   private final IntAnnotationEncoderFactory intAnnotationEncoderFactory;
 
   public <T extends Annotation> AnnotationDatasetEncoder<T> createAnnotationDatasetEncoder(
-      ResolvedAnnotationSpec annotationSpec) {
+      AnnotationSpec annotationSpec) {
     // FIXME get rid of cast
     return (AnnotationDatasetEncoder<T>)
         switch (annotationSpec) {
-          case ResolvedEnumAnnotationSpec enumAnnotationSpec ->
+          case EnumAnnotationSpec enumAnnotationSpec ->
               createEnumDataSetEncoder(enumAnnotationSpec);
-          case ResolvedEnumSetAnnotationSpec enumSetAnnotationSpec ->
+          case EnumSetAnnotationSpec enumSetAnnotationSpec ->
               createEnumSetDataSetEncoder(enumSetAnnotationSpec);
-          case ResolvedFloatAnnotationSpec floatAnnotationSpec ->
+          case FloatAnnotationSpec floatAnnotationSpec ->
               createFloatDataSetEncoder(floatAnnotationSpec);
-          case ResolvedIntAnnotationSpec intAnnotationSpec ->
-              createIntDataSetEncoder(intAnnotationSpec);
+          case IntAnnotationSpec intAnnotationSpec -> createIntDataSetEncoder(intAnnotationSpec);
         };
   }
 
   private static EnumAnnotationDatasetEncoder createEnumDataSetEncoder(
-      ResolvedEnumAnnotationSpec annotationSpec) {
+      EnumAnnotationSpec annotationSpec) {
     return new EnumAnnotationDatasetEncoder(annotationSpec.values(), annotationSpec.nullable());
   }
 
   private static EnumSetAnnotationDatasetEncoder createEnumSetDataSetEncoder(
-      ResolvedEnumSetAnnotationSpec annotationSpec) {
+      EnumSetAnnotationSpec annotationSpec) {
     String[] enumValues = annotationSpec.values();
     return new EnumSetAnnotationDatasetEncoder(enumValues);
   }
 
   private PerElementAnnotationDatasetEncoder<?> createFloatDataSetEncoder(
-      ResolvedFloatAnnotationSpec annotationSpec) {
+      FloatAnnotationSpec annotationSpec) {
     return new PerElementAnnotationDatasetEncoder<>(
         floatAnnotationEncoderFactory.create(annotationSpec));
   }
 
   private PerElementAnnotationDatasetEncoder<?> createIntDataSetEncoder(
-      ResolvedIntAnnotationSpec annotationSpec) {
+      IntAnnotationSpec annotationSpec) {
     return new PerElementAnnotationDatasetEncoder<>(
         intAnnotationEncoderFactory.create(annotationSpec));
   }

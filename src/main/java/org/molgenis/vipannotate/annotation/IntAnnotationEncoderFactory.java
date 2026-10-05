@@ -1,17 +1,17 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.NullableIntEncoding;
-import org.molgenis.vipannotate.annotation.resolved.OffsetIntEncoding;
-import org.molgenis.vipannotate.annotation.resolved.OffsetNullableIntEncoding;
-import org.molgenis.vipannotate.annotation.resolved.PlainIntEncoding;
-import org.molgenis.vipannotate.annotation.resolved.ResolvedIntAnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.IntAnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.NullableIntEncoding;
+import org.molgenis.vipannotate.annotation.spec.OffsetIntEncoding;
+import org.molgenis.vipannotate.annotation.spec.OffsetNullableIntEncoding;
+import org.molgenis.vipannotate.annotation.spec.PlainIntEncoding;
 
 @RequiredArgsConstructor
 public class IntAnnotationEncoderFactory {
   private final ValueWriterFactory valueWriterFactory;
 
-  public AnnotationEncoder<?> create(ResolvedIntAnnotationSpec annotationSpec) {
+  public AnnotationEncoder<?> create(IntAnnotationSpec annotationSpec) {
     IntValueWriter valueWriter =
         valueWriterFactory.createIntValueWriter(annotationSpec.storageType());
 

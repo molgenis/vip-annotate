@@ -1,12 +1,22 @@
 package org.molgenis.vipannotate.annotation.spec;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.serialization.BinaryReader;
+import org.molgenis.vipannotate.serialization.BinaryWriter;
 
-// keep in sync with
-// src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
-public record EnumAnnotationSpec(
-    @JsonProperty(value = "description") @Nullable String description,
-    @JsonProperty(value = "values", required = true) EnumValue[] values,
-    @JsonProperty(value = "nullable") boolean nullable)
-    implements AnnotationSpec {}
+public record EnumAnnotationSpec(@Nullable String description, String[] values, boolean nullable)
+    implements AnnotationSpec {
+
+  public void writeTo(BinaryWriter binaryWriter) {
+    binaryWriter.writeStringNullable(description);
+    binaryWriter.writeArray(values, BinaryWriter::writeString);
+    binaryWriter.writeBoolean(nullable);
+  }
+
+  public static EnumAnnotationSpec readFrom(BinaryReader binaryReader) {
+    String description = binaryReader.readStringNullable();
+    String[] values = binaryReader.readArray(String[]::new, BinaryReader::readString);
+    boolean b = binaryReader.readBoolean();
+    return new EnumAnnotationSpec(description, values, b);
+  }
+}
