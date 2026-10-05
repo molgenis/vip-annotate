@@ -13,11 +13,12 @@ import org.molgenis.vipannotate.util.Maps;
 
 @RequiredArgsConstructor
 public class AnnotationSpecResolver {
-  public ResolvedAnnotationSpecs resolve(InputAnalyses analyses, AnnotationType annotationType) {
+  public ResolvedAnnotationSpecs resolve(
+      Map<String, FieldAnalysis> annotationAnalyses, AnnotationType annotationType) {
     Map<String, ResolvedAnnotationSpec> resolvedSpecsMap =
-        Maps.newLinkedHashMapWithExpectedSize(analyses.size());
+        Maps.newLinkedHashMapWithExpectedSize(annotationAnalyses.size());
 
-    analyses.forEach(
+    annotationAnalyses.forEach(
         (annotationDatasetId, analysis) ->
             resolvedSpecsMap.put(annotationDatasetId, resolve(analysis, annotationType)));
 

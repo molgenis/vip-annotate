@@ -4,7 +4,7 @@ import org.molgenis.vipannotate.format.StringView;
 
 /** low memory, high performance, reusable, lazy parsing */
 public final class ChromEnd extends BedField {
-  private int parsedField;
+  private long parsedField;
 
   private ChromEnd(StringView fieldRawView) {
     super(fieldRawView);
@@ -15,19 +15,19 @@ public final class ChromEnd extends BedField {
     return false;
   }
 
-  public int getRaw() {
+  public long getRaw() {
     parseIfNeeded();
     return parsedField;
   }
 
   @Override
   protected void onParse() {
-    parsedField = Integer.parseInt(fieldRawView, 0, fieldRawView.length(), 10);
+    parsedField = Long.parseLong(fieldRawView, 0, fieldRawView.length(), 10);
   }
 
   @Override
   protected void onReset() {
-    parsedField = -1;
+    parsedField = -1L;
   }
 
   public static ChromEnd wrap(String fieldRaw) {

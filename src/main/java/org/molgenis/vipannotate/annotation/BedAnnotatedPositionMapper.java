@@ -30,15 +30,15 @@ public final class BedAnnotatedPositionMapper
 
   private Position createPosition(BedFeature bedFeature) {
     Chrom chrom = bedFeature.getChrom();
-    int chromStart = bedFeature.getChromStart().getRaw();
-    int chromEnd = bedFeature.getChromEnd().getRaw();
+    long chromStart = bedFeature.getChromStart().getRaw();
+    long chromEnd = bedFeature.getChromEnd().getRaw();
     if (chromEnd - chromStart != 1) {
       throw new IllegalArgumentException("expected bed position instead of interval");
     }
     // FIXME hardcoded length
     // FIXME use contig registry
     Contig contig = new Contig(chrom.getRaw().toString(), 9);
-    return new Position(contig, chromStart + 1); // 0-based -> 1-based
+    return new Position(contig, Math.toIntExact(chromStart + 1L)); // 0-based -> 1-based
   }
 
   // FIXME dedup with TsvAnnotatedSequenceVariantMapper

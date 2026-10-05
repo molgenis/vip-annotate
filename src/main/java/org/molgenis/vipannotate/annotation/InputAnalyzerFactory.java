@@ -44,6 +44,10 @@ public class InputAnalyzerFactory {
           return record -> record.fields()[fieldIndex.getColIndex()];
         };
 
+    ContigAnalyzer<BedField, BedFeature> contigAnalyzer =
+        new ContigAnalyzer<>(
+            record -> record.getChrom().getRaw(), record -> record.getChromStart().getRaw() + 1);
+
     // FIXME is this always true?
     SequenceVariantTypeAnalyzer<BedField, BedFeature> sequenceVariantTypeAnalyzer =
         new SequenceVariantTypeAnalyzer<>() {
@@ -57,7 +61,11 @@ public class InputAnalyzerFactory {
         };
     // FIXME return field analyzer factory that is aware of type of bed columns
     return new InputAnalyzerImpl<>(
-        recordReader, fieldResolver, sequenceVariantTypeAnalyzer, new FieldAnalyzerFactory<>());
+        recordReader,
+        fieldResolver,
+        contigAnalyzer,
+        sequenceVariantTypeAnalyzer,
+        new FieldAnalyzerFactory<>());
   }
 
   private InputAnalyzer createTsv(Path input, TsvInputFormat inputFormat) {
@@ -94,6 +102,17 @@ public class InputAnalyzerFactory {
           int index = getTsvColumnIndex(tsvColumn, tsvHeaderMap);
           return record -> record.fields()[index];
         };
+
+    int chrIndex = getTsvColumnIndex(inputFormat.columns().contig(), tsvHeaderMap);
+    int posIndex = getTsvColumnIndex(inputFormat.columns().start(), tsvHeaderMap);
+    ContigAnalyzer<TsvField, TsvRecord> contigAnalyzer =
+        new ContigAnalyzer<>(
+            record -> record.field(chrIndex).getRawView(),
+            record -> {
+              CharSequence posView = record.field(posIndex).getRawView();
+              return Long.parseLong(posView, 0, posView.length(), 10);
+            });
+
     SequenceVariantTypeAnalyzer<TsvField, TsvRecord> sequenceVariantTypeAnalyzer;
     TsvColumn refColumn = inputFormat.columns().ref();
     TsvColumn altColumn = inputFormat.columns().alt();
@@ -133,7 +152,11 @@ public class InputAnalyzerFactory {
           };
     }
     return new InputAnalyzerImpl<>(
-        recordReader, fieldResolver, sequenceVariantTypeAnalyzer, new FieldAnalyzerFactory<>());
+        recordReader,
+        fieldResolver,
+        contigAnalyzer,
+        sequenceVariantTypeAnalyzer,
+        new FieldAnalyzerFactory<>());
   }
 
   // TODO dedup using AnnotatedFeaturedReaderFactory.ResolvedTsvColumns

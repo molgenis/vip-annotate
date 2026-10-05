@@ -16,6 +16,7 @@ import org.molgenis.vipannotate.util.Maps;
 public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements InputAnalyzer {
   private final RecordReader<F, R> recordReader;
   private final FieldResolver<F, R> fieldResolver;
+  private final ContigAnalyzer<F, R> contigAnalyzer;
   private final SequenceVariantTypeAnalyzer<F, R> sequenceVariantTypeAnalyzer;
   private final FieldAnalyzerFactory<F> fieldAnalyzerFactory;
 
@@ -36,10 +37,13 @@ public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements 
     } while (recordReader.readInto(record));
 
     return new InputAnalyses(
-        sequenceVariantTypeAnalyzer.collect(), collectFieldAnalysis(annotationBindings));
+        contigAnalyzer.collect(),
+        sequenceVariantTypeAnalyzer.collect(),
+        collectFieldAnalysis(annotationBindings));
   }
 
   private void analyzeRecord(R record, List<AnnotationBinding<F, R>> analyses) {
+    contigAnalyzer.analyze(record);
     for (AnnotationBinding<F, R> analysis : analyses) {
       analysis.analyzer().analyze(analysis.accessor().get(record));
     }

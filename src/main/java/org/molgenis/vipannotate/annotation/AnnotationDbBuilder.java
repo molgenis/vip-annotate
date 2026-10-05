@@ -40,7 +40,8 @@ public class AnnotationDbBuilder {
 
     // create resolved specs
     ResolvedAnnotationSpecs resolvedAnnotationSpecs =
-        annotationSpecResolver.resolve(inputAnalyses, annotationSchema.annotationType());
+        annotationSpecResolver.resolve(
+            inputAnalyses.annotationAnalyses(), annotationSchema.annotationType());
 
     ResolvedAnnotationDbSpec resolvedAnnotationDbSpec =
         new ResolvedAnnotationDbSpec(
