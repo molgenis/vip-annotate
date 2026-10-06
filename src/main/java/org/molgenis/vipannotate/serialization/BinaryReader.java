@@ -155,6 +155,10 @@ public final class BinaryReader implements AutoCloseableNoThrow {
     return map;
   }
 
+  public long readLong() {
+    return memBuffer.getLong();
+  }
+
   public <T> @Nullable T readNullable(Supplier<T> valueReader) {
     return readBoolean() ? valueReader.get() : null;
   }
