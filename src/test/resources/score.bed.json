@@ -1,0 +1,18 @@
+{
+  "id": "SCORE",
+  "version": "1.2.3",
+  "input": {
+    "type": "bed",
+    "annotations": {
+      "scr": "score"
+    }
+  },
+  "definition": {
+    "annotation_type": "position",
+    "annotations": {
+      "scr": {
+        "type": "floating_point"
+      }
+    }
+  }
+}
