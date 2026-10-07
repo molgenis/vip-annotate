@@ -53,7 +53,8 @@ public final class DensePositionAnnotatedFeatureReader implements AnnotatedFeatu
 
       PositionBinSpec spec = getPositionBinSpec(actual.getContig());
 
-      if (actual.getStart() > spec.offset()) {
+      long actualZeroBased = actual.getStart() - 1L;
+      if (actualZeroBased > spec.offset()) {
         next = nullPosition(actual.getContig(), spec.offset());
       } else {
         next = buffered;
@@ -111,7 +112,7 @@ public final class DensePositionAnnotatedFeatureReader implements AnnotatedFeatu
     PositionBinSpec spec = getPositionBinSpec(contig);
     long expected = (long) lastPosition.getStart() + 1;
 
-    if (expected < spec.endExclusive()) {
+    if (expected <= spec.endExclusive()) {
       next = nullPosition(contig, expected);
       return true;
     }

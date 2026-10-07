@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import static org.molgenis.vipannotate.util.Numbers.requireNonNegative;
+import static org.molgenis.vipannotate.util.Numbers.requirePositive;
 
 /**
  * @param minStartPos minimum start position (one-based, inclusive)
@@ -9,7 +10,7 @@ import static org.molgenis.vipannotate.util.Numbers.requireNonNegative;
  */
 public record ContigAnalysis(long minStartPos, long maxStartPos, long recordCount) {
   public ContigAnalysis {
-    requireNonNegative(minStartPos);
+    requirePositive(minStartPos);
     if (maxStartPos < minStartPos) {
       throw new IllegalArgumentException();
     }

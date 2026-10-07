@@ -110,7 +110,11 @@ public class InputAnalyzerFactory {
             record -> record.field(chrIndex).getRawView(),
             record -> {
               CharSequence posView = record.field(posIndex).getRawView();
-              return Long.parseLong(posView, 0, posView.length(), 10);
+              long l = Long.parseLong(posView, 0, posView.length(), 10);
+              return switch (inputFormat.coordinateSystem()) {
+                case ZERO_BASED -> l + 1;
+                case ONE_BASED -> l;
+              };
             });
 
     SequenceVariantTypeAnalyzer<TsvField, TsvRecord> sequenceVariantTypeAnalyzer;

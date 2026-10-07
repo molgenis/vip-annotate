@@ -47,7 +47,10 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
   }
 
   private void updateActiveAnnotationIndex(PartitionKey key) {
-    if (activeAnnotationIndex == null) {
+    if (key.bin() == -1) {
+      activeAnnotationIndex = null;
+      activeAnnotationIndexValid = false;
+    } else if (activeAnnotationIndex == null) {
       // perf: allocate an annotation index once and reuse the same instance after
       activeAnnotationIndex = annotationIndexReader.read(key);
       activeAnnotationIndexValid = (activeAnnotationIndex != null);

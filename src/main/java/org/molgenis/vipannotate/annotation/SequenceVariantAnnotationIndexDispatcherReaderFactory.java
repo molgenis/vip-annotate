@@ -18,11 +18,15 @@ public class SequenceVariantAnnotationIndexDispatcherReaderFactory<T extends Seq
   public SequenceVariantAnnotationIndexDispatcherReader<T> createReader() {
     SequenceVariantAnnotationIndexDispatcherReader<T> reader =
         new SequenceVariantAnnotationIndexDispatcherReader<>();
+    StreamVByte streamVByte = StreamVByte.create();
     reader.register(
         EncodedSequenceVariant.Type.POS_20_BIT,
         new SequenceVariantAnnotationIndexSmallReader<>(
-            encoderDispatcher.getEncoder(EncodedSequenceVariant.Type.POS_20_BIT),
-            StreamVByte.create()));
+            encoderDispatcher.getEncoder(EncodedSequenceVariant.Type.POS_20_BIT), streamVByte));
+    reader.register(
+        EncodedSequenceVariant.Type.POS_26_BIT,
+        new SequenceVariantAnnotationIndexSmallReader<>(
+            encoderDispatcher.getEncoder(EncodedSequenceVariant.Type.POS_26_BIT), streamVByte));
     reader.register(
         EncodedSequenceVariant.Type.BIG,
         new SequenceVariantAnnotationIndexBigReader<>(

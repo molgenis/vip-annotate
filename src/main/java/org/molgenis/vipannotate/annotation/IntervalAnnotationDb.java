@@ -33,6 +33,9 @@ public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
   @SuppressWarnings("NullAway")
   private @Nullable U findAnnotations(Contig contig, int pos) {
     PartitionKey partitionKey = partitionResolver.resolvePartitionKey(contig, pos);
+    if (partitionKey.bin() == -1) {
+      return null;
+    }
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {

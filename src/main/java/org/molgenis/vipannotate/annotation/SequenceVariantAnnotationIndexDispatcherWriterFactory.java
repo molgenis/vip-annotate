@@ -22,9 +22,13 @@ public class SequenceVariantAnnotationIndexDispatcherWriterFactory<T extends Seq
   public SequenceVariantAnnotationIndexDispatcherWriter<T> createWriter() {
     SequenceVariantAnnotationIndexDispatcherWriter<T> writer =
         new SequenceVariantAnnotationIndexDispatcherWriter<>(memBufferFactory);
+    StreamVByte streamVByte = StreamVByte.create();
     writer.register(
         EncodedSequenceVariant.Type.POS_20_BIT,
-        new SequenceVariantAnnotationIndexSmallWriter<>(memBufferFactory, StreamVByte.create()));
+        new SequenceVariantAnnotationIndexSmallWriter<>(memBufferFactory, streamVByte));
+    writer.register(
+        EncodedSequenceVariant.Type.POS_26_BIT,
+        new SequenceVariantAnnotationIndexSmallWriter<>(memBufferFactory, streamVByte));
     writer.register(
         EncodedSequenceVariant.Type.BIG,
         new SequenceVariantAnnotationIndexBigWriter<>(memBufferFactory));

@@ -50,6 +50,9 @@ public class PositionAnnotationDb<T extends Annotation>
   @SuppressWarnings("NullAway")
   private @Nullable T findAnnotations(Contig contig, int pos) {
     PartitionKey partitionKey = partitionResolver.resolvePartitionKey(contig, pos);
+    if (partitionKey.bin() == -1) {
+      throw new IllegalArgumentException(); // FIXME how to handle?
+    }
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {
