@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.format.vcf;
 
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.StringView;
+import tools.jackson.core.internal.shaded.fdp.JavaDoubleParser;
 
 /** low memory, high performance, reusable, lazy parsing */
 public final class Qual extends VcfField {
@@ -18,7 +19,7 @@ public final class Qual extends VcfField {
 
   // perf: parse on demand
   public @Nullable Double getRaw() {
-    return isMissingValue() ? null : Double.parseDouble(fieldRawView.asString());
+    return isMissingValue() ? null : JavaDoubleParser.parseDouble(fieldRawView);
   }
 
   public static Qual wrap(String fieldRaw) {

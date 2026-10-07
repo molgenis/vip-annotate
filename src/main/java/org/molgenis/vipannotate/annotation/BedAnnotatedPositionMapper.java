@@ -14,6 +14,7 @@ import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.format.bed.BedFeature;
 import org.molgenis.vipannotate.format.bed.BedField;
 import org.molgenis.vipannotate.format.bed.Chrom;
+import tools.jackson.core.internal.shaded.fdp.JavaDoubleParser;
 
 @RequiredArgsConstructor
 public final class BedAnnotatedPositionMapper
@@ -50,7 +51,8 @@ public final class BedAnnotatedPositionMapper
       //    }
       //    else if (idxAnnotations.length == 1) {
       //      int idxAnnotation = idxAnnotations[0];
-      //      return (T) new DoubleAnnotation(Double.parseDouble(tsvFeature[idxAnnotation]));
+      //      return (T) new
+      // DoubleAnnotation(JavaDoubleParser.parseDouble(tsvFeature[idxAnnotation]));
     } else {
       List<Annotation> annotations = new ArrayList<>(annotationsSpec.size());
       annotationsSpec.forEach(
@@ -106,17 +108,16 @@ public final class BedAnnotatedPositionMapper
     return switch (spec.floatEncoding()) {
       case NullableFloatEncoding _ ->
           !bedField.getRawView().isEmpty()
-              ? new NullableFloatAnnotation(Double.parseDouble(bedField.getRawView().toString()))
+              ? new NullableFloatAnnotation(JavaDoubleParser.parseDouble(bedField.getRawView()))
               : new NullableFloatAnnotation();
       case PlainFloatEncoding _ ->
-          new FloatAnnotation(Double.parseDouble(bedField.getRawView().toString()));
+          new FloatAnnotation(JavaDoubleParser.parseDouble(bedField.getRawView()));
       case QuantizedEncoding encoding ->
           encoding.nullCode() != null
               ? (!bedField.getRawView().isEmpty()
-                  ? new NullableFloatAnnotation(
-                      Double.parseDouble(bedField.getRawView().toString()))
+                  ? new NullableFloatAnnotation(JavaDoubleParser.parseDouble(bedField.getRawView()))
                   : new NullableFloatAnnotation())
-              : new FloatAnnotation(Double.parseDouble(bedField.getRawView().toString()));
+              : new FloatAnnotation(JavaDoubleParser.parseDouble(bedField.getRawView()));
     };
   }
 

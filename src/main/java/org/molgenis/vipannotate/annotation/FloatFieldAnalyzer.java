@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.def.FloatAnnotationDef;
 import org.molgenis.vipannotate.format.Field;
+import tools.jackson.core.internal.shaded.fdp.JavaDoubleParser;
 
 @RequiredArgsConstructor
 public class FloatFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
@@ -21,7 +22,7 @@ public class FloatFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
     } else {
       // TODO perf: prevent toString
       CharSequence charSequence = field.getRawView();
-      double number = Double.parseDouble(charSequence.toString());
+      double number = JavaDoubleParser.parseDouble(charSequence);
       if (number < min) {
         min = number;
       }

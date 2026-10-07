@@ -11,6 +11,7 @@ import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotatio
 import org.molgenis.vipannotate.annotation.spec.*;
 import org.molgenis.vipannotate.format.tsv.TsvField;
 import org.molgenis.vipannotate.format.tsv.TsvRecord;
+import tools.jackson.core.internal.shaded.fdp.JavaDoubleParser;
 
 @RequiredArgsConstructor
 public final class TsvAnnotationMapper {
@@ -62,19 +63,18 @@ public final class TsvAnnotationMapper {
     return switch (spec.floatEncoding()) {
       case NullableFloatEncoding _ ->
           !tsvField.isMissingValue()
-              ? new NullableFloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()))
+              ? new NullableFloatAnnotation(JavaDoubleParser.parseDouble(tsvField.getRawView()))
               : new NullableFloatAnnotation();
 
       case PlainFloatEncoding _ ->
-          new FloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()));
+          new FloatAnnotation(JavaDoubleParser.parseDouble(tsvField.getRawView()));
 
       case QuantizedEncoding encoding ->
           encoding.nullCode() != null
               ? (!tsvField.isMissingValue()
-                  ? new NullableFloatAnnotation(
-                      Double.parseDouble(tsvField.getRawView().toString()))
+                  ? new NullableFloatAnnotation(JavaDoubleParser.parseDouble(tsvField.getRawView()))
                   : new NullableFloatAnnotation())
-              : new FloatAnnotation(Double.parseDouble(tsvField.getRawView().toString()));
+              : new FloatAnnotation(JavaDoubleParser.parseDouble(tsvField.getRawView()));
     };
   }
 
