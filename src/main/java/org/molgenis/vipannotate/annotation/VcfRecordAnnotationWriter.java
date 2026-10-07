@@ -20,7 +20,7 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
   }
 
   public void appendAltAnnotation(@Nullable T altAnnotation) {
-    if (altAnnotation == null) {
+    if (altAnnotation == null || altAnnotation.isMissingValue()) {
       reusableVcfInfoBuilder.appendValueMissing();
     } else {
       appendAnnotation(altAnnotation);

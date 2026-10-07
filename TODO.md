@@ -12,7 +12,6 @@ in addition to below see >100 TODO items in code
 - [ ] feat (db): determine encoding per-partition instead of per-input (e.g. sharper min-max, enum subsets)
 - [ ] perf (db): medium 64-bit sequence variant index
 - [ ] feat (annotate): write max error in output vcf header
-- [ ] fix (annotate): output "chr21 5252415 . T C . . PHYLOP=" instead of "chr21 5252415 . T C . . ."
 - [ ] refactor: bump streamvbyte to v3.0.0
 
 ## 0.0.1-alpha.8

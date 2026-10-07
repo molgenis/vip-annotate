@@ -11,6 +11,11 @@ public sealed interface ScalarAnnotation extends Annotation {
   final class FloatAnnotation implements ScalarAnnotation {
     private double value;
 
+    @Override
+    public boolean isMissingValue() {
+      return false;
+    }
+
     public void reset(double value) {
       this.value = value;
     }
@@ -28,6 +33,11 @@ public sealed interface ScalarAnnotation extends Annotation {
 
     public NullableFloatAnnotation(double value) {
       this(false, value);
+    }
+
+    @Override
+    public boolean isMissingValue() {
+      return isNull;
     }
 
     public void reset() {
@@ -65,6 +75,11 @@ public sealed interface ScalarAnnotation extends Annotation {
   @EqualsAndHashCode
   final class IntAnnotation implements ScalarAnnotation {
     private long value;
+
+    @Override
+    public boolean isMissingValue() {
+      return false;
+    }
   }
 
   @AllArgsConstructor
@@ -79,6 +94,11 @@ public sealed interface ScalarAnnotation extends Annotation {
 
     public NullableIntAnnotation(long value) {
       this(false, value);
+    }
+
+    @Override
+    public boolean isMissingValue() {
+      return isNull;
     }
 
     public void reset() {
