@@ -16,6 +16,15 @@ import org.molgenis.vipannotate.util.Maps;
 public final class BinaryReader implements AutoCloseableNoThrow {
   private final MemoryBuffer memBuffer;
 
+  public int[] getUnsignedByteArray() {
+    int arrayLength = memBuffer.getVarUnsignedInt();
+    int[] array = new int[arrayLength];
+    for (int i = 0; i < arrayLength; i++) {
+      array[i] = getUnsignedByte();
+    }
+    return array;
+  }
+
   public <T> T[] readArray(IntFunction<T[]> arrayFactory, BinaryReaderFunction<T> elementReader) {
     int length = memBuffer.getVarUnsignedInt();
     T[] array = arrayFactory.apply(length);

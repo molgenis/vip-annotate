@@ -243,12 +243,6 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
     return memSegment.get(LAYOUT_BYTE, pos);
   }
 
-  /** Returns the unsigned byte at the given position */
-  @Deprecated // FIXME delete
-  public int getUnsignedByte(long pos) {
-    return Byte.toUnsignedInt(getByte(pos));
-  }
-
   /** Returns the byte at the given index */
   public byte getByteAtIndex(long index) {
     return memSegment.getAtIndex(LAYOUT_BYTE, index);
@@ -328,17 +322,6 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
     int arrayLength = getVarUnsignedInt();
     byte[] array = new byte[arrayLength];
     MemorySegment.copy(memSegment, LAYOUT_BYTE, position, array, 0, arrayLength);
-    position += arrayLength * LAYOUT_BYTE.byteSize();
-    return array;
-  }
-
-  // FIXME move to BinaryReader
-  public int[] getUnsignedByteArray() {
-    int arrayLength = getVarUnsignedInt();
-    int[] array = new int[arrayLength];
-    for (int i = 0; i < arrayLength; i++) {
-      array[i] = getUnsignedByte(position + (i * LAYOUT_BYTE.byteSize()));
-    }
     position += arrayLength * LAYOUT_BYTE.byteSize();
     return array;
   }
