@@ -46,9 +46,9 @@ class PositionAnnotationDbTest {
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
     when(partitionResolver.resolvePartitionKey(contig, 124)).thenReturn(partitionKey);
     when(partitionResolver.resolvePartitionKey(contig, 125)).thenReturn(partitionKey);
-    when(partitionResolver.getPartitionPos(123)).thenReturn(456);
-    when(partitionResolver.getPartitionPos(124)).thenReturn(457);
-    when(partitionResolver.getPartitionPos(125)).thenReturn(458);
+    when(partitionResolver.getPartitionPos(contig, 123)).thenReturn(456);
+    when(partitionResolver.getPartitionPos(contig, 124)).thenReturn(457);
+    when(partitionResolver.getPartitionPos(contig, 125)).thenReturn(458);
     when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
 
     when(annotationDataset.findByIndex(456)).thenReturn(annotation0);
@@ -76,7 +76,7 @@ class PositionAnnotationDbTest {
     Annotation annotation = mock(CompositeAnnotation.class);
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
-    when(partitionResolver.getPartitionPos(123)).thenReturn(456);
+    when(partitionResolver.getPartitionPos(contig, 123)).thenReturn(456);
     when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
     when(annotationDataset.findByIndex(456)).thenReturn(annotation);
 
@@ -98,7 +98,7 @@ class PositionAnnotationDbTest {
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
-    when(partitionResolver.getPartitionPos(123)).thenReturn(456);
+    when(partitionResolver.getPartitionPos(contig, 123)).thenReturn(456);
     when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
     when(annotationDataset.findByIndex(456)).thenReturn(null);
 

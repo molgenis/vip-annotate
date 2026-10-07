@@ -7,6 +7,6 @@ public class SequenceVariantAnnotationIndexSmallFactory<T extends SequenceVarian
   public static <T extends SequenceVariant> SequenceVariantAnnotationIndexSmall<T> create() {
     // TODO reuse same encoder
     return new SequenceVariantAnnotationIndexSmall<>(
-        new SequenceVariantEncoderSmall<>(), new int[0]);
+        new SequenceVariantEncoderPos20Bit<>(), new int[0]);
   }
 }

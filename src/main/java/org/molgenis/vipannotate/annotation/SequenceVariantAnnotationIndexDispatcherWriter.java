@@ -7,7 +7,7 @@ import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
 
 public class SequenceVariantAnnotationIndexDispatcherWriter<T extends SequenceVariant>
-    implements MemoryBufferWriter<AnnotationIndex<T>> {
+    implements MemoryBufferWriter<SequenceVariantAnnotationIndexDispatcher<T>> {
   private final MemoryBufferFactory memBufferFactory;
   private final EnumMap<Type, MemoryBufferWriter<AnnotationIndex<T>>> writerMap;
 
@@ -21,16 +21,15 @@ public class SequenceVariantAnnotationIndexDispatcherWriter<T extends SequenceVa
   }
 
   @Override
-  public MemoryBuffer writeTo(AnnotationIndex<T> object) {
+  public MemoryBuffer writeTo(SequenceVariantAnnotationIndexDispatcher<T> object) {
     MemoryBuffer memBuffer = memBufferFactory.newMemoryBuffer();
     writeInto(object, memBuffer);
     return memBuffer;
   }
 
   @Override
-  public void writeInto(AnnotationIndex<T> index, MemoryBuffer memoryBuffer) {
-    SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher = getTyped(index);
-
+  public void writeInto(
+      SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher, MemoryBuffer memoryBuffer) {
     // TODO perf: write control byte that indicates which types are serialized
     for (Type type : Type.values()) {
       MemoryBufferWriter<AnnotationIndex<T>> writer = writerMap.get(type);
@@ -38,14 +37,5 @@ public class SequenceVariantAnnotationIndexDispatcherWriter<T extends SequenceVa
         writer.writeInto(indexDispatcher.getAnnotationIndex(type), memoryBuffer);
       }
     }
-  }
-
-  // TODO dedup with reader
-  private SequenceVariantAnnotationIndexDispatcher<T> getTyped(AnnotationIndex<T> annotationIndex) {
-    if (!(annotationIndex instanceof SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher)) {
-      throw new IllegalArgumentException(
-          "index must be of type SequenceVariantAnnotationIndexDispatcher");
-    }
-    return indexDispatcher;
   }
 }

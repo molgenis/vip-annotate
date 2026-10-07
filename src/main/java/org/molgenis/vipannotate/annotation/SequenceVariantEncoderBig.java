@@ -7,14 +7,14 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 public class SequenceVariantEncoderBig<T extends SequenceVariant>
     implements SequenceVariantEncoder<T> {
   @Override
-  public EncodedSequenceVariant encode(T variant) {
+  public EncodedSequenceVariant encode(T variant, int encodedStartPos) {
     byte[] bytes = new byte[calcNrBytes(variant)];
-    encodeIntoBytes(variant, bytes);
+    encodeIntoBytes(variant, encodedStartPos, bytes);
     return EncodedSequenceVariant.createBig(bytes);
   }
 
   @Override
-  public void encodeInto(T variant, EncodedSequenceVariant encodedVariant) {
+  public void encodeInto(T variant, int encodedStartPos, EncodedSequenceVariant encodedVariant) {
     int length = calcNrBytes(variant);
     byte[] bytes;
     if (encodedVariant.getBigBytesLength() < length) {
@@ -22,19 +22,18 @@ public class SequenceVariantEncoderBig<T extends SequenceVariant>
     } else {
       bytes = new byte[length];
     }
-    encodeIntoBytes(variant, bytes);
+    encodeIntoBytes(variant, encodedStartPos, bytes);
     encodedVariant.resetBig(bytes, length);
   }
 
-  private static void encodeIntoBytes(SequenceVariant variant, byte[] bytes) {
+  private static void encodeIntoBytes(SequenceVariant variant, int encodedStartPos, byte[] bytes) {
     CharSequence altBases = variant.getAlt().get(); // FIXME not true, can be symbolic etc.
 
-    int encodedPos = SequenceVariantEncoderUtils.encodePos(variant.getStart());
     int encodedRefLength = SequenceVariantEncoderUtils.encodeBaseCount(variant.getRefLength());
     int encodedAltLength = SequenceVariantEncoderUtils.encodeBaseCount(altBases.length());
 
     try (MemoryBuffer memoryBuffer = MemoryBuffer.wrap(bytes)) {
-      memoryBuffer.putVarUnsignedIntUnchecked(encodedPos);
+      memoryBuffer.putVarUnsignedIntUnchecked(encodedStartPos);
       memoryBuffer.putVarUnsignedIntUnchecked(encodedRefLength);
       memoryBuffer.putVarUnsignedIntUnchecked(encodedAltLength);
       encodeAlt(altBases, bytes, Math.toIntExact(memoryBuffer.getPosition()));

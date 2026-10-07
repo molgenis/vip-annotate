@@ -4,16 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
+import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexReader<T extends SequenceVariant>
-    implements AnnotationIndexReader<T> {
+    implements AutoCloseableNoThrow {
   private final AnnotationBlobReader annotationBlobReader;
-  private final MemoryBufferReader<AnnotationIndex<T>> indexReader;
+  private final MemoryBufferReader<SequenceVariantAnnotationIndexDispatcher<T>> indexReader;
 
-  @Override
-  public @Nullable AnnotationIndex<T> read(PartitionKey partitionKey) {
+  public @Nullable SequenceVariantAnnotationIndexDispatcher<T> read(PartitionKey partitionKey) {
     BinaryReader binaryReader = annotationBlobReader.read(partitionKey);
     if (binaryReader == null) {
       return null;
@@ -21,8 +21,8 @@ public class SequenceVariantAnnotationIndexReader<T extends SequenceVariant>
     return indexReader.readFrom(binaryReader.unwrap());
   }
 
-  @Override
-  public boolean readInto(PartitionKey partitionKey, AnnotationIndex<T> annotationIndex) {
+  public boolean readInto(
+      PartitionKey partitionKey, SequenceVariantAnnotationIndexDispatcher<T> annotationIndex) {
     BinaryReader binaryReader = annotationBlobReader.read(partitionKey);
     if (binaryReader == null) {
       return false;
@@ -31,7 +31,6 @@ public class SequenceVariantAnnotationIndexReader<T extends SequenceVariant>
     return true;
   }
 
-  @Override
   public void close() {
     ClosableUtils.close(annotationBlobReader);
   }

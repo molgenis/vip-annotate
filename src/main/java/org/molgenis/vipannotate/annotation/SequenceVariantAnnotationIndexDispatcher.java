@@ -10,8 +10,7 @@ import org.molgenis.vipannotate.util.IndexRange;
 
 @Getter(AccessLevel.PACKAGE)
 @RequiredArgsConstructor
-public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant>
-    implements AnnotationIndex<T> {
+public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant> {
   private final EnumMap<Type, AnnotationIndex<T>> indexMap;
 
   public SequenceVariantAnnotationIndexDispatcher() {
@@ -22,7 +21,6 @@ public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant>
     indexMap.put(type, index);
   }
 
-  @Override
   public boolean isEmpty() {
     for (AnnotationIndex<T> index : indexMap.values()) {
       if (!index.isEmpty()) {
@@ -32,18 +30,17 @@ public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant>
     return true;
   }
 
-  @Override
-  public @Nullable IndexRange findIndexes(T feature) {
+  public @Nullable IndexRange findIndexes(T feature, PositionEncoding positionEncoding) {
     if (isEmpty()) {
       return null;
     }
 
-    Type type = SequenceVariantEncoderUtils.determineType(feature);
+    Type type = SequenceVariantEncoderUtils.determineType(feature, positionEncoding.bits());
     AnnotationIndex<T> annotationIndex = indexMap.get(type);
     if (annotationIndex == null) {
       return null;
     }
-    return annotationIndex.findIndexes(feature);
+    return annotationIndex.findIndexes(feature, positionEncoding.value());
   }
 
   public AnnotationIndex<T> getAnnotationIndex(Type type) {
@@ -55,7 +52,6 @@ public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant>
   }
 
   /** clear index */
-  @Override
   public void reset() {
     for (AnnotationIndex<T> index : indexMap.values()) {
       index.reset();

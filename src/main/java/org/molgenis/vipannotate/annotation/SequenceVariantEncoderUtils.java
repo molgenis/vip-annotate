@@ -6,12 +6,14 @@ import org.molgenis.vipannotate.util.Numbers;
 public class SequenceVariantEncoderUtils {
   private SequenceVariantEncoderUtils() {}
 
-  public static EncodedSequenceVariant.Type determineType(SequenceVariant variant) {
+  public static EncodedSequenceVariant.Type determineType(SequenceVariant variant, int bits) {
     return switch (variant.getType()) {
       case SNV -> {
         CharSequence alt = variant.getAlt().get();
         yield AlleleUtils.isActg(alt)
-            ? EncodedSequenceVariant.Type.SMALL
+            ? (bits > 20
+                ? EncodedSequenceVariant.Type.POS_26_BIT
+                : EncodedSequenceVariant.Type.POS_20_BIT)
             : EncodedSequenceVariant.Type.OTHER;
       }
       case MNV, INDEL, INSERTION, DELETION -> {
@@ -19,25 +21,14 @@ public class SequenceVariantEncoderUtils {
         if (!AlleleUtils.isActg(alt)) {
           yield EncodedSequenceVariant.Type.OTHER;
         }
-        // TODO thresholds assume that partition size is static globally
-        yield alt.length() <= 4 && variant.getRefLength() <= 16
-            ? EncodedSequenceVariant.Type.SMALL
+        yield alt.length() <= 4 && variant.getRefLength() <= 4
+            ? (bits > 20
+                ? EncodedSequenceVariant.Type.POS_26_BIT
+                : EncodedSequenceVariant.Type.POS_20_BIT)
             : EncodedSequenceVariant.Type.BIG;
       }
       case STRUCTURAL, OTHER -> EncodedSequenceVariant.Type.OTHER;
     };
-  }
-
-  /**
-   * Encode one-based position as int. Position zero indicates telomere.
-   *
-   * @param pos position >= 0
-   * @return position encoded in 18 bits
-   */
-  public static int encodePos(int pos) {
-    Numbers.validateNonNegative(pos);
-    // TODO encoding assume that partition size is static globally
-    return Partition.calcPosInBin(pos);
   }
 
   /** encodes positive one-based number of bases as zero-based number */

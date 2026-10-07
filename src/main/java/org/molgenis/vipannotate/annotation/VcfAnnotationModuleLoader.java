@@ -122,14 +122,15 @@ public class VcfAnnotationModuleLoader {
         SequenceVariantAnnotationIndexDispatcherReaderFactory<SequenceVariant>
             indexDispatcherReaderFactory =
                 SequenceVariantAnnotationIndexDispatcherReaderFactory.create();
-        MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader =
+        MemoryBufferReader<SequenceVariantAnnotationIndexDispatcher<SequenceVariant>> indexReader =
             indexDispatcherReaderFactory.createReader();
 
-        AnnotationIndexReader<SequenceVariant> annotationIndexReader =
+        SequenceVariantAnnotationIndexReader<SequenceVariant> annotationIndexReader =
             new SequenceVariantAnnotationIndexReader<>(
                 new AnnotationBlobReader("idx", archiveReader), indexReader);
 
-        PartitionResolver partitionResolver = new PartitionResolver();
+        PartitionResolver partitionResolver =
+            new PartitionResolver(annotationDbSpec.partitioningSpec());
 
         yield switch (annotationsSpec.size()) {
           case 0 -> throw new IllegalStateException();
@@ -200,7 +201,9 @@ public class VcfAnnotationModuleLoader {
             AnnotationDatasetDecoder<CompositeAnnotation> annotationDatasetReader =
                 createCompositeAnnotationDatasetReader(annotationsSpec, archiveReader);
             IntervalAnnotationDb<SequenceVariant, CompositeAnnotation> annotationDb =
-                new IntervalAnnotationDb<>(new PartitionResolver(), annotationDatasetReader);
+                new IntervalAnnotationDb<>(
+                    new PartitionResolver(annotationDbSpec.partitioningSpec()),
+                    annotationDatasetReader);
 
             ScalarAnnotationSelector annotationSelector = createScalarAnnotationSelector();
 

@@ -1,38 +1,37 @@
 package org.molgenis.vipannotate.annotation;
 
-public class SequenceVariantEncoderSmall<T extends SequenceVariant>
+public class SequenceVariantEncoderPos20Bit<T extends SequenceVariant>
     implements SequenceVariantEncoder<T> {
   @Override
-  public EncodedSequenceVariant encode(T variant) {
-    int encodedVariantValue = encodeAsInt(variant);
+  public EncodedSequenceVariant encode(T variant, int encodedStartPos) {
+    int encodedVariantValue = encodeAsInt(variant, encodedStartPos);
     return EncodedSequenceVariant.createSmall(encodedVariantValue);
   }
 
   @Override
-  public void encodeInto(T variant, EncodedSequenceVariant encodedVariant) {
-    int encodedVariantValue = encodeAsInt(variant);
+  public void encodeInto(T variant, int encodedStartPos, EncodedSequenceVariant encodedVariant) {
+    int encodedVariantValue = encodeAsInt(variant, encodedStartPos);
     encodedVariant.resetSmall(encodedVariantValue);
   }
 
   /**
-   * Returns an encoded variant for variants with [1,16] reference bases and [1,4] alternate bases
+   * Returns an encoded variant for variants with [1,4] reference bases and [1,4] alternate bases
    *
    * <ul>
-   *   <li>{@code 18 bits} encoded position
-   *   <li>{@code 04 bits} encoded ref length
+   *   <li>{@code 20 bits} encoded position
+   *   <li>{@code 02 bits} encoded ref length
    *   <li>{@code 02 bits} encoded alt length
    *   <li>{@code 08 bits} encoded alt
    * </ul>
    *
    * @return encoded variant
    */
-  private static int encodeAsInt(SequenceVariant variant) {
+  private static int encodeAsInt(SequenceVariant variant, int encodedPos) {
     CharSequence altBases = variant.getAlt().get();
-    int encodedPos = SequenceVariantEncoderUtils.encodePos(variant.getStart());
     int encodedRefLength = SequenceVariantEncoderUtils.encodeBaseCount(variant.getRefLength());
     int encodedAltLength = SequenceVariantEncoderUtils.encodeBaseCount(altBases.length());
     int encodedAlt = encodeAlt(altBases);
-    return encodedPos << 14 | encodedRefLength << 10 | encodedAltLength << 8 | encodedAlt;
+    return encodedPos << 12 | encodedRefLength << 10 | encodedAltLength << 8 | encodedAlt;
   }
 
   /**

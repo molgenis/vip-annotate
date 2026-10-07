@@ -10,7 +10,6 @@ in addition to below see >100 TODO items in code
 - [ ] feat (db): reintroduce dictionary support (e.g. SpliceAI ncbiGeneId)
 - [ ] feat (db): null bitmap instead of nullable types (rank1 to determine index)
 - [ ] feat (db): determine encoding per-partition instead of per-input (e.g. sharper min-max, enum subsets)
-- [ ] perf (db): ClinVar vdb 135M > source data 43M. why?
 - [ ] perf (db): medium 64-bit sequence variant index
 - [ ] perf (db): use https://mvnrepository.com/artifact/ch.randelshofer/fastdoubleparser/2.0.1
 - [ ] feat (annotate): write max error in output vcf header

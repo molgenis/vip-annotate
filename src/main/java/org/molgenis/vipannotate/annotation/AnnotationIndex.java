@@ -8,7 +8,7 @@ public interface AnnotationIndex<T extends Feature> {
   boolean isEmpty();
 
   /** {@return annotation data index range or <code>null</code> if no index exists for variant} */
-  @Nullable IndexRange findIndexes(T feature);
+  @Nullable IndexRange findIndexes(T feature, int encodedPos);
 
   void reset();
 }

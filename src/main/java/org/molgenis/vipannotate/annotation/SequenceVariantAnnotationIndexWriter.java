@@ -13,11 +13,12 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexWriter<T extends SequenceVariant>
     implements AutoCloseableNoThrow {
-  private final MemoryBufferWriter<AnnotationIndex<T>> indexWriter;
+  private final MemoryBufferWriter<SequenceVariantAnnotationIndexDispatcher<T>> indexWriter;
   private final BinaryPartitionWriter binaryPartitionWriter;
   @Nullable private MemoryBuffer reusableMemBuffer;
 
-  public void write(PartitionKey partitionKey, AnnotationIndex<T> annotationIndex) {
+  public void write(
+      PartitionKey partitionKey, SequenceVariantAnnotationIndexDispatcher<T> annotationIndex) {
     if (reusableMemBuffer == null) {
       reusableMemBuffer = indexWriter.writeTo(annotationIndex);
     } else {

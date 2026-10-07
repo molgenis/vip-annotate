@@ -20,24 +20,29 @@ public class PartitionIterator<
   /**
    * Creates a new partition iterator
    *
+   * @param partitionResolver determines how to partition
    * @param sourceIterator iterator of annotated genomic intervals
    */
-  public PartitionIterator(Iterator<V> sourceIterator) {
+  public PartitionIterator(PartitionResolver partitionResolver, Iterator<V> sourceIterator) {
+    this.partitionResolver = partitionResolver;
     this.sourceIterator = new PredicateBatchIterator<>(sourceIterator, this::test);
-    this.partitionResolver = new PartitionResolver();
   }
 
   /**
    * Creates a new partition iterator, reuses the same list to create partitions. Useful when
    * performance matters, use it with care.
    *
+   * @param partitionResolver determines how to partition
    * @param sourceIterator iterator of annotated genomic intervals
    * @param reusableAnnotatedIntervalList reusable list of annotated genomic intervals
    */
-  public PartitionIterator(Iterator<V> sourceIterator, List<V> reusableAnnotatedIntervalList) {
+  public PartitionIterator(
+      PartitionResolver partitionResolver,
+      Iterator<V> sourceIterator,
+      List<V> reusableAnnotatedIntervalList) {
+    this.partitionResolver = partitionResolver;
     this.sourceIterator =
         new PredicateBatchIterator<>(sourceIterator, this::test, reusableAnnotatedIntervalList);
-    this.partitionResolver = new PartitionResolver();
   }
 
   @Override

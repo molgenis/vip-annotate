@@ -10,7 +10,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class Position extends Interval {
 
-  // TODO int -> long
+  // FIXME int -> long
   public Position(Contig contig, int pos) {
     super(contig, pos, pos);
   }

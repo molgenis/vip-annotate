@@ -1,17 +1,17 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.annotation.spec.PositionBinSpec;
 
 @RequiredArgsConstructor
 public final class DensePositionAnnotatedFeatureReader implements AnnotatedFeatureReader {
-  /** 1st base has position 1, but telomeres is 0 or @link{{@link Contig#getLength()}} + 1 */
-  private static final int FIRST_POSITION = 0;
-
   private final AnnotatedFeatureReader delegate;
   private final Annotation nullAnnotation;
+  private final Map<String, PositionBinSpec> partitioningSpec;
 
   @Nullable private AnnotatedPosition<?> buffered;
   @Nullable private AnnotatedPosition<?> next;
@@ -43,33 +43,23 @@ public final class DensePositionAnnotatedFeatureReader implements AnnotatedFeatu
       buffered = asPosition(delegate.next());
     }
 
-    // No input left.
     if (buffered == null) {
-      if (lastPosition == null) {
-        return false;
-      }
-
-      int expected = lastPosition.getStart() + 1;
-
-      if (expected <= lastPosition.getContig().getLength()) {
-        next = nullPosition(lastPosition.getContig(), expected);
-        return true;
-      }
-
-      return false;
+      return emitNextMissingPosition();
     }
 
-    // First real position.
     if (lastPosition == null) {
       Position actual = buffered.getFeature();
+      validatePosition(actual);
 
-      if (actual.getStart() > FIRST_POSITION) {
-        next = nullPosition(actual.getContig(), FIRST_POSITION);
-        return true;
+      PositionBinSpec spec = getPositionBinSpec(actual.getContig());
+
+      if (actual.getStart() > spec.offset()) {
+        next = nullPosition(actual.getContig(), spec.offset());
+      } else {
+        next = buffered;
+        buffered = null;
       }
 
-      next = buffered;
-      buffered = null;
       return true;
     }
 
@@ -78,21 +68,19 @@ public final class DensePositionAnnotatedFeatureReader implements AnnotatedFeatu
 
     if (!last.getContig().equals(actual.getContig())) {
       // Finish the previous contig before moving to the next one.
-      int expected = last.getStart() + 1;
-
-      if (expected <= last.getContig().getLength()) {
-        next = nullPosition(last.getContig(), expected);
+      if (emitNextMissingPosition()) {
         return true;
       }
 
-      // Previous contig is complete; now emit the first position
-      // of the next contig (or its leading null positions).
+      // The previous contig is complete. Process the new contig.
       lastPosition = null;
       return loadNext();
     }
 
-    int expected = last.getStart() + 1;
-    int actualStart = actual.getStart();
+    validatePosition(actual);
+
+    long expected = (long) last.getStart() + 1;
+    long actualStart = actual.getStart();
 
     if (actualStart < expected) {
       throw new IllegalArgumentException(
@@ -104,13 +92,54 @@ public final class DensePositionAnnotatedFeatureReader implements AnnotatedFeatu
       return true;
     }
 
+    // The real position is exactly the next expected position.
     next = buffered;
     buffered = null;
     return true;
   }
 
-  private AnnotatedPosition<Annotation> nullPosition(Contig contig, int position) {
-    return new AnnotatedPosition<>(new Position(contig, position), nullAnnotation);
+  /**
+   * Emits the next missing position in the current contig, if its configured dense range has not
+   * yet been completed.
+   */
+  private boolean emitNextMissingPosition() {
+    if (lastPosition == null) {
+      return false;
+    }
+
+    Contig contig = lastPosition.getContig();
+    PositionBinSpec spec = getPositionBinSpec(contig);
+    long expected = (long) lastPosition.getStart() + 1;
+
+    if (expected < spec.endExclusive()) {
+      next = nullPosition(contig, expected);
+      return true;
+    }
+
+    return false;
+  }
+
+  private void validatePosition(Position position) {
+    PositionBinSpec spec = getPositionBinSpec(position.getContig());
+    long start = position.getStart() - 1;
+
+    if (start < spec.offset() || start >= spec.endExclusive()) {
+      throw new IllegalArgumentException(
+          "Position %d is outside configured range [%d, %d)"
+              .formatted(start, spec.offset(), spec.endExclusive()));
+    }
+  }
+
+  private PositionBinSpec getPositionBinSpec(Contig contig) {
+    PositionBinSpec spec = partitioningSpec.get(contig.getName());
+    if (spec == null) {
+      throw new IllegalStateException();
+    }
+    return spec;
+  }
+
+  private AnnotatedPosition<Annotation> nullPosition(Contig contig, long position) {
+    return new AnnotatedPosition<>(new Position(contig, Math.toIntExact(position)), nullAnnotation);
   }
 
   private static AnnotatedPosition<?> asPosition(AnnotatedFeature<?, ?> feature) {

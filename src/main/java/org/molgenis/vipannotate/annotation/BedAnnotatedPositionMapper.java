@@ -38,6 +38,7 @@ public final class BedAnnotatedPositionMapper
     // FIXME hardcoded length
     // FIXME use contig registry
     Contig contig = new Contig(chrom.getRaw().toString(), 9);
+    // FIXME use long for pos
     return new Position(contig, Math.toIntExact(chromStart + 1L)); // 0-based -> 1-based
   }
 

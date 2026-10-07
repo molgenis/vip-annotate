@@ -18,9 +18,10 @@ public class PartitioningSpecResolver {
   }
 
   private static PositionBinSpec createPositionBinSpec(ContigAnalysis contigAnalysis) {
-    long offset = contigAnalysis.minStartPos();
+    long offset = contigAnalysis.minStartPos() - 1; // 1-based -> 0-based
+    long length = contigAnalysis.maxStartPos() - 1 - offset + 1; // 1-based -> 0-based
     byte binBits = chooseBinBits(contigAnalysis);
-    return new PositionBinSpec(offset, binBits);
+    return new PositionBinSpec(offset, length, binBits);
   }
 
   /** Returns number of bits to represent the span of [min, max] */

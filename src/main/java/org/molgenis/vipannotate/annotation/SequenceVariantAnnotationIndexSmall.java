@@ -31,12 +31,13 @@ public class SequenceVariantAnnotationIndexSmall<T extends SequenceVariant>
   }
 
   @Override
-  public @Nullable IndexRange findIndexes(T variant) {
+  public @Nullable IndexRange findIndexes(T variant, int encodedPos) {
     if (isEmpty()) {
       return null;
     }
 
-    int encodedSmallVariant = encoder.encode(variant).getSmall(); // FIXME call encodeInto
+    int encodedSmallVariant =
+        encoder.encode(variant, encodedPos).getSmall(); // FIXME call encodeInto
     return IndexRangeFinder.findIndexes(
         encodedVariantsArray, 0, nrEncodedVariants, encodedSmallVariant);
   }

@@ -10,11 +10,11 @@ import org.molgenis.vipannotate.util.IndexRange;
 public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends Annotation>
     implements AnnotationDb<T, U> {
   private final PartitionResolver partitionResolver;
-  private final AnnotationIndexReader<T> annotationIndexReader;
+  private final SequenceVariantAnnotationIndexReader<T> annotationIndexReader;
   private final AnnotationDatasetDecoder<U> annotationDatasetReader;
 
   @Nullable private PartitionKey activePartitionKey;
-  @Nullable private AnnotationIndex<T> activeAnnotationIndex;
+  @Nullable private SequenceVariantAnnotationIndexDispatcher<T> activeAnnotationIndex;
   private boolean activeAnnotationIndexValid = false;
   @Nullable private AnnotationDataset<U> activeAnnotationDataset;
 
@@ -31,7 +31,9 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
     }
 
     if (activeAnnotationIndexValid) {
-      IndexRange indexRange = activeAnnotationIndex.findIndexes(feature);
+      IndexRange indexRange =
+          activeAnnotationIndex.findIndexes(
+              feature, partitionResolver.resolvePosition(partitionKey, feature.getStart()));
 
       if (indexRange != null) {
         if (activeAnnotationDataset == null) {

@@ -57,7 +57,7 @@ public class PositionAnnotationDb<T extends Annotation>
       activePartitionKey = partitionKey;
     }
 
-    int partitionStart = partitionResolver.getPartitionPos(pos);
+    int partitionStart = partitionResolver.getPartitionPos(contig, pos);
     return activeAnnotationDataset.findByIndex(partitionStart);
   }
 

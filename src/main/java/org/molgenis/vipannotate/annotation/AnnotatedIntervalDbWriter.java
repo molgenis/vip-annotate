@@ -17,21 +17,23 @@ import org.molgenis.vipannotate.util.Logger;
 public class AnnotatedIntervalDbWriter<
         T extends Interval, U extends Annotation, V extends AnnotatedInterval<T, U>>
     implements AnnotatedFeatureDbWriter<T, U, V> {
+  private final PartitionResolver partitionResolver;
   private final AnnotatedIntervalPartitionWriter<T, U, V> annotatedIntervalPartitionWriter;
 
   @Override
   public void write(Iterator<V> annotatedFeatureIt) {
-    List<V> reusableAnnotatedIntervals = new ArrayList<>();
-    for (PartitionIterator<T, U, V> partitionIt =
-            new PartitionIterator<>(annotatedFeatureIt, reusableAnnotatedIntervals);
-        partitionIt.hasNext(); ) {
-      Partition<T, U, V> partition = partitionIt.next();
+    for (PartitionIterator<T, U, V> it = createPartitionIt(annotatedFeatureIt); it.hasNext(); ) {
+      Partition<T, U, V> partition = it.next();
       if (Logger.isDebugEnabled()) {
-        Logger.debug(
-            "processing partition %s/%d",
-            partition.key().contig().getName(), partition.key().bin());
+        PartitionKey key = partition.key();
+        Logger.debug("processing partition %s/%d", key.contig().getName(), key.bin());
       }
       annotatedIntervalPartitionWriter.write(partition);
     }
+  }
+
+  private PartitionIterator<T, U, V> createPartitionIt(Iterator<V> sourceIt) {
+    List<V> reusableAnnotatedIntervals = new ArrayList<>();
+    return new PartitionIterator<>(partitionResolver, sourceIt, reusableAnnotatedIntervals);
   }
 }

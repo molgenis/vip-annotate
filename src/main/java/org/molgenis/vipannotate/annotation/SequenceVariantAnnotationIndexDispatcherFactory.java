@@ -9,7 +9,7 @@ public class SequenceVariantAnnotationIndexDispatcherFactory<T extends SequenceV
   /** create a new index dispatcher with empty indexes */
   public static <T extends SequenceVariant> SequenceVariantAnnotationIndexDispatcher<T> create() {
     EnumMap<Type, AnnotationIndex<T>> indexMap = new EnumMap<>(Type.class);
-    indexMap.put(Type.SMALL, SequenceVariantAnnotationIndexSmallFactory.create());
+    indexMap.put(Type.POS_20_BIT, SequenceVariantAnnotationIndexSmallFactory.create());
     indexMap.put(Type.BIG, SequenceVariantAnnotationIndexBigFactory.create());
     return new SequenceVariantAnnotationIndexDispatcher<>(indexMap);
   }

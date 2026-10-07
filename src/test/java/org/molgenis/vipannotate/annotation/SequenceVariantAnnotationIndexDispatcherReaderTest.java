@@ -22,7 +22,7 @@ class SequenceVariantAnnotationIndexDispatcherReaderTest {
   @BeforeEach
   void setUp() {
     indexReader = new SequenceVariantAnnotationIndexDispatcherReader<>();
-    indexReader.register(EncodedSequenceVariant.Type.SMALL, indexSmallReader);
+    indexReader.register(EncodedSequenceVariant.Type.POS_20_BIT, indexSmallReader);
     indexReader.register(EncodedSequenceVariant.Type.BIG, indexBigReader);
   }
 
@@ -38,7 +38,9 @@ class SequenceVariantAnnotationIndexDispatcherReaderTest {
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         indexReader.readFrom(memoryBuffer);
     assertAll(
-        () -> assertEquals(indexSmall, index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)),
+        () ->
+            assertEquals(
+                indexSmall, index.getAnnotationIndex(EncodedSequenceVariant.Type.POS_20_BIT)),
         () -> assertEquals(indexBig, index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)));
   }
 
@@ -55,7 +57,7 @@ class SequenceVariantAnnotationIndexDispatcherReaderTest {
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
         mock(SequenceVariantAnnotationIndexBig.class);
 
-    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)).thenReturn(indexSmall);
+    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.POS_20_BIT)).thenReturn(indexSmall);
     when(index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)).thenReturn(indexBig);
 
     indexReader.readInto(memoryBuffer, index);

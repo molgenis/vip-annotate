@@ -15,10 +15,11 @@ import org.molgenis.vipannotate.util.Logger;
 @RequiredArgsConstructor
 public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U extends Annotation>
     implements AnnotatedFeatureDbWriter<SequenceVariant, U, AnnotatedSequenceVariant<U>> {
+  private final PartitionResolver partitionResolver;
   private final AnnotatedIntervalPartitionWriter<SequenceVariant, U, AnnotatedSequenceVariant<U>>
       annotatedIntervalPartitionWriter;
   private final SequenceVariantAnnotationIndexWriter<T> annotationIndexWriter;
-  private final SequenceVariantEncoderDispatcher encoderDispatcher;
+  private final SequenceVariantEncoderDispatcher<T> encoderDispatcher;
   @Nullable private List<IntEncodedAnnotatedSequenceVariant<U>> intEncodedAnnotatedSequenceVariants;
 
   @Nullable
@@ -29,7 +30,8 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
   public void write(Iterator<AnnotatedSequenceVariant<U>> annotatedFeatureIt) {
     List<AnnotatedSequenceVariant<U>> reusableAnnotatedVariants = new ArrayList<>();
     for (PartitionIterator<SequenceVariant, U, AnnotatedSequenceVariant<U>> partitionIt =
-            new PartitionIterator<>(annotatedFeatureIt, reusableAnnotatedVariants);
+            new PartitionIterator<>(
+                partitionResolver, annotatedFeatureIt, reusableAnnotatedVariants);
         partitionIt.hasNext(); ) {
       write(partitionIt.next());
     }
@@ -55,9 +57,12 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
       SequenceVariant variant = annotatedFeature.getFeature();
 
       // encode
-      EncodedSequenceVariant encodedVariant = encoderDispatcher.encode(variant);
+      PositionEncoding positionEncoding =
+          partitionResolver.resolvePosition(partition.key(), variant.getStart());
+      EncodedSequenceVariant encodedVariant =
+          encoderDispatcher.encode((T) variant, positionEncoding);
       switch (encodedVariant.getType()) {
-        case SMALL ->
+        case POS_20_BIT, POS_26_BIT ->
             intEncodedAnnotatedSequenceVariants.add(
                 new IntEncodedAnnotatedSequenceVariant<>(
                     encodedVariant.getSmall(), annotatedFeature));
@@ -91,9 +96,13 @@ public class AnnotatedSequenceVariantDbWriter<T extends SequenceVariant, U exten
     SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher =
         new SequenceVariantAnnotationIndexDispatcher<>();
     indexDispatcher.register(
-        Type.SMALL,
-        new SequenceVariantAnnotationIndexSmall<T>(
-            encoderDispatcher.getEncoder(Type.SMALL), smallIndex));
+        Type.POS_20_BIT,
+        new SequenceVariantAnnotationIndexSmall<>(
+            encoderDispatcher.getEncoder(Type.POS_20_BIT), smallIndex));
+    indexDispatcher.register(
+        Type.POS_26_BIT,
+        new SequenceVariantAnnotationIndexSmall<>(
+            encoderDispatcher.getEncoder(Type.POS_26_BIT), smallIndex));
     indexDispatcher.register(
         Type.BIG,
         new SequenceVariantAnnotationIndexBig<>(encoderDispatcher.getEncoder(Type.BIG), bigIndex));

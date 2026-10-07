@@ -3,8 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import java.util.EnumMap;
 import org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type;
 
-public final class SequenceVariantEncoderDispatcher<T extends SequenceVariant>
-    implements SequenceVariantEncoder<T> {
+public final class SequenceVariantEncoderDispatcher<T extends SequenceVariant> {
   private final EnumMap<Type, SequenceVariantEncoder<T>> encoderMap;
 
   public SequenceVariantEncoderDispatcher() {
@@ -15,14 +14,14 @@ public final class SequenceVariantEncoderDispatcher<T extends SequenceVariant>
     encoderMap.put(type, encoder);
   }
 
-  @Override
-  public EncodedSequenceVariant encode(T variant) {
-    return getEncoder(variant).encode(variant);
+  public EncodedSequenceVariant encode(T variant, PositionEncoding positionEncoding) {
+    return getEncoder(variant, positionEncoding.bits()).encode(variant, positionEncoding.value());
   }
 
-  @Override
-  public void encodeInto(T variant, EncodedSequenceVariant encodedVariant) {
-    getEncoder(variant).encodeInto(variant, encodedVariant);
+  public void encodeInto(
+      T variant, PositionEncoding positionEncoding, EncodedSequenceVariant encodedVariant) {
+    getEncoder(variant, positionEncoding.bits())
+        .encodeInto(variant, positionEncoding.value(), encodedVariant);
   }
 
   public SequenceVariantEncoder<T> getEncoder(Type type) {
@@ -33,8 +32,8 @@ public final class SequenceVariantEncoderDispatcher<T extends SequenceVariant>
     return encoder;
   }
 
-  private SequenceVariantEncoder<T> getEncoder(SequenceVariant variant) {
-    Type type = SequenceVariantEncoderUtils.determineType(variant);
+  private SequenceVariantEncoder<T> getEncoder(SequenceVariant variant, int bits) {
+    Type type = SequenceVariantEncoderUtils.determineType(variant, bits);
     return getEncoder(type);
   }
 }

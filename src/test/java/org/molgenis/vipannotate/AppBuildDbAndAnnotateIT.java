@@ -47,7 +47,7 @@ public class AppBuildDbAndAnnotateIT {
             "seq_var_all_types.tsv.json",
             "seq_var_all_types.vcf",
             "seq_var_all_types.annotated.vcf",
-            74045L),
+            74044L),
         Arguments.of(
             "pos_encoding.tsv",
             "pos_encoding.tsv.json",
@@ -59,6 +59,7 @@ public class AppBuildDbAndAnnotateIT {
   private long buildDb(String inputDefFilename, String inputFilename, Path outputPath) {
     App.main(
         new String[] {
+          "--debug",
           "database-build",
           "--definition",
           getResource(inputDefFilename).toString(),

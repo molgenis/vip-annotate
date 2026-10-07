@@ -31,8 +31,12 @@ public class AnnotationDbSpecFormatter {
     partitioningSpec.forEach(
         (contigId, positionBinSpec) ->
             builder.append(
-                "    %-12s:  pos_offset=%-10d  pos_bits=%d\n"
-                    .formatted(contigId, positionBinSpec.offset(), positionBinSpec.bits())));
+                "    %-12s:  pos_offset=%-10d  pos_length=%-10d  pos_bits=%d\n"
+                    .formatted(
+                        contigId,
+                        positionBinSpec.offset(),
+                        positionBinSpec.length(),
+                        positionBinSpec.bits())));
   }
 
   private static void formatAnnotationSpec(

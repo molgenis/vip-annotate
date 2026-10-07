@@ -49,20 +49,19 @@ public class AnnotationDbBuilder {
 
       switch (annotationsSpec.annotationType()) {
         case INTERVAL -> throw new UnsupportedOperationException(); // FIXME implement
-        case POSITION ->
-            createAnnotatedPositionDb(annotationReader, annotationsSpec, partitionWriter);
+        case POSITION -> createAnnotatedPositionDb(annotationReader, dbSpec, partitionWriter);
         case SEQUENCE_VARIANT ->
-            createCompositeAnnotatedSequenceVariantDb(
-                annotationReader, annotationsSpec, partitionWriter);
+            createCompositeAnnotatedSequenceVariantDb(annotationReader, dbSpec, partitionWriter);
       }
     }
   }
 
   private void createCompositeAnnotatedSequenceVariantDb(
       AnnotatedFeatureReader annotationReader,
-      AnnotationsSpec annotationSpecs,
+      AnnotationDbSpec dbSpec,
       BinaryPartitionWriter partitionWriter) {
     // FIXME get rid of cast
+    AnnotationsSpec annotationSpecs = dbSpec.annotationsSpec();
     Iterator<AnnotatedSequenceVariant<CompositeAnnotation>> annotatedIterator =
         (Iterator) annotationReader;
     List<
@@ -89,9 +88,10 @@ public class AnnotationDbBuilder {
 
     // TODO check if only needs to be created once
     VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
-    MemoryBufferWriter<AnnotationIndex<SequenceVariant>> indexDispatcherWriter =
-        SequenceVariantAnnotationIndexDispatcherWriterFactory.create(memBufferFactory)
-            .createWriter();
+    MemoryBufferWriter<SequenceVariantAnnotationIndexDispatcher<SequenceVariant>>
+        indexDispatcherWriter =
+            SequenceVariantAnnotationIndexDispatcherWriterFactory.create(memBufferFactory)
+                .createWriter();
 
     try (CompositeAnnotatedIntervalPartitionWriter<
             SequenceVariant, AnnotatedSequenceVariant<CompositeAnnotation>>
@@ -99,6 +99,7 @@ public class AnnotationDbBuilder {
             new CompositeAnnotatedIntervalPartitionWriter<>(partitionWriters)) {
 
       new AnnotatedSequenceVariantDbWriter<>(
+              new PartitionResolver(dbSpec.partitioningSpec()),
               variantPartitionWriter,
               new SequenceVariantAnnotationIndexWriter<>(indexDispatcherWriter, partitionWriter),
               SequenceVariantEncoderDispatcherFactory.create())
@@ -108,12 +109,14 @@ public class AnnotationDbBuilder {
 
   private void createAnnotatedPositionDb(
       AnnotatedFeatureReader annotationReader,
-      AnnotationsSpec annotationsSpec,
+      AnnotationDbSpec dbSpec,
       BinaryPartitionWriter partitionWriter) {
     // fill all positions without annotations with null annotations
+    AnnotationsSpec annotationsSpec = dbSpec.annotationsSpec();
     Annotation nullAnnotation = createNullAnnotation(annotationsSpec);
     DensePositionAnnotatedFeatureReader denseAnnotationReader =
-        new DensePositionAnnotatedFeatureReader(annotationReader, nullAnnotation);
+        new DensePositionAnnotatedFeatureReader(
+            annotationReader, nullAnnotation, dbSpec.partitioningSpec());
     // FIXME get rid of cast
     Iterator<AnnotatedPosition<CompositeAnnotation>> annotatedPosIterator =
         (Iterator) denseAnnotationReader;
@@ -141,7 +144,9 @@ public class AnnotationDbBuilder {
         posPartitionWriter = new CompositeAnnotatedIntervalPartitionWriter<>(partitionWriters)) {
       AnnotatedIntervalDbWriter<
               Position, CompositeAnnotation, AnnotatedPosition<CompositeAnnotation>>
-          annotationDbWriter = new AnnotatedIntervalDbWriter<>(posPartitionWriter);
+          annotationDbWriter =
+              new AnnotatedIntervalDbWriter<>(
+                  new PartitionResolver(dbSpec.partitioningSpec()), posPartitionWriter);
 
       annotationDbWriter.write(annotatedPosIterator);
     }

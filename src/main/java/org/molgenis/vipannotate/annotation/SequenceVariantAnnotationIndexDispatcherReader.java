@@ -6,7 +6,7 @@ import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
 
 public class SequenceVariantAnnotationIndexDispatcherReader<T extends SequenceVariant>
-    implements MemoryBufferReader<AnnotationIndex<T>> {
+    implements MemoryBufferReader<SequenceVariantAnnotationIndexDispatcher<T>> {
   private final EnumMap<Type, MemoryBufferReader<AnnotationIndex<T>>> serializerMap;
 
   public SequenceVariantAnnotationIndexDispatcherReader() {
@@ -32,10 +32,9 @@ public class SequenceVariantAnnotationIndexDispatcherReader<T extends SequenceVa
   }
 
   @Override
-  public void readInto(MemoryBuffer memoryBuffer, AnnotationIndex<T> index) {
+  public void readInto(
+      MemoryBuffer memoryBuffer, SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher) {
     memoryBuffer.flip();
-
-    SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher = getTyped(index);
 
     for (Type type : Type.values()) {
       MemoryBufferReader<AnnotationIndex<T>> reader = serializerMap.get(type);
@@ -43,14 +42,5 @@ public class SequenceVariantAnnotationIndexDispatcherReader<T extends SequenceVa
         reader.readInto(memoryBuffer, indexDispatcher.getAnnotationIndex(type));
       }
     }
-  }
-
-  // TODO dedup with writer
-  private SequenceVariantAnnotationIndexDispatcher<T> getTyped(AnnotationIndex<T> annotationIndex) {
-    if (!(annotationIndex instanceof SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher)) {
-      throw new IllegalArgumentException(
-          "index must be of type SequenceVariantAnnotationIndexDispatcher");
-    }
-    return indexDispatcher;
   }
 }

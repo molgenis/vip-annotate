@@ -32,14 +32,14 @@ public class SequenceVariantAnnotationIndexBig<T extends SequenceVariant>
   }
 
   @Override
-  public @Nullable IndexRange findIndexes(T variant) {
+  public @Nullable IndexRange findIndexes(T variant, int encodedPos) {
     if (isEmpty()) {
       return null;
     }
 
     // FIXME call encodeInto
     // FIXME use big bytes + length instead of BigInteger
-    BigInteger encodedVariant = new BigInteger(encoder.encode(variant).getBigBytes());
+    BigInteger encodedVariant = new BigInteger(encoder.encode(variant, encodedPos).getBigBytes());
     return IndexRangeFinder.findIndexes(encodedVariantsArray, 0, nrEncodedVariants, encodedVariant);
   }
 

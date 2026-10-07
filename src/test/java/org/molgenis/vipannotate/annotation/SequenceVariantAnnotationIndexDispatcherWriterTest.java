@@ -22,7 +22,7 @@ class SequenceVariantAnnotationIndexDispatcherWriterTest {
   @BeforeEach
   void setUp() {
     indexWriter = new SequenceVariantAnnotationIndexDispatcherWriter<>(memBufferFactory);
-    indexWriter.register(EncodedSequenceVariant.Type.SMALL, indexSmallWriter);
+    indexWriter.register(EncodedSequenceVariant.Type.POS_20_BIT, indexSmallWriter);
     indexWriter.register(EncodedSequenceVariant.Type.BIG, indexBigWriter);
   }
 
@@ -39,7 +39,7 @@ class SequenceVariantAnnotationIndexDispatcherWriterTest {
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
         mock(SequenceVariantAnnotationIndexBig.class);
 
-    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)).thenReturn(indexSmall);
+    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.POS_20_BIT)).thenReturn(indexSmall);
     when(index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)).thenReturn(indexBig);
 
     indexWriter.writeInto(index, memoryBuffer);
