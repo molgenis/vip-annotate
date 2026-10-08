@@ -85,6 +85,7 @@ public class AnnotationsSpecResolver {
     Integer nullCode =
         (stats.nullCount() > 0 || annotationType == AnnotationType.POSITION) ? 0 : null;
 
+    String description = spec.description();
     ScalarType scalarType;
     FloatEncoding floatEncoding;
     switch (spec.floatEncodingType()) {
@@ -102,6 +103,13 @@ public class AnnotationsSpecResolver {
                 new QuantizedEncoding.Range(stats.min(), stats.max()),
                 new QuantizedEncoding.Levels(lvlMin, lvlMax),
                 nullCode);
+
+        double v = maxQuantizationError(stats.min(), stats.max(), lvlMin, lvlMax);
+        if (description == null) {
+          description = "maximum deviation ±%f".formatted(v);
+        } else {
+          description += " (maximum deviation ±%f)".formatted(v);
+        }
       }
       case Q16 -> {
         scalarType = IntType.U16;
@@ -113,10 +121,21 @@ public class AnnotationsSpecResolver {
                 new QuantizedEncoding.Range(stats.min(), stats.max()),
                 new QuantizedEncoding.Levels(lvlMin, lvlMax),
                 nullCode);
+
+        double v = maxQuantizationError(stats.min(), stats.max(), lvlMin, lvlMax);
+        if (description == null) {
+          description = "maximum deviation ±%f".formatted(v);
+        } else {
+          description += " (maximum deviation ±%f)".formatted(v);
+        }
       }
       default -> throw new IllegalStateException();
     }
-    return new FloatAnnotationSpec(spec.description(), scalarType, floatEncoding);
+    return new FloatAnnotationSpec(description, scalarType, floatEncoding);
+  }
+
+  private static double maxQuantizationError(double x, double y, int u, int v) {
+    return (y - x) / (2.0 * (v - u));
   }
 
   private IntAnnotationSpec resolve(

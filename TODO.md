@@ -4,7 +4,6 @@ in addition to below see >100 TODO items in code
 
 ## 0.0.1-alpha.7
 
-- [ ] feat (annotate): write max error in output vcf header
 - [ ] feat (spec): add annotation type=string
 - [ ] feat (db): reintroduce dictionary support (e.g. SpliceAI ncbiGeneId)
 - [ ] feat (db): null bitmap instead of nullable types (rank1 to determine index)
