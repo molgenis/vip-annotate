@@ -25,6 +25,7 @@
     "annotations": {
       "score": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "score prediction of the potential pathogenicity of noncoding variants"
       }
     }

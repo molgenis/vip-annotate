@@ -59,18 +59,22 @@
       },
       "ds_ag": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (acceptor gain)"
       },
       "ds_al": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (acceptor loss)"
       },
       "ds_dg": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (donor gain)"
       },
       "ds_dl": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Delta score (donor loss)"
       },
       "dp_ag": {

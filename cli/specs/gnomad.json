@@ -67,14 +67,18 @@
       },
       "af": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
+        "encoding": "lossy_q16",
         "description": "Alternate allele frequency"
       },
       "faf95": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Filtering allele frequency (using Poisson 95% CI)"
       },
       "faf99": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Filtering allele frequency (using Poisson 99% CI)"
       },
       "nhomalt": {
@@ -101,6 +105,7 @@
       },
       "cov": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Percentage of individuals with coverage at this variant"
       }
     }

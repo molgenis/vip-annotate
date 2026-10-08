@@ -34,10 +34,12 @@
     "annotations": {
       "raw_score": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Raw model predictions"
       },
       "score": {
         "type": "floating_point",
+        "encoding": "lossy_q16",
         "description": "Raw model predictions converted to PHRED scores (PHRED 10 indicates top 10% of predictions, 20 indicates top 1%, etc.)"
       }
     }

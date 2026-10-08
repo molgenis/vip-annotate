@@ -1,10 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
-import static java.util.Objects.requireNonNull;
-
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -46,16 +43,19 @@ public class VcfAnnotationModuleLoader {
     String infoNumber = "A";
     String infoType;
     if (annotationsSpec.size() == 1) {
-      AtomicReference<String> infoTypeRef = new AtomicReference<>();
-      annotationsSpec.forEach(
-          (_, spec) ->
-              infoTypeRef.set(
-                  switch (spec) {
-                    case EnumAnnotationSpec _, EnumSetAnnotationSpec _ -> "String";
-                    case FloatAnnotationSpec _ -> "Float";
-                    case IntAnnotationSpec _ -> "Integer";
-                  }));
-      infoType = requireNonNull(infoTypeRef.get());
+      AnnotationSpec annotationSpec =
+          annotationsSpec.annotationSpecMap().entrySet().iterator().next().getValue();
+      infoType =
+          switch (annotationSpec) {
+            case EnumAnnotationSpec _, EnumSetAnnotationSpec _ -> "String";
+            case FloatAnnotationSpec _ -> "Float";
+            case IntAnnotationSpec _ -> "Integer";
+          };
+
+      String description = annotationSpec.description();
+      if (description != null) {
+        stringBuilder.append(description);
+      }
     } else {
       infoType = "String";
       stringBuilder.append("format:");

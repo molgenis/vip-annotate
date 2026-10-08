@@ -43,6 +43,7 @@ in addition to below see >100 TODO items in code
 ### after 1.0.0
 
 - [ ] feat: effect prediction
+- [ ] feat (spec): add input/type=bigwig, see https://doi.org/10.1093/bioinformatics/btq351 and supplementary data
 - [ ] feat (annotate): how to annotate PositionAnnotationDb for SV? SVLEN could be too long (chr2-166299171-A-<DEL>)
 - [ ] feat (db): validate that annotation reference is normalized
 - [ ] feat (annotate): write gene index to header e.g. ##GENEIDX=<ID=0,SRCID=672,SYMBOL=BRCA1>

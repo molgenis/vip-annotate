@@ -93,9 +93,9 @@ Options:
   -f, --force         Overwrite existing output file if it exists
 ```
 
-#### Definition
+### Definition
 
-TODO
+See https://github.com/molgenis/vip-annotate/tree/main/cli/specs for definition .json examples.
 
 ## Development
 
