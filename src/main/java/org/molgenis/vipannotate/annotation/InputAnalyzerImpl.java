@@ -64,16 +64,15 @@ public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements 
   }
 
   private List<AnnotationBinding<F, R>> createAnnotationBindings(
-      Map<String, AnnotationDef> annotationDefinitionMap) {
-    List<AnnotationBinding<F, R>> annotationBindings =
-        new ArrayList<>(annotationDefinitionMap.size());
+      Map<String, AnnotationDef> annotationDefMap) {
+    List<AnnotationBinding<F, R>> annotationBindings = new ArrayList<>(annotationDefMap.size());
 
-    annotationDefinitionMap.forEach(
-        (annotationId, annotationSpec) ->
+    annotationDefMap.forEach(
+        (annotationId, annotationDef) ->
             annotationBindings.add(
                 new AnnotationBinding<>(
                     annotationId,
-                    fieldAnalyzerFactory.create(annotationSpec),
+                    fieldAnalyzerFactory.create(annotationDef),
                     fieldResolver.resolve(annotationId))));
 
     return annotationBindings;

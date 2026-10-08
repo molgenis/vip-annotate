@@ -4,18 +4,18 @@ in addition to below see >100 TODO items in code
 
 ## 0.0.1-alpha.7
 
+- [ ] feat (annotate): write max error in output vcf header
 - [ ] feat (spec): add annotation type=string
-- [ ] feat (spec): optional map input enum values (e.g. Likely_pathogenic to LP)
 - [ ] feat (db): reintroduce dictionary support (e.g. SpliceAI ncbiGeneId)
 - [ ] feat (db): null bitmap instead of nullable types (rank1 to determine index)
 - [ ] feat (db): determine encoding per-partition instead of per-input (e.g. sharper min-max, enum subsets)
 - [ ] perf (db): medium 64-bit sequence variant index
-- [ ] feat (annotate): write max error in output vcf header
 - [ ] refactor: bump streamvbyte to v3.0.0
 
 ## 0.0.1-alpha.8
 
 - [ ] feat (spec): input/type=vcf: nested value support
+- [ ] feat (spec): optional map input enum values (e.g. Likely_pathogenic to LP)
 - [ ] feat (db): support nested composite annotations (e.g. CLINSIGINCL 431417:Pathogenic|585009:Likely_pathogenic)
 - [ ] feat (db): add 'all_single_nucleotide_variants' indexless-db (e.g. avi)
 - [ ] feat (db): use [ALP](https://ir.cwi.nl/pub/33334/33334.pdf) for lossless float storage
