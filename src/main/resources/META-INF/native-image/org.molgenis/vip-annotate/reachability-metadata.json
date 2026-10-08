@@ -117,7 +117,7 @@
       "type": "org.molgenis.vipannotate.annotation.def.Range"
     },
     {
-      "type": "org.molgenis.vipannotate.annotation.def.TsvColumn",
+      "type": "org.molgenis.vipannotate.annotation.def.TsvColumnDef",
       "methods": [
         {
           "name": "<init>",
@@ -129,16 +129,16 @@
       ]
     },
     {
-      "type": "org.molgenis.vipannotate.annotation.def.TsvColumns",
+      "type": "org.molgenis.vipannotate.annotation.def.TsvColumnsDef",
       "methods": [
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.molgenis.vipannotate.annotation.def.TsvColumn",
-            "org.molgenis.vipannotate.annotation.def.TsvColumn",
-            "org.molgenis.vipannotate.annotation.def.TsvColumn",
-            "org.molgenis.vipannotate.annotation.def.TsvColumn",
-            "org.molgenis.vipannotate.annotation.def.TsvColumn",
+            "org.molgenis.vipannotate.annotation.def.TsvColumnDef",
+            "org.molgenis.vipannotate.annotation.def.TsvColumnDef",
+            "org.molgenis.vipannotate.annotation.def.TsvColumnDef",
+            "org.molgenis.vipannotate.annotation.def.TsvColumnDef",
+            "org.molgenis.vipannotate.annotation.def.TsvColumnDef",
             "java.util.Map"
           ]
         }
@@ -154,7 +154,7 @@
             "org.molgenis.vipannotate.annotation.def.CoordinateSystem",
             "java.lang.String",
             "java.lang.Character",
-            "org.molgenis.vipannotate.annotation.def.TsvColumns"
+            "org.molgenis.vipannotate.annotation.def.TsvColumnsDef"
           ]
         }
       ]
