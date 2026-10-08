@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.molgenis.vipannotate.format.Field;
 
 class VcfRecordTest {
   private Chrom chrom;
@@ -31,7 +30,7 @@ class VcfRecordTest {
     filter = Filter.wrap("PASS");
     info = Info.wrap("KEY=VALUE");
     genotype = Genotype.wrap("GT\t0/1");
-    vcfRecord = new VcfRecord(new Field[] {chrom, pos, id, ref, alt, qual, filter, info, genotype});
+    vcfRecord = new VcfRecord(chrom, pos, id, ref, alt, qual, filter, info, genotype);
   }
 
   @Test
@@ -81,7 +80,7 @@ class VcfRecordTest {
 
   @Test
   void getGenotypeNull() {
-    vcfRecord = new VcfRecord(new Field[] {chrom, pos, id, ref, alt, qual, filter, info});
+    vcfRecord = new VcfRecord(chrom, pos, id, ref, alt, qual, filter, info, null);
     assertNull(vcfRecord.getGenotype());
   }
 
@@ -97,7 +96,7 @@ class VcfRecordTest {
 
   @Test
   void resetAndWriteGenoType() throws IOException {
-    VcfRecord vcfRecord = new VcfRecord(new Field[] {chrom, pos, id, ref, alt, qual, filter, info});
+    VcfRecord vcfRecord = new VcfRecord(chrom, pos, id, ref, alt, qual, filter, info, null);
     String dataLine = "chr2\t124\tid1\tAA\tCC,TT\t2.34\tLQ\tKEY2=VALUE2";
     vcfRecord.reset(dataLine);
     try (StringWriter stringWriter = new StringWriter()) {

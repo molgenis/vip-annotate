@@ -1,11 +1,12 @@
 ##fileformat=VCFv4.5
 ##reference=file:///references/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 ##contig=<ID=chr1,length=248956422>
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-chr1	1	.	G	A	.	.	.
-chr1	2	.	G	A	.	.	.
-chr1	3	.	G	A	.	.	.
-chr1	4	.	G	A	.	.	.
-chr1	5	.	G	A	.	.	.
-chr1	6	.	G	A	.	.	.
-chr1	7	.	G	A	.	.	.
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+chr1	1	.	G	A	.	.	.	GT	0|1
+chr1	2	.	G	A	.	.	.	GT	0|1
+chr1	3	.	G	A	.	.	.	GT	0|1
+chr1	4	.	G	A	.	.	.	GT	0|1
+chr1	5	.	G	A	.	.	.	GT	0|1
+chr1	6	.	G	A	.	.	.	GT	0|1
+chr1	7	.	G	A	.	.	.	GT	0|1
