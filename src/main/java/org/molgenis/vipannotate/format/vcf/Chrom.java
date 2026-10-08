@@ -14,6 +14,12 @@ public final class Chrom extends VcfField {
   }
 
   // perf: parse on demand
+  /// Returns chromosome identifier, without optional angle-brackets removed
+  public CharSequence getIdentifierRaw() {
+    return fieldRawView;
+  }
+
+  // perf: parse on demand
   /// Returns chromosome identifier, with optional angle-brackets removed
   public CharSequence getIdentifier() {
     return getType() == ChromType.SYMBOLIC
