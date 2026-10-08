@@ -1,8 +1,6 @@
 package org.molgenis.vipannotate.format.vcf;
 
-import static org.molgenis.vipannotate.format.vcf.VcfRecord.*;
-
-import org.molgenis.vipannotate.format.Field;
+import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.StringView;
 
 public enum VcfRecordDummyFactory {
@@ -11,26 +9,23 @@ public enum VcfRecordDummyFactory {
   private static final String DATA_LINE_DUMMY = "1\t0\t.\tA\t.\t.\t.\t.\t.\t.";
 
   public VcfRecord createDummy() {
-    Field[] fields = new Field[8];
-    populateDummyFixedFields(fields);
-    return new VcfRecord(fields);
+    return create(null);
   }
 
   public VcfRecord createDummyWithGenotypeFields() {
-    Field[] fields = new Field[9];
-    populateDummyFixedFields(fields);
-    fields[INDEX_GENOTYPE] = Genotype.wrap(new StringView(DATA_LINE_DUMMY, 16));
-    return new VcfRecord(fields);
+    return create(Genotype.wrap(new StringView(DATA_LINE_DUMMY, 16)));
   }
 
-  private void populateDummyFixedFields(Field[] fields) {
-    fields[INDEX_CHROM] = Chrom.wrap(new StringView(DATA_LINE_DUMMY, 0, 1));
-    fields[INDEX_POS] = Pos.wrap(new StringView(DATA_LINE_DUMMY, 2, 3));
-    fields[INDEX_ID] = Id.wrap(new StringView(DATA_LINE_DUMMY, 4, 5));
-    fields[INDEX_REF] = Ref.wrap(new StringView(DATA_LINE_DUMMY, 6, 7));
-    fields[INDEX_ALT] = Alt.wrap(new StringView(DATA_LINE_DUMMY, 8, 9));
-    fields[INDEX_QUAL] = Qual.wrap(new StringView(DATA_LINE_DUMMY, 10, 11));
-    fields[INDEX_FILTER] = Filter.wrap(new StringView(DATA_LINE_DUMMY, 12, 13));
-    fields[INDEX_INFO] = Info.wrap(new StringView(DATA_LINE_DUMMY, 14, 15));
+  private VcfRecord create(@Nullable Genotype genotype) {
+    return new VcfRecord(
+        Chrom.wrap(new StringView(DATA_LINE_DUMMY, 0, 1)),
+        Pos.wrap(new StringView(DATA_LINE_DUMMY, 2, 3)),
+        Id.wrap(new StringView(DATA_LINE_DUMMY, 4, 5)),
+        Ref.wrap(new StringView(DATA_LINE_DUMMY, 6, 7)),
+        Alt.wrap(new StringView(DATA_LINE_DUMMY, 8, 9)),
+        Qual.wrap(new StringView(DATA_LINE_DUMMY, 10, 11)),
+        Filter.wrap(new StringView(DATA_LINE_DUMMY, 12, 13)),
+        Info.wrap(new StringView(DATA_LINE_DUMMY, 14, 15)),
+        genotype);
   }
 }
