@@ -84,14 +84,39 @@ public class AnnotationsSpecResolver {
       FloatAnnotationDef spec, FloatAnnotationStats stats, AnnotationType annotationType) {
     Integer nullCode =
         (stats.nullCount() > 0 || annotationType == AnnotationType.POSITION) ? 0 : null;
-    int lvlMin = nullCode != null ? 1 : 0;
-    int lvlMax = Math.powExact(2, Short.SIZE) - 1;
-    FloatEncoding floatEncoding =
-        new QuantizedEncoding(
-            new QuantizedEncoding.Range(stats.min(), stats.max()),
-            new QuantizedEncoding.Levels(lvlMin, lvlMax),
-            nullCode);
-    return new FloatAnnotationSpec(spec.description(), IntType.U16, floatEncoding);
+
+    ScalarType scalarType;
+    FloatEncoding floatEncoding;
+    switch (spec.floatEncodingType()) {
+      case LOSSLESS -> {
+        scalarType = FloatType.F64;
+        floatEncoding = nullCode != null ? new NullableFloatEncoding() : new PlainFloatEncoding();
+      }
+      case Q8 -> {
+        scalarType = IntType.U8;
+
+        int lvlMin = nullCode != null ? 1 : 0;
+        int lvlMax = Math.powExact(2, Byte.SIZE) - 1;
+        floatEncoding =
+            new QuantizedEncoding(
+                new QuantizedEncoding.Range(stats.min(), stats.max()),
+                new QuantizedEncoding.Levels(lvlMin, lvlMax),
+                nullCode);
+      }
+      case Q16 -> {
+        scalarType = IntType.U16;
+
+        int lvlMin = nullCode != null ? 1 : 0;
+        int lvlMax = Math.powExact(2, Short.SIZE) - 1;
+        floatEncoding =
+            new QuantizedEncoding(
+                new QuantizedEncoding.Range(stats.min(), stats.max()),
+                new QuantizedEncoding.Levels(lvlMin, lvlMax),
+                nullCode);
+      }
+      default -> throw new IllegalStateException();
+    }
+    return new FloatAnnotationSpec(spec.description(), scalarType, floatEncoding);
   }
 
   private IntAnnotationSpec resolve(

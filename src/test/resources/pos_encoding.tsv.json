@@ -14,17 +14,14 @@
         "index": 2
       },
       "annotations": {
-        "my_f64_q8": {
+        "my_f64_lossless": {
           "index": 3
         },
-        "my_f64_q8_nullable": {
+        "my_f64_q8": {
           "index": 4
         },
         "my_f64_q16": {
           "index": 5
-        },
-        "my_f64_q16_nullable": {
-          "index": 6
         }
       }
     }
@@ -32,21 +29,20 @@
   "definition": {
     "annotation_type": "position",
     "annotations": {
+      "my_f64_lossless": {
+        "type": "floating_point",
+        "description": "my f64 lossless description",
+        "encoding": "lossless"
+      },
       "my_f64_q8": {
         "type": "floating_point",
-        "description": "my f64 q8 description"
-      },
-      "my_f64_q8_nullable": {
-        "type": "floating_point",
-        "description": "my f64 q8 nullable description"
+        "description": "my f64 q8 description",
+        "encoding": "lossy_q8"
       },
       "my_f64_q16": {
         "type": "floating_point",
-        "description": "my f64 q16 description"
-      },
-      "my_f64_q16_nullable": {
-        "type": "floating_point",
-        "description": "my f64 q16 nullable description"
+        "description": "my f64 q16 description",
+        "encoding": "lossy_q16"
       }
     }
   }

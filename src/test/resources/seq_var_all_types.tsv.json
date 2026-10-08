@@ -174,16 +174,20 @@
         "type": "integer"
       },
       "my_f32": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       },
       "my_f32_nullable": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       },
       "my_f64": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       },
       "my_f64_nullable": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       }
     }
   }

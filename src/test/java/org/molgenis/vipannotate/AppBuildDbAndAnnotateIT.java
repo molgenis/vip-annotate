@@ -53,7 +53,7 @@ public class AppBuildDbAndAnnotateIT {
             "pos_encoding.tsv.json",
             "pos_encoding.vcf",
             "pos_encoding.annotated.vcf",
-            20670L),
+            16570L),
         Arguments.of("score.bed", "score.bed.json", "score.vcf", "score.annotated.vcf", 8334L));
   }
 

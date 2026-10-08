@@ -11,7 +11,8 @@
     "annotation_type": "position",
     "annotations": {
       "scr": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       }
     }
   }
