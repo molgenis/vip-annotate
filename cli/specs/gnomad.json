@@ -68,7 +68,6 @@
       "af": {
         "type": "floating_point",
         "encoding": "lossy_q16",
-        "encoding": "lossy_q16",
         "description": "Alternate allele frequency"
       },
       "faf95": {
