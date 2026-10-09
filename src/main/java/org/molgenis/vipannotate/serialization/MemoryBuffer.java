@@ -33,25 +33,15 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   static {
     ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
 
-    //noinspection DataFlowIssue
     LAYOUT_BOOLEAN = ValueLayout.JAVA_BOOLEAN.withOrder(byteOrder);
-    //noinspection DataFlowIssue
     LAYOUT_BYTE = ValueLayout.JAVA_BYTE.withOrder(byteOrder);
-    //noinspection DataFlowIssue
     LAYOUT_BYTE_VAR_HANDLE = LAYOUT_BYTE.varHandle();
-    //noinspection DataFlowIssue
     LAYOUT_DOUBLE = ValueLayout.JAVA_DOUBLE_UNALIGNED.withOrder(byteOrder);
-    //noinspection DataFlowIssue
     LAYOUT_FLOAT = ValueLayout.JAVA_FLOAT_UNALIGNED.withOrder(byteOrder);
-    //noinspection DataFlowIssue
     LAYOUT_SHORT = ValueLayout.JAVA_SHORT_UNALIGNED.withOrder(byteOrder);
-    //noinspection DataFlowIssue
     LAYOUT_SHORT_VAR_HANDLE = LAYOUT_SHORT.varHandle();
-    //noinspection DataFlowIssue
     LAYOUT_INT = ValueLayout.JAVA_INT_UNALIGNED.withOrder(byteOrder);
-    //noinspection DataFlowIssue
     LAYOUT_INT_VAR_HANDLE = LAYOUT_INT.varHandle();
-    //noinspection DataFlowIssue
     LAYOUT_LONG = ValueLayout.JAVA_LONG_UNALIGNED.withOrder(byteOrder);
   }
 

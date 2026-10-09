@@ -32,7 +32,6 @@ public class Zstd implements AutoCloseable {
   private boolean decompressMethodHandlesInitialized;
 
   public static Zstd create() {
-    //noinspection DataFlowIssue
     return create(Linker.nativeLinker());
   }
 

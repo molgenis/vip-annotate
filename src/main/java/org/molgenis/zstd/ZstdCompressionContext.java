@@ -67,7 +67,6 @@ public class ZstdCompressionContext implements AutoCloseable {
       throw new ZstdException(e);
     }
 
-    //noinspection DataFlowIssue
     return new ZstdCompressionContext(
         zstd,
         createCCtxMemorySegment,

@@ -46,7 +46,6 @@ public class ZstdDecompressionContext implements AutoCloseable {
     } catch (Throwable e) {
       throw new ZstdException(e);
     }
-    //noinspection DataFlowIssue
     return new ZstdDecompressionContext(
         zstd, createDCtxMemorySegment, decompressDCtxMethodHandle, freeDCtxMethodHandle);
   }
