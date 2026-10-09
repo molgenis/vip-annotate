@@ -8,7 +8,7 @@ public class SequenceVariantEncoderDispatcherFactory {
   public static <T extends SequenceVariant> SequenceVariantEncoderDispatcher<T> create() {
     SequenceVariantEncoderDispatcher<T> dispatcher = new SequenceVariantEncoderDispatcher<>();
     dispatcher.register(POS_20_BIT, new SequenceVariantEncoderPos20Bit<>());
-    dispatcher.register(POS_26_BIT, new SequenceVariantEncoderPos20Bit<>());
+    dispatcher.register(POS_26_BIT, new SequenceVariantEncoderPos26Bit<>());
     dispatcher.register(BIG, new SequenceVariantEncoderBig<>());
     return dispatcher;
   }
