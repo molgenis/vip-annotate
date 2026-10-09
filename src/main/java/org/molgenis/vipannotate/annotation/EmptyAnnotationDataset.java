@@ -1,20 +1,20 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
-public final class EmptyAnnotationDataset<T extends @Nullable Annotation>
-    implements AnnotationDataset<T> {
+public final class EmptyAnnotationDataset<T extends Annotation> implements AnnotationDataset<T> {
   private static final EmptyAnnotationDataset<?> INSTANCE = new EmptyAnnotationDataset<>();
 
   private EmptyAnnotationDataset() {}
 
   @SuppressWarnings("unchecked")
-  public static <T extends @Nullable Annotation> EmptyAnnotationDataset<T> getInstance() {
+  public static <T extends Annotation> EmptyAnnotationDataset<T> getInstance() {
     return (EmptyAnnotationDataset<T>) INSTANCE;
   }
 
   @Override
-  public boolean findByIndexInto(int index, T annotation) {
-    return false;
+  public @Nullable T findByIndexInto(int index, Supplier<T> annotationSupplier) {
+    return null;
   }
 }

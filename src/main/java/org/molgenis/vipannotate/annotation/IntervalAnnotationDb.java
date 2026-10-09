@@ -45,9 +45,7 @@ public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
     }
 
     int partitionStart = partitionResolver.getPartitionPos(contig, pos);
-    U annotation = annotationPool.acquire();
-    activeAnnotationDataset.findByIndexInto(partitionStart, annotation);
-    return annotation;
+    return activeAnnotationDataset.findByIndexInto(partitionStart, annotationPool::acquire);
   }
 
   @Override

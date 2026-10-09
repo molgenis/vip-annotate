@@ -62,9 +62,7 @@ public class PositionAnnotationDb<T extends Annotation>
     }
 
     int partitionStart = partitionResolver.getPartitionPos(contig, pos);
-    T annotation = annotationPool.acquire();
-    activeAnnotationDataset.findByIndexInto(partitionStart, annotation);
-    return annotation;
+    return activeAnnotationDataset.findByIndexInto(partitionStart, annotationPool::acquire);
   }
 
   @Override

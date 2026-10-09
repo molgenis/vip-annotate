@@ -5,8 +5,7 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.IndexRange;
 
-// FIXME remove nullable?
-public interface AnnotationDataset<T extends @Nullable Annotation> {
+public interface AnnotationDataset<T extends Annotation> {
   /**
    * find annotations for indexes in the given index range and update existing annotations in the
    * provided {@link List}.
@@ -17,17 +16,19 @@ public interface AnnotationDataset<T extends @Nullable Annotation> {
   default void findByIndexesInto(
       IndexRange indexRange, List<T> annotations, Supplier<T> annotationSupplier) {
     for (int i = indexRange.getStart(), end = indexRange.getEnd(); i <= end; ++i) {
-      T annotation = annotationSupplier.get();
-      if (findByIndexInto(i, annotation)) {
+      T annotation = findByIndexInto(i, annotationSupplier);
+      if (annotation != null) {
         annotations.add(annotation);
       }
     }
   }
 
   /**
-   * find annotation for given index and read into the given annotation.
+   * finds annotation at the given index and read into a supplied annotation.
    *
-   * @return {@code true} if annotation was found, {@code true} false otherwise.
+   * <p>the supplier is invoked only if an annotation is found
+   *
+   * @return the populated annotation if found, or {@code null} otherwise
    */
-  boolean findByIndexInto(int index, T annotation);
+  @Nullable T findByIndexInto(int index, Supplier<T> annotationSupplier);
 }

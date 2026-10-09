@@ -18,7 +18,7 @@ public class EnumSetAnnotationDatasetDecoder
     BinaryReader binaryReader = blobReader.read(partitionKey);
 
     return binaryReader != null
-        ? (index, stringListAnnotation) -> {
+        ? (index, annotationSupplier) -> {
           if (index < 0) {
             throw new IllegalArgumentException();
           }
@@ -42,9 +42,9 @@ public class EnumSetAnnotationDatasetDecoder
               values.add(enumValues[enumIndex]);
             }
           }
-
+          StringListAnnotation stringListAnnotation = annotationSupplier.get();
           stringListAnnotation.reset(values.toArray(String[]::new));
-          return true;
+          return stringListAnnotation;
         }
         : EmptyAnnotationDataset.getInstance();
   }

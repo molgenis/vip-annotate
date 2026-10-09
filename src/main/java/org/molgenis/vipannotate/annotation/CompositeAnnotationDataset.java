@@ -1,19 +1,28 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CompositeAnnotationDataset implements AnnotationDataset<CompositeAnnotation> {
   private final AnnotationDataset<? extends Annotation>[] annotationDatasets;
 
-  // TODO possible to get rid of cast?
-  @SuppressWarnings("unchecked")
   @Override
-  public boolean findByIndexInto(int index, CompositeAnnotation annotation) {
+  public CompositeAnnotation findByIndexInto(
+      int index, Supplier<CompositeAnnotation> annotationSupplier) {
+    CompositeAnnotation compositeAnnotation = annotationSupplier.get();
     for (int i = 0, length = annotationDatasets.length; i < length; i++) {
-      ((AnnotationDataset<Annotation>) annotationDatasets[i])
-          .findByIndexInto(index, annotation.annotation(i));
+      AnnotationDataset<Annotation> annotationDataset = getAnnotationDataset(i);
+      Annotation annotation = compositeAnnotation.annotation(i);
+      if (annotationDataset.findByIndexInto(index, () -> annotation) == null) {
+        throw new UnsupportedOperationException();
+      }
     }
-    return true;
+    return compositeAnnotation;
+  }
+
+  @SuppressWarnings("unchecked")
+  private AnnotationDataset<Annotation> getAnnotationDataset(int index) {
+    return (AnnotationDataset<Annotation>) annotationDatasets[index];
   }
 }
