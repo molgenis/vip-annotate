@@ -76,8 +76,15 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
           reusableVcfInfoBuilder.appendRaw(value);
         }
       }
-      case StringListAnnotation stringListAnnotation -> // TODO improve perf
-          reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.getValues()));
+      case StringListAnnotation stringListAnnotation -> {
+        String[] values = stringListAnnotation.getValues();
+        for (int i = 0; i < values.length; i++) {
+          if (i > 0) {
+            reusableVcfInfoBuilder.appendRaw('&');
+          }
+          reusableVcfInfoBuilder.appendRaw(values[i]);
+        }
+      }
 
       default ->
           throw new UnsupportedOperationException(
