@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.spec.*;
-import org.molgenis.vipannotate.annotation.spec.FloatAnnotationSpec;
 import org.molgenis.vipannotate.util.DoubleInterval;
 import org.molgenis.vipannotate.util.IntInterval;
 import org.molgenis.vipannotate.util.Quantizer;

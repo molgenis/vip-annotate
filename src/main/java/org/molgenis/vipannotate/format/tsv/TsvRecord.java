@@ -6,7 +6,6 @@ import java.io.Writer;
 import lombok.ToString;
 import org.molgenis.vipannotate.format.Record;
 import org.molgenis.vipannotate.format.StringView;
-import org.molgenis.vipannotate.format.vcf.*;
 
 /** low memory, high performance, reusable, lazy parsing */
 @ToString

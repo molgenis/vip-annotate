@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.AppMetadata;
 import org.molgenis.vipannotate.annotation.spec.*;
-import org.molgenis.vipannotate.annotation.spec.AnnotationSpec;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReader;
 import org.molgenis.vipannotate.format.vdb.PartitionedVdbArchiveReaderFactory;
 import org.molgenis.vipannotate.serialization.MemoryBufferReader;
