@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.serialization.BinaryReader;
 
 @RequiredArgsConstructor
@@ -10,7 +9,7 @@ public class PerElementAnnotationDataset<T extends Annotation> implements Annota
   private final BinaryReader binaryReader;
 
   @Override
-  public @Nullable T findByIndex(int index) {
-    return annotationDecoder.decode(binaryReader, index);
+  public void findByIndexInto(int index, T annotation) {
+    annotationDecoder.decodeInto(binaryReader, index, annotation);
   }
 }

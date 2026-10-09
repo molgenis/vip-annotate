@@ -11,16 +11,6 @@ public class OffsetNullableIntAnnotationDecoder
   private final int offset;
 
   @Override
-  public NullableIntAnnotation decode(BinaryReader binaryReader, int annotationIndex) {
-    long value = intReadValueFunction.apply(binaryReader, annotationIndex);
-    if (value == 0) {
-      return new NullableIntAnnotation();
-    } else {
-      return new NullableIntAnnotation(offset + value - 1);
-    }
-  }
-
-  @Override
   public void decodeInto(
       BinaryReader binaryReader, int annotationIndex, NullableIntAnnotation annotation) {
     long value = intReadValueFunction.apply(binaryReader, annotationIndex);

@@ -15,7 +15,7 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
     BinaryReader binaryReader = blobReader.read(partitionKey);
 
     return binaryReader != null
-        ? index -> {
+        ? (index, stringAnnotation) -> {
           if (index < 0) {
             throw new IllegalArgumentException();
           }
@@ -24,7 +24,8 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
           int bitsPerAnnotation = getBitsPerAnnotation();
 
           if (bitsPerAnnotation == 0) {
-            return new StringAnnotation(enumValues[0]);
+            stringAnnotation.reset(enumValues[0]);
+            return;
           }
 
           int bitOffset = Math.multiplyExact(index, bitsPerAnnotation);
@@ -50,7 +51,8 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
           }
 
           if (enumAnnotationSpec.nullable() && value == 0) {
-            return new StringAnnotation(null);
+            stringAnnotation.reset(null);
+            return;
           }
 
           int enumIndex = enumAnnotationSpec.nullable() ? value - 1 : value;
@@ -59,7 +61,7 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
             throw new IllegalArgumentException("Invalid enum index: %d".formatted(value));
           }
 
-          return new StringAnnotation(enumValues[enumIndex]);
+          stringAnnotation.reset(enumValues[enumIndex]);
         }
         : EmptyAnnotationDataset.getInstance();
   }

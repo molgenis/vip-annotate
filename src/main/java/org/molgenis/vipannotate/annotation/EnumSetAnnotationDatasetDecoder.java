@@ -18,7 +18,7 @@ public class EnumSetAnnotationDatasetDecoder
     BinaryReader binaryReader = blobReader.read(partitionKey);
 
     return binaryReader != null
-        ? index -> {
+        ? (index, stringListAnnotation) -> {
           if (index < 0) {
             throw new IllegalArgumentException();
           }
@@ -28,6 +28,7 @@ public class EnumSetAnnotationDatasetDecoder
           int byteOffset = bitOffset >>> 3;
           int bitInByte = bitOffset & 7;
 
+          // FIXME reuse StringListAnnotationList.values
           List<String> values = new ArrayList<>();
 
           for (int enumIndex = 0; enumIndex < enumValues.length; enumIndex++) {
@@ -42,7 +43,7 @@ public class EnumSetAnnotationDatasetDecoder
             }
           }
 
-          return new StringListAnnotation(values.toArray(String[]::new));
+          stringListAnnotation.reset(values.toArray(String[]::new));
         }
         : EmptyAnnotationDataset.getInstance();
   }

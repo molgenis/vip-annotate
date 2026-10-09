@@ -40,16 +40,16 @@ public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<St
 
       int enumIndex;
 
-      if (annotation.value() == null) {
+      if (annotation.getValue() == null) {
         if (!nullable) {
           throw new IllegalArgumentException("Null enum value is not allowed");
         }
         enumIndex = 0;
       } else {
-        Integer mappedIndex = enumValueToBitIndexMap.get(annotation.value());
+        Integer mappedIndex = enumValueToBitIndexMap.get(annotation.getValue());
         if (mappedIndex == null) {
           throw new IllegalArgumentException(
-              "Unknown enum value: %s".formatted(annotation.value()));
+              "Unknown enum value: %s".formatted(annotation.getValue()));
         }
         enumIndex = mappedIndex;
       }

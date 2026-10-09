@@ -18,6 +18,7 @@ public class PositionAnnotationDb<T extends Annotation>
   private final PartitionResolver partitionResolver;
   private final AnnotationDatasetDecoder<T> annotationDatasetReader;
   private final Predicate<SequenceVariant> canAnnotate;
+  private final Pool<T> annotationPool;
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationDataset<@Nullable T> activeAnnotationDataset;
@@ -61,7 +62,9 @@ public class PositionAnnotationDb<T extends Annotation>
     }
 
     int partitionStart = partitionResolver.getPartitionPos(contig, pos);
-    return activeAnnotationDataset.findByIndex(partitionStart);
+    T annotation = annotationPool.acquire();
+    activeAnnotationDataset.findByIndexInto(partitionStart, annotation);
+    return annotation;
   }
 
   @Override

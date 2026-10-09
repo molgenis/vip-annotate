@@ -6,18 +6,12 @@ import org.molgenis.vipannotate.serialization.BinaryReader;
 
 @RequiredArgsConstructor
 public class FloatAnnotationDecoder implements AnnotationDecoder<FloatAnnotation> {
-  private final FloatReadValueFunction floatReadValueFunction;
-
-  @Override
-  public FloatAnnotation decode(BinaryReader binaryReader, int annotationIndex) {
-    double value = floatReadValueFunction.apply(binaryReader, annotationIndex);
-    return new FloatAnnotation(value);
-  }
+  private final FloatReadValueFunction readValueFunction;
 
   @Override
   public void decodeInto(
       BinaryReader binaryReader, int annotationIndex, FloatAnnotation annotation) {
-    double value = floatReadValueFunction.apply(binaryReader, annotationIndex);
+    double value = readValueFunction.apply(binaryReader, annotationIndex);
     annotation.reset(value);
   }
 }

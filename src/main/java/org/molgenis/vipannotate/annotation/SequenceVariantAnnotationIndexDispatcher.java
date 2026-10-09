@@ -11,6 +11,8 @@ import org.molgenis.vipannotate.util.IndexRange;
 @Getter(AccessLevel.PACKAGE)
 @RequiredArgsConstructor
 public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant> {
+  // perf: reduce memory allocations since indexMap.values() creates new array
+  private static final Type[] TYPES = Type.values();
   private final EnumMap<Type, AnnotationIndex<T>> indexMap;
 
   public SequenceVariantAnnotationIndexDispatcher() {
@@ -22,8 +24,9 @@ public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant>
   }
 
   public boolean isEmpty() {
-    for (AnnotationIndex<T> index : indexMap.values()) {
-      if (!index.isEmpty()) {
+    for (Type type : TYPES) {
+      AnnotationIndex<T> index = indexMap.get(type);
+      if (index != null && !index.isEmpty()) {
         return false;
       }
     }
@@ -53,8 +56,11 @@ public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant>
 
   /** clear index */
   public void reset() {
-    for (AnnotationIndex<T> index : indexMap.values()) {
-      index.reset();
+    for (Type type : TYPES) {
+      AnnotationIndex<T> index = indexMap.get(type);
+      if (index != null) {
+        index.reset();
+      }
     }
   }
 }

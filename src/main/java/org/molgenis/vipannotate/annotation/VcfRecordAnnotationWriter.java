@@ -71,13 +71,13 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
         }
       }
       case StringAnnotation stringAnnotation -> {
-        String value = stringAnnotation.value();
+        String value = stringAnnotation.getValue();
         if (value != null) {
           reusableVcfInfoBuilder.appendRaw(value);
         }
       }
       case StringListAnnotation stringListAnnotation -> // TODO improve perf
-          reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.values()));
+          reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.getValues()));
 
       default ->
           throw new UnsupportedOperationException(

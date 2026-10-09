@@ -1,18 +1,18 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 public class CompositeAnnotationDataset implements AnnotationDataset<CompositeAnnotation> {
   private final AnnotationDataset<? extends Annotation>[] annotationDatasets;
 
+  // TODO possible to get rid of cast?
+  @SuppressWarnings("unchecked")
   @Override
-  public @Nullable CompositeAnnotation findByIndex(int index) {
-    Annotation[] annotations = new Annotation[annotationDatasets.length];
+  public void findByIndexInto(int index, CompositeAnnotation annotation) {
     for (int i = 0, length = annotationDatasets.length; i < length; i++) {
-      annotations[i] = annotationDatasets[i].findByIndex(index);
+      ((AnnotationDataset<Annotation>) annotationDatasets[i])
+          .findByIndexInto(index, annotation.annotation(i));
     }
-    return new CompositeAnnotation(annotations);
   }
 }

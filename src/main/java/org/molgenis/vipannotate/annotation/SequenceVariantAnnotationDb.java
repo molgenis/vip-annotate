@@ -12,6 +12,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
   private final PartitionResolver partitionResolver;
   private final SequenceVariantAnnotationIndexReader<T> annotationIndexReader;
   private final AnnotationDatasetDecoder<U> annotationDatasetReader;
+  private final Pool<U> annotationPool;
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private SequenceVariantAnnotationIndexDispatcher<T> activeAnnotationIndex;
@@ -41,7 +42,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
           activeAnnotationDataset = annotationDatasetReader.decode(activePartitionKey);
         }
 
-        activeAnnotationDataset.findByIndexes(indexRange, annotations);
+        activeAnnotationDataset.findByIndexesInto(indexRange, annotations, annotationPool::acquire);
       }
     }
   }

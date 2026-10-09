@@ -19,8 +19,7 @@ public class VcfRecordAnnotator<T extends Annotation> implements AutoCloseableNo
 
     for (AltAllele altAllele : vcfRecord.getAlt().getAlleles()) {
       SequenceVariant sequenceVariant = createSequenceVariant(contig, start, stop, altAllele);
-      T altAnnotation = variantAnnotator.annotate(sequenceVariant);
-      annotationWriter.appendAltAnnotation(altAnnotation);
+      variantAnnotator.annotate(sequenceVariant, annotationWriter::appendAltAnnotation);
     }
 
     annotationWriter.writeInfoSubField(vcfRecord, annotationMode);

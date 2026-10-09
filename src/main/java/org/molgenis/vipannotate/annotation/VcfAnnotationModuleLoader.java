@@ -117,6 +117,9 @@ public class VcfAnnotationModuleLoader {
         sequenceVariant ->
             annotationsSpec.supportedVariantTypes().contains(sequenceVariant.getType());
 
+    CompositeAnnotationPool annotationPool =
+        new CompositeAnnotationPool(annotationsSpec.annotationSpecMap().values());
+
     return switch (annotationsSpec.annotationType()) {
       case SEQUENCE_VARIANT -> {
         SequenceVariantAnnotationIndexDispatcherReaderFactory<SequenceVariant>
@@ -164,12 +167,15 @@ public class VcfAnnotationModuleLoader {
 
             SequenceVariantAnnotationDb<SequenceVariant, CompositeAnnotation> annotationDb =
                 new SequenceVariantAnnotationDb<>(
-                    partitionResolver, annotationIndexReader, annotationDatasetReader);
-
+                    partitionResolver,
+                    annotationIndexReader,
+                    annotationDatasetReader,
+                    annotationPool);
             yield new VcfRecordAnnotator<>(
                 new SequenceVariantAnnotator<>(
                     canAnnotate,
                     annotationDb,
+                    annotationPool,
                     (annotationList) -> {
                       if (annotationList.isEmpty()) {
                         return null;
@@ -203,14 +209,17 @@ public class VcfAnnotationModuleLoader {
             IntervalAnnotationDb<SequenceVariant, CompositeAnnotation> annotationDb =
                 new IntervalAnnotationDb<>(
                     new PartitionResolver(annotationDbSpec.partitioningSpec()),
-                    annotationDatasetReader);
+                    annotationDatasetReader,
+                    annotationPool);
 
+            // FIXME unused
             ScalarAnnotationSelector annotationSelector = createScalarAnnotationSelector();
 
             yield new VcfRecordAnnotator<>(
                 new SequenceVariantAnnotator<>(
                     canAnnotate,
                     annotationDb,
+                    annotationPool,
                     (annotationList) -> {
                       if (annotationList.isEmpty()) {
                         return null;

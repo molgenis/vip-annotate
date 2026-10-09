@@ -1,5 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
+import org.jspecify.annotations.Nullable;
+
 public record CompositeAnnotation(Annotation[] annotations) implements Annotation {
   @Override
   public boolean isMissingValue() {
@@ -10,5 +12,13 @@ public record CompositeAnnotation(Annotation[] annotations) implements Annotatio
     }
 
     return true;
+  }
+
+  public Annotation annotation(int index) {
+    return annotations[index];
+  }
+
+  public void reset(int index, @Nullable Annotation annotation) {
+    annotations[index] = annotation;
   }
 }

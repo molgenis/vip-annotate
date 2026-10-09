@@ -31,7 +31,7 @@ public class EnumSetAnnotationDatasetEncoder
     while (annotationIt.hasNext()) {
       StringListAnnotation annotation = annotationIt.next();
 
-      for (String value : annotation.values()) {
+      for (String value : annotation.getValues()) {
         Integer bitIndex = enumValueToBitIndexMap.get(value);
         if (bitIndex == null) {
           throw new IllegalArgumentException("Unknown enum value: %s".formatted(value));

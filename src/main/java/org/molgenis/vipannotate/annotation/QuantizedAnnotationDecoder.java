@@ -14,23 +14,20 @@ public class QuantizedAnnotationDecoder implements AnnotationDecoder<ScalarAnnot
   @Nullable private final Integer nullValue;
 
   @Override
-  public ScalarAnnotation decode(BinaryReader binaryReader, int annotationIndex) {
-    long quantizedValue = intReadValueFunction.apply(binaryReader, annotationIndex);
-
-    ScalarAnnotation scalarAnnotation;
-    if (nullValue != null && quantizedValue == nullValue) {
-      scalarAnnotation = new NullableFloatAnnotation();
-    } else {
-      double value = quantizer.dequantize(quantizedValue);
-      scalarAnnotation =
-          nullValue != null ? new NullableFloatAnnotation(value) : new FloatAnnotation(value);
-    }
-    return scalarAnnotation;
-  }
-
-  @Override
   public void decodeInto(
       BinaryReader binaryReader, int annotationIndex, ScalarAnnotation annotation) {
-    throw new RuntimeException("not implemented"); // FIXME
+    long quantizedValue = intReadValueFunction.apply(binaryReader, annotationIndex);
+
+    // FIXME prevent casting
+    if (nullValue != null && quantizedValue == nullValue) {
+      ((NullableFloatAnnotation) annotation).reset();
+    } else {
+      double value = quantizer.dequantize(quantizedValue);
+      if (nullValue != null) {
+        ((NullableFloatAnnotation) annotation).reset(value);
+      } else {
+        ((FloatAnnotation) annotation).reset(value);
+      }
+    }
   }
 }

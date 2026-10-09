@@ -15,6 +15,7 @@ public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
     implements AnnotationDb<T, U> {
   private final PartitionResolver partitionResolver;
   private final AnnotationDatasetDecoder<U> annotationDatasetReader;
+  private final Pool<U> annotationPool;
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationDataset<@Nullable U> activeAnnotationDataset;
@@ -44,7 +45,9 @@ public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
     }
 
     int partitionStart = partitionResolver.getPartitionPos(contig, pos);
-    return activeAnnotationDataset.findByIndex(partitionStart);
+    U annotation = annotationPool.acquire();
+    activeAnnotationDataset.findByIndexInto(partitionStart, annotation);
+    return annotation;
   }
 
   @Override
