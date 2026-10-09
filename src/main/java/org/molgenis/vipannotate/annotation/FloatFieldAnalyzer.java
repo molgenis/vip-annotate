@@ -20,9 +20,7 @@ public class FloatFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
     if (field.isMissingValue()) {
       nullCount++;
     } else {
-      // TODO perf: prevent toString
-      CharSequence charSequence = field.getRawView();
-      double number = JavaDoubleParser.parseDouble(charSequence);
+      double number = JavaDoubleParser.parseDouble(field.getRawView());
       if (number < min) {
         min = number;
       }
