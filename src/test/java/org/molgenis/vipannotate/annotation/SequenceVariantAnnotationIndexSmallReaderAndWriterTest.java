@@ -68,8 +68,8 @@ class SequenceVariantAnnotationIndexSmallReaderAndWriterTest {
 
     memoryBuffer.flip();
     SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmallDeserialized =
-        SequenceVariantAnnotationIndexSmallFactory
-            .create(); // TODO do not use factory in unit test class
+        new SequenceVariantAnnotationIndexSmall<>(
+            new SequenceVariantEncoderPos20Bit<>(), new int[0]);
     indexReader.readInto(memoryBuffer, indexSmallDeserialized);
     assertAll(
         () ->

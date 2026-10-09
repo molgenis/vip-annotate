@@ -57,8 +57,8 @@ class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
     sequenceVariantAnnotationIndexBigWriter.writeInto(indexBig, memoryBuffer);
     memoryBuffer.rewind();
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBigDeserialized =
-        SequenceVariantAnnotationIndexBigFactory
-            .create(); // TODO do not use factory in unit test class
+        new SequenceVariantAnnotationIndexBig<>(
+            new SequenceVariantEncoderBig<>(), new BigInteger[0]);
     sequenceVariantAnnotationIndexBigReader.readInto(memoryBuffer, indexBigDeserialized);
     assertArrayEquals(
         indexBig.getEncodedVariantsArray(), indexBigDeserialized.getEncodedVariantsArray());
