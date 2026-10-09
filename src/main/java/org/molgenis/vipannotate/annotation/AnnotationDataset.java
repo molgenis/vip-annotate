@@ -18,10 +18,16 @@ public interface AnnotationDataset<T extends @Nullable Annotation> {
       IndexRange indexRange, List<T> annotations, Supplier<T> annotationSupplier) {
     for (int i = indexRange.start(), end = indexRange.end(); i <= end; ++i) {
       T annotation = annotationSupplier.get();
-      findByIndexInto(i, annotation);
-      annotations.add(annotation);
+      if (findByIndexInto(i, annotation)) {
+        annotations.add(annotation);
+      }
     }
   }
 
-  void findByIndexInto(int index, T annotation);
+  /**
+   * find annotation for given index and read into the given annotation.
+   *
+   * @return {@code true} if annotation was found, {@code true} false otherwise.
+   */
+  boolean findByIndexInto(int index, T annotation);
 }

@@ -9,10 +9,11 @@ public class CompositeAnnotationDataset implements AnnotationDataset<CompositeAn
   // TODO possible to get rid of cast?
   @SuppressWarnings("unchecked")
   @Override
-  public void findByIndexInto(int index, CompositeAnnotation annotation) {
+  public boolean findByIndexInto(int index, CompositeAnnotation annotation) {
     for (int i = 0, length = annotationDatasets.length; i < length; i++) {
       ((AnnotationDataset<Annotation>) annotationDatasets[i])
           .findByIndexInto(index, annotation.annotation(i));
     }
+    return true;
   }
 }

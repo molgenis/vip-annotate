@@ -14,7 +14,7 @@ public final class EmptyAnnotationDataset<T extends @Nullable Annotation>
   }
 
   @Override
-  public void findByIndexInto(int index, T annotation) {
-    throw new UnsupportedOperationException(); // FIXME should reset annotation to 'empty'?
+  public boolean findByIndexInto(int index, T annotation) {
+    return false;
   }
 }

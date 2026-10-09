@@ -2,6 +2,8 @@ package org.molgenis.vipannotate.annotation;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.format.StringView;
 import org.molgenis.vipannotate.format.vcf.*;
 import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
@@ -12,14 +14,22 @@ public class VcfRecordAnnotator<T extends Annotation> implements AutoCloseableNo
   private final VcfRecordAnnotationWriter<T> annotationWriter;
   private final VcfContigResolver contigRegistry;
 
+  @Nullable private SequenceVariant reusableSequenceVariant;
+
   public void annotate(VcfRecord vcfRecord, AnnotationMode annotationMode) {
     Contig contig = contigRegistry.getContig(vcfRecord);
     int start = vcfRecord.getPos().getRaw();
     int stop = start + vcfRecord.getRef().getBaseCount() - 1;
 
+    SequenceVariant reusableSequenceVariant = getReusableSequenceVariant();
     for (AltAllele altAllele : vcfRecord.getAlt().getAlleles()) {
-      SequenceVariant sequenceVariant = createSequenceVariant(contig, start, stop, altAllele);
-      variantAnnotator.annotate(sequenceVariant, annotationWriter::appendAltAnnotation);
+      reusableSequenceVariant.reset(
+          contig,
+          start,
+          stop,
+          altAllele,
+          SequenceVariantTypeDetector.determineType(stop - start + 1, altAllele));
+      variantAnnotator.annotate(reusableSequenceVariant, annotationWriter::appendAltAnnotation);
     }
 
     annotationWriter.writeInfoSubField(vcfRecord, annotationMode);
@@ -31,17 +41,17 @@ public class VcfRecordAnnotator<T extends Annotation> implements AutoCloseableNo
     }
   }
 
-  private static SequenceVariant createSequenceVariant(
-      Contig contig, int start, int stop, AltAllele altAllele) {
-    // perf: reduce allocations and garbage collect pressure
-    // @Nullable private SequenceVariant reusableSequenceVariant;
-    // TODO perf: reuse SequenceVariant
-    return new SequenceVariant(
-        contig,
-        start,
-        stop,
-        altAllele,
-        SequenceVariantTypeDetector.determineType(stop - start + 1, altAllele));
+  private SequenceVariant getReusableSequenceVariant() {
+    if (reusableSequenceVariant == null) {
+      reusableSequenceVariant =
+          new SequenceVariant(
+              new Contig("", 1),
+              0,
+              0,
+              new AltAllele(new StringView("")),
+              SequenceVariantType.OTHER);
+    }
+    return reusableSequenceVariant;
   }
 
   @Override

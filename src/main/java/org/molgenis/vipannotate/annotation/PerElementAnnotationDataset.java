@@ -9,7 +9,8 @@ public class PerElementAnnotationDataset<T extends Annotation> implements Annota
   private final BinaryReader binaryReader;
 
   @Override
-  public void findByIndexInto(int index, T annotation) {
+  public boolean findByIndexInto(int index, T annotation) {
     annotationDecoder.decodeInto(binaryReader, index, annotation);
+    return true;
   }
 }

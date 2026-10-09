@@ -44,6 +44,7 @@ public class EnumSetAnnotationDatasetDecoder
           }
 
           stringListAnnotation.reset(values.toArray(String[]::new));
+          return true;
         }
         : EmptyAnnotationDataset.getInstance();
   }

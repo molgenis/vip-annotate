@@ -25,7 +25,7 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
 
           if (bitsPerAnnotation == 0) {
             stringAnnotation.reset(enumValues[0]);
-            return;
+            return true;
           }
 
           int bitOffset = Math.multiplyExact(index, bitsPerAnnotation);
@@ -52,7 +52,7 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
 
           if (enumAnnotationSpec.nullable() && value == 0) {
             stringAnnotation.reset(null);
-            return;
+            return true;
           }
 
           int enumIndex = enumAnnotationSpec.nullable() ? value - 1 : value;
@@ -62,6 +62,7 @@ public class EnumAnnotationDatasetReader implements AnnotationDatasetDecoder<Str
           }
 
           stringAnnotation.reset(enumValues[enumIndex]);
+          return true;
         }
         : EmptyAnnotationDataset.getInstance();
   }
