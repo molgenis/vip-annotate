@@ -1,4 +1,4 @@
-package org.molgenis.vipannotate;
+package org.molgenis.vipannotate.annotation;
 
 import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.Record;

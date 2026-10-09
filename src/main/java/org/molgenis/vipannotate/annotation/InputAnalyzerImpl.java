@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.FieldAccessor;
 import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.Record;

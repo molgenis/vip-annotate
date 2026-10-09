@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.FieldAccessor;
 import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.Record;
 
