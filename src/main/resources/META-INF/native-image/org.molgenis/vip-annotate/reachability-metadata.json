@@ -95,7 +95,7 @@
           "name": "<init>",
           "parameterTypes": [
             "org.molgenis.vipannotate.annotation.def.FloatEncodingType",
-            "java.lang.String;"
+            "java.lang.String"
           ]
         }
       ]
