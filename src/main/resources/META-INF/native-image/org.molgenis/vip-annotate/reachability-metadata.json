@@ -150,7 +150,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "java.lang.boolean",
+            "boolean",
             "org.molgenis.vipannotate.annotation.def.CoordinateSystem",
             "java.lang.String",
             "java.lang.Character",
