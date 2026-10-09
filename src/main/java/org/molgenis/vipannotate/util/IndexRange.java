@@ -1,8 +1,12 @@
 package org.molgenis.vipannotate.util;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
+@EqualsAndHashCode
 public final class IndexRange {
   private int start;
   private int end;
