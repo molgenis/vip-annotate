@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.serialization;
 
 import static org.molgenis.vipannotate.util.Numbers.nextPowerOf2;
+import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -14,7 +15,6 @@ import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
-import org.molgenis.vipannotate.util.Numbers;
 
 /** Memory buffer with little endian byte order. */
 public final class MemoryBuffer implements AutoCloseableNoThrow {
@@ -93,7 +93,7 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   }
 
   public void setPosition(long position) {
-    Numbers.requireNonNegative(position);
+    validateNonNegative(position);
     if (position > limit) {
       throw new IllegalArgumentException("invalid position: %d".formatted(position));
     }
@@ -101,7 +101,7 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   }
 
   public void setLimit(long limit) {
-    Numbers.requireNonNegative(limit);
+    validateNonNegative(limit);
     if (limit < position || limit > getCapacity()) {
       throw new IllegalArgumentException("invalid limit: %d".formatted(limit));
     }

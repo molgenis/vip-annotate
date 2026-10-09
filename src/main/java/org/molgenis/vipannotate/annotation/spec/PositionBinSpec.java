@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation.spec;
 
-import static org.molgenis.vipannotate.util.Numbers.requireNonNegative;
-import static org.molgenis.vipannotate.util.Numbers.requirePositive;
+import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
+import static org.molgenis.vipannotate.util.Numbers.validatePositive;
 
 import org.molgenis.vipannotate.serialization.BinaryReader;
 import org.molgenis.vipannotate.serialization.BinaryWriter;
@@ -15,9 +15,9 @@ import org.molgenis.vipannotate.serialization.BinaryWriter;
  */
 public record PositionBinSpec(long offset, long length, byte bits) {
   public PositionBinSpec {
-    requireNonNegative(offset);
-    requirePositive(length);
-    requirePositive(bits);
+    validateNonNegative(offset);
+    validatePositive(length);
+    validatePositive(bits);
   }
 
   public long endExclusive() {
