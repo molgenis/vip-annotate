@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type;
 import org.molgenis.vipannotate.util.IndexRange;
 
@@ -33,17 +32,18 @@ public class SequenceVariantAnnotationIndexDispatcher<T extends SequenceVariant>
     return true;
   }
 
-  public @Nullable IndexRange findIndexes(T feature, PositionEncoding positionEncoding) {
+  public boolean findIndexesInto(
+      T feature, PositionEncoding positionEncoding, IndexRange indexRange) {
     if (isEmpty()) {
-      return null;
+      return false;
     }
 
     Type type = SequenceVariantEncoderUtils.determineType(feature, positionEncoding.bits());
     AnnotationIndex<T> annotationIndex = indexMap.get(type);
     if (annotationIndex == null) {
-      return null;
+      return false;
     }
-    return annotationIndex.findIndexes(feature, positionEncoding.value());
+    return annotationIndex.findIndexesInto(feature, positionEncoding.value(), indexRange);
   }
 
   public AnnotationIndex<T> getAnnotationIndex(Type type) {

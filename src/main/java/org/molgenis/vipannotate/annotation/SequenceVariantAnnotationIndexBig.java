@@ -3,7 +3,6 @@ package org.molgenis.vipannotate.annotation;
 import java.math.BigInteger;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.IndexRange;
 import org.molgenis.vipannotate.util.IndexRangeFinder;
 
@@ -32,15 +31,16 @@ public class SequenceVariantAnnotationIndexBig<T extends SequenceVariant>
   }
 
   @Override
-  public @Nullable IndexRange findIndexes(T variant, int encodedPos) {
+  public boolean findIndexesInto(T variant, int encodedPos, IndexRange indexRange) {
     if (isEmpty()) {
-      return null;
+      return false;
     }
 
     // FIXME call encodeInto
     // FIXME use big bytes + length instead of BigInteger
     BigInteger encodedVariant = new BigInteger(encoder.encode(variant, encodedPos).getBigBytes());
-    return IndexRangeFinder.findIndexes(encodedVariantsArray, 0, nrEncodedVariants, encodedVariant);
+    return IndexRangeFinder.findIndexesInto(
+        encodedVariantsArray, 0, nrEncodedVariants, encodedVariant, indexRange);
   }
 
   /** clear index */

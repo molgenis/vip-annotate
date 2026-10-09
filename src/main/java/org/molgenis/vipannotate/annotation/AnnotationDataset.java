@@ -16,7 +16,7 @@ public interface AnnotationDataset<T extends @Nullable Annotation> {
    */
   default void findByIndexesInto(
       IndexRange indexRange, List<T> annotations, Supplier<T> annotationSupplier) {
-    for (int i = indexRange.start(), end = indexRange.end(); i <= end; ++i) {
+    for (int i = indexRange.getStart(), end = indexRange.getEnd(); i <= end; ++i) {
       T annotation = annotationSupplier.get();
       if (findByIndexInto(i, annotation)) {
         annotations.add(annotation);

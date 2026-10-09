@@ -18,6 +18,7 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
   @Nullable private SequenceVariantAnnotationIndexDispatcher<T> activeAnnotationIndex;
   private boolean activeAnnotationIndexValid = false;
   @Nullable private AnnotationDataset<U> activeAnnotationDataset;
+  private final IndexRange reusableIndexRange = new IndexRange(0, 0);
 
   @SuppressWarnings("NullAway")
   @Override
@@ -32,17 +33,20 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
     }
 
     if (activeAnnotationIndexValid) {
-      IndexRange indexRange =
-          activeAnnotationIndex.findIndexes(
-              feature, partitionResolver.resolvePosition(partitionKey, feature.getStart()));
+      boolean found =
+          activeAnnotationIndex.findIndexesInto(
+              feature,
+              partitionResolver.resolvePosition(partitionKey, feature.getStart()),
+              reusableIndexRange);
 
-      if (indexRange != null) {
+      if (found) {
         if (activeAnnotationDataset == null) {
           // load annotation data on the first index hit
           activeAnnotationDataset = annotationDatasetReader.decode(activePartitionKey);
         }
 
-        activeAnnotationDataset.findByIndexesInto(indexRange, annotations, annotationPool::acquire);
+        activeAnnotationDataset.findByIndexesInto(
+            reusableIndexRange, annotations, annotationPool::acquire);
       }
     }
   }
