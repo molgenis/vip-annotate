@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.cli;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -9,7 +8,6 @@ import org.molgenis.vipannotate.annotation.*;
 import org.molgenis.vipannotate.annotation.def.AnnotationDbDef;
 import org.molgenis.vipannotate.annotation.def.AnnotationDbDefReader;
 import org.molgenis.vipannotate.format.vdb.*;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.util.Logger;
 import tools.jackson.databind.DatabindException;
 
@@ -36,39 +34,26 @@ public class DbBuildCommand implements Command {
   }
 
   private static void buildDb(Path input, Path inputDef, Path outputDb, boolean force) {
-    byte[] bytes;
+    AnnotationDbDef annotationDbDef;
     try {
-      bytes = Files.readAllBytes(inputDef);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      annotationDbDef = AnnotationDbDefReader.create().readFrom(inputDef);
+    } catch (DatabindException e) {
+      throw new IllegalStateException("error parsing %s".formatted(inputDef), e);
     }
 
-    try (MemoryBuffer memBuffer =
-        MemoryBuffer.wrap(new byte[bytes.length + MemoryBuffer.VAR_INT_MAX_BYTE_SIZE])) {
-      memBuffer.putByteArray(bytes);
-      memBuffer.flip();
-
-      AnnotationDbDef annotationDbDef;
+    VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
+    VdbArchiveWriter vdbArchiveWriter =
+        VdbArchiveWriterFactory.create(memBufferFactory).create(outputDb, force);
+    try (PartitionedVdbArchiveWriter archiveWriter =
+        PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
+      AnnotationDbBuilder.create().buildDb(input, annotationDbDef, archiveWriter);
+    } catch (Throwable t) {
       try {
-        annotationDbDef = AnnotationDbDefReader.create().readFrom(memBuffer);
-      } catch (DatabindException e) {
-        throw new IllegalStateException("error parsing %s".formatted(inputDef), e);
+        Files.deleteIfExists(outputDb);
+      } catch (IOException _) {
+        // ignore
       }
-
-      VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
-      VdbArchiveWriter vdbArchiveWriter =
-          VdbArchiveWriterFactory.create(memBufferFactory).create(outputDb, force);
-      try (PartitionedVdbArchiveWriter archiveWriter =
-          PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
-        AnnotationDbBuilder.create().buildDb(input, annotationDbDef, archiveWriter);
-      } catch (Throwable t) {
-        try {
-          Files.deleteIfExists(outputDb);
-        } catch (IOException _) {
-          // ignore
-        }
-        throw t;
-      }
+      throw t;
     }
   }
 

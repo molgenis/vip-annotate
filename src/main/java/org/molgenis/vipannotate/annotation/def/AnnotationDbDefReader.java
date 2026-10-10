@@ -1,8 +1,8 @@
 package org.molgenis.vipannotate.annotation.def;
 
+import java.nio.file.Path;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
@@ -15,9 +15,8 @@ import tools.jackson.databind.type.LogicalType;
 public class AnnotationDbDefReader {
   private final ObjectMapper objectMapper;
 
-  public AnnotationDbDef readFrom(MemoryBuffer memoryBuffer) {
-    byte[] byteArray = memoryBuffer.getByteArray();
-    return objectMapper.readValue(byteArray, AnnotationDbDef.class);
+  public AnnotationDbDef readFrom(Path path) {
+    return objectMapper.readValue(path.toFile(), AnnotationDbDef.class);
   }
 
   public static AnnotationDbDefReader create() {
