@@ -3,13 +3,13 @@ package org.molgenis.vipannotate.annotation;
 import java.util.List;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vdb.BinaryPartitionWriter;
 import org.molgenis.vipannotate.format.vdb.Compression;
 import org.molgenis.vipannotate.format.vdb.IoMode;
 import org.molgenis.vipannotate.serialization.BinaryWriter;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.util.Numbers;
+import org.molgenis.vipannotate.serialization.ScratchMemoryBuffer;
+import org.molgenis.vipannotate.util.ClosableUtils;
 import org.molgenis.vipannotate.util.SizedIterator;
 import org.molgenis.vipannotate.util.TransformingIterator;
 
@@ -86,12 +86,12 @@ public class AnnotatedSequenceVariantPartitionWriter<
         V extends Annotation, // type of sequence variant annotation part to write to partition
         W extends AnnotatedInterval<T, U>>
     implements AnnotatedIntervalPartitionWriter<T, U, W> {
+  private final ScratchMemoryBuffer scratchBuffer = new ScratchMemoryBuffer();
+
   private final String annotationDataId;
   private final AnnotationDatasetEncoder<V> annotationDatasetEncoder;
   private final BinaryPartitionWriter binaryPartitionWriter;
   private final Function<W, V> annotationExtractor;
-
-  @Nullable private MemoryBuffer scratchBuffer;
 
   @Override
   public void write(Partition<T, U, W> partition) {
@@ -105,7 +105,7 @@ public class AnnotatedSequenceVariantPartitionWriter<
     // encode
     long encodedAnnotationByteSize =
         annotationDatasetEncoder.getEncodedSizeInBytes(annotationIt.getSize());
-    MemoryBuffer memBuffer = getHeapBackedScratchBuffer(encodedAnnotationByteSize);
+    MemoryBuffer memBuffer = scratchBuffer.get(encodedAnnotationByteSize);
     annotationDatasetEncoder.encode(annotationIt, BinaryWriter.fixed(memBuffer));
 
     // write
@@ -113,27 +113,8 @@ public class AnnotatedSequenceVariantPartitionWriter<
         annotationDataId, Compression.ZSTD, IoMode.DIRECT, memBuffer, partition.key());
   }
 
-  // FIXME dedup with AnnotationPositionVariantPartitionWriter
-  private MemoryBuffer getHeapBackedScratchBuffer(long minCapacity) {
-    if (scratchBuffer == null) {
-      scratchBuffer = MemoryBuffer.wrap(new byte[Math.toIntExact(minCapacity)]);
-    } else {
-      if (minCapacity > scratchBuffer.getCapacity()) {
-        // ensureCapacity does not support heap backed buffers, create a new one
-        scratchBuffer.close();
-        scratchBuffer =
-            MemoryBuffer.wrap(new byte[Math.toIntExact(Numbers.nextPowerOf2(minCapacity))]);
-      } else {
-        scratchBuffer.clear();
-      }
-    }
-    return scratchBuffer;
-  }
-
   @Override
   public void close() {
-    if (scratchBuffer != null) {
-      scratchBuffer.close();
-    }
+    ClosableUtils.close(scratchBuffer);
   }
 }
