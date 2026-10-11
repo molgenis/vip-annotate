@@ -836,43 +836,6 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
     return new MemoryBuffer(MemorySegment.ofArray(array));
   }
 
-  /**
-   * Wraps an existing {@code double[]} array in a {@code MemoryBuffer}. The buffer provides a view
-   * of the array's contents; modifications are reflected in both.
-   *
-   * @param array the array to wrap
-   * @return a new {@code MemoryBuffer} view of the given array
-   */
-  public static MemoryBuffer wrap(double[] array) {
-    return new MemoryBuffer(MemorySegment.ofArray(array));
-  }
-
-  /**
-   * Wraps an existing {@code float[]} array in a {@code MemoryBuffer}. The buffer provides a view
-   * of the array's contents; modifications are reflected in both.
-   *
-   * @param array the array to wrap
-   * @return a new {@code MemoryBuffer} view of the given array
-   */
-  public static MemoryBuffer wrap(float[] array) {
-    return new MemoryBuffer(MemorySegment.ofArray(array));
-  }
-
-  /** Same as above for {@code short[]} arrays. */
-  public static MemoryBuffer wrap(short[] array) {
-    return new MemoryBuffer(MemorySegment.ofArray(array));
-  }
-
-  /** Same as above for {@code int[]} arrays. */
-  public static MemoryBuffer wrap(int[] array) {
-    return new MemoryBuffer(MemorySegment.ofArray(array));
-  }
-
-  /** Same as {@link #wrap(byte[])} for {@code long[]} arrays. */
-  public static MemoryBuffer wrap(long[] array) {
-    return new MemoryBuffer(MemorySegment.ofArray(array));
-  }
-
   @Override
   public void close() {
     ClosableUtils.close(arena);

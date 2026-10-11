@@ -71,7 +71,7 @@ class MemoryBufferTest {
 
   @Test
   void getCapacity() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new short[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Short.BYTES * 3])) {
       assertEquals(Short.BYTES * 3, memBuffer.getCapacity());
     }
   }
@@ -291,7 +291,7 @@ class MemoryBufferTest {
 
   @Test
   void putDoubleGetDouble() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new double[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Double.BYTES * 3])) {
       memBuffer.putDouble(0.12);
       memBuffer.putDouble(1.23);
       memBuffer.putDouble(2.34);
@@ -316,7 +316,7 @@ class MemoryBufferTest {
 
   @Test
   void setDoubleAtIndexGetDoubleAtIndex() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new double[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Double.BYTES * 3])) {
       memBuffer.setDoubleAtIndex(0, 2.34);
       memBuffer.setDoubleAtIndex(1, 0.12);
       memBuffer.setDoubleAtIndex(2, 1.23);
@@ -357,7 +357,7 @@ class MemoryBufferTest {
 
   @Test
   void putFloatGetFloat() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new float[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Float.BYTES * 3])) {
       memBuffer.putFloat(0.12f);
       memBuffer.putFloat(1.23f);
       memBuffer.putFloat(2.34f);
@@ -382,7 +382,7 @@ class MemoryBufferTest {
 
   @Test
   void setFloatAtIndexGetFloatAtIndex() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new float[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Float.BYTES * 3])) {
       memBuffer.setFloatAtIndex(0, 2.34f);
       memBuffer.setFloatAtIndex(1, 0.12f);
       memBuffer.setFloatAtIndex(2, 1.23f);
@@ -423,7 +423,7 @@ class MemoryBufferTest {
 
   @Test
   void putShortGetShort() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new short[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Short.BYTES * 3])) {
       memBuffer.putShort((short) 0);
       memBuffer.putShort((short) 1);
       memBuffer.putShort((short) 2);
@@ -448,7 +448,7 @@ class MemoryBufferTest {
 
   @Test
   void setShortAtIndexGetShortAtIndex() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new short[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Short.BYTES * 3])) {
       memBuffer.setShortAtIndex(0, (short) 2);
       memBuffer.setShortAtIndex(1, (short) 0);
       memBuffer.setShortAtIndex(2, (short) 1);
@@ -471,7 +471,7 @@ class MemoryBufferTest {
 
   @Test
   void putIntGetInt() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new int[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Integer.BYTES * 3])) {
       memBuffer.putInt(0);
       memBuffer.putInt(1);
       memBuffer.putInt(2);
@@ -496,7 +496,7 @@ class MemoryBufferTest {
 
   @Test
   void setIntAtIndexGetIntAtIndex() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new int[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Integer.BYTES * 3])) {
       memBuffer.setIntAtIndex(0, 2);
       memBuffer.setIntAtIndex(1, 0);
       memBuffer.setIntAtIndex(2, 1);
@@ -595,7 +595,7 @@ class MemoryBufferTest {
 
   @Test
   void putLongGetLong() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new long[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Long.BYTES * 3])) {
       memBuffer.putLong(0L);
       memBuffer.putLong(1L);
       memBuffer.putLong(2L);
@@ -620,7 +620,7 @@ class MemoryBufferTest {
 
   @Test
   void setLongAtIndexGetLongAtIndex() {
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new long[3])) {
+    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(new byte[Long.BYTES * 3])) {
       memBuffer.setLongAtIndex(0, 2L);
       memBuffer.setLongAtIndex(1, 0L);
       memBuffer.setLongAtIndex(2, 1L);
