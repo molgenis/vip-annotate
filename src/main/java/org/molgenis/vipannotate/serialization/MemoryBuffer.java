@@ -3,8 +3,6 @@ package org.molgenis.vipannotate.serialization;
 import static org.molgenis.vipannotate.util.Numbers.nextPowerOf2;
 import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -48,6 +46,9 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   /** Underlying native or heap-based memory segment */
   private MemorySegment memSegment;
 
+  /** Whether the buffer is allowed to grow */
+  @Getter private final boolean resizable;
+
   /** {@link #memSegment} wrapped in a {@link ByteBuffer} */
   @Nullable private ByteBuffer byteBufferWrapper;
 
@@ -79,12 +80,14 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
    */
   @Getter private long limit;
 
-  private MemoryBuffer(MemorySegment memSegment) {
-    this(memSegment, 1L, null);
+  private MemoryBuffer(MemorySegment memSegment, boolean resizable) {
+    this(memSegment, resizable, 1L, null);
   }
 
-  private MemoryBuffer(MemorySegment memSegment, long alignment, @Nullable Arena arena) {
+  private MemoryBuffer(
+      MemorySegment memSegment, boolean resizable, long alignment, @Nullable Arena arena) {
     this.memSegment = memSegment;
+    this.resizable = resizable;
     this.alignment = alignment;
     this.arena = arena;
 
@@ -116,28 +119,40 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   /**
    * ensures the native memory buffer has at least the given capacity.
    *
-   * @throws UncheckedIOException if attempting to resize a heap-based memory buffer
+   * @throws UnsupportedOperationException if this buffer is not resizable
    */
   public void ensureCapacity(long minCapacity) {
     if (minCapacity <= getCapacity()) {
       return;
     }
 
-    if (arena == null) {
-      throw new UncheckedIOException(new IOException("cannot resize heap-based memory buffer"));
+    if (!resizable) {
+      throw new UnsupportedOperationException("cannot resize this memory buffer");
     }
 
-    // create new memory segment
-    Arena newArena = Arena.ofConfined();
     long newCapacity = Math.max(alignment, nextPowerOf2(minCapacity));
-    MemorySegment newMemorySegment = newArena.allocate(newCapacity, alignment);
-    newMemorySegment.copyFrom(memSegment);
+    if (arena == null) {
+      MemorySegment newMemorySegment =
+          MemorySegment.ofArray(new byte[Math.toIntExact(newCapacity)]);
 
-    // replace old memory segment
-    close();
-    memSegment = newMemorySegment;
+      newMemorySegment.copyFrom(memSegment);
+      memSegment = newMemorySegment;
+    } else {
+      // create new memory segment
+      Arena newArena = Arena.ofConfined();
+      MemorySegment newMemorySegment = newArena.allocate(newCapacity, alignment);
+      newMemorySegment.copyFrom(memSegment);
+
+      // replace old memory segment
+      Arena oldArena = arena;
+      memSegment = newMemorySegment;
+      arena = newArena;
+      byteBufferWrapper = null;
+      oldArena.close();
+    }
+
+    // reset
     byteBufferWrapper = null;
-    arena = newArena;
   }
 
   /** Rewinds this buffer: sets the position to zero. */
@@ -822,7 +837,17 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   public static MemoryBuffer allocate(long byteSize, long byteAlignment) {
     Arena arena = Arena.ofConfined();
     MemorySegment memSegment = arena.allocate(byteSize, byteAlignment);
-    return new MemoryBuffer(memSegment, byteAlignment, arena);
+    return new MemoryBuffer(memSegment, true, byteAlignment, arena);
+  }
+
+  /**
+   * Create a heap-based memory buffer with the given size
+   *
+   * @param byteSize buffer size
+   * @return heap-based memory buffer that can be grown with {@link #ensureCapacity(long)}}
+   */
+  public static MemoryBuffer allocateHeap(int byteSize) {
+    return new MemoryBuffer(MemorySegment.ofArray(new byte[byteSize]), true);
   }
 
   /**
@@ -830,10 +855,11 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
    * the array's contents; modifications are reflected in both.
    *
    * @param array the array to wrap
-   * @return a new {@code MemoryBuffer} view of the given array
+   * @return a new {@code MemoryBuffer} view of the given array. can't be grown with {@link
+   *     #ensureCapacity(long)}}
    */
   public static MemoryBuffer wrap(byte[] array) {
-    return new MemoryBuffer(MemorySegment.ofArray(array));
+    return new MemoryBuffer(MemorySegment.ofArray(array), false);
   }
 
   @Override

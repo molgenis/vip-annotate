@@ -30,7 +30,7 @@ class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
 
   @Test
   void testWriteIntoAndReadFrom() {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[100]);
+    MemoryBuffer memoryBuffer = MemoryBuffer.allocateHeap(100);
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
         new SequenceVariantAnnotationIndexBig<>(
             encoder,
@@ -47,7 +47,7 @@ class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
 
   @Test
   void testWriteIntoAndReadInto() {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[100]);
+    MemoryBuffer memoryBuffer = MemoryBuffer.allocateHeap(100);
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
         new SequenceVariantAnnotationIndexBig<>(
             encoder,
