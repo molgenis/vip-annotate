@@ -118,7 +118,7 @@ public class AnnotatedSequenceVariantPartitionWriter<
       scratchBuffer = MemoryBuffer.allocateHeap(Math.toIntExact(minCapacity));
     } else {
       scratchBuffer.ensureCapacity(minCapacity);
-      scratchBuffer.rewind();
+      scratchBuffer.clear();
     }
     return scratchBuffer;
   }
