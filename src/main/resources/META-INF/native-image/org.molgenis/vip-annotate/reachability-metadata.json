@@ -89,7 +89,16 @@
       ]
     },
     {
-      "type": "org.molgenis.vipannotate.annotation.def.EnumValue"
+      "type": "org.molgenis.vipannotate.annotation.def.EnumValue",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        }
+      ]
     },
     {
       "type": "org.molgenis.vipannotate.annotation.def.FloatAnnotationDef",
