@@ -89,6 +89,9 @@
       ]
     },
     {
+      "type": "org.molgenis.vipannotate.annotation.def.EnumValue"
+    },
+    {
       "type": "org.molgenis.vipannotate.annotation.def.FloatAnnotationDef",
       "methods": [
         {

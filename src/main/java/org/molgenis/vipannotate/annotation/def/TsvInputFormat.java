@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.jspecify.annotations.Nullable;
 
-// keep in sync with
-// src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 @JsonTypeName("tsv")
 public record TsvInputFormat(
     @JsonProperty(value = "header", required = true) boolean header,
