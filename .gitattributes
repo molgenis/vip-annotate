@@ -1,0 +1,6 @@
+*.bed   text eol=lf
+*.bed.gz binary
+*.tsv   text eol=lf
+*.tsv.gz binary
+*.vcf   text eol=lf
+*.vcf.gz binary
