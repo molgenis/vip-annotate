@@ -1,16 +1,18 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
-import org.molgenis.vipannotate.serialization.BinaryWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @RequiredArgsConstructor
 public class FloatAnnotationEncoder implements AnnotationEncoder<FloatAnnotation> {
   private final FloatValueWriter floatValueWriter;
 
   @Override
-  public void encodeInto(FloatAnnotation annotation, BinaryWriter binaryWriter) {
-    floatValueWriter.write(annotation.getValue(), binaryWriter);
+  public void encodeInto(FloatAnnotation annotation, MemoryEncoder memEncoder) {
+    if (annotation.isMissingValue()) {
+      throw new IllegalArgumentException();
+    }
+    floatValueWriter.write(annotation.getValue(), memEncoder);
   }
 
   @Override

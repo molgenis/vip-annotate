@@ -30,7 +30,7 @@ public abstract class LineRecordReader<F extends Field, R extends Record<F>>
         return null;
       }
 
-      if (!lineBuffer.isEmpty() && lineBuffer.charAt(0) != '#') {
+      if (!lineBuffer.isEmpty()) {
         return createRecord(lineBuffer);
       }
     }

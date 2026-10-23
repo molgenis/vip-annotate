@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.molgenis.vipannotate.serialization.BinaryWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 import org.molgenis.vipannotate.util.SizedIterator;
 
 public class EnumSetAnnotationDatasetEncoder
@@ -19,19 +19,17 @@ public class EnumSetAnnotationDatasetEncoder
   }
 
   @Override
-  public long getEncodedSizeInBytes(int annotationCount) {
-    return Math.ceilDivExact(enumValueToBitIndexMap.size() * annotationCount, Byte.SIZE);
-  }
+  public void encodeInto(
+      SizedIterator<StringListAnnotation> annotationIt, MemoryEncoderProvider encoderProvider) {
+    MemoryEncoder memEncoder = encoderProvider.get();
 
-  @Override
-  public void encode(SizedIterator<StringListAnnotation> annotationIt, BinaryWriter binaryWriter) {
     int currentByte = 0;
     int bitsInCurrentByte = 0;
 
     while (annotationIt.hasNext()) {
       StringListAnnotation annotation = annotationIt.next();
 
-      for (String value : annotation.values()) {
+      for (String value : annotation.getValues()) {
         Integer bitIndex = enumValueToBitIndexMap.get(value);
         if (bitIndex == null) {
           throw new IllegalArgumentException("Unknown enum value: %s".formatted(value));
@@ -43,14 +41,14 @@ public class EnumSetAnnotationDatasetEncoder
       bitsInCurrentByte += enumValueToBitIndexMap.size();
 
       while (bitsInCurrentByte >= Byte.SIZE) {
-        binaryWriter.writeByte((byte) currentByte);
+        memEncoder.putByte((byte) currentByte);
         currentByte >>>= Byte.SIZE;
         bitsInCurrentByte -= Byte.SIZE;
       }
     }
 
     if (bitsInCurrentByte > 0) {
-      binaryWriter.writeByte((byte) currentByte);
+      memEncoder.putByte((byte) currentByte);
     }
   }
 }

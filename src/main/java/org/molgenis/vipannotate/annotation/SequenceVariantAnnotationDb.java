@@ -10,13 +10,15 @@ import org.molgenis.vipannotate.util.IndexRange;
 public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends Annotation>
     implements AnnotationDb<T, U> {
   private final PartitionResolver partitionResolver;
-  private final AnnotationIndexReader<T> annotationIndexReader;
-  private final AnnotationDatasetDecoder<U> annotationDatasetReader;
+  private final SequenceVariantAnnotationIndexReader<T> annotationIndexReader;
+  private final AnnotationDatasetReader<U> datasetReader;
+  private final Pool<U> annotationPool;
 
   @Nullable private PartitionKey activePartitionKey;
-  @Nullable private AnnotationIndex<T> activeAnnotationIndex;
+  @Nullable private SequenceVariantAnnotationIndexDispatcher<T> activeAnnotationIndex;
   private boolean activeAnnotationIndexValid = false;
   @Nullable private AnnotationDataset<U> activeAnnotationDataset;
+  private final IndexRange reusableIndexRange = new IndexRange(0, 0);
 
   @SuppressWarnings("NullAway")
   @Override
@@ -31,21 +33,29 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
     }
 
     if (activeAnnotationIndexValid) {
-      IndexRange indexRange = activeAnnotationIndex.findIndexes(feature);
+      boolean found =
+          activeAnnotationIndex.findIndexesInto(
+              feature,
+              partitionResolver.resolvePosition(partitionKey, feature.getStart()),
+              reusableIndexRange);
 
-      if (indexRange != null) {
+      if (found) {
         if (activeAnnotationDataset == null) {
           // load annotation data on the first index hit
-          activeAnnotationDataset = annotationDatasetReader.decode(activePartitionKey);
+          activeAnnotationDataset = datasetReader.read(activePartitionKey);
         }
 
-        activeAnnotationDataset.findByIndexes(indexRange, annotations);
+        activeAnnotationDataset.findByIndexesInto(
+            reusableIndexRange, annotations, annotationPool::acquire);
       }
     }
   }
 
   private void updateActiveAnnotationIndex(PartitionKey key) {
-    if (activeAnnotationIndex == null) {
+    if (key.bin() == -1) {
+      activeAnnotationIndex = null;
+      activeAnnotationIndexValid = false;
+    } else if (activeAnnotationIndex == null) {
       // perf: allocate an annotation index once and reuse the same instance after
       activeAnnotationIndex = annotationIndexReader.read(key);
       activeAnnotationIndexValid = (activeAnnotationIndex != null);
@@ -56,6 +66,6 @@ public class SequenceVariantAnnotationDb<T extends SequenceVariant, U extends An
 
   @Override
   public void close() {
-    ClosableUtils.closeAll(annotationIndexReader, annotationDatasetReader);
+    ClosableUtils.closeAll(annotationIndexReader, datasetReader);
   }
 }

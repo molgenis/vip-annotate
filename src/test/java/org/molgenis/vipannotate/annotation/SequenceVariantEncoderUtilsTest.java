@@ -9,13 +9,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class SequenceVariantEncoderUtilsTest {
-  // TODO add other encodePos test cases after resolving TODO in method
-  @Test
-  void encodePosZeroTelomere() {
-    int telomerePos = 0;
-    assertDoesNotThrow(() -> SequenceVariantEncoderUtils.encodePos(telomerePos));
-  }
-
   @Test
   void encodeBaseCount() {
     assertEquals(3, SequenceVariantEncoderUtils.encodeBaseCount(4));

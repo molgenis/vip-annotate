@@ -1,31 +1,23 @@
 package org.molgenis.vipannotate.format.vdb;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncodable;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @RequiredArgsConstructor
-public class VdbArchiveIndexWriter implements MemoryBufferWriter<VdbArchiveIndex> {
+public class VdbArchiveIndexWriter implements MemoryEncodable<VdbArchiveIndex> {
   private final VdbMemoryBufferFactory memBufferFactory;
 
   @Override
-  public MemoryBuffer writeTo(VdbArchiveIndex archiveIndex) {
-    MemoryBuffer memBuffer = memBufferFactory.newMemoryBuffer();
-    writeInto(archiveIndex, memBuffer);
-    return memBuffer;
+  public MemoryEncoder writeTo(VdbArchiveIndex archiveIndex) {
+    MemoryEncoder memEncoder = MemoryEncoder.autoGrowing(memBufferFactory.newMemoryBuffer());
+    writeInto(archiveIndex, memEncoder);
+    return memEncoder;
   }
 
   @Override
-  public void writeInto(VdbArchiveIndex archiveIndex, MemoryBuffer memBuffer) {
-    Set<Map.Entry<String, Integer>> entries = archiveIndex.getEntryNameToIdMap().entrySet();
-    memBuffer.putInt(entries.size());
-    for (Map.Entry<String, Integer> entry : entries) {
-      memBuffer.putByteArray(entry.getKey().getBytes(UTF_8));
-      memBuffer.putInt(entry.getValue());
-    }
+  public void writeInto(VdbArchiveIndex archiveIndex, MemoryEncoder memEncoder) {
+    memEncoder.putMap(
+        archiveIndex.getEntryNameToIdMap(), MemoryEncoder::putString, MemoryEncoder::putInt);
   }
 }

@@ -1,10 +1,13 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.annotation.resolved.ResolvedEnumAnnotationSpec;
+import org.molgenis.vipannotate.annotation.spec.EnumAnnotationSpec;
 
 public class EnumAnnotationDatasetDecoderFactory {
-  public AnnotationDatasetDecoder<?> create(
-      ResolvedEnumAnnotationSpec annotationSpec, AnnotationBlobReader blobReader) {
-    return new EnumAnnotationDatasetReader(annotationSpec, blobReader);
+  public AnnotationDatasetDecoder<?> create(EnumAnnotationSpec annotationSpec) {
+    AnnotationDatasetDecoder<?> datasetDecoder = new EnumAnnotationDatasetDecoder(annotationSpec);
+    if (annotationSpec.nullable()) {
+      datasetDecoder = new NullableAnnotationDatasetDecoder<>(datasetDecoder);
+    }
+    return datasetDecoder;
   }
 }

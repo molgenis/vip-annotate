@@ -14,7 +14,8 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
     implements AnnotationDb<T, U> {
   private final PartitionResolver partitionResolver;
-  private final AnnotationDatasetDecoder<U> annotationDatasetReader;
+  private final AnnotationDatasetReader<U> datasetReader;
+  private final Pool<U> annotationPool;
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationDataset<@Nullable U> activeAnnotationDataset;
@@ -33,19 +34,22 @@ public class IntervalAnnotationDb<T extends Interval, U extends Annotation>
   @SuppressWarnings("NullAway")
   private @Nullable U findAnnotations(Contig contig, int pos) {
     PartitionKey partitionKey = partitionResolver.resolvePartitionKey(contig, pos);
+    if (partitionKey.bin() == -1) {
+      return null;
+    }
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {
-      activeAnnotationDataset = annotationDatasetReader.decode(partitionKey);
+      activeAnnotationDataset = datasetReader.read(partitionKey);
       activePartitionKey = partitionKey;
     }
 
-    int partitionStart = partitionResolver.getPartitionPos(pos);
-    return activeAnnotationDataset.findByIndex(partitionStart);
+    int partitionStart = partitionResolver.getPartitionPos(contig, pos);
+    return activeAnnotationDataset.findByIndexInto(partitionStart, annotationPool::acquire);
   }
 
   @Override
   public void close() {
-    ClosableUtils.close(annotationDatasetReader);
+    ClosableUtils.close(datasetReader);
   }
 }

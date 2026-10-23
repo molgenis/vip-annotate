@@ -3,7 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.molgenis.vipannotate.serialization.BinaryWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 import org.molgenis.vipannotate.util.SizedIterator;
 
 public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<StringAnnotation> {
@@ -25,12 +25,9 @@ public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<St
   }
 
   @Override
-  public long getEncodedSizeInBytes(int annotationCount) {
-    return Math.ceilDivExact((long) bitsPerAnnotation * annotationCount, Byte.SIZE);
-  }
-
-  @Override
-  public void encode(SizedIterator<StringAnnotation> annotationIt, BinaryWriter binaryWriter) {
+  public void encodeInto(
+      SizedIterator<StringAnnotation> annotationIt, MemoryEncoderProvider encoderProvider) {
+    MemoryEncoder memEncoder = encoderProvider.get();
 
     int currentByte = 0;
     int bitsInCurrentByte = 0;
@@ -40,16 +37,16 @@ public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<St
 
       int enumIndex;
 
-      if (annotation.value() == null) {
+      if (annotation.getValue() == null) {
         if (!nullable) {
           throw new IllegalArgumentException("Null enum value is not allowed");
         }
         enumIndex = 0;
       } else {
-        Integer mappedIndex = enumValueToBitIndexMap.get(annotation.value());
+        Integer mappedIndex = enumValueToBitIndexMap.get(annotation.getValue());
         if (mappedIndex == null) {
           throw new IllegalArgumentException(
-              "Unknown enum value: %s".formatted(annotation.value()));
+              "Unknown enum value: %s".formatted(annotation.getValue()));
         }
         enumIndex = mappedIndex;
       }
@@ -58,14 +55,14 @@ public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<St
       bitsInCurrentByte += bitsPerAnnotation;
 
       while (bitsInCurrentByte >= Byte.SIZE) {
-        binaryWriter.writeByte((byte) currentByte);
+        memEncoder.putByte((byte) currentByte);
         currentByte >>>= Byte.SIZE;
         bitsInCurrentByte -= Byte.SIZE;
       }
     }
 
     if (bitsInCurrentByte > 0) {
-      binaryWriter.writeByte((byte) currentByte);
+      memEncoder.putByte((byte) currentByte);
     }
   }
 }

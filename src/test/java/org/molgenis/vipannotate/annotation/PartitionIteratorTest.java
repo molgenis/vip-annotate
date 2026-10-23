@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
@@ -8,8 +9,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class PartitionIteratorTest {
+  @Mock private PartitionResolver partitionResolver;
+
   @Test
   void hasNextAndNext() {
     hasNextAndNext(false);
@@ -51,12 +58,29 @@ class PartitionIteratorTest {
             annotatedInterval2,
             annotatedInterval3,
             annotatedInterval4);
+    doReturn(new PartitionKey(chr1, 0))
+        .when(partitionResolver)
+        .resolvePartitionKey(annotatedInterval0);
+    doReturn(new PartitionKey(chr1, 0))
+        .when(partitionResolver)
+        .resolvePartitionKey(annotatedInterval1);
+    doReturn(new PartitionKey(chr1, 1))
+        .when(partitionResolver)
+        .resolvePartitionKey(annotatedInterval2);
+    doReturn(new PartitionKey(chr1, 1))
+        .when(partitionResolver)
+        .resolvePartitionKey(annotatedInterval3);
+    doReturn(new PartitionKey(chr2, 0))
+        .when(partitionResolver)
+        .resolvePartitionKey(annotatedInterval4);
     PartitionIterator<Interval, Annotation, AnnotatedInterval<Interval, Annotation>> it;
     if (reusable) {
       List<AnnotatedInterval<Interval, Annotation>> reusableAnnotatedIntervals = new ArrayList<>();
-      it = new PartitionIterator<>(annotatedIntervals.iterator(), reusableAnnotatedIntervals);
+      it =
+          new PartitionIterator<>(
+              partitionResolver, annotatedIntervals.iterator(), reusableAnnotatedIntervals);
     } else {
-      it = new PartitionIterator<>(annotatedIntervals.iterator());
+      it = new PartitionIterator<>(partitionResolver, annotatedIntervals.iterator());
     }
     assertTrue(it.hasNext());
     assertEquals(
@@ -75,7 +99,7 @@ class PartitionIteratorTest {
   @Test
   void nextNoSuchElementException() {
     PartitionIterator<Interval, Annotation, AnnotatedInterval<Interval, Annotation>> it =
-        new PartitionIterator<>(Collections.emptyIterator());
+        new PartitionIterator<>(partitionResolver, Collections.emptyIterator());
     assertThrows(NoSuchElementException.class, it::next);
   }
 }

@@ -11,40 +11,49 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferReader;
+import org.molgenis.vipannotate.serialization.MemoryDecodable;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexDispatcherReaderTest {
-  @Mock private MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexSmallReader;
-  @Mock private MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexBigReader;
+  @Mock private MemoryDecodable<AnnotationIndex<SequenceVariant>> indexSmallReader;
+  @Mock private MemoryDecodable<AnnotationIndex<SequenceVariant>> indexBigReader;
   private SequenceVariantAnnotationIndexDispatcherReader<SequenceVariant> indexReader;
 
   @BeforeEach
   void setUp() {
     indexReader = new SequenceVariantAnnotationIndexDispatcherReader<>();
-    indexReader.register(EncodedSequenceVariant.Type.SMALL, indexSmallReader);
+    indexReader.register(EncodedSequenceVariant.Type.POS_20_BIT, indexSmallReader);
     indexReader.register(EncodedSequenceVariant.Type.BIG, indexBigReader);
   }
 
   @Test
   void readFrom() {
-    MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
+    MemoryBuffer memBuffer = mock(MemoryBuffer.class);
+    MemoryDecoder memDecoder = mock(MemoryDecoder.class);
+    when(memDecoder.unwrap()).thenReturn(memBuffer);
+
     @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> indexSmall = mock(AnnotationIndex.class);
-    when(indexSmallReader.readFrom(memoryBuffer)).thenReturn(indexSmall);
+    when(indexSmallReader.readFrom(memDecoder)).thenReturn(indexSmall);
     @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> indexBig = mock(SequenceVariantAnnotationIndexBig.class);
-    when(indexBigReader.readFrom(memoryBuffer)).thenReturn(indexBig);
+    when(indexBigReader.readFrom(memDecoder)).thenReturn(indexBig);
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
-        indexReader.readFrom(memoryBuffer);
+        indexReader.readFrom(memDecoder);
     assertAll(
-        () -> assertEquals(indexSmall, index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)),
+        () ->
+            assertEquals(
+                indexSmall, index.getAnnotationIndex(EncodedSequenceVariant.Type.POS_20_BIT)),
         () -> assertEquals(indexBig, index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)));
   }
 
   @Test
   void readInto() {
-    MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
+    MemoryBuffer memBuffer = mock(MemoryBuffer.class);
+    MemoryDecoder memDecoder = mock(MemoryDecoder.class);
+    when(memDecoder.unwrap()).thenReturn(memBuffer);
+
     @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
@@ -55,12 +64,12 @@ class SequenceVariantAnnotationIndexDispatcherReaderTest {
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
         mock(SequenceVariantAnnotationIndexBig.class);
 
-    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)).thenReturn(indexSmall);
+    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.POS_20_BIT)).thenReturn(indexSmall);
     when(index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)).thenReturn(indexBig);
 
-    indexReader.readInto(memoryBuffer, index);
+    indexReader.readInto(memDecoder, index);
     InOrder inOrder = inOrder(indexSmallReader, indexBigReader);
-    inOrder.verify(indexSmallReader).readInto(memoryBuffer, indexSmall);
-    inOrder.verify(indexBigReader).readInto(memoryBuffer, indexBig);
+    inOrder.verify(indexSmallReader).readInto(memDecoder, indexSmall);
+    inOrder.verify(indexBigReader).readInto(memDecoder, indexBig);
   }
 }

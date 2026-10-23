@@ -1,8 +1,9 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
-
-public interface AnnotationDatasetDecoder<T extends Annotation> extends AutoCloseableNoThrow {
-  /** {@return annotation data set, never <code>null</code>} */
-  AnnotationDataset<T> decode(PartitionKey partitionKey);
+/// decodes annotations
+public interface AnnotationDatasetDecoder<T extends Annotation> {
+  /// decodes annotations from provided memory decoders
+  ///
+  /// @param decoderProvider provides memory decoders for specific dataset components
+  AnnotationDataset<T> decode(MemoryDecoderProvider decoderProvider);
 }

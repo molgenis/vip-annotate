@@ -32,10 +32,10 @@ public class Zstd implements AutoCloseable {
   private boolean decompressMethodHandlesInitialized;
 
   public static Zstd create() {
-    //noinspection DataFlowIssue
     return create(Linker.nativeLinker());
   }
 
+  @SuppressWarnings("MustBeClosedChecker")
   public static Zstd create(Linker linker) {
     String overridePath = System.getProperty("zstd.lib.path");
     if (overridePath == null) {

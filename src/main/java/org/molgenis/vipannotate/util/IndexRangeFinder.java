@@ -1,7 +1,6 @@
 package org.molgenis.vipannotate.util;
 
 import java.util.Arrays;
-import org.jspecify.annotations.Nullable;
 
 public class IndexRangeFinder {
   /**
@@ -14,10 +13,11 @@ public class IndexRangeFinder {
    * @param key the value to be searched for
    * @return index range of the search key or <code>null</code> if it is not contained in the array
    */
-  public static @Nullable IndexRange findIndexes(int[] arr, int fromIndex, int toIndex, int key) {
+  public static boolean findIndexesInto(
+      int[] arr, int fromIndex, int toIndex, int key, IndexRange indexRange) {
     int index = Arrays.binarySearch(arr, fromIndex, toIndex, key);
     if (index < 0) {
-      return null;
+      return false;
     }
 
     // find first occurrence
@@ -32,7 +32,8 @@ public class IndexRangeFinder {
       ++last;
     }
 
-    return new IndexRange(first, last);
+    indexRange.reset(first, last);
+    return true;
   }
 
   /**
@@ -45,11 +46,11 @@ public class IndexRangeFinder {
    * @param key the value to be searched for
    * @return index range of the search key or <code>null</code> if it is not contained in the array
    */
-  public static <T extends Comparable<? super T>> @Nullable IndexRange findIndexes(
-      T[] arr, int fromIndex, int toIndex, T key) {
+  public static <T extends Comparable<? super T>> boolean findIndexesInto(
+      T[] arr, int fromIndex, int toIndex, T key, IndexRange indexRange) {
     int index = Arrays.binarySearch(arr, fromIndex, toIndex, key);
     if (index < 0) {
-      return null; // not found
+      return false; // not found
     }
 
     int first = index;
@@ -62,6 +63,7 @@ public class IndexRangeFinder {
       last++;
     }
 
-    return new IndexRange(first, last);
+    indexRange.reset(first, last);
+    return true;
   }
 }

@@ -1,40 +1,38 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.EnumMap;
-import org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type;
 
-public final class SequenceVariantEncoderDispatcher<T extends SequenceVariant>
-    implements SequenceVariantEncoder<T> {
-  private final EnumMap<Type, SequenceVariantEncoder<T>> encoderMap;
+public final class SequenceVariantEncoderDispatcher<T extends SequenceVariant> {
+  private final EnumMap<EncodedSequenceVariant.Type, SequenceVariantEncoder<T>> encoderMap;
 
   public SequenceVariantEncoderDispatcher() {
-    encoderMap = new EnumMap<>(Type.class);
+    encoderMap = new EnumMap<>(EncodedSequenceVariant.Type.class);
   }
 
-  public void register(Type type, SequenceVariantEncoder<T> encoder) {
+  public void register(EncodedSequenceVariant.Type type, SequenceVariantEncoder<T> encoder) {
     encoderMap.put(type, encoder);
   }
 
-  @Override
-  public EncodedSequenceVariant encode(T variant) {
-    return getEncoder(variant).encode(variant);
+  public EncodedSequenceVariant encode(T variant, PositionEncoding positionEncoding) {
+    return getEncoder(variant, positionEncoding.bits()).encode(variant, positionEncoding.value());
   }
 
-  @Override
-  public void encodeInto(T variant, EncodedSequenceVariant encodedVariant) {
-    getEncoder(variant).encodeInto(variant, encodedVariant);
+  public void encodeInto(
+      T variant, PositionEncoding positionEncoding, EncodedSequenceVariant encodedVariant) {
+    getEncoder(variant, positionEncoding.bits())
+        .encodeInto(variant, positionEncoding.value(), encodedVariant);
   }
 
-  public SequenceVariantEncoder<T> getEncoder(Type type) {
+  public SequenceVariantEncoder<T> getEncoder(EncodedSequenceVariant.Type type) {
     SequenceVariantEncoder<T> encoder = encoderMap.get(type);
     if (encoder == null) {
-      throw new EnumConstantNotPresentException(Type.class, type.toString());
+      throw new EnumConstantNotPresentException(EncodedSequenceVariant.Type.class, type.toString());
     }
     return encoder;
   }
 
-  private SequenceVariantEncoder<T> getEncoder(SequenceVariant variant) {
-    Type type = SequenceVariantEncoderUtils.determineType(variant);
+  private SequenceVariantEncoder<T> getEncoder(SequenceVariant variant, int bits) {
+    EncodedSequenceVariant.Type type = SequenceVariantEncoderUtils.determineType(variant, bits);
     return getEncoder(type);
   }
 }

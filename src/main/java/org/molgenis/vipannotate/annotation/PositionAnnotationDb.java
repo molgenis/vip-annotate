@@ -16,8 +16,9 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 public class PositionAnnotationDb<T extends Annotation>
     implements AnnotationDb<SequenceVariant, T> {
   private final PartitionResolver partitionResolver;
-  private final AnnotationDatasetDecoder<T> annotationDatasetReader;
+  private final AnnotationDatasetReader<T> datasetReader;
   private final Predicate<SequenceVariant> canAnnotate;
+  private final Pool<T> annotationPool;
 
   @Nullable private PartitionKey activePartitionKey;
   @Nullable private AnnotationDataset<@Nullable T> activeAnnotationDataset;
@@ -50,19 +51,22 @@ public class PositionAnnotationDb<T extends Annotation>
   @SuppressWarnings("NullAway")
   private @Nullable T findAnnotations(Contig contig, int pos) {
     PartitionKey partitionKey = partitionResolver.resolvePartitionKey(contig, pos);
+    if (partitionKey.bin() == -1) {
+      throw new IllegalArgumentException(); // FIXME how to handle?
+    }
 
     // handle partition changes
     if (!partitionKey.equals(activePartitionKey)) {
-      activeAnnotationDataset = annotationDatasetReader.decode(partitionKey);
+      activeAnnotationDataset = datasetReader.read(partitionKey);
       activePartitionKey = partitionKey;
     }
 
-    int partitionStart = partitionResolver.getPartitionPos(pos);
-    return activeAnnotationDataset.findByIndex(partitionStart);
+    int partitionStart = partitionResolver.getPartitionPos(contig, pos);
+    return activeAnnotationDataset.findByIndexInto(partitionStart, annotationPool::acquire);
   }
 
   @Override
   public void close() {
-    ClosableUtils.close(annotationDatasetReader);
+    ClosableUtils.close(datasetReader);
   }
 }

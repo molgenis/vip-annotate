@@ -9,15 +9,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.molgenis.vipannotate.serialization.BinaryReader;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferReader;
+import org.molgenis.vipannotate.serialization.MemoryDecodable;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
 @SuppressWarnings({"unchecked"})
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexReaderTest {
-  @Mock private AnnotationBlobReader annotationBlobReader;
-  @Mock private MemoryBufferReader<AnnotationIndex<SequenceVariant>> indexReader;
+  @Mock private PartitionedEntryReader entryReader;
+
+  @Mock
+  private MemoryDecodable<SequenceVariantAnnotationIndexDispatcher<SequenceVariant>> indexReader;
 
   private SequenceVariantAnnotationIndexReader<SequenceVariant>
       sequenceVariantAnnotationIndexReader;
@@ -25,7 +26,7 @@ class SequenceVariantAnnotationIndexReaderTest {
   @BeforeEach
   void setUp() {
     sequenceVariantAnnotationIndexReader =
-        new SequenceVariantAnnotationIndexReader<>(annotationBlobReader, indexReader);
+        new SequenceVariantAnnotationIndexReader<>(entryReader, indexReader);
   }
 
   @AfterEach
@@ -36,14 +37,12 @@ class SequenceVariantAnnotationIndexReaderTest {
   @Test
   void read() {
     PartitionKey partitionKey = mock(PartitionKey.class);
-    MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
-    BinaryReader binaryReader = mock(BinaryReader.class);
-    when(binaryReader.unwrap()).thenReturn(memoryBuffer);
+    MemoryDecoder memDecoder = mock(MemoryDecoder.class);
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> indexDispatcher =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
 
-    when(annotationBlobReader.read(partitionKey)).thenReturn(binaryReader);
-    when(indexReader.readFrom(memoryBuffer)).thenReturn(indexDispatcher);
+    when(entryReader.read(partitionKey)).thenReturn(memDecoder);
+    when(indexReader.readFrom(memDecoder)).thenReturn(indexDispatcher);
 
     assertEquals(indexDispatcher, sequenceVariantAnnotationIndexReader.read(partitionKey));
   }
@@ -57,16 +56,14 @@ class SequenceVariantAnnotationIndexReaderTest {
   @Test
   void readInto() {
     PartitionKey partitionKey = mock(PartitionKey.class);
-    MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
-    BinaryReader binaryReader = mock(BinaryReader.class);
-    when(binaryReader.unwrap()).thenReturn(memoryBuffer);
-    when(annotationBlobReader.read(partitionKey)).thenReturn(binaryReader);
+    MemoryDecoder memDecoder = mock(MemoryDecoder.class);
+    when(entryReader.read(partitionKey)).thenReturn(memDecoder);
 
     @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
     assertTrue(sequenceVariantAnnotationIndexReader.readInto(partitionKey, index));
-    verify(indexReader).readInto(memoryBuffer, index);
+    verify(indexReader).readInto(memDecoder, index);
   }
 
   @Test

@@ -1,16 +1,38 @@
 package org.molgenis.vipannotate.annotation.spec;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 import org.jspecify.annotations.Nullable;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
-// keep in sync with
-// src/main/resources/META-INF/native-image/org.molgenis/vip-annotate/reachability-metadata.json
 public record AnnotationDbSpec(
     // TODO use SemVer class with regex, see https://semver.org
-    @JsonProperty(value = "version", required = true) String specVersion,
+    String version,
     // TODO use [a-z0-9._-] and length ≤ 64
-    @JsonProperty(value = "id", required = true) String specId,
-    // TODO use [a-zA-Z0-9_-<space>]
-    @JsonProperty(value = "description") @Nullable String specDescription,
-    @JsonProperty(value = "input", required = true) InputFormat inputFormat,
-    @JsonProperty(value = "definition", required = true) AnnotationSchema annotationSchema) {}
+    String id,
+    @Nullable String description,
+    AnnotationsSpec annotationsSpec,
+    Map<String, PositionBinSpec> partitioningSpec) {
+
+  public void writeTo(MemoryEncoder memEncoder) {
+    memEncoder.putString(version);
+    memEncoder.putString(id);
+    memEncoder.putStringNullable(description);
+    annotationsSpec.writeTo(memEncoder);
+    memEncoder.putMap(
+        partitioningSpec,
+        MemoryEncoder::putString,
+        (thisMemEncoder, positionBinSpec) -> positionBinSpec.writeTo(thisMemEncoder));
+  }
+
+  public static AnnotationDbSpec readFrom(MemoryDecoder memDecoder) {
+    String specVersion = memDecoder.getString();
+    String specId = memDecoder.getString();
+    String specDescription = memDecoder.getStringNullable();
+    AnnotationsSpec annotationSchema = AnnotationsSpec.readFrom(memDecoder);
+    Map<String, PositionBinSpec> partitioningSpec =
+        memDecoder.getMap(MemoryDecoder::getString, PositionBinSpec::readFrom);
+    return new AnnotationDbSpec(
+        specVersion, specId, specDescription, annotationSchema, partitioningSpec);
+  }
+}

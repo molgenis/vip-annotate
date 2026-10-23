@@ -8,27 +8,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
-import org.molgenis.vipannotate.serialization.MemoryBufferWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncodable;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexDispatcherWriterTest {
   @Mock private MemoryBufferFactory memBufferFactory;
-  @Mock private MemoryBufferWriter<AnnotationIndex<SequenceVariant>> indexSmallWriter;
-  @Mock private MemoryBufferWriter<AnnotationIndex<SequenceVariant>> indexBigWriter;
+  @Mock private MemoryEncodable<AnnotationIndex<SequenceVariant>> indexSmallWriter;
+  @Mock private MemoryEncodable<AnnotationIndex<SequenceVariant>> indexBigWriter;
   private SequenceVariantAnnotationIndexDispatcherWriter<SequenceVariant> indexWriter;
 
   @BeforeEach
   void setUp() {
     indexWriter = new SequenceVariantAnnotationIndexDispatcherWriter<>(memBufferFactory);
-    indexWriter.register(EncodedSequenceVariant.Type.SMALL, indexSmallWriter);
+    indexWriter.register(EncodedSequenceVariant.Type.POS_20_BIT, indexSmallWriter);
     indexWriter.register(EncodedSequenceVariant.Type.BIG, indexBigWriter);
   }
 
   @Test
-  void writeTo() {
-    MemoryBuffer memoryBuffer = mock(MemoryBuffer.class);
+  void writeInto() {
+    MemoryEncoder memEncoder = mock(MemoryEncoder.class);
     @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
         mock(SequenceVariantAnnotationIndexDispatcher.class);
@@ -39,12 +39,12 @@ class SequenceVariantAnnotationIndexDispatcherWriterTest {
     SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
         mock(SequenceVariantAnnotationIndexBig.class);
 
-    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.SMALL)).thenReturn(indexSmall);
+    when(index.getAnnotationIndex(EncodedSequenceVariant.Type.POS_20_BIT)).thenReturn(indexSmall);
     when(index.getAnnotationIndex(EncodedSequenceVariant.Type.BIG)).thenReturn(indexBig);
 
-    indexWriter.writeInto(index, memoryBuffer);
+    indexWriter.writeInto(index, memEncoder);
     InOrder inOrder = inOrder(indexSmallWriter, indexBigWriter);
-    inOrder.verify(indexSmallWriter).writeInto(indexSmall, memoryBuffer);
-    inOrder.verify(indexBigWriter).writeInto(indexBig, memoryBuffer);
+    inOrder.verify(indexSmallWriter).writeInto(indexSmall, memEncoder);
+    inOrder.verify(indexBigWriter).writeInto(indexBig, memEncoder);
   }
 }

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.FieldAccessor;
-import org.molgenis.vipannotate.annotation.spec.*;
+import org.molgenis.vipannotate.annotation.def.*;
 import org.molgenis.vipannotate.format.Field;
 import org.molgenis.vipannotate.format.Record;
 import org.molgenis.vipannotate.format.RecordReader;
@@ -16,6 +15,7 @@ import org.molgenis.vipannotate.util.Maps;
 public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements InputAnalyzer {
   private final RecordReader<F, R> recordReader;
   private final FieldResolver<F, R> fieldResolver;
+  private final ContigAnalyzer<F, R> contigAnalyzer;
   private final SequenceVariantTypeAnalyzer<F, R> sequenceVariantTypeAnalyzer;
   private final FieldAnalyzerFactory<F> fieldAnalyzerFactory;
 
@@ -23,8 +23,9 @@ public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements 
       String annotationId, FieldAnalyzer<F> analyzer, FieldAccessor<F, R> accessor) {}
 
   @Override
-  public InputAnalyses analyze(AnnotationSpecs annotationSpecs) {
-    List<AnnotationBinding<F, R>> annotationBindings = createAnnotationBindings(annotationSpecs);
+  public InputAnalyses analyze(AnnotationsDef annotationsDef) {
+    List<AnnotationBinding<F, R>> annotationBindings =
+        createAnnotationBindings(annotationsDef.annotationDefMap());
 
     R record = recordReader.read();
     if (record == null) {
@@ -36,10 +37,13 @@ public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements 
     } while (recordReader.readInto(record));
 
     return new InputAnalyses(
-        sequenceVariantTypeAnalyzer.collect(), collectFieldAnalysis(annotationBindings));
+        contigAnalyzer.collect(),
+        sequenceVariantTypeAnalyzer.collect(),
+        collectFieldAnalysis(annotationBindings));
   }
 
   private void analyzeRecord(R record, List<AnnotationBinding<F, R>> analyses) {
+    contigAnalyzer.analyze(record);
     for (AnnotationBinding<F, R> analysis : analyses) {
       analysis.analyzer().analyze(analysis.accessor().get(record));
     }
@@ -58,15 +62,16 @@ public class InputAnalyzerImpl<F extends Field, R extends Record<F>> implements 
     return annotationAnalyses;
   }
 
-  private List<AnnotationBinding<F, R>> createAnnotationBindings(AnnotationSpecs annotationSpecs) {
-    List<AnnotationBinding<F, R>> annotationBindings = new ArrayList<>(annotationSpecs.size());
+  private List<AnnotationBinding<F, R>> createAnnotationBindings(
+      Map<String, AnnotationDef> annotationDefMap) {
+    List<AnnotationBinding<F, R>> annotationBindings = new ArrayList<>(annotationDefMap.size());
 
-    annotationSpecs.forEach(
-        (annotationId, annotationSpec) ->
+    annotationDefMap.forEach(
+        (annotationId, annotationDef) ->
             annotationBindings.add(
                 new AnnotationBinding<>(
                     annotationId,
-                    fieldAnalyzerFactory.create(annotationSpec),
+                    fieldAnalyzerFactory.create(annotationDef),
                     fieldResolver.resolve(annotationId))));
 
     return annotationBindings;

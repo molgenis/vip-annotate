@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryBufferFactory;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
@@ -30,37 +32,42 @@ class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
 
   @Test
   void testWriteIntoAndReadFrom() {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[100]);
-    SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
-        new SequenceVariantAnnotationIndexBig<>(
-            encoder,
-            new BigInteger[] {
-              BigInteger.ZERO, BigInteger.ONE, new BigInteger("18446744073709551616")
-            });
-    sequenceVariantAnnotationIndexBigWriter.writeInto(indexBig, memoryBuffer);
-    memoryBuffer.rewind();
-    SequenceVariantAnnotationIndexBig<SequenceVariant> indexBigDeserialized =
-        sequenceVariantAnnotationIndexBigReader.readFrom(memoryBuffer);
-    assertArrayEquals(
-        indexBig.getEncodedVariantsArray(), indexBigDeserialized.getEncodedVariantsArray());
+    try (MemoryBuffer memoryBuffer = MemoryBuffer.allocateHeap(100)) {
+      SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
+          new SequenceVariantAnnotationIndexBig<>(
+              encoder,
+              new BigInteger[] {
+                BigInteger.ZERO, BigInteger.ONE, new BigInteger("18446744073709551616")
+              });
+      sequenceVariantAnnotationIndexBigWriter.writeInto(
+          indexBig, MemoryEncoder.autoGrowing(memoryBuffer));
+      memoryBuffer.rewind();
+      SequenceVariantAnnotationIndexBig<SequenceVariant> indexBigDeserialized =
+          sequenceVariantAnnotationIndexBigReader.readFrom(MemoryDecoder.wrap(memoryBuffer));
+      assertArrayEquals(
+          indexBig.getEncodedVariantsArray(), indexBigDeserialized.getEncodedVariantsArray());
+    }
   }
 
   @Test
   void testWriteIntoAndReadInto() {
-    MemoryBuffer memoryBuffer = MemoryBuffer.wrap(new byte[100]);
-    SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
-        new SequenceVariantAnnotationIndexBig<>(
-            encoder,
-            new BigInteger[] {
-              BigInteger.ZERO, BigInteger.ONE, new BigInteger("18446744073709551616")
-            });
-    sequenceVariantAnnotationIndexBigWriter.writeInto(indexBig, memoryBuffer);
-    memoryBuffer.rewind();
-    SequenceVariantAnnotationIndexBig<SequenceVariant> indexBigDeserialized =
-        SequenceVariantAnnotationIndexBigFactory
-            .create(); // TODO do not use factory in unit test class
-    sequenceVariantAnnotationIndexBigReader.readInto(memoryBuffer, indexBigDeserialized);
-    assertArrayEquals(
-        indexBig.getEncodedVariantsArray(), indexBigDeserialized.getEncodedVariantsArray());
+    try (MemoryBuffer memoryBuffer = MemoryBuffer.allocateHeap(100)) {
+      SequenceVariantAnnotationIndexBig<SequenceVariant> indexBig =
+          new SequenceVariantAnnotationIndexBig<>(
+              encoder,
+              new BigInteger[] {
+                BigInteger.ZERO, BigInteger.ONE, new BigInteger("18446744073709551616")
+              });
+      sequenceVariantAnnotationIndexBigWriter.writeInto(
+          indexBig, MemoryEncoder.autoGrowing(memoryBuffer));
+      memoryBuffer.rewind();
+      SequenceVariantAnnotationIndexBig<SequenceVariant> indexBigDeserialized =
+          new SequenceVariantAnnotationIndexBig<>(
+              new SequenceVariantEncoderBig<>(), new BigInteger[0]);
+      sequenceVariantAnnotationIndexBigReader.readInto(
+          MemoryDecoder.wrap(memoryBuffer), indexBigDeserialized);
+      assertArrayEquals(
+          indexBig.getEncodedVariantsArray(), indexBigDeserialized.getEncodedVariantsArray());
+    }
   }
 }

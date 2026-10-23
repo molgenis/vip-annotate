@@ -3,28 +3,76 @@
   "version": "1.0.0",
   "input": {
     "type": "tsv",
+    "header": true,
     "coordinate_system": "1-based",
-    "contig": 1,
-    "start": 2,
-    "ref": 3,
-    "alt": 4,
-    "annotation_columns": {
-      "my_enum": 5,
-      "my_enum_nullable": 6,
-      "my_i8": 7,
-      "my_i8_nullable": 8,
-      "my_u8": 9,
-      "my_u8_nullable": 10,
-      "my_i16": 11,
-      "my_i16_nullable": 12,
-      "my_u16": 13,
-      "my_u16_nullable": 14,
-      "my_i32": 15,
-      "my_i32_nullable": 16,
-      "my_f32": 17,
-      "my_f32_nullable": 18,
-      "my_f64": 19,
-      "my_f64_nullable": 20
+    "missing_value": ".",
+    "list_separator": "&",
+    "columns": {
+      "contig": {
+        "name": "#[1]contig"
+      },
+      "start": {
+        "name": "[2]start"
+      },
+      "ref": {
+        "name": "[3]ref"
+      },
+      "alt": {
+        "name": "[4]alt"
+      },
+      "annotations": {
+        "my_enum": {
+          "name": "[5]enum"
+        },
+        "my_enum_nullable": {
+          "name": "[6]enum_nullable"
+        },
+        "my_enum_multivalue": {
+          "name": "[7]enum_multivalue"
+        },
+        "my_i8": {
+          "name": "[8]i8"
+        },
+        "my_i8_nullable": {
+          "name": "[9]i8_nullable"
+        },
+        "my_u8": {
+          "name": "[10]u8"
+        },
+        "my_u8_nullable": {
+          "name": "[11]u8_nullable"
+        },
+        "my_i16": {
+          "name": "[12]i16"
+        },
+        "my_i16_nullable": {
+          "name": "[13]i16_nullable"
+        },
+        "my_u16": {
+          "name": "[14]u16"
+        },
+        "my_u16_nullable": {
+          "name": "[15]u16_nullable"
+        },
+        "my_i32": {
+          "name": "[16]i32"
+        },
+        "my_i32_nullable": {
+          "name": "[17]i32_nullable"
+        },
+        "my_f32": {
+          "name": "[18]f32"
+        },
+        "my_f32_nullable": {
+          "name": "[19]f32_nullable"
+        },
+        "my_f64": {
+          "name": "[20]f64"
+        },
+        "my_f64_nullable": {
+          "name": "[21]f64_nullable"
+        }
+      }
     }
   },
   "definition": {
@@ -33,21 +81,66 @@
       "my_enum": {
         "type": "enum",
         "values": [
-          "B",
-          "LB",
-          "VUS",
-          "LP",
-          "P"
+          {
+            "value": "B",
+            "description": "Benign"
+          },
+          {
+            "value": "LB",
+            "description": "Likely benign"
+          },
+          {
+            "value": "VUS",
+            "description": "Variant of uncertain significance"
+          },
+          {
+            "value": "LP",
+            "description": "Likely pathogenic"
+          },
+          {
+            "value": "P",
+            "description": "Pathogenic"
+          }
         ]
       },
       "my_enum_nullable": {
         "type": "enum",
         "values": [
-          "B",
-          "LB",
-          "VUS",
-          "LP",
-          "P"
+          {
+            "value": "B"
+          },
+          {
+            "value": "LB"
+          },
+          {
+            "value": "VUS"
+          },
+          {
+            "value": "LP"
+          },
+          {
+            "value": "P"
+          }
+        ]
+      },
+      "my_enum_multivalue": {
+        "type": "enum_set",
+        "values": [
+          {
+            "value": "B"
+          },
+          {
+            "value": "LB"
+          },
+          {
+            "value": "VUS"
+          },
+          {
+            "value": "LP"
+          },
+          {
+            "value": "P"
+          }
         ]
       },
       "my_i8": {
@@ -81,16 +174,20 @@
         "type": "integer"
       },
       "my_f32": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       },
       "my_f32_nullable": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       },
       "my_f64": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       },
       "my_f64_nullable": {
-        "type": "floating_point"
+        "type": "floating_point",
+        "encoding": "lossy_q16"
       }
     }
   }

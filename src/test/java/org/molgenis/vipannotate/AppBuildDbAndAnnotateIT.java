@@ -47,13 +47,14 @@ public class AppBuildDbAndAnnotateIT {
             "seq_var_all_types.tsv.json",
             "seq_var_all_types.vcf",
             "seq_var_all_types.annotated.vcf",
-            69935L),
+            74055L),
         Arguments.of(
             "pos_encoding.tsv",
             "pos_encoding.tsv.json",
             "pos_encoding.vcf",
             "pos_encoding.annotated.vcf",
-            20670L));
+            16565L),
+        Arguments.of("score.bed", "score.bed.json", "score.vcf", "score.annotated.vcf", 8328L));
   }
 
   private long buildDb(String inputDefFilename, String inputFilename, Path outputPath) {

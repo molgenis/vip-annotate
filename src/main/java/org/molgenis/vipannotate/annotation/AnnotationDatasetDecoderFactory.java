@@ -1,7 +1,7 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.resolved.*;
+import org.molgenis.vipannotate.annotation.spec.*;
 
 @RequiredArgsConstructor
 public class AnnotationDatasetDecoderFactory {
@@ -10,17 +10,16 @@ public class AnnotationDatasetDecoderFactory {
   private final FloatAnnotationDatasetDecoderFactory floatAnnotationDatasetDecoderFactory;
   private final IntAnnotationDatasetDecoderFactory intAnnotationDatasetDecoderFactory;
 
-  public AnnotationDatasetDecoder<?> create(
-      ResolvedAnnotationSpec annotationSpec, AnnotationBlobReader blobReader) {
+  public AnnotationDatasetDecoder<?> create(AnnotationSpec annotationSpec) {
     return switch (annotationSpec) {
-      case ResolvedEnumAnnotationSpec enumAnnotationSpec ->
-          enumAnnotationDatasetDecoderFactory.create(enumAnnotationSpec, blobReader);
-      case ResolvedEnumSetAnnotationSpec enumSetAnnotationSpec ->
-          enumSetAnnotationDatasetDecoderFactory.create(enumSetAnnotationSpec, blobReader);
-      case ResolvedFloatAnnotationSpec floatAnnotationSpec ->
-          floatAnnotationDatasetDecoderFactory.create(floatAnnotationSpec, blobReader);
-      case ResolvedIntAnnotationSpec intAnnotationSpec ->
-          intAnnotationDatasetDecoderFactory.create(intAnnotationSpec, blobReader);
+      case EnumAnnotationSpec enumAnnotationSpec ->
+          enumAnnotationDatasetDecoderFactory.create(enumAnnotationSpec);
+      case EnumSetAnnotationSpec enumSetAnnotationSpec ->
+          enumSetAnnotationDatasetDecoderFactory.create(enumSetAnnotationSpec);
+      case FloatAnnotationSpec floatAnnotationSpec ->
+          floatAnnotationDatasetDecoderFactory.create(floatAnnotationSpec);
+      case IntAnnotationSpec intAnnotationSpec ->
+          intAnnotationDatasetDecoderFactory.create(intAnnotationSpec);
     };
   }
 

@@ -1,8 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.serialization.BinaryWriter;
+import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 @FunctionalInterface
 public interface FloatWriteValueFunction {
-  void apply(double value, BinaryWriter binaryWriter);
+  void apply(double value, MemoryEncoder memEncoder);
 }

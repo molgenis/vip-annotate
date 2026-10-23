@@ -1,56 +1,48 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.EnumMap;
-import org.molgenis.vipannotate.annotation.EncodedSequenceVariant.Type;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
-import org.molgenis.vipannotate.serialization.MemoryBufferReader;
+import org.molgenis.vipannotate.serialization.MemoryDecodable;
+import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
 public class SequenceVariantAnnotationIndexDispatcherReader<T extends SequenceVariant>
-    implements MemoryBufferReader<AnnotationIndex<T>> {
-  private final EnumMap<Type, MemoryBufferReader<AnnotationIndex<T>>> serializerMap;
+    implements MemoryDecodable<SequenceVariantAnnotationIndexDispatcher<T>> {
+  private final EnumMap<EncodedSequenceVariant.Type, MemoryDecodable<AnnotationIndex<T>>>
+      serializerMap;
 
   public SequenceVariantAnnotationIndexDispatcherReader() {
-    serializerMap = new EnumMap<>(Type.class);
+    serializerMap = new EnumMap<>(EncodedSequenceVariant.Type.class);
   }
 
-  public void register(Type type, MemoryBufferReader<AnnotationIndex<T>> serializer) {
+  public void register(
+      EncodedSequenceVariant.Type type, MemoryDecodable<AnnotationIndex<T>> serializer) {
     serializerMap.put(type, serializer);
   }
 
   @Override
-  public SequenceVariantAnnotationIndexDispatcher<T> readFrom(MemoryBuffer memoryBuffer) {
-    memoryBuffer.flip();
+  public SequenceVariantAnnotationIndexDispatcher<T> readFrom(MemoryDecoder memDecoder) {
+    memDecoder.unwrap().flip(); // FIXME should not happen here
 
-    EnumMap<Type, AnnotationIndex<T>> indexMap = new EnumMap<>(Type.class);
-    for (Type type : Type.values()) {
-      MemoryBufferReader<AnnotationIndex<T>> reader = serializerMap.get(type);
+    EnumMap<EncodedSequenceVariant.Type, AnnotationIndex<T>> indexMap =
+        new EnumMap<>(EncodedSequenceVariant.Type.class);
+    for (EncodedSequenceVariant.Type type : EncodedSequenceVariant.Type.values()) {
+      MemoryDecodable<AnnotationIndex<T>> reader = serializerMap.get(type);
       if (reader != null) {
-        indexMap.put(type, reader.readFrom(memoryBuffer));
+        indexMap.put(type, reader.readFrom(memDecoder));
       }
     }
     return new SequenceVariantAnnotationIndexDispatcher<>(indexMap);
   }
 
   @Override
-  public void readInto(MemoryBuffer memoryBuffer, AnnotationIndex<T> index) {
-    memoryBuffer.flip();
+  public void readInto(
+      MemoryDecoder memDecoder, SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher) {
+    memDecoder.unwrap().flip(); // FIXME should not happen here
 
-    SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher = getTyped(index);
-
-    for (Type type : Type.values()) {
-      MemoryBufferReader<AnnotationIndex<T>> reader = serializerMap.get(type);
+    for (EncodedSequenceVariant.Type type : EncodedSequenceVariant.Type.values()) {
+      MemoryDecodable<AnnotationIndex<T>> reader = serializerMap.get(type);
       if (reader != null) {
-        reader.readInto(memoryBuffer, indexDispatcher.getAnnotationIndex(type));
+        reader.readInto(memDecoder, indexDispatcher.getAnnotationIndex(type));
       }
     }
-  }
-
-  // TODO dedup with writer
-  private SequenceVariantAnnotationIndexDispatcher<T> getTyped(AnnotationIndex<T> annotationIndex) {
-    if (!(annotationIndex instanceof SequenceVariantAnnotationIndexDispatcher<T> indexDispatcher)) {
-      throw new IllegalArgumentException(
-          "index must be of type SequenceVariantAnnotationIndexDispatcher");
-    }
-    return indexDispatcher;
   }
 }

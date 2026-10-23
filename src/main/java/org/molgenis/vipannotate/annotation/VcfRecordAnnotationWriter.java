@@ -2,10 +2,6 @@ package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.FloatAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.IntAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableFloatAnnotation;
-import org.molgenis.vipannotate.annotation.ScalarAnnotation.NullableIntAnnotation;
 import org.molgenis.vipannotate.format.vcf.Info;
 import org.molgenis.vipannotate.format.vcf.VcfInfoSubfieldValueBuilder;
 import org.molgenis.vipannotate.format.vcf.VcfRecord;
@@ -20,7 +16,7 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
   }
 
   public void appendAltAnnotation(@Nullable T altAnnotation) {
-    if (altAnnotation == null) {
+    if (altAnnotation == null || altAnnotation.isMissingValue()) {
       reusableVcfInfoBuilder.appendValueMissing();
     } else {
       appendAnnotation(altAnnotation);
@@ -46,38 +42,40 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
 
   private void appendRawAnnotation(Annotation annotation, boolean writeMissing) {
     switch (annotation) {
-      case FloatAnnotation floatAnnotation ->
-          reusableVcfInfoBuilder.appendRaw(floatAnnotation.getValue(), 3);
-      // FIXME for unsigned long this should append Long.toUnsignedString(value)
-      case IntAnnotation intAnnotation ->
-          reusableVcfInfoBuilder.appendRaw(intAnnotation.getValue());
-      case NullableFloatAnnotation nullableFloatAnnotation -> {
-        if (nullableFloatAnnotation.isNull()) {
+      case FloatAnnotation floatAnnotation -> {
+        if (floatAnnotation.isMissingValue()) {
           if (writeMissing) {
             reusableVcfInfoBuilder.appendRawMissing();
           }
         } else {
-          reusableVcfInfoBuilder.appendRaw(nullableFloatAnnotation.getValue(), 3);
+          reusableVcfInfoBuilder.appendRaw(floatAnnotation.getValue(), 3);
         }
       }
-      case NullableIntAnnotation nullableIntAnnotation -> {
-        if (nullableIntAnnotation.isNull()) {
+      case IntAnnotation intAnnotation -> {
+        if (intAnnotation.isMissingValue()) {
           if (writeMissing) {
             reusableVcfInfoBuilder.appendRawMissing();
           }
         } else {
           // FIXME for unsigned long this should append Long.toUnsignedString(value)
-          reusableVcfInfoBuilder.appendRaw(nullableIntAnnotation.getValue());
+          reusableVcfInfoBuilder.appendRaw(intAnnotation.getValue());
         }
       }
       case StringAnnotation stringAnnotation -> {
-        String value = stringAnnotation.value();
+        String value = stringAnnotation.getValue();
         if (value != null) {
           reusableVcfInfoBuilder.appendRaw(value);
         }
       }
-      case StringListAnnotation stringListAnnotation -> // TODO improve perf
-          reusableVcfInfoBuilder.appendRaw(String.join("&", stringListAnnotation.values()));
+      case StringListAnnotation stringListAnnotation -> {
+        String[] values = stringListAnnotation.getValues();
+        for (int i = 0; i < values.length; i++) {
+          if (i > 0) {
+            reusableVcfInfoBuilder.appendRaw('&');
+          }
+          reusableVcfInfoBuilder.appendRaw(values[i]);
+        }
+      }
 
       default ->
           throw new UnsupportedOperationException(

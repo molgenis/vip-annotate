@@ -16,13 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class PositionAnnotationDbTest {
   @Mock private PartitionResolver partitionResolver;
-  @Mock private AnnotationDatasetDecoder<Annotation> annotationDatasetReader;
+  @Mock private AnnotationDatasetReader<Annotation> annotationDatasetReader;
+  @Mock private Pool<Annotation> annotationPool;
   private PositionAnnotationDb<Annotation> positionAnnotationDb;
 
   @BeforeEach
   void setUp() {
     positionAnnotationDb =
-        new PositionAnnotationDb<>(partitionResolver, annotationDatasetReader, _ -> true);
+        new PositionAnnotationDb<>(
+            partitionResolver, annotationDatasetReader, _ -> true, annotationPool);
   }
 
   @AfterEach
@@ -46,21 +48,19 @@ class PositionAnnotationDbTest {
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
     when(partitionResolver.resolvePartitionKey(contig, 124)).thenReturn(partitionKey);
     when(partitionResolver.resolvePartitionKey(contig, 125)).thenReturn(partitionKey);
-    when(partitionResolver.getPartitionPos(123)).thenReturn(456);
-    when(partitionResolver.getPartitionPos(124)).thenReturn(457);
-    when(partitionResolver.getPartitionPos(125)).thenReturn(458);
-    when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
-
-    when(annotationDataset.findByIndex(456)).thenReturn(annotation0);
-    when(annotationDataset.findByIndex(457)).thenReturn(null);
-    when(annotationDataset.findByIndex(458)).thenReturn(annotation1);
+    when(partitionResolver.getPartitionPos(contig, 123)).thenReturn(456);
+    when(partitionResolver.getPartitionPos(contig, 124)).thenReturn(457);
+    when(partitionResolver.getPartitionPos(contig, 125)).thenReturn(458);
+    when(annotationDatasetReader.read(partitionKey)).thenReturn(annotationDataset);
+    when(annotationDataset.findByIndexInto(eq(456), any())).thenReturn(annotation0);
+    when(annotationDataset.findByIndexInto(eq(457), any())).thenReturn(annotation1);
 
     List<Annotation> annotationList = new ArrayList<>();
     positionAnnotationDb.findAnnotations(sequenceVariant, annotationList);
 
     assertAll(
         () -> assertEquals(List.of(annotation0, annotation1), annotationList),
-        () -> verify(annotationDatasetReader, times(1)).decode(partitionKey));
+        () -> verify(annotationDatasetReader, times(1)).read(partitionKey));
   }
 
   @Test
@@ -76,14 +76,11 @@ class PositionAnnotationDbTest {
     Annotation annotation = mock(CompositeAnnotation.class);
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
-    when(partitionResolver.getPartitionPos(123)).thenReturn(456);
-    when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
-    when(annotationDataset.findByIndex(456)).thenReturn(annotation);
+    when(partitionResolver.getPartitionPos(contig, 123)).thenReturn(456);
+    when(annotationDatasetReader.read(partitionKey)).thenReturn(annotationDataset);
+    when(annotationDataset.findByIndexInto(eq(456), any())).thenReturn(annotation);
 
-    assertAll(
-        () ->
-            assertEquals(
-                List.of(annotation), positionAnnotationDb.findAnnotations(sequenceVariant)));
+    assertEquals(List.of(annotation), positionAnnotationDb.findAnnotations(sequenceVariant));
   }
 
   @Test
@@ -98,12 +95,10 @@ class PositionAnnotationDbTest {
     AnnotationDataset<Annotation> annotationDataset = mock(AnnotationDataset.class);
 
     when(partitionResolver.resolvePartitionKey(contig, 123)).thenReturn(partitionKey);
-    when(partitionResolver.getPartitionPos(123)).thenReturn(456);
-    when(annotationDatasetReader.decode(partitionKey)).thenReturn(annotationDataset);
-    when(annotationDataset.findByIndex(456)).thenReturn(null);
+    when(partitionResolver.getPartitionPos(contig, 123)).thenReturn(456);
+    when(annotationDatasetReader.read(partitionKey)).thenReturn(annotationDataset);
 
-    assertAll(
-        () -> assertEquals(emptyList(), positionAnnotationDb.findAnnotations(sequenceVariant)));
+    assertEquals(emptyList(), positionAnnotationDb.findAnnotations(sequenceVariant));
   }
 
   @Test
@@ -111,7 +106,8 @@ class PositionAnnotationDbTest {
     SequenceVariant sequenceVariant = mock(SequenceVariant.class);
     assertEquals(
         emptyList(),
-        new PositionAnnotationDb<>(partitionResolver, annotationDatasetReader, _ -> false)
+        new PositionAnnotationDb<>(
+                partitionResolver, annotationDatasetReader, _ -> false, annotationPool)
             .findAnnotations(sequenceVariant));
   }
 }

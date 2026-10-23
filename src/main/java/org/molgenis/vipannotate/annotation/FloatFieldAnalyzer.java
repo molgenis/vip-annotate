@@ -1,12 +1,13 @@
 package org.molgenis.vipannotate.annotation;
 
 import lombok.RequiredArgsConstructor;
-import org.molgenis.vipannotate.annotation.spec.FloatAnnotationSpec;
+import org.molgenis.vipannotate.annotation.def.FloatAnnotationDef;
 import org.molgenis.vipannotate.format.Field;
+import tools.jackson.core.internal.shaded.fdp.JavaDoubleParser;
 
 @RequiredArgsConstructor
 public class FloatFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
-  private final FloatAnnotationSpec annotationSpec;
+  private final FloatAnnotationDef annotationSpec;
 
   private long count;
   private long nullCount;
@@ -15,14 +16,11 @@ public class FloatFieldAnalyzer<F extends Field> implements FieldAnalyzer<F> {
 
   @Override
   public void analyze(F field) {
-    CharSequence charSequence = field.getRawView();
-
     count++;
-    if (charSequence.isEmpty()) {
+    if (field.isMissingValue()) {
       nullCount++;
     } else {
-      // TODO perf: prevent toString
-      double number = Double.parseDouble(charSequence.toString());
+      double number = JavaDoubleParser.parseDouble(field.getRawView());
       if (number < min) {
         min = number;
       }

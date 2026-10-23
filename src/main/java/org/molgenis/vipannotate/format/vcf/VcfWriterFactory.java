@@ -57,14 +57,11 @@ public class VcfWriterFactory {
     if (outputVcfType != VcfType.UNCOMPRESSED) {
       Integer compressionLevel = outputVcfType.getCompressionLevel();
       if (compressionLevel != null) {
-        //noinspection DataFlowIssue
         vcfWriter = createGzip(outputStream, compressionLevel);
       } else {
-        //noinspection DataFlowIssue
         vcfWriter = createGzip(outputStream);
       }
     } else {
-      //noinspection DataFlowIssue
       vcfWriter = create(outputStream);
     }
     return vcfWriter;

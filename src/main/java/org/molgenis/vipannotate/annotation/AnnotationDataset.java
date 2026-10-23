@@ -1,31 +1,34 @@
 package org.molgenis.vipannotate.annotation;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.IndexRange;
 
-public interface AnnotationDataset<T extends @Nullable Annotation> {
-  /** {@return annotation dataset collection for indexes in the given index range} */
-  default List<T> findByIndexes(IndexRange indexRange) {
-    List<T> annotations = new ArrayList<>(indexRange.end() - indexRange.start() + 1);
-    findByIndexes(indexRange, annotations);
-    return annotations;
-  }
-
+public interface AnnotationDataset<T extends Annotation> {
   /**
-   * find annotations for indexes in the given index range and add to the provided {@link List}.
+   * find annotations for indexes in the given index range and update existing annotations in the
+   * provided {@link List}.
    *
-   * <p>this method allows reusing annotations list to reduce allocations and garbage collect
-   * pressure.
+   * <p>this method allows reusing annotations list and its annotations to reduce allocations and
+   * garbage collect pressure.
    */
-  default void findByIndexes(IndexRange indexRange, List<T> annotations) {
-    for (int i = indexRange.start(), end = indexRange.end(); i <= end; ++i) {
-      T annotation = findByIndex(i);
-      annotations.add(annotation);
+  default void findByIndexesInto(
+      IndexRange indexRange, List<T> annotations, Supplier<T> annotationSupplier) {
+    for (int i = indexRange.getStart(), end = indexRange.getEnd(); i <= end; ++i) {
+      T annotation = findByIndexInto(i, annotationSupplier);
+      if (annotation != null) {
+        annotations.add(annotation);
+      }
     }
   }
 
-  /** {@return annotation dataset or <code>null</code> for the given index} */
-  @Nullable T findByIndex(int index);
+  /**
+   * finds annotation at the given index and read into a supplied annotation.
+   *
+   * <p>the supplier is invoked only if an annotation is found
+   *
+   * @return the populated annotation if found, or {@code null} otherwise
+   */
+  @Nullable T findByIndexInto(int index, Supplier<T> annotationSupplier);
 }
