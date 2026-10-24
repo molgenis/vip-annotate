@@ -484,6 +484,14 @@ class MemoryBufferTest {
   }
 
   @Test
+  void putShortArrayIncreaseCapacity() {
+    try (MemoryBuffer memBuffer = MemoryBuffer.allocate(5)) {
+      memBuffer.putShortArray(new short[] {0, 1, 2, 3});
+      assertEquals(8, memBuffer.getLimit());
+    }
+  }
+
+  @Test
   void putIntGetInt() {
     try (MemoryBuffer memBuffer = MemoryBuffer.allocateHeap(Integer.BYTES * 3)) {
       memBuffer.putInt(0);
@@ -764,6 +772,50 @@ class MemoryBufferTest {
       assertEquals(2, byteBuffer.get());
       assertEquals(3, byteBuffer.get());
       assertThrows(BufferUnderflowException.class, byteBuffer::get);
+    }
+  }
+
+  @Test
+  void getMemoryBuffer() {
+    try (MemoryBuffer srcBuffer = MemoryBuffer.wrap(new byte[] {0, 1, 2, 3, 4})) {
+      srcBuffer.setPosition(1);
+
+      MemoryBuffer memBuffer = srcBuffer.getMemoryBuffer();
+      assertAll(
+          () -> assertEquals(0, memBuffer.getPosition()),
+          () -> assertEquals(1, memBuffer.getByte()),
+          () -> assertEquals(2, memBuffer.getByte()),
+          () -> assertEquals(3, memBuffer.getByte()),
+          () -> assertEquals(4, memBuffer.getByte()),
+          () -> assertEquals(4, memBuffer.getLimit()));
+    }
+  }
+
+  @Test
+  void getMemoryBufferLength() {
+    try (MemoryBuffer srcBuffer = MemoryBuffer.wrap(new byte[] {0, 1, 2, 3, 4})) {
+      srcBuffer.setPosition(1);
+
+      MemoryBuffer memBuffer = srcBuffer.getMemoryBuffer(3);
+      assertAll(
+          () -> assertEquals(0, memBuffer.getPosition()),
+          () -> assertEquals(1, memBuffer.getByte()),
+          () -> assertEquals(2, memBuffer.getByte()),
+          () -> assertEquals(3, memBuffer.getLimit()));
+    }
+  }
+
+  @Test
+  void getMemoryBufferLengthNegativeLength() {
+    try (MemoryBuffer srcBuffer = MemoryBuffer.wrap(new byte[] {0, 1, 2, 3, 4})) {
+      assertThrows(IllegalArgumentException.class, () -> srcBuffer.getMemoryBuffer(-1L));
+    }
+  }
+
+  @Test
+  void getMemoryBufferLengthIndexOutOfBounds() {
+    try (MemoryBuffer srcBuffer = MemoryBuffer.wrap(new byte[] {0, 1, 2, 3, 4})) {
+      assertThrows(IndexOutOfBoundsException.class, () -> srcBuffer.getMemoryBuffer(6L));
     }
   }
 }

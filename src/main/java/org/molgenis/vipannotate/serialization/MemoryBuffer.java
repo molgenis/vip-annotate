@@ -9,6 +9,7 @@ import java.lang.foreign.ValueLayout;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.util.AutoCloseableNoThrow;
 import org.molgenis.vipannotate.util.ClosableUtils;
@@ -784,7 +785,7 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   ///
   /// @return a buffer containing the remaining data
   public MemoryBuffer getMemoryBuffer() {
-    return getMemoryBuffer(limit - position);
+    return getMemoryBufferUnchecked(limit - position);
   }
 
   /// Returns a buffer containing the next 'length' bytes.
@@ -794,12 +795,17 @@ public final class MemoryBuffer implements AutoCloseableNoThrow {
   ///
   /// @param length number of bytes to include
   /// @return a buffer containing the specified bytes
+  /// @throws IllegalArgumentException if length is negative
+  /// @throws IndexOutOfBoundsException if length exceeds remaining data
   public MemoryBuffer getMemoryBuffer(long length) {
     validateNonNegative(length);
     if (length > limit - position) {
-      throw new IndexOutOfBoundsException("length exceeds remaining data: " + length);
+      throw new IndexOutOfBoundsException();
     }
+    return getMemoryBufferUnchecked(length);
+  }
 
+  private @NonNull MemoryBuffer getMemoryBufferUnchecked(long length) {
     long endPosition = position + length;
     long dstAlignment = position % alignment == 0 && endPosition % alignment == 0 ? alignment : 1L;
 
