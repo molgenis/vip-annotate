@@ -130,8 +130,6 @@ public final class RankBitmap {
   }
 
   public static RankBitmap readFrom(MemoryDecoder memDecoder) {
-    memDecoder.unwrap().flip(); // FIXME should not happen here, probably bug somewhere else
-
     int size = memDecoder.getVarInt();
     long[] bitmap = memDecoder.getLongArray();
     int[] checkpoints = memDecoder.getIntArray(); // FIXME StreamVByte.deltaEncode

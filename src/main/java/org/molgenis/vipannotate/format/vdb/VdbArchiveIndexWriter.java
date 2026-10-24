@@ -10,7 +10,7 @@ public class VdbArchiveIndexWriter implements MemoryEncodable<VdbArchiveIndex> {
 
   @Override
   public MemoryEncoder writeTo(VdbArchiveIndex archiveIndex) {
-    MemoryEncoder memEncoder = MemoryEncoder.autoGrowing(memBufferFactory.newMemoryBuffer());
+    MemoryEncoder memEncoder = MemoryEncoder.wrap(memBufferFactory.newMemoryBuffer());
     writeInto(archiveIndex, memEncoder);
     return memEncoder;
   }

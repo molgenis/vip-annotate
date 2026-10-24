@@ -53,7 +53,7 @@ public class AnnotatedPositionPartitionWriter<
         annotationIt,
         () -> {
           if (memEncoder.get() == null) {
-            memEncoder.set(MemoryEncoder.autoGrowing(getScratchBuffer()));
+            memEncoder.set(MemoryEncoder.wrap(getScratchBuffer()));
           }
           return memEncoder.get();
         });

@@ -47,7 +47,7 @@ class SequenceVariantAnnotationIndexSmallReaderAndWriterTest {
       SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall =
           new SequenceVariantAnnotationIndexSmall<>(
               encoder, new int[] {0, 1, 2, Integer.MAX_VALUE});
-      indexWriter.writeInto(indexSmall, MemoryEncoder.autoGrowing(memoryBuffer));
+      indexWriter.writeInto(indexSmall, MemoryEncoder.wrap(memoryBuffer));
       long afterWritePos = memoryBuffer.getPosition();
 
       memoryBuffer.flip();
@@ -69,7 +69,7 @@ class SequenceVariantAnnotationIndexSmallReaderAndWriterTest {
       SequenceVariantAnnotationIndexSmall<SequenceVariant> indexSmall =
           new SequenceVariantAnnotationIndexSmall<>(
               encoder, new int[] {0, 1, 2, Integer.MAX_VALUE});
-      indexWriter.writeInto(indexSmall, MemoryEncoder.autoGrowing(memoryBuffer));
+      indexWriter.writeInto(indexSmall, MemoryEncoder.wrap(memoryBuffer));
       long afterWritePos = memoryBuffer.getPosition();
 
       memoryBuffer.flip();

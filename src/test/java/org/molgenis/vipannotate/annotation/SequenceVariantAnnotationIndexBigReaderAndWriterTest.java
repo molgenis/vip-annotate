@@ -39,8 +39,7 @@ class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
               new BigInteger[] {
                 BigInteger.ZERO, BigInteger.ONE, new BigInteger("18446744073709551616")
               });
-      sequenceVariantAnnotationIndexBigWriter.writeInto(
-          indexBig, MemoryEncoder.autoGrowing(memoryBuffer));
+      sequenceVariantAnnotationIndexBigWriter.writeInto(indexBig, MemoryEncoder.wrap(memoryBuffer));
       memoryBuffer.rewind();
       SequenceVariantAnnotationIndexBig<SequenceVariant> indexBigDeserialized =
           sequenceVariantAnnotationIndexBigReader.readFrom(MemoryDecoder.wrap(memoryBuffer));
@@ -58,8 +57,7 @@ class SequenceVariantAnnotationIndexBigReaderAndWriterTest {
               new BigInteger[] {
                 BigInteger.ZERO, BigInteger.ONE, new BigInteger("18446744073709551616")
               });
-      sequenceVariantAnnotationIndexBigWriter.writeInto(
-          indexBig, MemoryEncoder.autoGrowing(memoryBuffer));
+      sequenceVariantAnnotationIndexBigWriter.writeInto(indexBig, MemoryEncoder.wrap(memoryBuffer));
       memoryBuffer.rewind();
       SequenceVariantAnnotationIndexBig<SequenceVariant> indexBigDeserialized =
           new SequenceVariantAnnotationIndexBig<>(

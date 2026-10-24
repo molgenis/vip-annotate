@@ -1,6 +1,5 @@
 package org.molgenis.vipannotate.annotation;
 
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryEncoder;
 
 public class SequenceVariantEncoderBig<T extends SequenceVariant>
@@ -31,13 +30,11 @@ public class SequenceVariantEncoderBig<T extends SequenceVariant>
     int encodedRefLength = SequenceVariantEncoderUtils.encodeBaseCount(variant.getRefLength());
     int encodedAltLength = SequenceVariantEncoderUtils.encodeBaseCount(altBases.length());
 
-    try (MemoryBuffer memBuffer = MemoryBuffer.wrap(bytes)) {
-      MemoryEncoder memEncoder = MemoryEncoder.fixed(memBuffer);
-      memEncoder.putVarInt(encodedStartPos);
-      memEncoder.putVarInt(encodedRefLength);
-      memEncoder.putVarInt(encodedAltLength);
-      encodeAlt(altBases, bytes, Math.toIntExact(memEncoder.unwrap().getPosition()));
-    }
+    MemoryEncoder memEncoder = MemoryEncoder.wrap(bytes);
+    memEncoder.putVarInt(encodedStartPos);
+    memEncoder.putVarInt(encodedRefLength);
+    memEncoder.putVarInt(encodedAltLength);
+    encodeAlt(altBases, bytes, Math.toIntExact(memEncoder.unwrap().getPosition()));
   }
 
   private static void encodeAlt(CharSequence altBases, byte[] dest, int offset) {

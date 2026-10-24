@@ -17,7 +17,7 @@ public class NullableAnnotationDatasetEncoder<T extends Annotation>
   public void encodeInto(SizedIterator<T> annotationIt, MemoryEncoderProvider encoderProvider) {
     // FIXME cleanup
     MemoryBuffer nullIndexMemBuffer = MemoryBuffer.allocateHeap(1024);
-    MemoryEncoder nullIndexEncoder = MemoryEncoder.autoGrowing(nullIndexMemBuffer);
+    MemoryEncoder nullIndexEncoder = MemoryEncoder.wrap(nullIndexMemBuffer);
 
     int nrAnnotations = annotationIt.getSize();
     RankBitmap.Builder bitmapBuilder = RankBitmap.builder(nrAnnotations);
@@ -34,7 +34,7 @@ public class NullableAnnotationDatasetEncoder<T extends Annotation>
     bitmapBuilder.build().writeInto(nullIndexEncoder);
 
     MemoryBuffer datasetMemBuffer = MemoryBuffer.allocateHeap(1024);
-    MemoryEncoder datasetEncoder = MemoryEncoder.autoGrowing(datasetMemBuffer);
+    MemoryEncoder datasetEncoder = MemoryEncoder.wrap(datasetMemBuffer);
     annotationDataSetEncoder.encodeInto(
         new SizedIterator<>(annotations.iterator(), annotations.size()), () -> datasetEncoder);
 

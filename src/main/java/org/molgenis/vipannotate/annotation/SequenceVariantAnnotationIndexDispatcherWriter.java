@@ -22,7 +22,7 @@ public class SequenceVariantAnnotationIndexDispatcherWriter<T extends SequenceVa
 
   @Override
   public MemoryEncoder writeTo(SequenceVariantAnnotationIndexDispatcher<T> object) {
-    MemoryEncoder memEncoder = MemoryEncoder.autoGrowing(memBufferFactory.newMemoryBuffer());
+    MemoryEncoder memEncoder = MemoryEncoder.wrap(memBufferFactory.newMemoryBuffer());
     writeInto(object, memEncoder);
     return memEncoder;
   }

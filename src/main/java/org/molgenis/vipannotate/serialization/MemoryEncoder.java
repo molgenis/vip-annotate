@@ -1,131 +1,176 @@
 package org.molgenis.vipannotate.serialization;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.function.Consumer;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Writes binary data into a {@link MemoryBuffer}.
- *
- * <p>The caller is responsible for closing the buffer when it is no longer needed.
- */
-public interface MemoryEncoder {
-  int VAR_INT_MAX_BYTE_SIZE = Integer.BYTES + 1;
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MemoryEncoder {
+  public static final int VAR_INT_MAX_BYTE_SIZE = Integer.BYTES + 1;
 
-  /** Returns an encoder that automatically grows the wrapped {@link MemoryBuffer}. */
-  static MemoryEncoder autoGrowing(MemoryBuffer buffer) {
-    return AutoGrowingMemoryEncoder.wrap(buffer);
+  private final MemoryBuffer memBuffer;
+
+  public static MemoryEncoder wrap(MemoryBuffer memBuffer) {
+    return new MemoryEncoder(memBuffer);
   }
 
-  /** Returns an encoder with the wrapped {@link MemoryBuffer}. */
-  static MemoryEncoder fixed(MemoryBuffer buffer) {
-    return FixedMemoryEncoder.wrap(buffer);
+  public static MemoryEncoder wrap(byte[] bytes) {
+    return new MemoryEncoder(MemoryBuffer.wrap(bytes));
   }
 
-  MemoryBuffer unwrap();
+  public MemoryBuffer unwrap() {
+    return memBuffer;
+  }
 
-  <T> void putArray(T[] array, MemoryEncoderFunction<T> elementEncoder);
+  public <T> void putArray(T[] array, MemoryEncoderFunction<T> elementEncoder) {
+    putVarInt(array.length);
+    for (T element : array) {
+      elementEncoder.write(this, element);
+    }
+  }
 
-  void putBoolean(boolean b);
+  public void putBoolean(boolean b) {
+    memBuffer.putBoolean(b);
+  }
 
-  void putByte(byte value);
+  public void putByte(byte value) {
+    memBuffer.putByte(value);
+  }
 
-  void putByteAtIndex(long index, byte value);
+  public void putByteArray(byte[] array) {
+    putVarInt(array.length);
+    memBuffer.putByteArray(array);
+  }
 
-  void putByteArray(byte[] array);
+  public void putDouble(double d) {
+    memBuffer.putDouble(d);
+  }
 
-  void putDouble(double d);
+  public void putDoubleArray(double[] array) {
+    putVarInt(array.length);
+    memBuffer.putDoubleArray(array);
+  }
 
-  void putDoubleAtIndex(long index, double value);
-
-  default void putDoubleNullable(@Nullable Double d) {
+  public void putDoubleNullable(@Nullable Double d) {
     putBoolean(d != null);
     if (d != null) {
       putDouble(d);
     }
   }
 
-  void putDoubleArray(double[] array);
+  @SuppressWarnings("EnumOrdinal")
+  public <E extends Enum<E>> void putEnum(E enumConstant) {
+    putVarInt(enumConstant.ordinal());
+  }
 
   @SuppressWarnings("EnumOrdinal")
-  <E extends Enum<E>> void putEnum(E enumConstant);
+  public <E extends Enum<E>> void putEnumSet(EnumSet<E> enumSet) {
+    putVarInt(enumSet.size());
+    for (E enumConstant : enumSet) {
+      putVarInt(enumConstant.ordinal());
+    }
+  }
 
-  @SuppressWarnings("EnumOrdinal")
-  <E extends Enum<E>> void putEnumSet(EnumSet<E> enumSet);
+  public void putFloat(float value) {
+    memBuffer.putFloat(value);
+  }
 
-  void putFloat(float value);
+  public void putFloatArray(float[] array) {
+    putVarInt(array.length);
+    memBuffer.putFloatArray(array);
+  }
 
-  void putFloatAtIndex(long index, float value);
-
-  default void putFloatNullable(@Nullable Float f) {
+  public void putFloatNullable(@Nullable Float f) {
     putBoolean(f != null);
     if (f != null) {
       putFloat(f);
     }
   }
 
-  void putFloatArray(float[] array);
+  public void putInt(int i) {
+    memBuffer.putInt(i);
+  }
 
-  void putInt(int i);
+  public void putIntArray(int[] array) {
+    putVarInt(array.length);
+    memBuffer.putIntArray(array);
+  }
 
-  void putIntAtIndex(long index, int value);
-
-  default void putIntNullable(@Nullable Integer i) {
+  public void putIntNullable(@Nullable Integer i) {
     putBoolean(i != null);
     if (i != null) {
       putInt(i);
     }
   }
 
-  void putIntArray(int[] array);
+  public void putLong(long value) {
+    memBuffer.putLong(value);
+  }
 
-  void putLong(long value);
+  public void putLongArray(long[] array) {
+    putVarInt(array.length);
+    memBuffer.putLongArray(array);
+  }
 
-  void putLongAtIndex(long index, long value);
-
-  default void putLongNullable(@Nullable Long l) {
+  public void putLongNullable(@Nullable Long l) {
     putBoolean(l != null);
     if (l != null) {
       putLong(l);
     }
   }
 
-  void putLongArray(long[] array);
+  public <K, V> void putMap(
+      Map<K, V> map, MemoryEncoderFunction<K> keyWriter, MemoryEncoderFunction<V> valueEncoder) {
+    putVarInt(map.size());
 
-  <K, V> void putMap(
-      Map<K, V> map, MemoryEncoderFunction<K> keyWriter, MemoryEncoderFunction<V> valueEncoder);
+    for (Map.Entry<K, V> entry : map.entrySet()) {
+      keyWriter.write(this, entry.getKey());
+      valueEncoder.write(this, entry.getValue());
+    }
+  }
 
-  default <T> void putNullable(@Nullable T value, Consumer<T> valueEncoder) {
+  public <T> void putNullable(@Nullable T value, Consumer<T> valueEncoder) {
     putBoolean(value != null);
     if (value != null) {
       valueEncoder.accept(value);
     }
   }
 
-  void putShort(short value);
+  public void putShort(short value) {
+    memBuffer.putShort(value);
+  }
 
-  void putShortAtIndex(long index, short value);
+  public void putShortArray(short[] array) {
+    putVarInt(array.length);
+    memBuffer.putShortArray(array);
+  }
 
-  default void putShortNullable(@Nullable Short s) {
+  public void putShortNullable(@Nullable Short s) {
     putBoolean(s != null);
     if (s != null) {
       putShort(s);
     }
   }
 
-  void putShortArray(short[] array);
+  public void putString(String str) {
+    byte[] bytes = str.getBytes(UTF_8);
+    putVarInt(bytes.length);
+    memBuffer.putByteArray(bytes);
+  }
 
-  void putString(String str);
-
-  default void putStringNullable(@Nullable String str) {
+  public void putStringNullable(@Nullable String str) {
     putBoolean(str != null);
     if (str != null) {
       putString(str);
     }
   }
 
-  default void putVarInt(int value) {
+  public void putVarInt(int value) {
     // fast path: fits in 7 bits
     if ((value >>> 7) == 0) {
       putByte((byte) value);
@@ -160,5 +205,19 @@ public interface MemoryEncoder {
     putByte((byte) ((encoded >>> 32) & 0xFF));
   }
 
-  void putMemoryEncoder(MemoryEncoder memEncoder);
+  public void putVarLong(long value) {
+    while ((value & ~0x7FL) != 0) {
+      putByte((byte) ((value & 0x7F) | 0x80));
+      value >>>= 7;
+    }
+    putByte((byte) value);
+  }
+
+  public void putMemoryEncoder(MemoryEncoder memEncoder) {
+    MemoryBuffer source = memEncoder.unwrap();
+    long byteLength = source.getLimit() - source.getPosition();
+
+    putVarLong(byteLength);
+    memBuffer.copyFrom(source);
+  }
 }

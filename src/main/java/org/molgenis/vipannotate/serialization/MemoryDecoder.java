@@ -282,11 +282,41 @@ public final class MemoryDecoder {
     return result;
   }
 
+  /**
+   * Reads a 1–10 byte unsigned variable-length integer written with {@link
+   * MemoryEncoder#putVarLong(long)}.
+   *
+   * @return decoded long
+   */
+  public long getVarLong() {
+    long result = 0;
+
+    for (int shift = 0; shift < 64; shift += 7) {
+      int b = getUnsignedByte();
+
+      // tenth byte can contain only one payload bit.
+      if (shift == 63) {
+        if ((b & 0xFE) != 0) {
+          throw new IllegalArgumentException();
+        }
+        return result | ((long) b << 63);
+      }
+
+      result |= (long) (b & 0x7F) << shift;
+
+      if ((b & 0x80) == 0) {
+        return result;
+      }
+    }
+
+    throw new IllegalArgumentException();
+  }
+
   /// Returns a {@link MemoryDecoder} for the next block of data.
   ///
   /// <p>The decoder shares the underlying memory without copying it.
   public MemoryDecoder getMemoryDecoder() {
-    int byteLength = getVarInt();
+    long byteLength = getVarLong();
     return MemoryDecoder.wrap(memBuffer.getMemoryBuffer(byteLength));
   }
 }

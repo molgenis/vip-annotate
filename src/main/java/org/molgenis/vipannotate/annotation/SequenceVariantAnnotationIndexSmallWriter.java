@@ -16,7 +16,7 @@ public class SequenceVariantAnnotationIndexSmallWriter<T extends SequenceVariant
 
   @Override
   public MemoryEncoder writeTo(AnnotationIndex<T> object) {
-    MemoryEncoder memEncoder = MemoryEncoder.autoGrowing(memBufferFactory.newMemoryBuffer());
+    MemoryEncoder memEncoder = MemoryEncoder.wrap(memBufferFactory.newMemoryBuffer());
     writeInto(object, memEncoder);
     return memEncoder;
   }

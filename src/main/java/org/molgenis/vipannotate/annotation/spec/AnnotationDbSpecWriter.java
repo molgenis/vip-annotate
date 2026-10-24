@@ -11,7 +11,7 @@ import org.molgenis.vipannotate.serialization.MemoryEncoder;
 public class AnnotationDbSpecWriter {
   public void write(AnnotationDbSpec spec, PartitionedMemoryWriter partitionWriter) {
     try (MemoryBuffer memBuffer = MemoryBuffer.allocate(32 * 1024)) {
-      spec.writeTo(MemoryEncoder.autoGrowing(memBuffer));
+      spec.writeTo(MemoryEncoder.wrap(memBuffer));
       partitionWriter.write("spec", Compression.ZSTD, IoMode.BUFFERED, memBuffer);
     }
   }
