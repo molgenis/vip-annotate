@@ -1,6 +1,7 @@
 package org.molgenis.vipannotate.cli;
 
 import java.nio.file.Path;
+import java.util.List;
 import org.molgenis.vipannotate.annotation.VcfAnnotator;
 import org.molgenis.vipannotate.annotation.VcfAnnotatorFactory;
 import org.molgenis.vipannotate.format.vcf.VcfType;
@@ -14,7 +15,7 @@ public class AnnotateCommand implements Command {
     AnnotateArgs annotateArgs = new AnnotateArgsParser().parse(args);
 
     Input inputVcf = annotateArgs.inputVcf();
-    Path annotationsDir = annotateArgs.annotationsDir();
+    List<Path> annotationFiles = annotateArgs.annotationFiles();
     Output outputVcf = annotateArgs.outputVcf();
     VcfType outputVcfType = annotateArgs.vcfType();
 
@@ -25,7 +26,7 @@ public class AnnotateCommand implements Command {
 
     VcfAnnotatorFactory vcfAnnotatorFactory = VcfAnnotatorFactory.create();
     try (VcfAnnotator vcfAnnotator =
-        vcfAnnotatorFactory.create(inputVcf, annotationsDir, outputVcf, outputVcfType)) {
+        vcfAnnotatorFactory.create(inputVcf, annotationFiles, outputVcf, outputVcfType)) {
       vcfAnnotator.annotate();
     }
   }

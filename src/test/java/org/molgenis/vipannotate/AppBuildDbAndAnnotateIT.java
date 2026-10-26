@@ -31,7 +31,7 @@ public class AppBuildDbAndAnnotateIT {
       @TempDir Path tmpDir) {
     Path outputPath = Paths.get(tmpDir.toString(), inputFilename + ".vdb");
     long dbSize = buildDb(inputDefFilename, inputFilename, outputPath);
-    String vcf = annotateVcf(tmpDir, vcfFilename);
+    String vcf = annotateVcf(outputPath, vcfFilename);
 
     // one of the goals of vip-annotate is compact annotation archives, so check size
     // update thresholds in case index got smaller
@@ -76,13 +76,13 @@ public class AppBuildDbAndAnnotateIT {
     }
   }
 
-  private String annotateVcf(Path tmpDir, String vcfResourceName) {
+  private String annotateVcf(Path inputPath, String vcfResourceName) {
     Path inputVcfFile = getResource(vcfResourceName);
 
     String[] args = {
       "annotate",
       "--annotations",
-      tmpDir.toString(),
+      inputPath.toString(),
       "--input",
       inputVcfFile.toString(),
       "--output",

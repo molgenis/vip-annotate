@@ -41,15 +41,15 @@ vip-annotate annotate --help
 
 ```
 Usage:
-  vip-annotate annotate --annotations DIR --input FILE --output FILE [OPTIONS]
+  vip-annotate annotate --annotations FILE --input FILE --output FILE [OPTIONS]
   vip-annotate annotate --help
 
 Options:
-  -a, --annotations DIR       Directory containing annotation database  (required)
-  -i, --input       FILE      Input VCF file path; use '-' for stdin    (required)
-  -o, --output      FILE      Output VCF file path; use '-' for stdout  (required)
+  -a, --annotations FILE      Annotation database file or glob pattern; may be specified multiple times (required)
+  -i, --input       FILE      Input VCF file path; use '-' for stdin                                    (required)
+  -o, --output      FILE      Output VCF file path; use '-' for stdout                                  (required)
 
-  -O, --output-type v|z[0-9]  Output format                             (default: z)
+  -O, --output-type v|z[0-9]  Output format                                                             (default: z)
                                 Options:
                                   v      Uncompressed VCF
                                   z      Compressed VCF (default compression)

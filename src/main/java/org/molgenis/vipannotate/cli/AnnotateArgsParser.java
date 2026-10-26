@@ -1,7 +1,14 @@
 package org.molgenis.vipannotate.cli;
 
+import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.molgenis.vipannotate.format.vcf.VcfType;
 import org.molgenis.vipannotate.util.Input;
 import org.molgenis.vipannotate.util.Logger;
@@ -13,7 +20,7 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
     super.validate(args);
 
     Input input = null;
-    Path annotationsDir = null;
+    Set<Path> annotationFiles = new LinkedHashSet<>();
     Output output = null;
     Boolean force = null;
     VcfType outputVcfType = null;
@@ -21,15 +28,9 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
       String arg = args[i];
       switch (arg) {
         case "-a", "--annotations" -> {
-          annotationsDir = Path.of(parseArgValue(args, i++, arg));
-          if (Files.notExists(annotationsDir)) {
-            throw new ArgValidationException(
-                "'%s' value '%s' does not exist".formatted(arg, annotationsDir));
-          }
-          if (!Files.isDirectory(annotationsDir)) {
-            throw new ArgValidationException(
-                "'%s' value '%s' is not a directory".formatted(arg, annotationsDir));
-          }
+          String value = parseArgValue(args, i++, arg);
+          annotationFiles.addAll(
+              parseArgAnnotationFiles(value, arg).stream().map(Path::normalize).toList());
         }
         case "-i", "--input" -> input = parseArgInputValue(args, i++, arg);
         case "-o", "--output" -> output = parseArgOutputValue(args, i++, arg);
@@ -58,7 +59,7 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
       throw new ArgValidationException(
           "missing required option '%s' or '%s'".formatted("-i", "--input"));
     }
-    if (annotationsDir == null) {
+    if (annotationFiles.isEmpty()) {
       throw new ArgValidationException(
           "missing required option '%s' or '%s'".formatted("-a", "--annotations"));
     }
@@ -71,7 +72,55 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
       throw new ArgValidationException(
           "'%s' or '%s' value '%s' already exists".formatted("-o", "--output", output.path()));
     }
-    return new AnnotateArgs(input, annotationsDir, output, force, outputVcfType);
+    return new AnnotateArgs(input, List.copyOf(annotationFiles), output, force, outputVcfType);
+  }
+
+  private static List<Path> parseArgAnnotationFiles(String value, String arg) {
+    boolean hasGlob = value.indexOf('*') >= 0 || value.indexOf('?') >= 0 || value.indexOf('[') >= 0;
+
+    Path path = Path.of(value);
+
+    if (!hasGlob) {
+      validateAnnotationFile(path, arg);
+      return List.of(path);
+    }
+
+    Path parent = path.getParent();
+    if (parent == null) {
+      parent = Path.of(".");
+    }
+
+    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path.getFileName());
+
+    try (Stream<Path> paths = Files.list(parent)) {
+      List<Path> matches =
+          paths
+              .filter(p -> matcher.matches(p.getFileName()))
+              .filter(Files::isRegularFile)
+              .sorted()
+              .toList();
+
+      if (matches.isEmpty()) {
+        throw new ArgValidationException(
+            "'%s' value '%s' matched no annotation files".formatted(arg, value));
+      }
+
+      return matches;
+    } catch (IOException e) {
+      throw new ArgValidationException(
+          "cannot read annotation directory '%s': %s".formatted(parent, e.getMessage()));
+    }
+  }
+
+  private static void validateAnnotationFile(Path path, String arg) {
+    if (!Files.exists(path)) {
+      throw new ArgValidationException("'%s' value '%s' does not exist".formatted(arg, path));
+    }
+
+    if (!Files.isRegularFile(path)) {
+      throw new ArgValidationException(
+          "'%s' value '%s' is not a regular file".formatted(arg, path));
+    }
   }
 
   @Override
@@ -79,15 +128,15 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
     Logger.info(
 """
 Usage:
-  vip-annotate annotate --annotations DIR --input FILE --output FILE [OPTIONS]
+  vip-annotate annotate --annotations FILE --input FILE --output FILE [OPTIONS]
   vip-annotate annotate --help
 
 Options:
-  -a, --annotations DIR       Directory containing annotation database  (required)
-  -i, --input       FILE      Input VCF file path; use '-' for stdin    (required)
-  -o, --output      FILE      Output VCF file path; use '-' for stdout  (required)
+  -a, --annotations FILE      Annotation database file or glob pattern; may be specified multiple times (required)
+  -i, --input       FILE      Input VCF file path; use '-' for stdin                                    (required)
+  -o, --output      FILE      Output VCF file path; use '-' for stdout                                  (required)
 
-  -O, --output-type v|z[0-9]  Output format                             (default: z)
+  -O, --output-type v|z[0-9]  Output format                                                             (default: z)
                                 Options:
                                   v      Uncompressed VCF
                                   z      Compressed VCF (default compression)
