@@ -11,6 +11,8 @@ import org.molgenis.vipannotate.util.ClosableUtils;
 
 @RequiredArgsConstructor
 public class Zstd implements AutoCloseable {
+  public static final int DEFAULT_COMPRESSION_LEVEL = 3;
+
   private final Arena arena;
   private final Linker linker;
   private final SymbolLookup symbolLookup;
@@ -76,7 +78,7 @@ public class Zstd implements AutoCloseable {
   }
 
   public ZstdCompressionContext createCompressionContext() {
-    return createCompressionContext(19);
+    return createCompressionContext(DEFAULT_COMPRESSION_LEVEL);
   }
 
   public ZstdCompressionContext createCompressionContext(int compressionLevel) {

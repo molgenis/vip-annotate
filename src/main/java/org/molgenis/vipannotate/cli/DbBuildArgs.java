@@ -3,13 +3,16 @@ package org.molgenis.vipannotate.cli;
 import java.nio.file.Path;
 import org.jspecify.annotations.Nullable;
 
-/**
- * parsed database-build command-line arguments
- *
- * @param input input file path.
- * @param inputDef input definition file path.
- * @param output output file path.
- * @param force whether to overwrite the output database if it exists.
- */
+/// parsed database-build command-line arguments
+///
+/// @param input input file path.
+/// @param inputDef input definition file path.
+/// @param output output file path.
+/// @param force whether to overwrite the output database if it exists.
+/// @param compressionLevel zstandard compression level
 public record DbBuildArgs(
-    Path input, Path inputDef, @Nullable Path output, @Nullable Boolean force) {}
+    Path input,
+    Path inputDef,
+    @Nullable Path output,
+    @Nullable Boolean force,
+    int compressionLevel) {}

@@ -57,7 +57,7 @@ class VdbArchiveReaderAndWriterTest {
       String sha256 =
           HexFormat.of()
               .formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(vdbPath)));
-      assertEquals("5eef9bd090132c8640d4a3a22c2dc3552b56895c4f53bd117f6e48f7bf20aa13", sha256);
+      assertEquals("af5e609cf916556e28ab7ab430cf9b6bcabbf5c028ca54fa1643e50ea5c2e5c8", sha256);
 
       try (VdbArchiveReader archiveReader = archiveReaderFactory.create(vdbPath)) {
         for (int i = 0; i < 2; ++i) {

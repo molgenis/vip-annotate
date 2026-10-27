@@ -2,6 +2,7 @@ package org.molgenis.vipannotate.format.vdb;
 
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
+import org.molgenis.zstd.Zstd;
 import org.molgenis.zstd.ZstdCompressionContext;
 import org.molgenis.zstd.ZstdProvider;
 
@@ -12,12 +13,13 @@ public class VdbArchiveWriterFactory {
   private final VdbArchiveMetadataWriter metadataWriter;
 
   public static VdbArchiveWriterFactory create() {
-    return create(new VdbMemoryBufferFactory());
+    return create(new VdbMemoryBufferFactory(), Zstd.DEFAULT_COMPRESSION_LEVEL);
   }
 
-  public static VdbArchiveWriterFactory create(VdbMemoryBufferFactory memBufferFactory) {
+  public static VdbArchiveWriterFactory create(
+      VdbMemoryBufferFactory memBufferFactory, int compressionLevel) {
     return new VdbArchiveWriterFactory(
-        ZstdProvider.INSTANCE.get().createCompressionContext(),
+        ZstdProvider.INSTANCE.get().createCompressionContext(compressionLevel),
         memBufferFactory,
         new VdbArchiveMetadataWriter());
   }

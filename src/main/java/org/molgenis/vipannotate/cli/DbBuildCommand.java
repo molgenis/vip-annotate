@@ -27,13 +27,19 @@ public class DbBuildCommand implements Command {
     Logger.debug("creating database ...");
     long startCreateDb = System.currentTimeMillis();
 
-    buildDb(input, inputDef, output, dbBuildArgs.force() != null && dbBuildArgs.force());
+    buildDb(
+        input,
+        inputDef,
+        output,
+        dbBuildArgs.force() != null && dbBuildArgs.force(),
+        dbBuildArgs.compressionLevel());
 
     long endCreateDb = System.currentTimeMillis();
     Logger.debug("creating database done in %sms", endCreateDb - startCreateDb);
   }
 
-  private static void buildDb(Path input, Path inputDef, Path outputDb, boolean force) {
+  private static void buildDb(
+      Path input, Path inputDef, Path outputDb, boolean force, int compressionLevel) {
     AnnotationDbDef annotationDbDef;
     try {
       annotationDbDef = AnnotationDbDefReader.create().readFrom(inputDef);
@@ -43,7 +49,7 @@ public class DbBuildCommand implements Command {
 
     VdbMemoryBufferFactory memBufferFactory = new VdbMemoryBufferFactory();
     VdbArchiveWriter vdbArchiveWriter =
-        VdbArchiveWriterFactory.create(memBufferFactory).create(outputDb, force);
+        VdbArchiveWriterFactory.create(memBufferFactory, compressionLevel).create(outputDb, force);
     try (PartitionedVdbArchiveWriter archiveWriter =
         PartitionedVdbArchiveWriter.create(vdbArchiveWriter, memBufferFactory)) {
       AnnotationDbBuilder.create().buildDb(input, annotationDbDef, archiveWriter);
