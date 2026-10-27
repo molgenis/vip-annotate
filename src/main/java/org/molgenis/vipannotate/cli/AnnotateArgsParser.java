@@ -78,19 +78,21 @@ public class AnnotateArgsParser extends ArgsParser<AnnotateArgs> {
   private static List<Path> parseArgAnnotationFiles(String value, String arg) {
     boolean hasGlob = value.indexOf('*') >= 0 || value.indexOf('?') >= 0 || value.indexOf('[') >= 0;
 
-    Path path = Path.of(value);
-
     if (!hasGlob) {
+      Path path = Path.of(value);
       validateAnnotationFile(path, arg);
       return List.of(path);
     }
 
-    Path parent = path.getParent();
-    if (parent == null) {
-      parent = Path.of(".");
-    }
+    // Split at the last path separator, before creating a Path from the glob.
+    int separator = Math.max(value.lastIndexOf('/'), value.lastIndexOf('\\'));
 
-    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path.getFileName());
+    String parentValue = separator < 0 ? "." : value.substring(0, separator);
+    String filePattern = value.substring(separator + 1);
+
+    Path parent = Path.of(parentValue.isEmpty() ? value.substring(0, 1) : parentValue);
+
+    PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + filePattern);
 
     try (Stream<Path> paths = Files.list(parent)) {
       List<Path> matches =
