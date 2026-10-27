@@ -29,7 +29,8 @@ public class AnnotationsSpecResolver {
     return switch (fieldAnalysis) {
       case EnumFieldAnalysis analysis ->
           resolve(analysis.annotationSpec(), analysis.stats(), annotationType);
-      case EnumSetFieldAnalysis analysis -> resolve(analysis.annotationSpec());
+      case EnumSetFieldAnalysis analysis ->
+          resolve(analysis.annotationSpec(), analysis.stats(), annotationType);
       case FloatFieldAnalysis analysis ->
           resolve(analysis.annotationSpec(), analysis.stats(), annotationType);
       case IntFieldAnalysis analysis ->
@@ -69,11 +70,12 @@ public class AnnotationsSpecResolver {
     return stringBuilder.toString();
   }
 
-  private EnumSetAnnotationSpec resolve(EnumSetAnnotationDef spec) {
+  private EnumSetAnnotationSpec resolve(
+      EnumSetAnnotationDef spec, EnumSetAnnotationStats stats, AnnotationType annotationType) {
     EnumValue[] enumValues = spec.values();
     return new EnumSetAnnotationSpec(
         resolveEnumSpecDescription(spec.description(), enumValues),
-        false, // FIXME support nullable EnumSet
+        stats.nullCount() > 0 || annotationType == AnnotationType.POSITION,
         Arrays.stream(enumValues).map(EnumValue::value).toArray(String[]::new));
   }
 

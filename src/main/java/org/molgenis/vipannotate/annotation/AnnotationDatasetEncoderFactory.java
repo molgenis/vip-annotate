@@ -36,8 +36,7 @@ public class AnnotationDatasetEncoderFactory {
 
   private static EnumSetAnnotationDatasetEncoder createEnumSetDataSetEncoder(
       EnumSetAnnotationSpec annotationSpec) {
-    String[] enumValues = annotationSpec.values();
-    return new EnumSetAnnotationDatasetEncoder(enumValues);
+    return new EnumSetAnnotationDatasetEncoder(annotationSpec);
   }
 
   private PerElementAnnotationDatasetEncoder<?> createFloatDataSetEncoder(
