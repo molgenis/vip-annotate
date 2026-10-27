@@ -1,9 +1,8 @@
 package org.molgenis.vipannotate.annotation;
 
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.molgenis.vipannotate.serialization.MemoryEncoder;
+import org.molgenis.vipannotate.util.Maps;
 import org.molgenis.vipannotate.util.SizedIterator;
 
 public class EnumSetAnnotationDatasetEncoder
@@ -11,11 +10,10 @@ public class EnumSetAnnotationDatasetEncoder
   private final Map<String, Integer> enumValueToBitIndexMap;
 
   public EnumSetAnnotationDatasetEncoder(String[] enumValues) {
-    // TODO perf: create map with known size
-    this.enumValueToBitIndexMap =
-        IntStream.range(0, enumValues.length)
-            .boxed()
-            .collect(Collectors.toMap(i -> enumValues[i], i -> i));
+    this.enumValueToBitIndexMap = Maps.newHashMapWithExpectedSize(enumValues.length);
+    for (int i = 0; i < enumValues.length; i++) {
+      this.enumValueToBitIndexMap.put(enumValues[i], i);
+    }
   }
 
   @Override
