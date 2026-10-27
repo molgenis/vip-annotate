@@ -1,12 +1,16 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.spec.EnumAnnotationSpec;
 import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
-@RequiredArgsConstructor
 public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<StringAnnotation> {
-  private final EnumAnnotationSpec enumAnnotationSpec;
+  private final String[] enumValues;
+  private final int bitsPerAnnotation;
+
+  public EnumAnnotationDatasetDecoder(EnumAnnotationSpec annotationSpec) {
+    this.enumValues = annotationSpec.values();
+    this.bitsPerAnnotation = Integer.SIZE - Integer.numberOfLeadingZeros(enumValues.length - 1);
+  }
 
   @Override
   public AnnotationDataset<StringAnnotation> decode(MemoryDecoderProvider decoderProvider) {
@@ -20,9 +24,6 @@ public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<St
         throw new IllegalArgumentException();
       }
 
-      String[] enumValues = enumAnnotationSpec.values();
-      int bitsPerAnnotation = getBitsPerAnnotation();
-
       StringAnnotation stringAnnotation = annotationSupplier.get();
       if (bitsPerAnnotation == 0) {
         stringAnnotation.reset(enumValues[0]);
@@ -33,7 +34,7 @@ public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<St
       int byteOffset = bitOffset >>> 3;
       int bitInByte = bitOffset & 7;
 
-      int value = 0;
+      int enumIndex = 0;
       int bitsRead = 0;
 
       while (bitsRead < bitsPerAnnotation) {
@@ -44,33 +45,19 @@ public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<St
         int mask = (1 << bitsToRead) - 1;
         int bits = (currentByte >>> bitInByte) & mask;
 
-        value |= bits << bitsRead;
+        enumIndex |= bits << bitsRead;
 
         bitsRead += bitsToRead;
         byteOffset++;
         bitInByte = 0;
       }
 
-      if (enumAnnotationSpec.nullable() && value == 0) {
-        stringAnnotation.reset(null);
-        return stringAnnotation;
-      }
-
-      int enumIndex = enumAnnotationSpec.nullable() ? value - 1 : value;
-
       if (enumIndex < 0 || enumIndex >= enumValues.length) {
-        throw new IllegalArgumentException("Invalid enum index: %d".formatted(value));
+        throw new IllegalArgumentException("Invalid enum index: %d".formatted(enumIndex));
       }
 
       stringAnnotation.reset(enumValues[enumIndex]);
       return stringAnnotation;
     };
-  }
-
-  private int getBitsPerAnnotation() {
-    int enumValueCount = enumAnnotationSpec.values().length;
-    int valueCount = enumAnnotationSpec.nullable() ? enumValueCount + 1 : enumValueCount;
-
-    return Integer.SIZE - Integer.numberOfLeadingZeros(valueCount - 1);
   }
 }

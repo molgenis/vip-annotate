@@ -31,7 +31,7 @@ public class AnnotationDatasetEncoderFactory {
 
   private static EnumAnnotationDatasetEncoder createEnumDataSetEncoder(
       EnumAnnotationSpec annotationSpec) {
-    return new EnumAnnotationDatasetEncoder(annotationSpec.values(), annotationSpec.nullable());
+    return new EnumAnnotationDatasetEncoder(annotationSpec);
   }
 
   private static EnumSetAnnotationDatasetEncoder createEnumSetDataSetEncoder(
