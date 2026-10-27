@@ -70,8 +70,7 @@
           "name": "<init>",
           "parameterTypes": [
             "java.lang.String",
-            "[Lorg.molgenis.vipannotate.annotation.def.EnumValue;",
-            "boolean"
+            "[Lorg.molgenis.vipannotate.annotation.def.EnumValue;"
           ]
         }
       ]
