@@ -12,6 +12,9 @@ public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<St
 
   public EnumAnnotationDatasetEncoder(EnumAnnotationSpec annotationSpec) {
     String[] enumValues = annotationSpec.values();
+    if (enumValues.length < 2) {
+      throw new IllegalArgumentException();
+    }
 
     this.enumValueToBitIndexMap = Maps.newHashMapWithExpectedSize(enumValues.length);
     for (int i = 0; i < enumValues.length; i++) {
@@ -29,17 +32,7 @@ public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<St
     int bitsInCurrentByte = 0;
 
     while (annotationIt.hasNext()) {
-      StringAnnotation annotation = annotationIt.next();
-      if (annotation.getValue() == null) {
-        throw new IllegalArgumentException();
-      }
-
-      Integer mappedIndex = enumValueToBitIndexMap.get(annotation.getValue());
-      if (mappedIndex == null) {
-        throw new IllegalArgumentException(
-            "Unknown enum value: %s".formatted(annotation.getValue()));
-      }
-      int enumIndex = mappedIndex;
+      int enumIndex = getEnumIndex(annotationIt.next());
 
       currentByte |= enumIndex << bitsInCurrentByte;
       bitsInCurrentByte += bitsPerAnnotation;
@@ -54,5 +47,18 @@ public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<St
     if (bitsInCurrentByte > 0) {
       memEncoder.putByte((byte) currentByte);
     }
+  }
+
+  private int getEnumIndex(StringAnnotation annotation) {
+    String value = annotation.getValue();
+    if (value == null) {
+      throw new IllegalArgumentException();
+    }
+
+    Integer mappedIndex = enumValueToBitIndexMap.get(value);
+    if (mappedIndex == null) {
+      throw new IllegalArgumentException();
+    }
+    return mappedIndex;
   }
 }

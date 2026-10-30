@@ -9,6 +9,9 @@ public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<St
 
   public EnumAnnotationDatasetDecoder(EnumAnnotationSpec annotationSpec) {
     this.enumValues = annotationSpec.values();
+    if (enumValues.length < 2) {
+      throw new IllegalArgumentException();
+    }
     this.bitsPerAnnotation = Integer.SIZE - Integer.numberOfLeadingZeros(enumValues.length - 1);
   }
 
@@ -24,40 +27,40 @@ public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<St
         throw new IllegalArgumentException();
       }
 
-      StringAnnotation stringAnnotation = annotationSupplier.get();
-      if (bitsPerAnnotation == 0) {
-        stringAnnotation.reset(enumValues[0]);
-        return stringAnnotation;
+      int enumIndex = readEnumIndex(memDecoder, index);
+      if (enumIndex >= enumValues.length) {
+        throw new IllegalArgumentException();
       }
 
-      int bitOffset = Math.multiplyExact(index, bitsPerAnnotation);
-      int byteOffset = bitOffset >>> 3;
-      int bitInByte = bitOffset & 7;
-
-      int enumIndex = 0;
-      int bitsRead = 0;
-
-      while (bitsRead < bitsPerAnnotation) {
-        int currentByte = memDecoder.getUnsignedByteAtIndex(byteOffset);
-        int bitsAvailable = Byte.SIZE - bitInByte;
-        int bitsToRead = Math.min(bitsAvailable, bitsPerAnnotation - bitsRead);
-
-        int mask = (1 << bitsToRead) - 1;
-        int bits = (currentByte >>> bitInByte) & mask;
-
-        enumIndex |= bits << bitsRead;
-
-        bitsRead += bitsToRead;
-        byteOffset++;
-        bitInByte = 0;
-      }
-
-      if (enumIndex < 0 || enumIndex >= enumValues.length) {
-        throw new IllegalArgumentException("Invalid enum index: %d".formatted(enumIndex));
-      }
-
-      stringAnnotation.reset(enumValues[enumIndex]);
-      return stringAnnotation;
+      StringAnnotation annotation = annotationSupplier.get();
+      annotation.reset(enumValues[enumIndex]);
+      return annotation;
     };
+  }
+
+  private int readEnumIndex(MemoryDecoder memDecoder, int index) {
+    int bitOffset = Math.multiplyExact(index, bitsPerAnnotation);
+    int byteOffset = bitOffset >>> 3;
+    int bitInByte = bitOffset & 7;
+
+    int enumIndex = 0;
+    int bitsRead = 0;
+
+    while (bitsRead < bitsPerAnnotation) {
+      int currentByte = memDecoder.getUnsignedByteAtIndex(byteOffset);
+      int bitsAvailable = Byte.SIZE - bitInByte;
+      int bitsToRead = Math.min(bitsAvailable, bitsPerAnnotation - bitsRead);
+
+      int mask = (1 << bitsToRead) - 1;
+      int bits = (currentByte >>> bitInByte) & mask;
+
+      enumIndex |= bits << bitsRead;
+
+      bitsRead += bitsToRead;
+      byteOffset++;
+      bitInByte = 0;
+    }
+
+    return enumIndex;
   }
 }
