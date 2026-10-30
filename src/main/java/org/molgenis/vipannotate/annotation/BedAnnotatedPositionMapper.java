@@ -92,12 +92,11 @@ public final class BedAnnotatedPositionMapper
   }
 
   private Annotation createEnumSetAnnotation(BedField bedField) {
-    // TODO perf: split that does not require toString
-    String[] tokens =
-        !bedField.getRawView().isEmpty()
-            ? bedField.getRawView().toString().split(",", -1)
-            : new String[0];
-    return new StringListAnnotation(tokens);
+    StringListAnnotation annotation = new StringListAnnotation();
+    List<String> values = annotation.getValues();
+    bedField.parseValuesAppendTo(values);
+    values.forEach(annotation::add);
+    return annotation;
   }
 
   private Annotation createFloatAnnotation(BedField bedField) {

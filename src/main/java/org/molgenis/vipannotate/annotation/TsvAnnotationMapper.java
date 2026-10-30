@@ -52,7 +52,9 @@ public final class TsvAnnotationMapper {
   }
 
   private Annotation createEnumSetAnnotation(TsvField tsvField) {
-    return new StringListAnnotation(tsvField.parseValues());
+    StringListAnnotation listAnnotation = new StringListAnnotation();
+    tsvField.parseValuesAppendTo(listAnnotation.getValues());
+    return listAnnotation;
   }
 
   private Annotation createFloatAnnotation(TsvField tsvField) {

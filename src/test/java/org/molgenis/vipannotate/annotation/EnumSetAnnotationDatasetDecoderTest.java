@@ -27,24 +27,24 @@ class EnumSetAnnotationDatasetDecoderTest {
   private static Stream<Arguments> decodeProvider() {
     return Stream.of(
         Arguments.of(
-            List.of(new String[] {"one"}, new String[] {"two"}, new String[] {"one", "three"}),
+            List.of(List.of("one"), List.of("two"), List.of("one", "three")),
             new byte[] {(byte) 0b01_010_001, (byte) 0b1}),
         Arguments.of(
             List.of(
-                new String[] {"one"},
-                new String[] {"one"},
-                new String[] {"one"},
-                new String[] {"one"},
-                new String[] {"one"},
-                new String[] {"one"},
-                new String[] {"one"},
-                new String[] {"one"}),
+                List.of("one"),
+                List.of("one"),
+                List.of("one"),
+                List.of("one"),
+                List.of("one"),
+                List.of("one"),
+                List.of("one"),
+                List.of("one")),
             new byte[] {(byte) 0b01_001_001, (byte) 0b1_001_001_0, (byte) 0b001_001_00}));
   }
 
   @ParameterizedTest
   @MethodSource("decodeProvider")
-  void decode(List<String[]> expectedValues, byte[] encodedBytes) {
+  void decode(List<List<String>> expectedValues, byte[] encodedBytes) {
     MemoryDecoder memDecoder = mock(MemoryDecoder.class);
     MemoryDecoderProvider decoderProvider = () -> memDecoder;
 
@@ -62,7 +62,7 @@ class EnumSetAnnotationDatasetDecoderTest {
                       StringListAnnotation annotation =
                           dataset.findByIndexInto(i, StringListAnnotation::new);
                       assertNotNull(annotation);
-                      assertArrayEquals(expectedValues.get(i), annotation.getValues());
+                      assertEquals(expectedValues.get(i), annotation.getValues());
                     }));
   }
 
@@ -76,7 +76,7 @@ class EnumSetAnnotationDatasetDecoderTest {
     StringListAnnotation annotation = dataset.findByIndexInto(0, StringListAnnotation::new);
 
     assertNotNull(annotation);
-    assertArrayEquals(new String[0], annotation.getValues());
+    assertTrue(annotation.getValues().isEmpty());
   }
 
   @Test

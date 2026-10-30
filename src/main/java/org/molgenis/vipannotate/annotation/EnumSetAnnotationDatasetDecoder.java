@@ -2,7 +2,6 @@ package org.molgenis.vipannotate.annotation;
 
 import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.molgenis.vipannotate.annotation.spec.EnumSetAnnotationSpec;
 import org.molgenis.vipannotate.serialization.MemoryDecoder;
@@ -35,9 +34,10 @@ public class EnumSetAnnotationDatasetDecoder
       int byteOffset = bitOffset >>> 3;
       int bitInByte = bitOffset & 7;
 
-      // FIXME reuse StringListAnnotationList.values
-      List<String> values = new ArrayList<>();
+      StringListAnnotation stringListAnnotation = annotationSupplier.get();
+      stringListAnnotation.reset();
 
+      List<String> values = stringListAnnotation.getValues();
       for (int enumIndex = 0; enumIndex < bitsPerAnnotation; enumIndex++) {
         int bitIndex = bitInByte + enumIndex;
         int byteIndex = byteOffset + (bitIndex >>> 3);
@@ -49,8 +49,7 @@ public class EnumSetAnnotationDatasetDecoder
           values.add(enumValues[enumIndex]);
         }
       }
-      StringListAnnotation stringListAnnotation = annotationSupplier.get();
-      stringListAnnotation.reset(values.toArray(String[]::new));
+
       return stringListAnnotation;
     };
   }

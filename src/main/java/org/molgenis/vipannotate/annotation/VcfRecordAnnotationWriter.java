@@ -1,5 +1,6 @@
 package org.molgenis.vipannotate.annotation;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.molgenis.vipannotate.format.vcf.Info;
@@ -68,12 +69,12 @@ public class VcfRecordAnnotationWriter<T extends Annotation> {
         }
       }
       case StringListAnnotation stringListAnnotation -> {
-        String[] values = stringListAnnotation.getValues();
-        for (int i = 0; i < values.length; i++) {
+        List<String> values = stringListAnnotation.getValues();
+        for (int i = 0, size = values.size(); i < size; i++) {
           if (i > 0) {
             reusableVcfInfoBuilder.appendRaw('&');
           }
-          reusableVcfInfoBuilder.appendRaw(values[i]);
+          reusableVcfInfoBuilder.appendRaw(values.get(i));
         }
       }
 

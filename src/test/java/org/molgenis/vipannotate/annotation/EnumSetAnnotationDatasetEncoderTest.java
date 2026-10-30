@@ -3,6 +3,7 @@ package org.molgenis.vipannotate.annotation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,11 +50,18 @@ class EnumSetAnnotationDatasetEncoderTest {
     MemoryEncoder memEncoder = mock(MemoryEncoder.class);
     MemoryEncoderProvider memEncoderProvider = () -> memEncoder;
 
-    List<StringListAnnotation> annotations =
-        values.stream().map(StringListAnnotation::new).toList();
+    List<StringListAnnotation> listAnnotations = new ArrayList<>();
+    for (String[] enumValues : values) {
+      StringListAnnotation listAnnotation = new StringListAnnotation();
+      for (String enumValue : enumValues) {
+        listAnnotation.add(enumValue);
+      }
+      listAnnotations.add(listAnnotation);
+    }
 
     datasetEncoder.encodeInto(
-        new SizedIterator<>(annotations.iterator(), annotations.size()), memEncoderProvider);
+        new SizedIterator<>(listAnnotations.iterator(), listAnnotations.size()),
+        memEncoderProvider);
 
     for (byte expectedByte : expectedBytes) {
       verify(memEncoder).putByte(expectedByte);
@@ -97,8 +105,9 @@ class EnumSetAnnotationDatasetEncoderTest {
     MemoryEncoder memEncoder = mock(MemoryEncoder.class);
     MemoryEncoderProvider memEncoderProvider = () -> memEncoder;
 
-    List<StringListAnnotation> annotations =
-        List.of(new StringListAnnotation(new String[] {"four"}));
+    StringListAnnotation listAnnotation = new StringListAnnotation();
+    listAnnotation.add("four");
+    List<StringListAnnotation> annotations = List.of(listAnnotation);
 
     assertThrows(
         IllegalArgumentException.class,

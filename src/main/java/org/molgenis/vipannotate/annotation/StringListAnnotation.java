@@ -1,32 +1,32 @@
 package org.molgenis.vipannotate.annotation;
 
-import lombok.AllArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-@AllArgsConstructor
 @ToString
 @EqualsAndHashCode
 public final class StringListAnnotation implements Annotation {
-  private String[] values;
+  private final List<String> values;
 
   public StringListAnnotation() {
-    values = new String[0];
+    values = new ArrayList<>(2);
   }
 
   @Override
   public boolean isMissingValue() {
-    return values.length == 0;
+    return values.isEmpty();
   }
 
   @Override
   public void reset() {
-    this.values = new String[0];
+    this.values.clear();
   }
 
-  public void reset(String[] values) {
-    this.values = values;
+  public void add(String value) {
+    this.values.add(value);
   }
 }
