@@ -4,15 +4,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,44 +20,35 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class AppBuildDbAndAnnotateIT {
+  static Stream<Arguments> buildDbAndAnnotateProvider() {
+    return Stream.of(
+        of("seq_var_all_types", "tsv", 74092L, "9291bad8434ac94ce4dfff53cb1f35b7"),
+        of("pos_encoding", "tsv", 16561L, "e581c4151366565a971ca595ce3e6de4"),
+        of("score", "bed", 8328L, "25447e8ba34abec283e727acacaeb2dc"));
+  }
+
   @ParameterizedTest(name = "{0}")
-  @MethodSource("testCases")
+  @MethodSource("buildDbAndAnnotateProvider")
   void buildDbAndAnnotate(
       String inputFilename,
       String inputDefFilename,
       String vcfFilename,
       String expectedVcfFilename,
       long expectedDbSize,
+      String expectedMd5,
       @TempDir Path tmpDir) {
     Path outputPath = Paths.get(tmpDir.toString(), inputFilename + ".vdb");
-    long dbSize = buildDb(inputDefFilename, inputFilename, outputPath);
+
+    buildDb(inputDefFilename, inputFilename, outputPath);
     String vcf = annotateVcf(outputPath, vcfFilename);
 
-    // one of the goals of vip-annotate is compact annotation archives, so check size
-    // update thresholds in case index got smaller
     assertAll(
         () -> assertEquals(Files.readString(getResource(expectedVcfFilename), UTF_8), vcf),
-        () -> assertEquals(expectedDbSize, dbSize));
+        () -> assertEquals(expectedDbSize, Files.size(outputPath)), // unintentional db growth?
+        () -> assertEquals(expectedMd5, md5(outputPath))); // unintentional db format change?
   }
 
-  static Stream<Arguments> testCases() {
-    return Stream.of(
-        Arguments.of(
-            "seq_var_all_types.tsv",
-            "seq_var_all_types.tsv.json",
-            "seq_var_all_types.vcf",
-            "seq_var_all_types.annotated.vcf",
-            74092L),
-        Arguments.of(
-            "pos_encoding.tsv",
-            "pos_encoding.tsv.json",
-            "pos_encoding.vcf",
-            "pos_encoding.annotated.vcf",
-            16561L),
-        Arguments.of("score.bed", "score.bed.json", "score.vcf", "score.annotated.vcf", 8328L));
-  }
-
-  private long buildDb(String inputDefFilename, String inputFilename, Path outputPath) {
+  private void buildDb(String inputDefFilename, String inputFilename, Path outputPath) {
     App.main(
         new String[] {
           "database-build",
@@ -68,12 +59,6 @@ public class AppBuildDbAndAnnotateIT {
           "--output",
           outputPath.toString()
         });
-
-    try {
-      return Files.size(outputPath);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
   }
 
   private String annotateVcf(Path inputPath, String vcfResourceName) {
@@ -117,5 +102,38 @@ public class AppBuildDbAndAnnotateIT {
       throw new RuntimeException(e);
     }
     return filePath;
+  }
+
+  private static String md5(Path path) {
+    MessageDigest messageDigest;
+    try {
+      messageDigest = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    }
+
+    try (InputStream inputStream = Files.newInputStream(path)) {
+      byte[] buffer = new byte[8192];
+      int bytesRead;
+
+      while ((bytesRead = inputStream.read(buffer)) != -1) {
+        messageDigest.update(buffer, 0, bytesRead);
+      }
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
+    return HexFormat.of().formatHex(messageDigest.digest());
+  }
+
+  private static Arguments of(
+      String prefix, String suffix, long expectedDbSize, String expectedMd5) {
+    return Arguments.of(
+        "%s.%s".formatted(prefix, suffix),
+        "%s.%s.json".formatted(prefix, suffix),
+        "%s.vcf".formatted(prefix),
+        "%s.annotated.vcf".formatted(prefix),
+        expectedDbSize,
+        expectedMd5);
   }
 }
