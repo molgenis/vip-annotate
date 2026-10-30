@@ -1,15 +1,25 @@
 package org.molgenis.vipannotate.annotation;
 
+import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
+
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.molgenis.vipannotate.annotation.spec.EnumSetAnnotationSpec;
 import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
-@RequiredArgsConstructor
+/// Decodes enum sets with [1,32] enum values
 public class EnumSetAnnotationDatasetDecoder
     implements AnnotationDatasetDecoder<StringListAnnotation> {
-  private final EnumSetAnnotationSpec enumSetAnnotationSpec;
+  private final String[] enumValues;
+  private final int bitsPerAnnotation;
+
+  public EnumSetAnnotationDatasetDecoder(EnumSetAnnotationSpec annotationSpec) {
+    this.enumValues = annotationSpec.values();
+    if (enumValues.length < 1 || enumValues.length >= 32) {
+      throw new IllegalArgumentException();
+    }
+    this.bitsPerAnnotation = enumValues.length;
+  }
 
   @Override
   public AnnotationDataset<StringListAnnotation> decode(MemoryDecoderProvider decoderProvider) {
@@ -19,19 +29,16 @@ public class EnumSetAnnotationDatasetDecoder
     }
 
     return (index, annotationSupplier) -> {
-      if (index < 0) {
-        throw new IllegalArgumentException();
-      }
-      String[] enumValues = enumSetAnnotationSpec.values();
+      validateNonNegative(index);
 
-      int bitOffset = Math.multiplyExact(index, enumValues.length);
+      int bitOffset = Math.multiplyExact(index, bitsPerAnnotation);
       int byteOffset = bitOffset >>> 3;
       int bitInByte = bitOffset & 7;
 
       // FIXME reuse StringListAnnotationList.values
       List<String> values = new ArrayList<>();
 
-      for (int enumIndex = 0; enumIndex < enumValues.length; enumIndex++) {
+      for (int enumIndex = 0; enumIndex < bitsPerAnnotation; enumIndex++) {
         int bitIndex = bitInByte + enumIndex;
         int byteIndex = byteOffset + (bitIndex >>> 3);
         int bit = bitIndex & 7;

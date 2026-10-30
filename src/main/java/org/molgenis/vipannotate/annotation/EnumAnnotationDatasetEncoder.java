@@ -6,6 +6,7 @@ import org.molgenis.vipannotate.serialization.MemoryEncoder;
 import org.molgenis.vipannotate.util.Maps;
 import org.molgenis.vipannotate.util.SizedIterator;
 
+/// Encodes enums with >= 2 enum values
 public class EnumAnnotationDatasetEncoder implements AnnotationDatasetEncoder<StringAnnotation> {
   private final Map<String, Integer> enumValueToBitIndexMap;
   private final int bitsPerAnnotation;

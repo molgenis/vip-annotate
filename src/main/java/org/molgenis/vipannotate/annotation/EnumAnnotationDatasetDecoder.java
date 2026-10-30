@@ -1,8 +1,11 @@
 package org.molgenis.vipannotate.annotation;
 
+import static org.molgenis.vipannotate.util.Numbers.validateNonNegative;
+
 import org.molgenis.vipannotate.annotation.spec.EnumAnnotationSpec;
 import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
+/// Decodes enums with >= 2 enum values
 public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<StringAnnotation> {
   private final String[] enumValues;
   private final int bitsPerAnnotation;
@@ -23,9 +26,7 @@ public class EnumAnnotationDatasetDecoder implements AnnotationDatasetDecoder<St
     }
 
     return (index, annotationSupplier) -> {
-      if (index < 0) {
-        throw new IllegalArgumentException();
-      }
+      validateNonNegative(index);
 
       int enumIndex = readEnumIndex(memDecoder, index);
       if (enumIndex >= enumValues.length) {

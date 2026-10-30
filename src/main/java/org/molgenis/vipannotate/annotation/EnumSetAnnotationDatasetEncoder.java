@@ -6,12 +6,16 @@ import org.molgenis.vipannotate.serialization.MemoryEncoder;
 import org.molgenis.vipannotate.util.Maps;
 import org.molgenis.vipannotate.util.SizedIterator;
 
+/// Encodes enum sets with [1,32] enum values
 public class EnumSetAnnotationDatasetEncoder
     implements AnnotationDatasetEncoder<StringListAnnotation> {
   private final Map<String, Integer> enumValueToBitIndexMap;
 
   public EnumSetAnnotationDatasetEncoder(EnumSetAnnotationSpec spec) {
     String[] enumValues = spec.values();
+    if (enumValues.length < 1 || enumValues.length >= 32) {
+      throw new IllegalArgumentException();
+    }
     this.enumValueToBitIndexMap = Maps.newHashMapWithExpectedSize(enumValues.length);
     for (int i = 0; i < enumValues.length; i++) {
       this.enumValueToBitIndexMap.put(enumValues[i], i);
@@ -35,7 +39,7 @@ public class EnumSetAnnotationDatasetEncoder
       for (String value : annotation.getValues()) {
         Integer bitIndex = enumValueToBitIndexMap.get(value);
         if (bitIndex == null) {
-          throw new IllegalArgumentException("Unknown enum value: %s".formatted(value));
+          throw new IllegalArgumentException();
         }
 
         currentByte |= 1 << (bitsInCurrentByte + bitIndex);
