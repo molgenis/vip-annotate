@@ -34,7 +34,6 @@ public class VdbArchiveReader implements AutoCloseableNoThrow {
 
     // init
     try (MemoryBuffer memBuffer = readMetadata()) {
-      memBuffer.flip();
       this.archiveMetadata = metadataReader.readFrom(memBuffer);
     }
   }
@@ -150,7 +149,7 @@ public class VdbArchiveReader implements AutoCloseableNoThrow {
     }
 
     // set pos and limit to requested length
-    dstBuffer.setPosition(length);
+    dstBuffer.setPosition(0);
     dstBuffer.setLimit(length);
     return dstBuffer;
   }
@@ -158,14 +157,13 @@ public class VdbArchiveReader implements AutoCloseableNoThrow {
   private MemoryBuffer readZstd(
       long offset, long length, @Nullable MemoryBuffer memBuffer, IoMode ioMode) {
     MemoryBuffer srcBuffer = readPlain(offset, length, getScratchBuffer(length), ioMode);
-    srcBuffer.flip();
 
     long uncompressedLength = srcBuffer.getLong();
     MemoryBuffer dstBuffer = prepareWriteBuffer(memBuffer, uncompressedLength);
     zstdContext.decompress(dstBuffer.getMemSegment(), srcBuffer.getMemSegment());
 
     // set pos and limit to uncompressed length
-    dstBuffer.setPosition(uncompressedLength);
+    dstBuffer.setPosition(0);
     dstBuffer.setLimit(uncompressedLength);
     return dstBuffer;
   }

@@ -7,8 +7,6 @@ public class VdbArchiveIndexReader implements MemoryDecodable<VdbArchiveIndex> {
 
   @Override
   public VdbArchiveIndex readFrom(MemoryDecoder memDecoder) {
-    memDecoder.unwrap().flip(); // FIXME should not happen here
-
     VdbArchiveIndex archiveIndex = new VdbArchiveIndex();
     memDecoder.getMapInto(
         archiveIndex.getEntryNameToIdMap(), MemoryDecoder::getString, MemoryDecoder::getInt);
@@ -17,8 +15,6 @@ public class VdbArchiveIndexReader implements MemoryDecodable<VdbArchiveIndex> {
 
   @Override
   public void readInto(MemoryDecoder memDecoder, VdbArchiveIndex archiveIndex) {
-    memDecoder.unwrap().flip(); // FIXME should not happen here
-
     archiveIndex.reset();
     memDecoder.getMapInto(
         archiveIndex.getEntryNameToIdMap(), MemoryDecoder::getString, MemoryDecoder::getInt);

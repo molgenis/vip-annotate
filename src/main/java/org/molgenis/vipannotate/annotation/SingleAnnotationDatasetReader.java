@@ -18,11 +18,7 @@ public class SingleAnnotationDatasetReader<T extends Annotation>
 
   private static @Nullable MemoryDecoder read(
       PartitionKey partitionKey, PartitionedEntryReader entryReader) {
-    MemoryDecoder memDecoder = entryReader.read(partitionKey);
-    if (memDecoder != null) {
-      memDecoder.unwrap().flip(); // FIXME should not happen here (requires IndexReader fix?)
-    }
-    return memDecoder;
+    return entryReader.read(partitionKey);
   }
 
   @Override

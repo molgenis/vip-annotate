@@ -62,8 +62,6 @@ class VdbArchiveReaderAndWriterTest {
       try (VdbArchiveReader archiveReader = archiveReaderFactory.create(vdbPath)) {
         for (int i = 0; i < 2; ++i) {
           try (MemoryBuffer memBuffer = archiveReader.readEntry(entityIds.get(i))) {
-            memBuffer.flip();
-
             assertEquals(0, memBuffer.getByte());
             assertEquals(1, memBuffer.getByte());
             assertEquals(2, memBuffer.getByte());
@@ -73,8 +71,6 @@ class VdbArchiveReaderAndWriterTest {
 
         try (MemoryBuffer memBuffer = archiveReader.readEntry(2)) {
           // 2
-          memBuffer.flip();
-
           assertEquals(1, memBuffer.getByte());
           assertEquals(2, memBuffer.getByte());
           assertEquals(3, memBuffer.getByte());
@@ -82,8 +78,6 @@ class VdbArchiveReaderAndWriterTest {
 
           // 3
           archiveReader.readEntryInto(3, memBuffer);
-          memBuffer.flip();
-
           assertEquals(2, memBuffer.getByte());
           assertEquals(3, memBuffer.getByte());
           assertEquals(4, memBuffer.getByte());
@@ -91,8 +85,6 @@ class VdbArchiveReaderAndWriterTest {
 
           // 4
           archiveReader.readLastEntryInto(memBuffer);
-          memBuffer.flip();
-
           assertEquals(3, memBuffer.getByte());
           assertEquals(4, memBuffer.getByte());
           assertEquals(5, memBuffer.getByte());

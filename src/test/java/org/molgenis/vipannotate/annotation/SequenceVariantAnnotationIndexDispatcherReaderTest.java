@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.molgenis.vipannotate.serialization.MemoryBuffer;
 import org.molgenis.vipannotate.serialization.MemoryDecodable;
 import org.molgenis.vipannotate.serialization.MemoryDecoder;
 
@@ -29,9 +28,7 @@ class SequenceVariantAnnotationIndexDispatcherReaderTest {
 
   @Test
   void readFrom() {
-    MemoryBuffer memBuffer = mock(MemoryBuffer.class);
     MemoryDecoder memDecoder = mock(MemoryDecoder.class);
-    when(memDecoder.unwrap()).thenReturn(memBuffer);
 
     @SuppressWarnings("unchecked")
     AnnotationIndex<SequenceVariant> indexSmall = mock(AnnotationIndex.class);
@@ -50,9 +47,7 @@ class SequenceVariantAnnotationIndexDispatcherReaderTest {
 
   @Test
   void readInto() {
-    MemoryBuffer memBuffer = mock(MemoryBuffer.class);
     MemoryDecoder memDecoder = mock(MemoryDecoder.class);
-    when(memDecoder.unwrap()).thenReturn(memBuffer);
 
     @SuppressWarnings("unchecked")
     SequenceVariantAnnotationIndexDispatcher<SequenceVariant> index =
