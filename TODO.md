@@ -4,7 +4,8 @@
 
 - [ ] feat (db): reintroduce dictionary support (e.g. SpliceAI ncbiGeneId)
 - [ ] perf (db): medium 64-bit sequence variant index
-- [ ] feat: effect prediction
+- [ ] feat: effect prediction (see proof of concept
+  in https://github.com/molgenis/vip-annotate/tree/feat/effect_and_spliceai_live)
 
 ## 0.0.1-alpha.9
 
